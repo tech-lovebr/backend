@@ -12283,3 +12283,13 @@ body[data-theme="dark"] .leads-table tbody td.tabela-vazia-cheia:not(#love-h-a):
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body .b2b-content > [data-view-panel]:not([style*="none"]):has(:is(#orcamentos-table-card, #contratos-clientes-card) td.tabela-vazia-cheia):not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-bottom: 0 !important; }
 }
+
+/* Meus produtos vazio: "Que tal cadastrar um novo?" em negrito e clicável
+   (abre o Adicionar produto). */
+html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):not(#love-h-b) {
+  display: inline; padding: 0; margin: 0; background: none; border: 0; border-radius: 0; box-shadow: none; outline: none; cursor: pointer;
+  font: inherit; font-weight: 700; color: #18181B; text-decoration: none;
+}
+html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):hover,
+html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+body[data-theme="dark"] .produtos-vazio-texto .produtos-vazio-link { color: #FFFFFF !important; }

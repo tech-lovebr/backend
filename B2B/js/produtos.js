@@ -336,7 +336,7 @@ function renderProducts() {
     }
     grid.innerHTML = `
       <div class="produtos-vazio" style="grid-column:1/-1;">
-        <p class="produtos-vazio-texto">Você ainda não tem nenhum produto cadastrado. <b>Que tal cadastrar um novo?</b></p>
+        <p class="produtos-vazio-texto">Você ainda não tem nenhum produto cadastrado. <button type="button" class="produtos-vazio-link" data-produto-vazio-criar>Que tal cadastrar um novo?</button></p>
         <div class="produtos-vazio-cards">
           <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar>
             <dotlottie-wc class="produtos-vazio-lottie" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
@@ -346,7 +346,7 @@ function renderProducts() {
         </div>
       </div>`;
     if (typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
-    grid.querySelector('[data-produto-vazio-criar]')?.addEventListener('click', () => document.getElementById('product-add-btn')?.click());
+    grid.querySelectorAll('[data-produto-vazio-criar]').forEach(b => b.addEventListener('click', () => document.getElementById('product-add-btn')?.click()));
     return;
   }
 

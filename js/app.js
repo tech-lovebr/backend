@@ -10136,7 +10136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="w-full overflow-x-auto">
           <table class="love-tabela recados-tabela w-full text-left border-collapse font-sans">
             <thead><tr><th>Convidado</th><th>Presente</th><th>Recebido em</th><th>Recado</th></tr></thead>
-            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.'}</td></tr>`}</tbody>
+            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + 'Os recados dos seus convidados aparecerão aqui conforme os presentes forem chegando.'}</td></tr>`}</tbody>
           </table>
         </div>
         <div class="guests-pagination recados-paginacao">

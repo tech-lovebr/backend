@@ -1,0 +1,165 @@
+/* ==========================================================================
+   Teste do "UI Doctor App" (Adobe XD) no Hub, só no celular, com jeito de
+   app de iOS. Liga com ?kit=1 e desliga com ?kit=0 (fica salvo no aparelho)
+   — js/shell.js.
+   Do kit: Poppins; azul #1A5277, azul claro #CEEBF6, amarelo #FFCA3C; textos
+   #6F6F6F e #C2C2C2; fundo #F6F6F7; cards brancos com cantos 10px e sombra
+   0 5px 4px rgba(147,147,147,.25); campos e botões altos (55px) com cantos 15px;
+   topo azul com título grande em branco.
+   Do iOS: título grande à esquerda no cabeçalho; abas como controle
+   segmentado; listas em grupo (caixa branca arredondada sobre o cinza, linha
+   divisória que começa no texto); barra de baixo translúcida com desfoque;
+   toque esmaece o item (sem zoom); sem o destaque azul do toque.
+   Campos com 16px de letra (abaixo disso o iPhone dá zoom ao tocar).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html.ui-kit {
+    --k-azul: #1A5277; --k-azul-claro: #CEEBF6; --k-amarelo: #FFCA3C; --k-texto: #6F6F6F; --k-fraco: #C2C2C2; --k-fundo: #F6F6F7;
+    --k-sombra: 0 5px 4px rgba(147, 147, 147, 0.25); --k-sombra-leve: 0 2px 6px rgba(147, 147, 147, 0.22);
+    --primary-color: #1A5277;
+  }
+
+  /* Tipografia e toque */
+  html.ui-kit body:not([data-theme="dark"]), html.ui-kit body:not([data-theme="dark"]) :is(h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, label, td, th, li, strong, div):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) { -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+  html.ui-kit body:not([data-theme="dark"]) :is(h1, h2, h3, h4, h5, h6):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-azul) !important; font-weight: 700 !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(p, td, li, .text-zinc-500, .text-zinc-600, .text-zinc-400):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-texto) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(a, button, .lc-linha, .conv-item, .mobile-nav-item, .category-tab, .submenu-celular-item, .op-post) { transition: opacity 0.15s ease; }
+  html.ui-kit body:not([data-theme="dark"]) :is(a, button, tr.lc-linha, .conv-item, .op-post):active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { opacity: 0.55; }
+
+  /* Página: cinza claro do kit, margem 20px */
+  html.ui-kit body:not([data-theme="dark"]) :is(.b2b-main, .b2b-content):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--k-fundo) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding-left: 20px !important; padding-right: 20px !important; overscroll-behavior-y: contain; }
+
+  /* Cabeçalho das páginas: azul do kit, título grande à esquerda (iOS) */
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 0 !important; height: auto !important; margin: -20px -20px 0 !important;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 12px 18px 20px !important;
+    background: var(--k-azul) !important; border: 0 !important; box-shadow: none !important; overflow: clip !important;
+    display: flex !important; align-items: flex-end !important; justify-content: space-between !important; gap: 8px !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar :is(h1, h2):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin: 0 !important; font-size: 28px !important; font-weight: 700 !important; line-height: 1.2 !important; color: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar p:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: rgba(255, 255, 255, 0.75) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar :is(a, button):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: transparent !important; border: 0 !important; box-shadow: none !important; color: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar :is(a, button) :is(span, svg):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar + p:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin: 0 !important; padding: 14px 0 0 !important; background: transparent !important; font-size: 13px !important; }
+
+  /* Topo da Home: azul, logotipo e ícones em branco */
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-home-faixa, #shell-topbar, .b2b-topbar):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--k-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-topbar :is(img, .logo-celular img):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { filter: brightness(0) invert(1) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-topbar :is(button, a, svg):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dashboard-greeting:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--k-azul) !important; border: 0 !important; border-radius: 10px !important; box-shadow: var(--k-sombra) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dashboard-greeting :is(#greeting-title, #greeting-date, p, span, h1):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) #greeting-title:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 24px !important; font-weight: 700 !important; }
+  html.ui-kit body:not([data-theme="dark"]) #greeting-date:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 14px !important; opacity: 0.85; }
+
+  /* Abas: controle segmentado do iOS */
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tabs-bar, .submenu-celular):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    position: static !important; margin: 14px 0 14px !important; padding: 3px !important; min-height: 0 !important; height: auto !important;
+    background: #E9E9EB !important; border: 0 !important; border-radius: 10px !important; box-shadow: none !important; gap: 0 !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tab, .submenu-celular-item):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 34px !important; height: 34px !important; padding: 0 10px !important; border: 0 !important; border-radius: 8px !important;
+    background: transparent !important; color: var(--k-texto) !important; font-size: 13px !important; font-weight: 500 !important; box-shadow: none !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tab, .submenu-celular-item).active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: #FFFFFF !important; color: var(--k-azul) !important; font-weight: 600 !important; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.04) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tab, .submenu-celular-item).active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d)::before { display: none !important; }
+
+  /* Botões: altos, cantos 15px, sombra suave */
+  html.ui-kit body:not([data-theme="dark"]) :is(.btn-primary, button[type="submit"]):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 52px !important; padding: 0 22px !important; border-radius: 15px !important; border: 0 !important;
+    background: var(--k-azul) !important; color: #FFFFFF !important; font-size: 15px !important; font-weight: 600 !important; box-shadow: 4px 4px 5px rgba(147, 147, 147, 0.25) !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .btn-primary :is(span, svg):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .btn-secondary:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 52px !important; border-radius: 15px !important; background: #FFFFFF !important; border: 0 !important;
+    color: var(--k-azul) !important; font-size: 15px !important; font-weight: 600 !important; box-shadow: 4px 4px 5px rgba(147, 147, 147, 0.25) !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .btn-secondary :is(span, svg):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 44px !important; padding: 0 10px !important; box-shadow: none !important; }
+
+  /* Campos: brancos, sem borda, com sombra suave (kit) */
+  html.ui-kit body:not([data-theme="dark"]) :is(input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="password"], input[type="date"], input[type="time"], input:not([type]), select, textarea):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 52px !important; border-radius: 15px !important; border: 1px solid transparent !important; background: #FFFFFF !important;
+    color: var(--k-texto) !important; font-size: 16px !important; box-shadow: var(--k-sombra) !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) textarea:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 110px !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(input, textarea)::placeholder { color: var(--k-fraco) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(input, select, textarea):focus:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-color: var(--k-azul) !important; outline: none !important; }
+  html.ui-kit body:not([data-theme="dark"]) label:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-azul) !important; font-size: 13px !important; font-weight: 500 !important; }
+
+  /* Pesquisar: 44px, cantos 10px (kit "Find a Doctor") */
+  html.ui-kit body:not([data-theme="dark"]) :is(input[type="search"], .tabela-busca input, #chat-search-input, .op-busca input):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 44px !important; height: 44px !important; border-radius: 10px !important; border: 0 !important; background: #FFFFFF !important;
+    color: var(--k-texto) !important; font-size: 16px !important; box-shadow: var(--k-sombra) !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) :is(input[type="checkbox"], input[type="radio"]):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { accent-color: var(--k-azul); }
+
+  /* Cards: brancos, cantos 10px, sombra do kit */
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-card, .dashboard-suspensos-aviso, .dashboard-help-card, .dash-saldo-celular, .vazio-celular, .op-post):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    border-radius: 10px !important; border: 0 !important; box-shadow: var(--k-sombra) !important; background: #FFFFFF !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-saldo-celular-valor, .dash-analytics-metric-value):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-azul) !important; font-weight: 700 !important; }
+
+  /* Listas em grupo (iOS): contagem e busca no cinza, linhas numa caixa
+     branca arredondada; divisória começa no texto */
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > :is([data-view-panel], [data-leads-painel]):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin-bottom: 0 !important; flex: 0 0 auto !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > :is([data-view-panel], [data-leads-painel]) > div:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { flex: 0 0 auto !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    flex: 0 0 auto !important; min-height: 0 !important; height: auto !important; margin: 0 !important; padding: 14px 0 24px !important;
+    background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; overflow: visible !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular > .tabela-total-celular:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding: 4px 0 10px !important; color: var(--k-azul) !important; font-size: 18px !important; font-weight: 700 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular > .tabela-barra:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding: 0 0 16px !important; border: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular [data-tabela-filtrar]:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { height: 44px !important; min-height: 44px !important; border: 0 !important; border-radius: 10px !important; background: #FFFFFF !important; color: var(--k-azul) !important; box-shadow: var(--k-sombra) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular > :is(.overflow-x-auto, .leads-table-wrap):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { display: block !important; flex: 0 0 auto !important; min-height: 0 !important; height: auto !important; background: #FFFFFF !important; border-radius: 10px !important; box-shadow: var(--k-sombra) !important; overflow: hidden !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular tr.lc-linha:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 64px !important; padding: 0 0 0 16px !important; background: #FFFFFF !important; border: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular tr.lc-linha > td.lc-nome:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding: 10px 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular tr.lc-linha + tr.lc-linha > td.lc-nome:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d), html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular tr.lc-linha + tr.lc-linha > td.lc-info:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { box-shadow: inset 0 0.5px 0 #E5E5EA !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular tr.lc-linha > td.lc-info:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { align-self: stretch; display: flex !important; align-items: center; padding-right: 16px !important; font-size: 12px !important; color: var(--k-texto) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular tr.lc-linha > td.lc-nome:last-of-type:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding-right: 16px !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-card.lista-celular .lc-iniciais, #conv-list .conv-item .b2b-avatar-square):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    flex: 0 0 44px !important; width: 44px !important; height: 44px !important; border-radius: 50% !important; border: 0 !important;
+    background: var(--k-azul-claro) !important; color: var(--k-azul) !important; font-size: 14px !important; font-weight: 600 !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-card.lista-celular td.lc-nome, .dash-card.lista-celular td.lc-nome *:not(.lc-iniciais)):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 16px !important; font-weight: 400 !important; color: var(--k-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular > .vazio-celular:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin: 0 !important; }
+
+  /* Mensagens: mesma lista em grupo */
+  html.ui-kit body:not([data-theme="dark"]) :is(.chat-shell, .b2b-chat-contacts-column, .b2b-chat-contacts-header):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: transparent !important; }
+  html.ui-kit body:not([data-theme="dark"]) .chat-shell:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin: 0 !important; overflow: visible !important; }
+  html.ui-kit body:not([data-theme="dark"]) .chat-total-celular:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding: 18px 0 10px !important; color: var(--k-azul) !important; font-size: 18px !important; font-weight: 700 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-chat-contacts-header:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding: 0 0 16px !important; border: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { flex: 0 1 auto !important; background: #FFFFFF !important; border-radius: 10px !important; box-shadow: var(--k-sombra) !important; overflow: hidden auto !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-item:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 72px !important; padding: 12px 16px !important; background: #FFFFFF !important; border: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-linha + .conv-linha .conv-item:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d), html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-item + .conv-item:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { box-shadow: inset 72px 0.5px 0 #FFFFFF, inset 0 0.5px 0 #E5E5EA !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-item h4:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 16px !important; font-weight: 600 !important; color: var(--k-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-item p:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 13px !important; color: var(--k-texto) !important; }
+
+  /* Oportunidades */
+  html.ui-kit body:not([data-theme="dark"]) .op-chip:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { height: 34px !important; border-radius: 10px !important; border: 0 !important; background: #FFFFFF !important; color: var(--k-azul) !important; box-shadow: var(--k-sombra-leve) !important; font-size: 13px !important; }
+  html.ui-kit body:not([data-theme="dark"]) .op-chip.active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--k-amarelo) !important; color: var(--k-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) #op-caixa > #op-vazio:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: #FFFFFF !important; border-radius: 10px !important; box-shadow: var(--k-sombra) !important; }
+  html.ui-kit body:not([data-theme="dark"]) #op-caixa > #op-paginacao:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: transparent !important; }
+  html.ui-kit body:not([data-theme="dark"]) #op-caixa > #op-filtros:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding: 0 0 16px !important; border: 0 !important; }
+
+  /* Etiquetas e destaques */
+  html.ui-kit body:not([data-theme="dark"]) :is(.status-badge, .badge, .tag, .contrato-exemplo):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-radius: 6px !important; }
+  html.ui-kit body:not([data-theme="dark"]) .nav-badge:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--k-amarelo) !important; color: var(--k-azul) !important; }
+
+  /* Barra de baixo: translúcida com desfoque (iOS), ativo azul */
+  html.ui-kit body:not([data-theme="dark"]) .mobile-bottom-nav:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    background: rgba(255, 255, 255, 0.86) !important; -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    border-top: 0.5px solid rgba(0, 0, 0, 0.12) !important; box-shadow: none !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .mobile-nav-item:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-fraco) !important; background: transparent !important; }
+  html.ui-kit body:not([data-theme="dark"]) .mobile-nav-item span:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 10px !important; font-weight: 500 !important; color: inherit !important; }
+  html.ui-kit body:not([data-theme="dark"]) .mobile-nav-item.active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-azul) !important; background: transparent !important; }
+
+  /* Janelas e menus: cantos maiores como no iOS */
+  html.ui-kit body:not([data-theme="dark"]) :is(.op-menu, .tabela-filtro-menu, .contrato-menu, .conv-menu):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-radius: 14px !important; border: 0 !important; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important; }
+
+  /* Rodapé da Home */
+  html.ui-kit body:not([data-theme="dark"]) .b2b-footer:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-top-color: #E5E5EA !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-footer :is(p, a):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--k-fraco) !important; }
+}

@@ -797,12 +797,17 @@ function opPosicionarBusca() {
     }
     barra.prepend(busca);
     barra.querySelector('.tabela-barra-acoes')?.append(filtrar);
+    // Filtros rápidos (Apenas não respondidas, Salvas) dentro da caixa, abaixo da busca.
+    const chips = document.getElementById('op-filtros');
+    if (chips && chips.previousElementSibling !== barra) barra.after(chips);
     caixa.classList.add('lista-celular');
     // Mesmo botão de Clientes: "Filtrar ⌄" com borda (o rótulo vem do atributo).
     filtrarBtn.setAttribute('data-tabela-filtrar', '');
     filtrarBtn.setAttribute('data-rotulo-celular', 'Filtrar');
   } else {
     acoes.append(busca, filtrar);
+    const chips = document.getElementById('op-filtros');
+    if (chips && chips.parentElement === caixa) caixa.parentElement.insertBefore(chips, document.getElementById('op-aviso') || caixa);
     caixa.classList.remove('lista-celular');
     filtrarBtn.removeAttribute('data-tabela-filtrar');
   }

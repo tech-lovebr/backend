@@ -12473,3 +12473,37 @@ html body #op-header-acoes[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c) 
   html body .dash-card.lista-celular #op-filtrar-btn > .op-filtrar-qtd:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: inline !important; position: static; font-size: 15px !important; font-weight: 500; }
   html body .dash-card.lista-celular .op-filtrar-menu:not(#love-h-a):not(#love-h-b):not(#love-h-c) { right: 0; left: auto; top: calc(100% + 6px); }
 }
+
+/* ==========================================================================
+   Celular: a caixa da lista (Clientes, Oportunidades, Meus contratos,
+   Orçamentos) usa a tela toda — colada nas abas e indo até a barra de baixo,
+   sem a faixa cinza do respiro do rodapé (o rodapé só aparece na Home).
+   Mensagens: sem a faixa de outro cinza entre o cabeçalho e "N conversas",
+   um cinza só (o da página), linha fina embaixo do cabeçalho, como no index.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 0 !important; }
+
+  html body .b2b-content:has(> :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]) > .dash-card.lista-celular, > :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]) > :not([hidden]):not([style*="none"]) > .dash-card.lista-celular) > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs, .category-tabs-bar):not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-bottom: 0 !important; }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]):has(> .dash-card.lista-celular, > :not([hidden]):not([style*="none"]) > .dash-card.lista-celular):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; display: flex !important; flex-direction: column; min-height: 0;
+    padding-bottom: 0 !important; margin-bottom: calc(-88px - env(safe-area-inset-bottom, 0px)) !important;
+  }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]) > :not([hidden]):not([style*="none"]):has(> .dash-card.lista-celular):not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 1 0 auto !important; display: flex !important; flex-direction: column; margin-bottom: 0 !important; }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]) .dash-card.lista-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; margin-top: 0 !important; margin-bottom: 0 !important; padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]) .dash-card.lista-celular > .vazio-celular:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 1 0 auto; min-height: 320px; }
+
+  /* Oportunidades: filtros rápidos dentro da caixa, abaixo da busca. */
+  html body #op-caixa > #op-barra-celular:has(+ #op-filtros):not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-bottom: 12px !important; border-bottom: 0 !important; }
+  html body #op-caixa > #op-filtros:not(#love-h-a):not(#love-h-b) { flex-wrap: nowrap; gap: 8px; margin: 0; padding: 0 16px 16px; border-bottom: 1px solid #E4E4E7; overflow-x: auto; scrollbar-width: none; }
+  body[data-theme="dark"] #op-caixa > #op-filtros { border-bottom-color: #333333; }
+
+  /* Mensagens */
+  html body[data-page="chat"] .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-bottom: 0 !important; border-bottom: 1px solid #E4E4E7 !important; }
+  html body[data-page="chat"] :is(.chat-shell, .b2b-chat-contacts-column, .b2b-chat-contacts-header, #conv-list):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+  html body[data-page="chat"] .chat-total-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #18181B; }
+  body[data-theme="dark"][data-page="chat"] .b2b-content > .b2b-header-bar { border-bottom-color: #333333 !important; }
+  body[data-theme="dark"][data-page="chat"] .chat-total-celular { color: #FFFFFF; }
+}

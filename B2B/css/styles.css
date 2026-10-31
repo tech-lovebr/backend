@@ -12537,3 +12537,25 @@ html body .dash-saldo-celular .dash-saldo-celular-painel[hidden]:not(#love-h-a) 
 body[data-theme="dark"] .dash-saldo-celular .dash-saldo-celular-topo { border-bottom-color: #333333; }
 body[data-theme="dark"] .dash-saldo-celular :is(.dash-saldo-celular-aba, .dash-saldo-celular-olho) { color: #A1A1AA !important; }
 body[data-theme="dark"] .dash-saldo-celular .dash-saldo-celular-aba.active { color: #FFFFFF !important; border-bottom-color: #FFFFFF !important; }
+
+/* ==========================================================================
+   Celular: listas vazias e avisos de "sem produto" no mesmo padrão — caixa
+   branca sobre o fundo cinza, descendo até 16px acima da barra de baixo.
+   - Clientes, Contratos, Orçamentos vazios: sem o branco de ponta a ponta
+     atrás da caixa "Adicione seu primeiro…".
+   - Oportunidades e Propostas enviadas sem produto: a caixa estica até embaixo.
+   Barra de baixo: item ativo com o fundo #EAF0F5 e o ícone #183b54 dos
+   atalhos Cobrar / Orçamento / Construtor da Home.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content .dash-card.lista-celular.tem-vazio-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+  html body .dash-card.lista-celular.tem-vazio-celular > .tabela-barra:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-bottom-color: transparent !important; }
+  body[data-theme="dark"] .b2b-content .dash-card.lista-celular.tem-vazio-celular { background: transparent !important; }
+
+  html body .b2b-content > [data-leads-painel]:not([hidden]):has(> :is(#op-sem-produtos, #op-propostas-sem-produtos):not([hidden])):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; display: flex !important; flex-direction: column; margin-bottom: -8px !important; padding-bottom: 0 !important;
+  }
+  html body .b2b-content > [data-leads-painel] > :is(#op-sem-produtos, #op-propostas-sem-produtos):not([hidden]):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; align-content: center; margin-bottom: 0 !important; }
+
+  html body:not([data-theme="dark"]) .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #EAF0F5 !important; color: #183b54 !important; }
+}

@@ -15334,3 +15334,11 @@ html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#lov
     stroke: #183b54 !important;
   }
 }
+
+/* Sem foto/iniciais: o menu da conta (celular) mostra só nome e e-mail, e
+   Configurações não tem mais a foto de perfil — os campos usam a largura
+   toda da caixa (celular e desktop). */
+html body .menu-conta .menu-conta-avatar:not(#love-h-a):not(#love-h-b) { display: none !important; }
+html body .menu-conta .menu-conta-cabeca:not(#love-h-a) { padding-top: 32px; }
+html body .conta-perfil-linha .conta-avatar-coluna:not(#love-h-a) { display: none !important; }
+html body .conta-perfil-linha:not(#love-h-a):not(#love-h-b) { display: block; }

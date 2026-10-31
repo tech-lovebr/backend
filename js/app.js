@@ -13502,6 +13502,39 @@ document.addEventListener('DOMContentLoaded', () => {
   // Formatos de mesa da planta (o mesmo nome vai em elements[].formato).
   const FORMATOS_DE_MESA = ['redonda', 'retangular', 'quadrada', 'bistro'];
 
+  // Celular: o desenho e o texto do mapa vazio ficam no meio da tela (entre o
+  // topo e a barra de baixo), não no meio da área do mapa. Não dá para usar
+  // position:fixed porque a animação de entrada da aba usa transform.
+  function centralizarVazioDoMapa() {
+    const hint = document.getElementById('floorplan-empty-hint');
+    if (!hint) return;
+    hint.style.transform = '';
+    if (!plantaNoCelular() || hint.style.display === 'none') return;
+    const caixa = hint.getBoundingClientRect();
+    const filhos = [...hint.children].map(el => el.getBoundingClientRect()).filter(r => r.height);
+    if (!caixa.height || !filhos.length) return;
+    const topo = Math.min(...filhos.map(r => r.top));
+    const base = Math.max(...filhos.map(r => r.bottom));
+    const barra = document.querySelector('.sidebar-icon-rail');
+    const rBarra = barra ? barra.getBoundingClientRect() : null;
+    const fimDaTela = rBarra && rBarra.height ? rBarra.top : window.innerHeight;
+    let delta = fimDaTela / 2 - (topo + base) / 2;
+    // Sem sair da área do mapa.
+    delta = Math.max(caixa.top + 16 - topo, Math.min(caixa.bottom - 16 - base, delta));
+    hint.style.transform = `translateY(${Math.round(delta)}px)`;
+  }
+  let observadorVazioDoMapa = null;
+  function agendarCentralizarVazioDoMapa() {
+    requestAnimationFrame(centralizarVazioDoMapa);
+    setTimeout(centralizarVazioDoMapa, 320); // depois da animação de entrada da aba
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!observadorVazioDoMapa && canvas && 'ResizeObserver' in window) {
+      observadorVazioDoMapa = new ResizeObserver(() => { centralizarVazioDoMapa(); setTimeout(centralizarVazioDoMapa, 320); });
+      observadorVazioDoMapa.observe(canvas);
+      window.addEventListener('resize', centralizarVazioDoMapa);
+    }
+  }
+
   function renderFloorPlanCanvas() {
     const canvas = document.getElementById('floorplan-canvas');
     const emptyHint = document.getElementById('floorplan-empty-hint');
@@ -13523,6 +13556,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapaVazio = !elements.some(x => x.type !== 'guia' && x.type !== 'config');
     if (emptyHint) emptyHint.style.display = mapaVazio ? 'flex' : 'none';
     if (mapaVazio) carregarPlayerLottie();
+    agendarCentralizarVazioDoMapa();
     // Camada com todos os elementos, na escala que faz tudo caber na largura.
     escalaDaPlanta = escalaParaCaber(canvas, elements);
     let camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));

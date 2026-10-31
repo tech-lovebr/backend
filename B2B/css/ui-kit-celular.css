@@ -1,0 +1,132 @@
+/* ==========================================================================
+   Teste do "Wireframe - Ui Kit" (Adobe XD) no Hub, só no celular.
+   Liga com ?kit=1 e desliga com ?kit=0 (fica salvo no aparelho) — js/shell.js.
+   Medidas do kit: Poppins (SemiBold nos títulos, Light nos textos), azul
+   #2A8CFF (#0E6DDB pressionado), cinza de apoio #DFE4EB, texto fraco #C1CAD4
+   e #979797; cabeçalho 64px cinza com título centralizado 15px; busca 40px;
+   botões e campos 50px; cantos 4px; margem lateral 20px; linhas de lista 60px
+   com avatar redondo de borda azul; fundo da página branco.
+   Campos ficam com 16px de letra (abaixo disso o iPhone dá zoom ao tocar).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html.ui-kit { --kit-azul: #2A8CFF; --kit-azul-escuro: #0E6DDB; --kit-cinza: #DFE4EB; --kit-fraco: #C1CAD4; --kit-texto2: #979797; --primary-color: #2A8CFF; }
+
+  /* Tipografia */
+  html.ui-kit body:not([data-theme="dark"]), html.ui-kit body:not([data-theme="dark"]) :is(h1, h2, h3, h4, h5, h6, p, span, a, button, input, select, textarea, label, td, th, li, strong, div):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-family: 'Poppins', sans-serif !important; letter-spacing: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(h1, h2, h3, h4, h5, h6, strong):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; font-weight: 600 !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(p, td, li, .text-zinc-500, .text-zinc-600, .text-zinc-400):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-texto2) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(p, td, li):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-weight: 300 !important; }
+
+  /* Página */
+  html.ui-kit body:not([data-theme="dark"]) :is(.b2b-main, .b2b-content):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding-left: 20px !important; padding-right: 20px !important; }
+
+  /* Topo da Home e cabeçalho das páginas: faixa cinza do kit, título no centro */
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-home-faixa, #shell-topbar, .b2b-topbar):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--kit-cinza) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 64px !important; height: auto !important; padding: 10px 12px !important; margin: -20px -20px 0 !important;
+    background: var(--kit-cinza) !important; border: 0 !important; box-shadow: none !important; position: relative;
+    display: flex !important; align-items: center !important; justify-content: flex-end !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar :is(h1, h2):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    position: absolute; left: 64px; right: 64px; top: 50%; transform: translateY(-50%); margin: 0 !important;
+    text-align: center; font-size: 15px !important; font-weight: 600 !important; line-height: 1.3 !important; color: var(--kit-azul) !important;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { overflow: clip !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar > div:has(> :is(h1, h2)):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { position: static !important; }
+  html.ui-kit body:not([data-theme="dark"]) .produtos-barra-caixa:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin-left: -20px !important; margin-right: -20px !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar p:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { display: none !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar :is(a, button):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: transparent !important; border: 0 !important; color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar svg:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar + p:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin: 0 -20px !important; padding: 12px 20px !important; background: #FFFFFF !important; font-size: 12px !important; }
+
+  /* Abas (submenu) */
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tabs-bar, .submenu-celular):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin-left: -20px !important; margin-right: -20px !important; background: #FFFFFF !important; border-top: 0 !important; border-bottom: 1px solid var(--kit-cinza) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tab, .submenu-celular-item):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-fraco) !important; font-size: 12px !important; font-weight: 600 !important; background: transparent !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tab, .submenu-celular-item).active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; background: transparent !important; box-shadow: inset 0 -2px 0 var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.category-tab, .submenu-celular-item).active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d)::before { display: none !important; }
+
+  /* Botões: 50px, cantos 4px, azul cheio ou branco com borda #DFE4EB */
+  html.ui-kit body:not([data-theme="dark"]) :is(.btn-primary, button[type="submit"]):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 50px !important; padding: 0 20px !important; border-radius: 4px !important; border: 0 !important;
+    background: var(--kit-azul) !important; color: #FFFFFF !important; font-size: 14px !important; font-weight: 600 !important; box-shadow: none !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .btn-primary:active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--kit-azul-escuro) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .btn-primary :is(span, svg):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .btn-secondary:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 50px !important; border-radius: 4px !important; background: #FFFFFF !important; border: 1px solid var(--kit-cinza) !important;
+    color: var(--kit-azul) !important; font-size: 14px !important; font-weight: 600 !important; box-shadow: none !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .btn-secondary :is(span, svg):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 44px !important; background: transparent !important; border: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-content > .b2b-header-bar .btn-primary :is(span, svg):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; }
+
+  /* Campos: 50px, borda #DFE4EB, texto azul Light, rótulo azul 12px */
+  html.ui-kit body:not([data-theme="dark"]) :is(input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="password"], input[type="date"], input[type="time"], input:not([type]), select, textarea):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 50px !important; border-radius: 4px !important; border: 1px solid var(--kit-cinza) !important; background: #FFFFFF !important;
+    color: var(--kit-azul) !important; font-size: 16px !important; font-weight: 300 !important; box-shadow: none !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) textarea:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 100px !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(input, textarea)::placeholder { color: var(--kit-fraco) !important; font-weight: 300 !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(input, select, textarea):focus:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-color: var(--kit-azul) !important; outline: none !important; }
+  html.ui-kit body:not([data-theme="dark"]) label:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; font-size: 12px !important; font-weight: 600 !important; }
+
+  /* Busca: 40px */
+  html.ui-kit body:not([data-theme="dark"]) :is(input[type="search"], .tabela-busca input, #chat-search-input, .op-busca input):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    min-height: 40px !important; height: 40px !important; border-radius: 4px !important; border: 1px solid var(--kit-cinza) !important;
+    background: #FFFFFF !important; color: var(--kit-azul) !important; font-size: 16px !important; font-weight: 300 !important;
+  }
+
+  /* Caixas de marcar */
+  html.ui-kit body:not([data-theme="dark"]) :is(input[type="checkbox"], input[type="radio"]):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { accent-color: var(--kit-azul); }
+
+  /* Caixas e cards: branco, borda #DFE4EB, cantos 4px, sem sombra */
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-card, .dashboard-greeting, .dashboard-suspensos-aviso, .dashboard-help-card, .dash-saldo-celular, .vazio-celular, .modal-card):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    border-radius: 4px !important; border: 1px solid var(--kit-cinza) !important; box-shadow: none !important; background: #FFFFFF !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin-left: -20px !important; margin-right: -20px !important; border: 0 !important; border-radius: 0 !important; }
+  html.ui-kit body:not([data-theme="dark"]) #greeting-title:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 20px !important; color: var(--kit-azul) !important; font-weight: 600 !important; }
+  html.ui-kit body:not([data-theme="dark"]) #greeting-date:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 12px !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-saldo-celular-valor, .dash-analytics-metric-value):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; font-weight: 600 !important; }
+
+  /* Listas (Clientes, Oportunidades, Contratos, Orçamentos, Mensagens):
+     linha 60px, avatar 30px redondo com borda azul, nome 14 azul, apoio 12 */
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular > :is(.tabela-total-celular, .tabela-barra):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding-left: 20px !important; padding-right: 20px !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-card.lista-celular > .tabela-total-celular, .chat-total-celular):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; font-size: 15px !important; font-weight: 600 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular > .tabela-barra:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-bottom-color: var(--kit-cinza) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular tr.lc-linha:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 60px !important; padding: 0 20px !important; border-bottom: 1px solid var(--kit-cinza) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-card.lista-celular .lc-iniciais, #conv-list .conv-item .b2b-avatar-square):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) {
+    flex: 0 0 30px !important; width: 30px !important; height: 30px !important; border-radius: 50% !important;
+    border: 1px solid var(--kit-azul) !important; background: #FFFFFF !important; color: var(--kit-azul) !important; font-size: 10px !important; font-weight: 600 !important;
+  }
+  html.ui-kit body:not([data-theme="dark"]) :is(.dash-card.lista-celular td.lc-nome, .dash-card.lista-celular td.lc-nome *:not(.lc-iniciais)):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 14px !important; font-weight: 600 !important; color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular td.lc-info:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 12px !important; font-weight: 300 !important; color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular [data-tabela-filtrar]:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { height: 40px !important; min-height: 40px !important; border-radius: 4px !important; border-color: var(--kit-cinza) !important; color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .dash-card.lista-celular [data-tabela-filtrar]:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d)::before { font-size: 12px !important; font-weight: 600 !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-item:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { min-height: 60px !important; padding: 10px 20px !important; border-bottom: 1px solid var(--kit-cinza) !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-item h4:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 14px !important; font-weight: 600 !important; color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) #conv-list .conv-item p:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 12px !important; font-weight: 300 !important; color: var(--kit-azul) !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.chat-shell, .b2b-chat-contacts-column, .b2b-chat-contacts-header, #conv-list):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: #FFFFFF !important; }
+  html.ui-kit body:not([data-theme="dark"]) .chat-shell:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { margin-left: -20px !important; margin-right: -20px !important; }
+  html.ui-kit body:not([data-theme="dark"]) :is(.chat-total-celular, .b2b-chat-contacts-header):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { padding-left: 20px !important; padding-right: 20px !important; }
+  html.ui-kit body:not([data-theme="dark"]) .op-chip:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { height: 32px !important; border-radius: 4px !important; border: 1px solid var(--kit-cinza) !important; background: #FFFFFF !important; color: var(--kit-azul) !important; font-size: 12px !important; font-weight: 600 !important; }
+  html.ui-kit body:not([data-theme="dark"]) .op-chip.active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--kit-azul) !important; border-color: var(--kit-azul) !important; color: #FFFFFF !important; }
+
+  /* Etiquetas */
+  html.ui-kit body:not([data-theme="dark"]) :is(.status-badge, .badge, .tag, .contrato-exemplo):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-radius: 4px !important; }
+
+  /* Barra de baixo: branca, ícones #C1CAD4, ativo azul */
+  html.ui-kit body:not([data-theme="dark"]) .mobile-bottom-nav:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: #FFFFFF !important; border-top: 1px solid var(--kit-cinza) !important; box-shadow: none !important; }
+  html.ui-kit body:not([data-theme="dark"]) .mobile-nav-item:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-fraco) !important; background: transparent !important; }
+  html.ui-kit body:not([data-theme="dark"]) .mobile-nav-item span:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { font-size: 10px !important; font-weight: 600 !important; color: inherit !important; }
+  html.ui-kit body:not([data-theme="dark"]) .mobile-nav-item.active:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-azul) !important; background: transparent !important; }
+  html.ui-kit body:not([data-theme="dark"]) .mobile-nav-item .nav-badge:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { background: var(--kit-azul) !important; color: #FFFFFF !important; }
+
+  /* Menus: cantos 4px */
+  html.ui-kit body:not([data-theme="dark"]) :is(.menu-celular, .op-menu, .tabela-filtro-menu):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-radius: 4px !important; }
+
+  /* Rodapé da Home */
+  html.ui-kit body:not([data-theme="dark"]) .b2b-footer:not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { border-top-color: var(--kit-cinza) !important; }
+  html.ui-kit body:not([data-theme="dark"]) .b2b-footer :is(p, a):not(#kit-a):not(#kit-b):not(#kit-c):not(#kit-d) { color: var(--kit-fraco) !important; font-size: 10px !important; }
+}

@@ -678,6 +678,47 @@ function renderGreeting() {
   }
 }
 
+/* -------------------- Caixa do saldo (Home) --------------------
+   Abas Saldo / Faturamento em 30 dias no topo e o olho que esconde os
+   valores (a mesma escolha de "Esconder valores" do Financeiro). */
+const saldoCelular = { saldo: null, faturamento: null };
+const ICONE_OLHO_ABERTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICONE_OLHO_FECHADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.6 6.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
+function saldoEscondido() {
+  try { return localStorage.getItem('b2b-fin-esconder') === '1'; } catch (e) { return false; }
+}
+function desenharSaldoCelular() {
+  const esconder = saldoEscondido();
+  const valor = v => (v == null ? '—' : esconder ? 'R$ ••••' : formatCurrency(v));
+  setText('dash-saldo-celular-saldo', valor(saldoCelular.saldo));
+  setText('dash-saldo-celular-faturamento', valor(saldoCelular.faturamento));
+  const olho = document.getElementById('dash-saldo-celular-olho');
+  if (olho) {
+    olho.innerHTML = esconder ? ICONE_OLHO_FECHADO : ICONE_OLHO_ABERTO;
+    const dica = esconder ? 'Mostrar valores' : 'Esconder valores';
+    olho.setAttribute('aria-label', dica);
+    olho.dataset.dica = dica;
+  }
+}
+function ligarSaldoCelular() {
+  const caixa = document.querySelector('.dash-saldo-celular');
+  if (!caixa || caixa.dataset.ligada) return;
+  caixa.dataset.ligada = '1';
+  caixa.querySelectorAll('[data-saldo-aba]').forEach(aba => aba.addEventListener('click', () => {
+    caixa.querySelectorAll('[data-saldo-aba]').forEach(a => {
+      const ativa = a === aba;
+      a.classList.toggle('active', ativa);
+      a.setAttribute('aria-selected', ativa ? 'true' : 'false');
+    });
+    caixa.querySelectorAll('[data-saldo-painel]').forEach(p => { p.hidden = p.dataset.saldoPainel !== aba.dataset.saldoAba; });
+  }));
+  document.getElementById('dash-saldo-celular-olho')?.addEventListener('click', () => {
+    try { localStorage.setItem('b2b-fin-esconder', saldoEscondido() ? '0' : '1'); } catch (e) { /* sem armazenamento */ }
+    desenharSaldoCelular();
+  });
+  desenharSaldoCelular();
+}
+
 /* -------------------- Saldo total --------------------
    Valor grande do saldo (créditos − débitos da carteira) e, embaixo, o
    gráfico do faturamento de cada dia nos últimos 30 dias. Passando o mouse
@@ -687,6 +728,7 @@ function renderGreeting() {
 async function renderSaldoTotal() {
   const valorEl = document.getElementById('dash-saldo-total-valor');
   const grafico = document.getElementById('dash-saldo-total-grafico');
+  ligarSaldoCelular();
   if (!valorEl || !grafico) return;
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   let transacoes = [];
@@ -696,7 +738,7 @@ async function renderSaldoTotal() {
   }
   const sinal = t => (t.type === 'credit' ? 1 : -1) * Number(t.amount || 0);
   valorEl.textContent = formatCurrency(transacoes.reduce((soma, t) => soma + sinal(t), 0));
-  setText('dash-saldo-celular-saldo', valorEl.textContent);
+  saldoCelular.saldo = transacoes.reduce((soma, t) => soma + sinal(t), 0);
 
   // Faturamento (créditos) de cada um dos últimos 30 dias.
   const DIA = 24 * 60 * 60 * 1000;
@@ -712,7 +754,8 @@ async function renderSaldoTotal() {
     dias.push({ data: inicio, valor });
   }
   const temFaturamento = dias.some(d => d.valor > 0);
-  setText('dash-saldo-celular-faturamento', formatCurrency(dias.reduce((soma, d) => soma + d.valor, 0)));
+  saldoCelular.faturamento = dias.reduce((soma, d) => soma + d.valor, 0);
+  desenharSaldoCelular();
 
   let pontos;
   if (!temFaturamento) {

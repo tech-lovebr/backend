@@ -70,14 +70,14 @@
 
   <!-- Custom Styles -->
   <link rel="stylesheet" href="css/styles.css?v=20261031_semfoto">
-  <link rel="stylesheet" href="css/landing.css?v=20261031_landing4">
+  <link rel="stylesheet" href="css/landing.css?v=20261031_landing5">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
   <!-- =======================================================================
        VIEW 1: SITE PÚBLICO & LANDING PAGE (Com Primeiro Scroll Fiel à Referência)
        ======================================================================= -->
-  <div id="view-public-site" class="w-full flex flex-col min-h-screen">
+  <div id="view-public-site">
     
     <!-- Cabeçalho público: logo, âncoras da página e Entrar / Criar evento grátis -->
     <header class="lp-topo">
@@ -116,7 +116,6 @@
         <p class="lp2-hero-sub">Do convite à lista de presentes com Pix, a Love cuida de cada detalhe — para você aproveitar todos os dias até o grande dia.</p>
         <div class="lp2-hero-ctas">
           <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
-          <button type="button" class="btn-trigger-login lp-btn lp2-btn-vidro lp-btn-grande">Entrar</button>
         </div>
       </div>
       <ul class="lp-faixa lp2-hero-selos">
@@ -387,11 +386,11 @@
          header/footer da home, texto lido de documentos_legais (ver
          openLegalDocPage em app.js). Fica escondida até ser aberta.
          ======================================================================= -->
-    <section id="legal-doc-page" class="hidden w-full px-6 py-12 sm:py-16">
-      <div class="max-w-[760px] mx-auto">
-        <div id="legal-doc-loading" class="text-sm text-zinc-400 hidden">Carregando...</div>
-        <h1 id="legal-doc-title" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
-        <p id="legal-doc-date" class="text-sm text-zinc-400 mt-2 mb-10"></p>
+    <section id="legal-doc-page" class="lp-legal hidden">
+      <div class="lp-legal-faixa">
+        <div id="legal-doc-loading" class="lp-legal-carregando hidden">Carregando...</div>
+        <h1 id="legal-doc-title" class="lp-legal-titulo"></h1>
+        <p id="legal-doc-date" class="lp-legal-data"></p>
         <div id="legal-doc-body" class="legal-doc-body"></div>
       </div>
     </section>

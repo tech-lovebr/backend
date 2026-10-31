@@ -635,3 +635,73 @@
   #view-public-site .lp2-final p { font-size: 16px; }
   #view-public-site .lp2-final .lp-btn { width: 100%; }
 }
+
+/* ==========================================================================
+   LANDING v3 — caixas no padrão da plataforma logada (10px, borda fina,
+   sombra só no que flutua), sem classes de Tailwind no HTML, e o celular
+   no formato da referência: foto em caixa no topo, título embaixo, um
+   botão só, recursos em 2 colunas e painéis de ponta a ponta.
+   ========================================================================== */
+#view-public-site { width: 100%; min-height: 100vh; flex-direction: column; }
+
+/* Página legal (Termos / Privacidade) */
+#view-public-site .lp-legal { width: 100%; padding: 64px 32px; }
+#view-public-site .lp-legal.hidden { display: none; }
+#view-public-site .lp-legal-faixa { max-width: 760px; margin: 0 auto; }
+#view-public-site .lp-legal-carregando { font: 400 14px Inter, sans-serif; color: var(--lp-micro); }
+#view-public-site .lp-legal-carregando.hidden { display: none; }
+#view-public-site .lp-legal-titulo { margin: 0; font: 700 36px/1.15 'Plus Jakarta Sans', Inter, sans-serif !important; letter-spacing: -0.03em !important; color: var(--lp-tinta); }
+#view-public-site .lp-legal-data { margin: 8px 0 40px; font: 400 14px Inter, sans-serif; color: var(--lp-micro); }
+
+/* Caixas como na plataforma: 10px, borda fina, sem sombra. */
+#view-public-site :is(.lp2-ladrilho img, .lp2-painel, .lp2-painel-foto img, .lp2-detalhes-foto img, .lp2-seguranca-foto > img) { border-radius: var(--lp-raio-card); }
+#view-public-site :is(.lp2-detalhes-foto img, .lp2-seguranca-foto > img, .lp2-ladrilho img) { outline: 1px solid rgba(0, 0, 0, 0.06); outline-offset: -1px; }
+/* Avisos e comprovante flutuam por cima da foto: sombra de overlay. */
+#view-public-site .lp2-chip { border-radius: var(--lp-raio-card); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+#view-public-site .lp2-recibo { border: 1px solid var(--lp-borda); border-radius: var(--lp-raio-card); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+#view-public-site .lp2-btn-tom { border-radius: var(--lp-raio); }
+
+/* ---------- Celular ---------- */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-public-site .lp-legal { padding: 40px 16px; }
+  #view-public-site .lp-legal-titulo { font-size: 28px !important; }
+
+  /* Abertura: foto numa caixa no topo e o texto embaixo, no fundo branco. */
+  #view-public-site .lp2-hero { display: block; min-height: 0; background: #FFFFFF; color: var(--lp-tinta); overflow: visible; }
+  #view-public-site .lp2-hero-foto { position: relative; inset: auto; display: block; width: calc(100% - 32px); height: 248px; margin: 16px 16px 0; border-radius: var(--lp-raio-card); object-position: 50% 60%; }
+  #view-public-site .lp2-hero-veu { display: none; }
+  #view-public-site .lp2-hero-conteudo { padding-top: 28px; }
+  #view-public-site .lp2-hero-marca { color: var(--lp-azul); }
+  #view-public-site .lp2-hero-titulo { margin-top: 12px; font-size: 38px !important; line-height: 1.08 !important; color: var(--lp-tinta); }
+  #view-public-site .lp2-hero-sub { margin-top: 14px; font-size: 15px; color: var(--lp-texto); }
+  #view-public-site .lp2-hero-ctas { margin-top: 24px; }
+  #view-public-site .lp2-hero-ctas .lp-btn-branco { background: var(--lp-azul); color: #FFFFFF; }
+  #view-public-site .lp2-hero-selos { padding-top: 20px; padding-bottom: 8px; }
+  #view-public-site .lp2-hero-selos li { color: var(--lp-suave); }
+  #view-public-site .lp2-hero-selos svg { color: var(--lp-azul); }
+  #view-public-site .lp2-hero-selos img { filter: none; opacity: 1; }
+
+  /* Recursos: 2 colunas, nome em cima da foto quadrada. */
+  #view-public-site .lp2-tudo { padding: 56px 0 48px; }
+  #view-public-site .lp2-titulo-centro { text-align: left; font-size: 30px !important; }
+  #view-public-site .lp2-sub-centro { text-align: left; margin-left: 0; }
+  #view-public-site .lp2-mosaico { gap: 24px 12px; margin-top: 28px; }
+  #view-public-site .lp2-ladrilho { display: flex; flex-direction: column; }
+  #view-public-site .lp2-ladrilho span { order: -1; margin: 0 0 10px; font-size: 14px; }
+  #view-public-site .lp2-ladrilho img { aspect-ratio: 1 / 1; }
+
+  /* Painéis de ponta a ponta, um embaixo do outro, sem cantos. */
+  #view-public-site .lp2-paineis { padding-bottom: 0; }
+  #view-public-site .lp2-paineis-lista { gap: 0; margin: 0 -16px; }
+  #view-public-site .lp2-paineis .lp2-painel { gap: 28px; padding: 48px 16px 40px; border-radius: 0; }
+  #view-public-site .lp2-painel h2 { font-size: 32px !important; line-height: 1.1 !important; }
+  #view-public-site .lp2-chip { left: 12px; bottom: 12px; }
+
+  /* Detalhes: abas primeiro, a foto logo abaixo delas. */
+  #view-public-site .lp2-detalhes-foto { order: 0; }
+  #view-public-site .lp2-detalhes-linha { gap: 24px; }
+
+  #view-public-site .lp2-titulo { font-size: 30px !important; }
+  #view-public-site .lp2-momentos .lp2-titulo-centro { text-align: center; }
+  #view-public-site .lp2-final h2 { font-size: 34px !important; }
+}

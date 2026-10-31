@@ -15321,3 +15321,16 @@ html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#lov
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#love-h-b) { transform: translateX(4px); }
 }
+
+/* Barra de baixo (celular): item ativo com o fundo #EAF0F5 e o ícone
+   #183b54, as mesmas cores dos atalhos Cobrar / Orçamento / Construtor. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    background-color: #EAF0F5 !important;
+    color: #183b54 !important;
+  }
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) :is(svg, svg *) {
+    color: #183b54 !important;
+    stroke: #183b54 !important;
+  }
+}

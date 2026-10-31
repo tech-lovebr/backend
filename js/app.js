@@ -17501,6 +17501,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedNewType = 'wedding';
   /** Tipo escolhido no catálogo (slug '' = digitado livre). @type {{ slug: string, nome: string }|null} */
   let selectedTipoEvento = null;
+  /** Tipo que veio do /cadastro (slug do catálogo, ou só o nome digitado). @param {string|null} slug @param {string|null} nome */
+  function definirTipoDoCadastro(slug, nome) { selectedTipoEvento = (slug || nome) ? { slug: slug || "", nome: nome || "" } : null; }
   let createdCoverImageSrc = 'assets/wedding_hero_banner.jpg';
 
   // Transição: Clicar em "+ Criar Evento" abre o modal pop-up de escolha de tipo de evento (estilo Joy)
@@ -18127,6 +18129,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // reaparecer a cada login.
       localStorage.removeItem('love-pending-event-type');
       localStorage.removeItem('love-pending-event-type-label');
+      localStorage.removeItem('love-pending-event-type-slug');
       localStorage.removeItem('love-pending-event-name');
       localStorage.removeItem('love-pending-event-date');
 
@@ -23985,7 +23988,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // do /cadastro (ex.: cadastro pelo Google, ou um evento criado por outro
     // caminho) não pode mandar de novo para "criar evento" a cada recarga.
     if (events.length && pendingType) {
-      ['love-pending-event-type', 'love-pending-event-type-label', 'love-pending-event-name', 'love-pending-event-date']
+      ['love-pending-event-type', 'love-pending-event-type-label', 'love-pending-event-type-slug', 'love-pending-event-name', 'love-pending-event-date']
         .forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
       pendingType = null;
     }
@@ -24038,6 +24041,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // deslogar e logar de novo precisa continuar voltando pra esta mesma
       // tela pré-preenchida, em vez de "esquecer" o que a pessoa já tinha
       // escolhido no /cadastro e mandar pra tela genérica de boas-vindas.
+      if (typeof definirTipoDoCadastro === 'function') definirTipoDoCadastro(localStorage.getItem('love-pending-event-type-slug'), pendingTypeLabel);
       proceedToEventForm(pendingType, pendingTypeLabel || 'Novo Evento');
 
       // Nome e data do evento já coletados no onboarding de /cadastro

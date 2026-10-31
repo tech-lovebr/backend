@@ -19,11 +19,32 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=20261022_aparelho"></script>
+  <script src="js/tipos-evento.js?v=20261031_cadastro"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .onboard-step { display: none; }
     .onboard-step.is-active { display: block; }
-    .type-card.is-selected { border-color: #537bae; background: #EBF4FF; }
+    /* Selecionado e botões de avançar: as cores dos atalhos redondos da Home
+       (#EAF0F5 / #183b54), sem contorno. */
+    .type-card.is-selected, .type-card.is-selected:hover { border-color: transparent !important; background: #EAF0F5 !important; color: #183b54 !important; }
+    .type-card:focus { outline: none; }
+    .type-card:focus-visible { outline: 2px solid #181D24; outline-offset: 2px; }
+    #btn-onboard-next-1, #btn-onboard-next-2, #btn-onboard-submit { background: #EAF0F5 !important; color: #183b54 !important; box-shadow: none !important; font-weight: 500 !important; }
+    #btn-onboard-next-1:not(:disabled):hover, #btn-onboard-next-2:hover, #btn-onboard-submit:not(:disabled):hover { box-shadow: inset 0 0 0 1px #183b54 !important; }
+    #btn-onboard-next-1:disabled { background: #F4F4F5 !important; color: #A1A1AA !important; }
+    /* Campos da etapa 2 e o "Outro": sem contorno, no cinza do fundo da plataforma. */
+    .onboard-step[data-step="2"] :is(input[type="text"], input[type="date"], select), #onboard-outro-input {
+      border: 0 !important; background: #F4F6F7 !important; box-shadow: none !important; outline: none !important;
+    }
+    .onboard-step[data-step="2"] :is(input[type="text"], input[type="date"], select):focus, #onboard-outro-input:focus { background: #EDF0F2 !important; }
+    .cadastro-outro { position: relative; }
+    #onboard-outro-input { display: block; width: 100%; height: 54px; padding: 0 20px; border-radius: 12px; font: 400 14px Inter, system-ui, sans-serif; color: #27272A; }
+    #onboard-outro-input::placeholder { color: #A1A1AA; }
+    #onboard-outro-input.is-selected { background: #EAF0F5 !important; color: #183b54; }
+    .cadastro-outro-sugestoes { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 30; display: flex; flex-direction: column; padding: 4px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); max-height: 240px; overflow-y: auto; }
+    .cadastro-outro-sugestoes[hidden] { display: none; }
+    .cadastro-outro-opcao { display: block; width: 100%; padding: 10px 12px; background: none; border: 0; border-radius: 6px; font: 400 14px Inter, system-ui, sans-serif; color: #18181B; text-align: left; cursor: pointer; }
+    .cadastro-outro-opcao:hover, .cadastro-outro-opcao.is-ativa { background: #F4F4F5; }
     .step-circle { width: 28px; height: 28px; border-radius: 999px; border: 1.5px solid #D4D4D8; color: #A1A1AA; font-size: 0.75rem; font-weight: 400; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
     .step-circle.is-active { background: #18181B; border-color: #18181B; color: #fff; }
     .step-circle.is-done { background: #A1A1AA; border-color: #A1A1AA; color: #fff; }
@@ -121,6 +142,11 @@
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18A1.125 1.125 0 0 0 2.25 8.625v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg>
               <span>Festa de 15 Anos</span>
             </button>
+            <!-- Outro tipo: texto livre com sugestões do catálogo (tabela tipos_evento) -->
+            <div class="cadastro-outro">
+              <input type="text" id="onboard-outro-input" role="combobox" aria-autocomplete="list" aria-controls="onboard-outro-sugestoes" aria-expanded="false" autocomplete="off" placeholder="Outro" aria-label="Outro tipo de evento">
+              <div id="onboard-outro-sugestoes" class="cadastro-outro-sugestoes" role="listbox" aria-label="Tipos de evento" hidden></div>
+            </div>
           </div>
 
           <div class="mt-8">
@@ -262,14 +288,92 @@
     const btnNext1 = document.getElementById('btn-onboard-next-1');
     const btnNext2 = document.getElementById('btn-onboard-next-2');
 
+    const outroInput = document.getElementById('onboard-outro-input');
+    const outroCaixa = document.getElementById('onboard-outro-sugestoes');
+    let onboardTypeSlug = '';
+
     typeList.querySelectorAll('.type-card').forEach(card => {
       card.addEventListener('click', () => {
         typeList.querySelectorAll('.type-card').forEach(c => c.classList.remove('is-selected'));
         card.classList.add('is-selected');
         onboardType = card.dataset.type;
         onboardTypeLabel = card.dataset.label;
+        onboardTypeSlug = '';
+        outroInput.value = '';
+        outroInput.classList.remove('is-selected');
+        fecharOutro();
         btnNext1.disabled = false;
       });
+    });
+
+    // "Outro": a pessoa escreve o tipo do evento; enquanto escreve aparecem os
+    // tipos do catálogo (js/tipos-evento.js, tabela tipos_evento). Escolher uma
+    // sugestão usa aquele tipo; texto livre também vale (tipo "other").
+    const catalogo = () => window.LoveTiposEvento || null;
+    let sugestoes = [];
+    let ativa = -1;
+    function fecharOutro() { outroCaixa.hidden = true; outroInput.setAttribute('aria-expanded', 'false'); ativa = -1; }
+    function escaparTexto(t) { return String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function usarOutro(tipo) {
+      typeList.querySelectorAll('.type-card').forEach(c => c.classList.remove('is-selected'));
+      const texto = outroInput.value.trim();
+      if (tipo) {
+        outroInput.value = tipo.nome;
+        onboardType = tipo.base || 'other';
+        onboardTypeLabel = tipo.nome;
+        onboardTypeSlug = tipo.slug;
+      } else {
+        onboardType = texto ? 'other' : null;
+        onboardTypeLabel = texto || null;
+        onboardTypeSlug = '';
+      }
+      outroInput.classList.toggle('is-selected', !!onboardType);
+      btnNext1.disabled = !onboardType;
+    }
+    function desenharOutro() {
+      const cat = catalogo();
+      // Até 10, com os tipos mais usados (destaque) primeiro: "cha" já mostra Chá Revelação.
+      sugestoes = cat ? cat.buscar(outroInput.value, 50).sort((x, y) => (y.destaque ? 1 : 0) - (x.destaque ? 1 : 0)).slice(0, 10) : [];
+      if (!sugestoes.length) { fecharOutro(); return; }
+      if (ativa >= sugestoes.length) ativa = sugestoes.length - 1;
+      outroCaixa.innerHTML = sugestoes.map((t, i) => '<button type="button" role="option" class="cadastro-outro-opcao' + (i === ativa ? ' is-ativa' : '') + '" aria-selected="' + (i === ativa) + '" data-slug="' + escaparTexto(t.slug) + '">' + escaparTexto(t.nome) + '</button>').join('');
+      outroCaixa.hidden = false;
+      outroInput.setAttribute('aria-expanded', 'true');
+    }
+    outroInput.addEventListener('input', () => {
+      ativa = -1;
+      // Texto igual a um tipo do catálogo já vale como esse tipo; senão, texto livre.
+      const cat = catalogo();
+      const texto = outroInput.value.trim();
+      const exato = cat && texto ? cat.buscar(texto, 6).find(t => cat.normal(t.nome) === cat.normal(texto)) : null;
+      if (exato) { onboardType = exato.base || 'other'; onboardTypeLabel = exato.nome; onboardTypeSlug = exato.slug; typeList.querySelectorAll('.type-card').forEach(c => c.classList.remove('is-selected')); outroInput.classList.add('is-selected'); btnNext1.disabled = false; }
+      else usarOutro(null);
+      desenharOutro();
+    });
+    outroInput.addEventListener('focus', () => { if (outroInput.value.trim()) desenharOutro(); });
+    outroInput.addEventListener('blur', () => setTimeout(fecharOutro, 120));
+    outroCaixa.addEventListener('mousedown', (e) => {
+      const op = e.target.closest('[data-slug]');
+      if (!op) return;
+      e.preventDefault();
+      const t = sugestoes.find(x => x.slug === op.dataset.slug);
+      if (t) { usarOutro(t); fecharOutro(); }
+    });
+    outroInput.addEventListener('keydown', (e) => {
+      const aberta = !outroCaixa.hidden && sugestoes.length;
+      if (aberta && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        e.preventDefault();
+        ativa = (ativa + (e.key === 'ArrowDown' ? 1 : -1) + sugestoes.length) % sugestoes.length;
+        desenharOutro();
+        return;
+      }
+      if (e.key === 'Escape') { fecharOutro(); return; }
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (aberta && ativa >= 0) { usarOutro(sugestoes[ativa]); fecharOutro(); return; }
+        fecharOutro();
+        if (onboardType) goToStep(2);
+      }
     });
 
     function goToStep(step) {
@@ -385,6 +489,7 @@
       if (onboardType) {
         localStorage.setItem('love-pending-event-type', onboardType);
         localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
+        localStorage.setItem('love-pending-event-type-slug', onboardTypeSlug || '');
       }
       // No computador abre em pop-up; ao entrar, segue para a plataforma.
       const { error } = await entrarComGoogle({ aoEntrar: () => window.location.replace('/') });
@@ -402,6 +507,7 @@
         if (onboardType) {
           localStorage.setItem('love-pending-event-type', onboardType);
           localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
+        localStorage.setItem('love-pending-event-type-slug', onboardTypeSlug || '');
         }
         window.location.replace('/');
       },
@@ -459,6 +565,7 @@
       if (onboardType) {
         localStorage.setItem('love-pending-event-type', onboardType);
         localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
+        localStorage.setItem('love-pending-event-type-slug', onboardTypeSlug || '');
       }
       if (fullName) localStorage.setItem('love-pending-event-name', fullName);
       if (eventDate) localStorage.setItem('love-pending-event-date', eventDate);

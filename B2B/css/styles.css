@@ -12559,3 +12559,26 @@ body[data-theme="dark"] .dash-saldo-celular .dash-saldo-celular-aba.active { col
 
   html body:not([data-theme="dark"]) .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #EAF0F5 !important; color: #183b54 !important; }
 }
+
+/* ==========================================================================
+   Formulários vazios no padrão de Oportunidades sem produto: caixa branca
+   na largura do conteúdo (borda contínua, cantos 10px), texto em cima e o
+   cartão pontilhado "Cadastrar novo formulário" no meio. No celular a caixa
+   desce até 16px acima da barra de baixo.
+   ========================================================================== */
+html body #forms-list:has(> .forms-vazio):not(#love-h-a):not(#love-h-b) { max-width: none !important; width: 100%; }
+html body #forms-list > .forms-vazio:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  display: grid !important; grid-template-columns: fit-content(100%); justify-content: center; align-content: center; gap: 20px;
+  padding: 40px 24px; background: #FFFFFF; border: 1px solid #E4E4E7 !important; border-radius: 10px;
+}
+html body #forms-list > .forms-vazio > .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr); }
+html body .forms-vazio button.produtos-vazio-criar:not(#love-h-a):not(#love-h-b) { width: 100%; font: inherit; color: inherit; }
+html body .forms-vazio .forms-vazio-icone:not(#love-h-a) { display: block; width: 64px; height: 64px; margin: 0 auto 6px; }
+body[data-theme="dark"] #forms-list > .forms-vazio { background: #252525 !important; border-color: #404040 !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not(.form-editor-aberto) .b2b-content > [data-tab-panel="formularios"]:not([style*="none"]):has(> #forms-list > .forms-vazio):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; display: flex !important; flex-direction: column; margin-bottom: -8px !important; padding-bottom: 0 !important;
+  }
+  html body [data-tab-panel="formularios"] > #forms-list:has(> .forms-vazio):not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 1 0 auto; display: flex !important; flex-direction: column; }
+  html body #forms-list > .forms-vazio:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { flex: 1 0 auto; min-height: 0; }
+}

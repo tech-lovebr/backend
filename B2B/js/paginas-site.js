@@ -175,13 +175,19 @@ function renderFormsList() {
     </div>
   `;
 
-  // Sem formulário: caixa vazia (mesmo estilo da de Buscar eventos) com o
-  // botão "Criar novo"; com pelo menos um, a lista normal.
+  // Sem formulário: o mesmo aviso de Oportunidades sem produto — texto em
+  // cima e o cartão pontilhado "Cadastrar novo formulário".
   if (!siteForms.length) {
     list.innerHTML = `
       <div class="op-vazio forms-vazio">
-        <p>Você ainda não tem nenhum formulário criado.</p>
-        <button type="button" class="btn-secondary builder-toolbar-btn" data-form-criar><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>Criar novo formulário</button>
+        <p>Cadastre um formulário para questionar o seu cliente.</p>
+        <div class="produtos-vazio-cards">
+          <button type="button" class="produtos-vazio-criar" data-form-criar>
+            <svg class="forms-vazio-icone" viewBox="0 0 64 64" fill="none" stroke="#D4D4D8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8h20l10 10v36a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2Z"/><path d="M38 8v10h10M24 30h16M24 38h16M24 46h10"/></svg>
+            <strong>Cadastrar novo formulário</strong>
+            <span class="produtos-vazio-criar-sub">Crie um formulário do zero</span>
+          </button>
+        </div>
       </div>`;
     list.querySelector('[data-form-criar]').addEventListener('click', () => openFormDrawer(null));
     return;

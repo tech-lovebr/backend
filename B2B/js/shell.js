@@ -20,25 +20,6 @@ const AUTH_OPTIONAL_PAGES = ['termos', 'privacidade'];
 // tinha escolhido o escuro volta para o claro).
 localStorage.removeItem('b2b-theme');
 document.body.dataset.theme = 'light';
-
-// Teste do UI kit (Wireframe - Ui Kit, Adobe XD) no celular: ?kit=1 liga,
-// ?kit=0 desliga; fica salvo neste aparelho (css/ui-kit-celular.css).
-(function kitCelular() {
-  try {
-    const p = new URLSearchParams(location.search).get('kit');
-    if (p === '1') localStorage.setItem('love-ui-kit', '1');
-    if (p === '0') localStorage.removeItem('love-ui-kit');
-    if (localStorage.getItem('love-ui-kit') !== '1') return;
-  } catch (e) { return; }
-  document.documentElement.classList.add('ui-kit');
-  const fonte = document.createElement('link');
-  fonte.rel = 'stylesheet';
-  fonte.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap';
-  const css = document.createElement('link');
-  css.rel = 'stylesheet';
-  css.href = 'css/ui-kit-celular.css?v=1';
-  document.head.append(fonte, css);
-})();
 // Computador (mouse): o menu fica sempre recolhido e abre ao passar o mouse
 // (ver initSidebarHover). Telas de toque mantêm o recolher/expandir salvo.
 const SIDEBAR_HOVER = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;

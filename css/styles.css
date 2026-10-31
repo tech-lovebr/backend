@@ -15342,3 +15342,55 @@ html body .menu-conta .menu-conta-avatar:not(#love-h-a):not(#love-h-b) { display
 html body .menu-conta .menu-conta-cabeca:not(#love-h-a) { padding-top: 32px; }
 html body .conta-perfil-linha .conta-avatar-coluna:not(#love-h-a) { display: none !important; }
 html body .conta-perfil-linha:not(#love-h-a):not(#love-h-b) { display: block; }
+
+/* ==========================================================================
+   /login no celular (só até 768px): logo no meio, sem o título, Google em
+   cima, "ou" e depois e-mail/senha; campos no cinza do fundo da plataforma;
+   Entrar com as cores dos atalhos redondos da Home; e uma prévia da barra de
+   baixo da plataforma (só enfeite). Desktop não muda.
+   ========================================================================== */
+.login-barra-previa { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-login #login-panel-signin:not(#love-h-a) { display: flex; flex-direction: column; padding-bottom: 72px; }
+  html body #view-login #login-panel-forgot:not(#love-h-a) { padding-bottom: 72px; }
+  #login-panel-signin > div:first-child { order: 1; margin-bottom: 32px !important; text-align: center; }
+  #login-panel-signin > div:first-child img { margin: 0 auto !important; }
+  #login-panel-signin > div:first-child h3 { display: none; }
+  #login-panel-signin > div:has(#btn-google-login) { order: 2; }
+  #login-panel-signin > div:has(#btn-google-login) > * { margin-top: 0 !important; }
+  #login-panel-signin > div:has(.login-ou-continue) { order: 3; margin: 20px 0 !important; }
+  #login-panel-signin > form { order: 4; }
+  #login-panel-signin > div:has(#btn-login-to-register) { order: 5; justify-content: center; padding-top: 28px !important; }
+  html body #view-login .login-ou-continue:not(#love-h-a) { font-size: 0; }
+  html body #view-login .login-ou-continue:not(#love-h-a)::after { content: 'ou'; font-size: 13px; font-weight: 500; color: #71717A; }
+
+  html body #view-login :is(input[type="email"], input[type="password"], input[type="text"]):not(#love-h-a):not(#love-h-b) {
+    background: #F4F6F7 !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important;
+  }
+  html body #view-login :is(input[type="email"], input[type="password"], input[type="text"]):focus:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; border-color: #181D24 !important; }
+  /* Preenchimento automático do navegador (que pinta de azul claro). */
+  html body #view-login input:-webkit-autofill:not(#love-h-a),
+  html body #view-login input:-webkit-autofill:hover:not(#love-h-a),
+  html body #view-login input:-webkit-autofill:focus:not(#love-h-a) {
+    -webkit-box-shadow: 0 0 0 100px #F4F6F7 inset !important; -webkit-text-fill-color: #18181B !important; caret-color: #18181B;
+  }
+
+  html body #view-login :is(#btn-do-email-login, #btn-do-forgot-password):not(#love-h-a):not(#love-h-b) {
+    background: #EAF0F5 !important; color: #183b54 !important; box-shadow: none !important; border: 0 !important;
+  }
+  html body #view-login :is(#btn-do-email-login, #btn-do-forgot-password):hover:not(#love-h-a):not(#love-h-b) { background: #EAF0F5 !important; box-shadow: inset 0 0 0 1px #183b54 !important; }
+
+  .login-barra-previa {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex;
+    height: calc(64px + env(safe-area-inset-bottom, 0px)); padding: 6px 8px env(safe-area-inset-bottom, 0px);
+    background: #FFFFFF; border-top: 1px solid #E4E4E7; pointer-events: none; user-select: none;
+  }
+  .login-barra-item {
+    flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    height: 52px; margin: 0 2px; border-radius: 999px; color: #52525B;
+    font: 500 10.5px/1 Inter, sans-serif;
+  }
+  .login-barra-item small { font-size: 10.5px; }
+  .login-barra-item svg { width: 21px; height: 21px; }
+  .login-barra-item.is-ativo { background: #EAF0F5; color: #183b54; }
+}

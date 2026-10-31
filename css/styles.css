@@ -15315,3 +15315,9 @@ html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#lov
   body[data-theme="dark"] #dashboard-footer .rodape-logado-texto { color: #A1A1AA !important; }
   body[data-theme="dark"] #dashboard-footer .rodape-logado-links a { color: #D4D4D8 !important; }
 }
+
+/* Celular: o lápis do mapa vazio passa a maior parte da animação escrevendo
+   à esquerda; 4px para a direita deixa o desenho no meio, na média. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#love-h-b) { transform: translateX(4px); }
+}

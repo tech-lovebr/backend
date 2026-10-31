@@ -456,3 +456,182 @@
   #view-public-site .lp-card-faixa { grid-column: auto; flex-direction: column; align-items: stretch; gap: 24px; }
   #view-public-site .lp-card-faixa .lp-recado { padding: 16px; font-size: 15px; }
 }
+
+/* ==========================================================================
+   LANDING v2 — fotos reais (Envato Elements) em tela cheia, títulos com
+   serifa, painéis coloridos por recurso com menu fixo, detalhes em abas.
+   ========================================================================== */
+#view-public-site { --lp-serifa: 'Playfair Display', Georgia, serif; }
+#view-public-site :is(.lp2-hero-titulo, .lp2-titulo, .lp2-titulo-centro, .lp2-painel h2, .lp2-final h2) {
+  font-family: var(--lp-serifa) !important; font-weight: 400 !important; letter-spacing: -0.02em !important;
+}
+#view-public-site :is(.lp2-hero-titulo, .lp2-titulo, .lp2-painel h2, .lp2-final h2) em { font-style: italic; }
+
+/* ---------- Abertura ---------- */
+#view-public-site .lp2-hero { position: relative; min-height: min(760px, calc(100vh - 68px)); display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; background: #0F1A23; color: #FFFFFF; }
+#view-public-site .lp2-hero-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 55%; }
+#view-public-site .lp2-hero-veu { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,22,32,0.78) 0%, rgba(12,22,32,0.45) 45%, rgba(12,22,32,0.05) 75%), linear-gradient(0deg, rgba(12,22,32,0.55) 0%, transparent 40%); }
+#view-public-site .lp2-hero-conteudo { position: relative; padding-top: 120px; }
+#view-public-site .lp2-hero-marca { display: inline-block; font: 600 12px Inter, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.78); }
+#view-public-site .lp2-hero-titulo { margin: 20px 0 0; max-width: 680px; font-size: 76px !important; line-height: 1.02 !important; color: #FFFFFF; }
+#view-public-site .lp2-hero-sub { margin: 24px 0 0; max-width: 520px; font: 400 18px/1.6 Inter, sans-serif; color: rgba(255,255,255,0.86); }
+#view-public-site .lp2-hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+#view-public-site .lp2-btn-vidro { background: rgba(255,255,255,0.08); color: #FFFFFF; border-color: rgba(255,255,255,0.55); }
+#view-public-site .lp2-btn-vidro:hover { border-color: #FFFFFF; }
+#view-public-site .lp2-hero-selos { position: relative; display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 0 auto; padding-top: 56px; padding-bottom: 32px; list-style: none; }
+#view-public-site .lp2-hero-selos li { display: flex; align-items: center; gap: 8px; font: 500 13px Inter, sans-serif; color: rgba(255,255,255,0.8); }
+#view-public-site .lp2-hero-selos svg, #view-public-site .lp2-hero-selos img { width: 16px; height: 16px; object-fit: contain; }
+#view-public-site .lp2-hero-selos img { filter: brightness(0) invert(1); opacity: .85; }
+
+/* ---------- Títulos de seção ---------- */
+#view-public-site .lp2-titulo-centro { margin: 0; text-align: center; font-size: 48px !important; line-height: 1.1 !important; color: var(--lp-tinta); }
+#view-public-site .lp2-sub-centro { margin: 16px auto 0; max-width: 560px; text-align: center; font: 400 17px/1.6 Inter, sans-serif; color: var(--lp-texto); }
+#view-public-site .lp2-titulo { margin: 0; font-size: 44px !important; line-height: 1.1 !important; color: var(--lp-tinta); }
+#view-public-site .lp2-texto { margin: 16px 0 0; font: 400 17px/1.6 Inter, sans-serif; color: var(--lp-texto); }
+
+/* ---------- Tudo o que você precisa ---------- */
+#view-public-site .lp2-tudo { padding: 112px 0 96px; background: #FFFFFF; }
+#view-public-site .lp2-mosaico { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-top: 56px; }
+#view-public-site .lp2-ladrilho { display: block; text-decoration: none; color: var(--lp-tinta); }
+#view-public-site .lp2-ladrilho img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--lp-raio-card); transition: filter .2s; }
+#view-public-site .lp2-ladrilho span { display: block; margin-top: 14px; font: 600 15px/1.3 Inter, sans-serif; }
+#view-public-site .lp2-ladrilho:hover img { filter: brightness(0.9); }
+#view-public-site .lp2-ladrilho:hover span { color: var(--lp-azul); }
+
+/* ---------- Painéis ---------- */
+#view-public-site .lp2-paineis { padding: 0 0 112px; background: #FFFFFF; }
+#view-public-site .lp2-paineis-linha { display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: start; }
+#view-public-site .lp2-paineis-menu { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
+#view-public-site .lp2-paineis-menu a { padding: 10px 0 10px 16px; border-left: 2px solid var(--lp-borda); font: 500 14px Inter, sans-serif; color: var(--lp-suave); text-decoration: none; transition: color .15s, border-color .15s; }
+#view-public-site .lp2-paineis-menu a:hover { color: var(--lp-tinta); }
+#view-public-site .lp2-paineis-menu a.ativo { border-left-color: var(--lp-azul); color: var(--lp-tinta); font-weight: 600; }
+#view-public-site .lp2-paineis-lista { display: grid; gap: 24px; }
+#view-public-site .lp2-painel {
+  scroll-margin-top: 92px; display: grid; grid-template-columns: 1fr 400px; gap: 48px; align-items: center;
+  min-height: 600px; padding: 56px; border-radius: 12px; background: var(--fundo); color: #FFFFFF;
+}
+#view-public-site .lp2-painel h2 { margin: 0; font-size: 54px !important; line-height: 1.06 !important; color: var(--tom); }
+#view-public-site .lp2-painel p { margin: 24px 0 0; max-width: 440px; font: 400 17px/1.65 Inter, sans-serif; color: rgba(255,255,255,0.8); }
+#view-public-site .lp2-painel-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+#view-public-site .lp2-btn-tom {
+  display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border: 1px solid transparent; border-radius: var(--lp-raio);
+  background: var(--tom); color: var(--fundo); font: 600 15px Inter, sans-serif; cursor: pointer; transition: background .15s;
+}
+#view-public-site .lp2-btn-tom:hover { background: #FFFFFF; }
+#view-public-site .lp2-btn-tom:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
+#view-public-site .lp2-painel-foto { position: relative; margin: 0; }
+#view-public-site .lp2-painel-foto img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; }
+#view-public-site .lp2-chip { left: -32px; bottom: 32px; }
+#view-public-site .lp2-chip b { color: var(--lp-tinta); }
+
+/* ---------- Detalhes ---------- */
+#view-public-site .lp2-detalhes { scroll-margin-top: 68px; padding: 112px 0; background: var(--lp-fundo); }
+#view-public-site .lp2-detalhes-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+#view-public-site .lp2-abas { display: flex; flex-direction: column; margin-top: 40px; border-top: 1px solid var(--lp-borda); }
+#view-public-site .lp2-aba { display: block; width: 100%; padding: 20px 0 20px 20px; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--lp-borda); border-left: 2px solid transparent; cursor: pointer; transition: border-color .15s; }
+#view-public-site .lp2-aba b { display: block; font: 600 17px/1.35 Inter, sans-serif; color: var(--lp-suave); transition: color .15s; }
+#view-public-site .lp2-aba span { display: none; margin-top: 8px; max-width: 460px; font: 400 15px/1.6 Inter, sans-serif; color: var(--lp-texto); }
+#view-public-site .lp2-aba:hover b { color: var(--lp-tinta); }
+#view-public-site .lp2-aba.ativo { border-left-color: var(--lp-azul); }
+#view-public-site .lp2-aba.ativo b { color: var(--lp-tinta); }
+#view-public-site .lp2-aba.ativo span { display: block; }
+#view-public-site .lp2-aba:focus-visible { outline: 2px solid #181D24; outline-offset: -2px; }
+#view-public-site .lp2-detalhes-foto { margin: 0; }
+#view-public-site .lp2-detalhes-foto img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; transition: opacity .25s; }
+#view-public-site .lp2-detalhes-foto img.trocando { opacity: 0; }
+
+/* ---------- Segurança ---------- */
+#view-public-site .lp2-seguranca { scroll-margin-top: 68px; padding: 112px 0 136px; background: #FFFFFF; }
+#view-public-site .lp2-seguranca-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 96px; align-items: center; }
+#view-public-site .lp2-seguranca-foto { position: relative; margin: 0; }
+#view-public-site .lp2-seguranca-foto > img { display: block; width: 100%; aspect-ratio: 4 / 3.4; object-fit: cover; border-radius: 12px; }
+#view-public-site .lp2-recibo { position: absolute; right: -40px; bottom: -40px; width: 300px; padding: 22px; }
+#view-public-site .lp2-recibo .lp-recibo-valor { margin: 18px 0 14px; font-size: 32px; }
+#view-public-site .lp2-seguranca-texto .lp-sobretitulo { display: block; margin-bottom: 16px; font: 600 12px Inter, sans-serif; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lp-azul); }
+#view-public-site .lp2-garantias { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px; margin: 40px 0 0; padding: 28px 0 0; list-style: none; border-top: 1px solid var(--lp-borda); }
+#view-public-site .lp2-garantias b { display: block; font: 600 15px/1.4 Inter, sans-serif; color: var(--lp-tinta); }
+#view-public-site .lp2-garantias span { display: block; margin-top: 6px; font: 400 14px/1.55 Inter, sans-serif; color: var(--lp-texto); }
+
+/* ---------- Momentos ---------- */
+#view-public-site .lp2-momentos { padding: 112px 0; background: var(--lp-fundo); }
+#view-public-site .lp2-momentos-lista { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; margin-top: 56px; }
+#view-public-site .lp2-momento { display: flex; flex-direction: column; align-items: center; padding: 0; background: none; border: 0; cursor: pointer; }
+#view-public-site .lp2-momento img { width: 100%; max-width: 160px; aspect-ratio: 1; object-fit: cover; border-radius: 50%; transition: filter .2s; }
+#view-public-site .lp2-momento span { margin-top: 16px; font: 600 15px Inter, sans-serif; color: var(--lp-tinta); }
+#view-public-site .lp2-momento:hover img { filter: brightness(0.9); }
+#view-public-site .lp2-momento:hover span { color: var(--lp-azul); }
+
+/* ---------- Dúvidas ---------- */
+#view-public-site .lp2-duvidas { scroll-margin-top: 68px; }
+
+/* ---------- Chamada final ---------- */
+#view-public-site .lp2-final { position: relative; overflow: hidden; display: flex; align-items: center; min-height: 560px; background: #0F1A23; color: #FFFFFF; text-align: center; }
+#view-public-site .lp2-final-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+#view-public-site .lp2-final-veu { position: absolute; inset: 0; background: rgba(12,22,32,0.5); }
+#view-public-site .lp2-final-conteudo { position: relative; display: flex; flex-direction: column; align-items: center; }
+#view-public-site .lp2-final h2 { margin: 0; font-size: 60px !important; line-height: 1.08 !important; color: #FFFFFF; }
+#view-public-site .lp2-final p { margin: 20px 0 36px; font: 400 18px/1.6 Inter, sans-serif; color: rgba(255,255,255,0.86); }
+
+/* ---------- Telas médias ---------- */
+@media (max-width: 1100px) {
+  #view-public-site .lp2-hero-titulo { font-size: 60px !important; }
+  #view-public-site .lp2-mosaico, #view-public-site .lp2-momentos-lista { grid-template-columns: repeat(3, 1fr); }
+  #view-public-site .lp2-paineis-linha { grid-template-columns: 1fr; }
+  #view-public-site .lp2-paineis-menu { display: none; }
+  #view-public-site .lp2-painel { grid-template-columns: 1fr 340px; }
+  #view-public-site .lp2-painel h2 { font-size: 44px !important; }
+}
+@media (max-width: 960px) {
+  #view-public-site .lp2-painel { grid-template-columns: 1fr; min-height: 0; padding: 40px; }
+  #view-public-site .lp2-painel-foto { max-width: 420px; }
+  #view-public-site .lp2-chip { left: 16px; bottom: 16px; }
+  #view-public-site .lp2-detalhes-linha, #view-public-site .lp2-seguranca-linha { grid-template-columns: 1fr; gap: 48px; }
+  #view-public-site .lp2-recibo { right: 16px; bottom: -32px; }
+  #view-public-site .lp2-seguranca-texto { margin-top: 24px; }
+}
+
+/* ---------- Celular (mesmo corte da plataforma) ---------- */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-public-site .lp2-hero { min-height: 640px; }
+  #view-public-site .lp2-hero-foto { object-position: 62% 50%; }
+  #view-public-site .lp2-hero-veu { background: linear-gradient(0deg, rgba(12,22,32,0.85) 0%, rgba(12,22,32,0.55) 55%, rgba(12,22,32,0.2) 100%); }
+  #view-public-site .lp2-hero-conteudo { padding-top: 96px; }
+  #view-public-site .lp2-hero-marca { font-size: 11px; letter-spacing: 0.12em; }
+  #view-public-site .lp2-hero-titulo { margin-top: 16px; font-size: 44px !important; line-height: 1.05 !important; }
+  #view-public-site .lp2-hero-sub { margin-top: 16px; font-size: 16px; }
+  #view-public-site .lp2-hero-ctas { margin-top: 28px; flex-direction: column; }
+  #view-public-site .lp2-hero-ctas .lp-btn { width: 100%; }
+  #view-public-site .lp2-hero-selos { padding-top: 32px; padding-bottom: 24px; gap: 10px 18px; }
+  #view-public-site .lp2-hero-selos li { font-size: 12px; }
+  #view-public-site .lp2-titulo-centro { font-size: 34px !important; }
+  #view-public-site .lp2-titulo { font-size: 32px !important; }
+  #view-public-site .lp2-sub-centro, #view-public-site .lp2-texto { font-size: 16px; }
+  #view-public-site .lp2-tudo { padding: 72px 0 56px; }
+  #view-public-site .lp2-mosaico { grid-template-columns: repeat(2, 1fr); gap: 20px 12px; margin-top: 36px; }
+  #view-public-site .lp2-ladrilho span { margin-top: 10px; font-size: 14px; }
+  #view-public-site .lp2-paineis { padding-bottom: 72px; }
+  #view-public-site .lp2-paineis-lista { gap: 16px; }
+  #view-public-site .lp2-painel { gap: 32px; padding: 32px 20px 20px; }
+  #view-public-site .lp2-painel h2 { font-size: 36px !important; }
+  #view-public-site .lp2-painel p { margin-top: 16px; font-size: 16px; }
+  #view-public-site .lp2-painel-ctas { margin-top: 24px; }
+  #view-public-site .lp2-btn-tom { width: 100%; justify-content: center; }
+  #view-public-site .lp2-painel-foto { max-width: none; }
+  #view-public-site .lp2-detalhes, #view-public-site .lp2-momentos { padding: 72px 0; }
+  #view-public-site .lp2-seguranca { padding: 72px 0 96px; }
+  #view-public-site .lp2-abas { margin-top: 28px; }
+  #view-public-site .lp2-aba { padding: 16px 0 16px 16px; }
+  #view-public-site .lp2-aba b { font-size: 16px; }
+  #view-public-site .lp2-detalhes-linha { gap: 32px; }
+  #view-public-site .lp2-detalhes-foto { order: -1; }
+  #view-public-site .lp2-recibo { right: 12px; bottom: -28px; width: 250px; padding: 18px; }
+  #view-public-site .lp2-recibo .lp-recibo-valor { font-size: 28px; }
+  #view-public-site .lp2-seguranca-texto { margin-top: 40px; }
+  #view-public-site .lp2-garantias { grid-template-columns: 1fr; gap: 20px; margin-top: 32px; }
+  #view-public-site .lp2-momentos-lista { grid-template-columns: repeat(3, 1fr); gap: 24px 12px; margin-top: 36px; }
+  #view-public-site .lp2-momento span { margin-top: 10px; font-size: 13px; }
+  #view-public-site .lp2-final { min-height: 480px; }
+  #view-public-site .lp2-final h2 { font-size: 38px !important; }
+  #view-public-site .lp2-final p { font-size: 16px; }
+  #view-public-site .lp2-final .lp-btn { width: 100%; }
+}

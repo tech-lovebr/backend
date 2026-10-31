@@ -70,7 +70,7 @@
 
   <!-- Custom Styles -->
   <link rel="stylesheet" href="css/styles.css?v=20261030_rodapecentro">
-  <link rel="stylesheet" href="css/landing.css?v=20261030_landing3">
+  <link rel="stylesheet" href="css/landing.css?v=20261031_landing4">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -86,8 +86,9 @@
           <img src="assets/logo.png?v=2" alt="Love">
         </a>
         <nav class="lp-nav" aria-label="Seções da página">
-          <a href="#como-funciona">Como funciona</a>
-          <a href="#recursos">Recursos</a>
+          <a href="#painel-convite">Convite digital</a>
+          <a href="#painel-presentes">Lista de presentes</a>
+          <a href="#painel-convidados">Convidados</a>
           <a href="#seguranca">Segurança</a>
           <a href="#duvidas">Dúvidas</a>
         </nav>
@@ -104,309 +105,230 @@
     <div id="public-landing-sections" class="lp">
 
     <!-- =======================================================================
-         HERO: texto à esquerda, a plataforma "de verdade" à direita
-         (janela da Carteira + celular com o convite + avisos ao vivo)
+         ABERTURA — foto real em tela cheia, título com serifa
          ======================================================================= -->
-    <section class="lp-hero">
-      <div class="lp-hero-grade" aria-hidden="true"></div>
-      <div class="lp-faixa lp-hero-linha">
-        <div class="lp-hero-texto">
-          <span class="lp-etiqueta"><span class="lp-ponto-vivo" aria-hidden="true"></span>Convite digital, lista de presentes e Pix</span>
-          <h1 class="lp-titulo-hero">Do convite ao presente, <span>o seu evento inteiro</span> numa plataforma só.</h1>
-          <p class="lp-sub-hero">Crie um convite digital lindo, acompanhe as confirmações em tempo real e receba os presentes em dinheiro via Pix — com a segurança de uma empresa de tecnologia e o cuidado que o seu dia merece.</p>
-          <div class="lp-hero-ctas">
-            <button type="button" class="btn-trigger-register lp-btn lp-btn-primario lp-btn-grande">
-              Criar meu evento grátis
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <section class="lp2-hero">
+      <img class="lp2-hero-foto" src="assets/landing/heroi.jpg" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas">
+      <div class="lp2-hero-veu" aria-hidden="true"></div>
+      <div class="lp-faixa lp2-hero-conteudo">
+        <span class="lp2-hero-marca">Convite digital · Lista de presentes · Pix</span>
+        <h1 class="lp2-hero-titulo">Seu evento começa aqui.</h1>
+        <p class="lp2-hero-sub">Do convite à lista de presentes com Pix, a Love cuida de cada detalhe — para você aproveitar todos os dias até o grande dia.</p>
+        <div class="lp2-hero-ctas">
+          <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
+          <button type="button" class="btn-trigger-login lp-btn lp2-btn-vidro lp-btn-grande">Entrar</button>
+        </div>
+      </div>
+      <ul class="lp-faixa lp2-hero-selos">
+        <li><img src="assets/pix-icone.png" alt="" aria-hidden="true">Presentes em dinheiro via Pix</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Conexão criptografada</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>Dados protegidos (LGPD)</li>
+      </ul>
+    </section>
+
+    <!-- =======================================================================
+         TUDO O QUE VOCÊ PRECISA — 6 fotos que levam aos painéis
+         ======================================================================= -->
+    <section class="lp2-tudo">
+      <div class="lp-faixa">
+        <h2 class="lp2-titulo-centro">Tudo o que o seu evento precisa, num só lugar</h2>
+        <p class="lp2-sub-centro">Para todos os dias até o grande dia — e para o dia seguinte também.</p>
+        <div class="lp2-mosaico">
+          <a href="#painel-convite" class="lp2-ladrilho"><img src="assets/landing/tconvite.jpg" alt="" loading="lazy"><span>Convite digital</span></a>
+          <a href="#painel-convidados" class="lp2-ladrilho"><img src="assets/landing/tconvidados.jpg" alt="" loading="lazy"><span>Confirmação de presença</span></a>
+          <a href="#painel-presentes" class="lp2-ladrilho"><img src="assets/landing/tpresentes.jpg" alt="" loading="lazy"><span>Lista de presentes</span></a>
+          <a href="#painel-mesas" class="lp2-ladrilho"><img src="assets/landing/tmesas.jpg" alt="" loading="lazy"><span>Mapa do evento</span></a>
+          <a href="#painel-carteira" class="lp2-ladrilho"><img src="assets/landing/tcarteira.jpg" alt="" loading="lazy"><span>Carteira e Pix</span></a>
+          <a href="#detalhes" class="lp2-ladrilho"><img src="assets/landing/trecados.jpg" alt="" loading="lazy"><span>Recados com carinho</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         PAINÉIS — menu fixo à esquerda, um painel colorido por recurso
+         ======================================================================= -->
+    <section id="como-funciona" class="lp2-paineis">
+      <div class="lp-faixa lp2-paineis-linha">
+        <nav class="lp2-paineis-menu" aria-label="Recursos">
+          <a href="#painel-convite" class="ativo">Convite digital</a>
+          <a href="#painel-convidados">Confirmação de presença</a>
+          <a href="#painel-presentes">Lista de presentes</a>
+          <a href="#painel-mesas">Mapa do evento</a>
+          <a href="#painel-carteira">Carteira e Pix</a>
+        </nav>
+        <div class="lp2-paineis-lista">
+
+          <article id="painel-convite" class="lp2-painel" style="--fundo:#183b54;--tom:#CFE3F2">
+            <div class="lp2-painel-texto">
+              <h2>Um convite digital <em>à sua altura</em></h2>
+              <p>Modelos elegantes para personalizar com as suas fotos, a sua história, o local com mapa e a contagem regressiva. Compartilhe com um link só seu.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Criar meu convite</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pconvite.jpg" alt="Casal de noivos sorrindo" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+                <div><b>Convite publicado</b><small>love.com.br/marina-e-pedro</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-convidados" class="lp2-painel" style="--fundo:#0E4A57;--tom:#CDEDEA">
+            <div class="lp2-painel-texto">
+              <h2>Sua lista de convidados, <em>sempre em dia</em></h2>
+              <p>Cada convidado confirma a presença em poucos toques, com acompanhantes e restrições alimentares. Você vê tudo em tempo real, sem planilha.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Montar minha lista</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pconvidados.jpg" alt="Convidados celebrando à mesa" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+                <div><b>Ana confirmou presença</b><small>128 de 150 convidados</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-presentes" class="lp2-painel" style="--fundo:#27394f;--tom:#DCE4F5">
+            <div class="lp2-painel-texto">
+              <h2>Presentes que <em>viram dinheiro</em></h2>
+              <p>Monte a lista do seu jeito ou comece por uma lista pronta. Os convidados presenteiam com Pix ou cartão, e os presentes maiores ganham vaquinha.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Criar minha lista</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/ppresentes.jpg" alt="Caixa de presente azul com laço" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span>
+                <div><b>Novo presente recebido</b><small>R$ 250,00 via Pix · agora</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-mesas" class="lp2-painel" style="--fundo:#1D4466;--tom:#D6E8FA">
+            <div class="lp2-painel-texto">
+              <h2>Cada convidado <em>no lugar certo</em></h2>
+              <p>Monte o mapa do evento arrastando os convidados para as mesas. Redondas, retangulares, pista de dança — do jeito que o salão é.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Montar meu mapa</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pmesas.jpg" alt="Mesa redonda decorada em azul" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="4" rx="1"/><path d="M6 13v6M18 13v6"/></svg></span>
+                <div><b>Mesa 7 completa</b><small>8 de 8 lugares</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-carteira" class="lp2-painel" style="--fundo:#122B3D;--tom:#D3EFE0">
+            <div class="lp2-painel-texto">
+              <h2>O seu dinheiro, <em>com transparência</em></h2>
+              <p>Cada presente entra no saldo da sua Carteira com o recado de quem enviou. Acompanhe o extrato e saque para a sua conta via Pix quando quiser.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Começar agora</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pcarteira.jpg" alt="Casal sorrindo em frente ao notebook" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg></span>
+                <div><b>Saldo disponível</b><small>R$ 12.480,00</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         A DIFERENÇA ESTÁ NOS DETALHES — abas à esquerda, foto à direita
+         ======================================================================= -->
+    <section id="detalhes" class="lp2-detalhes">
+      <div class="lp-faixa lp2-detalhes-linha">
+        <div class="lp2-detalhes-texto">
+          <h2 class="lp2-titulo">A diferença está nos detalhes</h2>
+          <div class="lp2-abas" role="tablist">
+            <button type="button" class="lp2-aba ativo" role="tab" aria-selected="true" data-foto="assets/landing/dvaquinha.jpg">
+              <b>Vaquinha nos presentes maiores</b>
+              <span>Vários convidados se juntam para dar aquele presente especial — a viagem, o sofá, a lua de mel.</span>
             </button>
-            <button type="button" class="btn-trigger-login lp-btn lp-btn-claro lp-btn-grande">Já tenho conta</button>
-          </div>
-          <ul class="lp-selos">
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-              Conexão criptografada
-            </li>
-            <li>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg>
-              Dados protegidos (LGPD)
-            </li>
-            <li>
-              <img src="assets/pix-icone.png" alt="" aria-hidden="true">
-              Presentes via Pix
-            </li>
-          </ul>
-        </div>
-
-        <div class="lp-hero-produto" aria-hidden="true">
-          <!-- Janela da plataforma: Carteira -->
-          <div class="lp-janela">
-            <div class="lp-janela-barra">
-              <span></span><span></span><span></span>
-              <div class="lp-janela-url">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-                love.com.br/carteira
-              </div>
-            </div>
-            <div class="lp-janela-corpo">
-              <div class="lp-janela-rail">
-                <img src="assets/icon-white1.png" alt="">
-                <i class="ativo"></i><i></i><i></i><i></i>
-              </div>
-              <div class="lp-janela-conteudo">
-                <div class="lp-janela-cab">
-                  <strong>Carteira</strong>
-                  <span class="lp-tag lp-tag-verde">Conta verificada</span>
-                </div>
-                <div class="lp-saldo">
-                  <small>Saldo disponível</small>
-                  <b>R$ 12.480,00</b>
-                  <div class="lp-saldo-linha">
-                    <span>+ R$ 1.950,00 esta semana</span>
-                    <em>Sacar via Pix</em>
-                  </div>
-                </div>
-                <div class="lp-barras">
-                  <i style="--h:34%"></i><i style="--h:52%"></i><i style="--h:41%"></i><i style="--h:68%"></i><i style="--h:57%"></i><i style="--h:83%"></i><i style="--h:100%"></i>
-                </div>
-                <ul class="lp-movimentos">
-                  <li><img src="assets/presentes/jantar-romantico.jpg" alt=""><div><b>Jantar romântico</b><small>Beatriz Lima · Pix</small></div><span>R$ 350,00</span></li>
-                  <li><img src="assets/presentes/passagem-aerea.jpg" alt=""><div><b>Passagens da lua de mel</b><small>Família Souza · Pix</small></div><span>R$ 1.200,00</span></li>
-                  <li><img src="assets/presentes/cafeteira.jpg" alt=""><div><b>Cafeteira</b><small>Rafael Costa · Cartão</small></div><span>R$ 400,00</span></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <!-- Celular com o convite digital -->
-          <div class="lp-celular">
-            <div class="lp-celular-tela">
-              <img src="assets/criar-casamento.jpg" alt="">
-              <div class="lp-convite">
-                <small>Save the date</small>
-                <strong>Marina &amp; Pedro</strong>
-                <span>12 · 09 · 2026</span>
-                <em>Confirmar presença</em>
-              </div>
-            </div>
-          </div>
-
-          <!-- Avisos ao vivo -->
-          <div class="lp-aviso lp-aviso-presente">
-            <span class="lp-aviso-icone">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>
-            </span>
-            <div><b>Novo presente recebido</b><small>R$ 250,00 via Pix · agora</small></div>
-          </div>
-          <div class="lp-aviso lp-aviso-rsvp">
-            <span class="lp-aviso-icone lp-aviso-icone-verde">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>
-            </span>
-            <div><b>Ana confirmou presença</b><small>128 de 150 convidados</small></div>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/drecados.jpg">
+              <b>Recados guardados para sempre</b>
+              <span>Junto com cada presente chega uma mensagem de quem você ama, reunida num só lugar.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dmapa.jpg">
+              <b>Mapa de mesas inteligente</b>
+              <span>Arraste, troque e veja na hora quantos lugares ainda estão livres em cada mesa.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dsaque.jpg">
+              <b>Saque via Pix</b>
+              <span>O dinheiro dos presentes vai para a sua conta quando você quiser, sem complicação.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dlista.jpg">
+              <b>Lista de convidados completa</b>
+              <span>Grupos, acompanhantes, restrições e contatos — importe direto da agenda do celular.</span>
+            </button>
           </div>
         </div>
+        <figure class="lp2-detalhes-foto">
+          <img src="assets/landing/dvaquinha.jpg" alt="" loading="lazy">
+        </figure>
       </div>
     </section>
 
     <!-- =======================================================================
-         TIPOS DE EVENTO
+         SEGURANÇA — foto real + comprovante + garantias
          ======================================================================= -->
-    <section class="lp-secao lp-secao-branca">
-      <div class="lp-faixa">
-        <div class="lp-cab-secao lp-cab-centro">
-          <span class="lp-sobretitulo">Para todos os momentos</span>
-          <h2 class="lp-titulo">Um evento, uma página, tudo resolvido.</h2>
-          <p class="lp-texto">Modelos prontos para cada comemoração — é só escolher, personalizar e compartilhar.</p>
-        </div>
-        <div class="lp-tipos">
-          <button type="button" class="btn-trigger-register lp-tipo"><img src="assets/criar-casamento.jpg" alt="" loading="lazy"><span>Casamento</span></button>
-          <button type="button" class="btn-trigger-register lp-tipo"><img src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy"><span>Chá de bebê</span></button>
-          <button type="button" class="btn-trigger-register lp-tipo"><img src="assets/criar-aniversario.jpg" alt="" loading="lazy"><span>Aniversário</span></button>
-          <button type="button" class="btn-trigger-register lp-tipo"><img src="assets/criar-bodas.jpg" alt="" loading="lazy"><span>Bodas</span></button>
-          <button type="button" class="btn-trigger-register lp-tipo"><img src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy"><span>Chá de panela</span></button>
-          <button type="button" class="btn-trigger-register lp-tipo"><img src="assets/criar-revelacao.jpg" alt="" loading="lazy"><span>Chá revelação</span></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- =======================================================================
-         COMO FUNCIONA — 3 passos
-         ======================================================================= -->
-    <section id="como-funciona" class="lp-secao">
-      <div class="lp-faixa">
-        <div class="lp-cab-secao">
-          <span class="lp-sobretitulo">Como funciona</span>
-          <h2 class="lp-titulo">Pronto em minutos. Sem planilha, sem complicação.</h2>
-        </div>
-        <ol class="lp-passos">
-          <li class="lp-passo">
-            <span class="lp-passo-num">01</span>
-            <h3>Crie o seu convite</h3>
-            <p>Escolha um modelo, coloque as fotos, a data e o local. O convite fica pronto para o celular e para o computador.</p>
-          </li>
-          <li class="lp-passo">
-            <span class="lp-passo-num">02</span>
-            <h3>Compartilhe com os convidados</h3>
-            <p>Envie o link pelo WhatsApp. Cada convidado confirma a presença em poucos toques e você acompanha tudo em tempo real.</p>
-          </li>
-          <li class="lp-passo">
-            <span class="lp-passo-num">03</span>
-            <h3>Receba os presentes via Pix</h3>
-            <p>Os presentes viram dinheiro no seu saldo, com recado de quem enviou. Quando quiser, é só sacar para a sua conta.</p>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- =======================================================================
-         RECURSOS — grade com pedaços da plataforma
-         ======================================================================= -->
-    <section id="recursos" class="lp-secao lp-secao-branca">
-      <div class="lp-faixa">
-        <div class="lp-cab-secao lp-cab-dividido">
-          <div>
-            <span class="lp-sobretitulo">Recursos</span>
-            <h2 class="lp-titulo">Tudo o que o seu evento precisa, num só lugar.</h2>
+    <section id="seguranca" class="lp2-seguranca">
+      <div class="lp-faixa lp2-seguranca-linha">
+        <figure class="lp2-seguranca-foto">
+          <img src="assets/landing/seguranca.jpg" alt="Casal planejando o evento no notebook" loading="lazy">
+          <div class="lp-recibo lp2-recibo" aria-hidden="true">
+            <div class="lp-recibo-topo">
+              <span class="lp-recibo-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+              <div><b>Presente confirmado</b><small>Pagamento aprovado · Pix</small></div>
+            </div>
+            <div class="lp-recibo-valor">R$ 350,00</div>
+            <dl class="lp-recibo-dados">
+              <div><dt>De</dt><dd>Beatriz Lima</dd></div>
+              <div><dt>Identificador</dt><dd class="lp-mono">E2E·7F3A·91C0</dd></div>
+            </dl>
           </div>
-          <p class="lp-texto">A mesma plataforma que organiza o convite cuida da lista de presentes, das confirmações, do mapa de mesas e do dinheiro que chega.</p>
-        </div>
-
-        <div class="lp-bento">
-          <!-- Convite digital -->
-          <article class="lp-card lp-card-largo">
-            <div class="lp-card-texto">
-              <span class="lp-card-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
-              <h3>Convite digital</h3>
-              <p>Modelos elegantes e editáveis, com fotos, história do casal, local com mapa e contagem regressiva. Publique com o seu próprio link.</p>
-            </div>
-            <div class="lp-modelos" aria-hidden="true">
-              <figure><img src="assets/criar-bodas.jpg" alt="" loading="lazy"><figcaption>Clara &amp; João</figcaption></figure>
-              <figure class="destaque"><img src="assets/login-banner.jpg" alt="" loading="lazy"><figcaption>Marina &amp; Pedro</figcaption></figure>
-              <figure><img src="assets/criar-aniversario.jpg" alt="" loading="lazy"><figcaption>Lívia, 30 anos</figcaption></figure>
-            </div>
-          </article>
-
-          <!-- Lista de presentes -->
-          <article class="lp-card">
-            <div class="lp-card-texto">
-              <span class="lp-card-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span>
-              <h3>Lista de presentes</h3>
-              <p>Listas prontas ou do seu jeito, com vaquinha para os presentes maiores.</p>
-            </div>
-            <div class="lp-vaquinha" aria-hidden="true">
-              <img src="assets/presentes/passagem-aerea.jpg" alt="" loading="lazy">
-              <div>
-                <b>Lua de mel em Lisboa</b>
-                <div class="lp-progresso"><i></i></div>
-                <small><span>R$ 5.760</span> de R$ 9.000</small>
-              </div>
-            </div>
-          </article>
-
-          <!-- Confirmação de presença -->
-          <article class="lp-card">
-            <div class="lp-card-texto">
-              <span class="lp-card-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 11l2 2 4-4"/></svg></span>
-              <h3>Confirmação de presença</h3>
-              <p>Lista de convidados com acompanhantes, grupos e status — tudo atualizado sozinho.</p>
-            </div>
-            <ul class="lp-rsvp" aria-hidden="true">
-              <li><i>AL</i><span>Ana Luiza</span><em class="lp-tag lp-tag-verde">Confirmado</em></li>
-              <li><i>RC</i><span>Rafael Costa</span><em class="lp-tag lp-tag-verde">Confirmado</em></li>
-              <li><i>FS</i><span>Família Souza</span><em class="lp-tag lp-tag-cinza">Pendente</em></li>
-            </ul>
-          </article>
-
-          <!-- Carteira -->
-          <article class="lp-card">
-            <div class="lp-card-texto">
-              <span class="lp-card-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg></span>
-              <h3>Carteira e saque</h3>
-              <p>Cada presente entra no seu saldo com histórico completo. Saque para a sua conta via Pix.</p>
-            </div>
-            <div class="lp-mini-saldo" aria-hidden="true">
-              <small>Saldo disponível</small>
-              <b>R$ 12.480,00</b>
-              <span class="lp-btn lp-btn-primario lp-btn-mini">Sacar via Pix</span>
-            </div>
-          </article>
-
-          <!-- Mapa do evento -->
-          <article class="lp-card">
-            <div class="lp-card-texto">
-              <span class="lp-card-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="4" rx="1"/><path d="M6 13v6M18 13v6"/></svg></span>
-              <h3>Mapa do evento</h3>
-              <p>Monte as mesas arrastando os convidados. Ninguém fica sem lugar.</p>
-            </div>
-            <svg class="lp-mapa" viewBox="0 0 240 92" aria-hidden="true">
-              <rect x="1" y="1" width="238" height="90" rx="8" class="lp-mapa-fundo"/>
-              <g class="lp-mapa-mesa"><circle cx="52" cy="46" r="18"/><circle cx="52" cy="20" r="5"/><circle cx="52" cy="72" r="5"/><circle cx="26" cy="46" r="5"/><circle cx="78" cy="46" r="5"/></g>
-              <g class="lp-mapa-mesa"><circle cx="128" cy="46" r="18"/><circle cx="128" cy="20" r="5" class="cheio"/><circle cx="128" cy="72" r="5" class="cheio"/><circle cx="102" cy="46" r="5" class="cheio"/><circle cx="154" cy="46" r="5"/></g>
-              <g class="lp-mapa-mesa"><rect x="180" y="26" width="40" height="40" rx="4"/><circle cx="200" cy="18" r="5" class="cheio"/><circle cx="200" cy="74" r="5"/></g>
-            </svg>
-          </article>
-
-          <!-- Recados -->
-          <article class="lp-card lp-card-faixa">
-            <div class="lp-card-texto">
-              <span class="lp-card-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg></span>
-              <h3>Recados com carinho</h3>
-              <p>Junto com cada presente, uma mensagem de quem você ama — guardada para sempre.</p>
-            </div>
-            <blockquote class="lp-recado" aria-hidden="true">
-              “Que essa viagem seja só a primeira de muitas. Amamos vocês!”
-              <cite>— Tia Helena, com o presente <b>Jantar em Lisboa</b></cite>
-            </blockquote>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- =======================================================================
-         SEGURANÇA — faixa na cor da marca
-         ======================================================================= -->
-    <section id="seguranca" class="lp-secao lp-seguranca">
-      <div class="lp-faixa lp-seguranca-linha">
-        <div class="lp-seguranca-texto">
+        </figure>
+        <div class="lp2-seguranca-texto">
           <span class="lp-sobretitulo">Segurança</span>
-          <h2 class="lp-titulo">Tecnologia que cuida do seu dinheiro e dos seus dados.</h2>
-          <p class="lp-texto">Por trás de um convite bonito existe uma operação financeira séria. Cada presente é registrado, rastreável e chega ao seu saldo com transparência total.</p>
-          <ul class="lp-garantias">
-            <li>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
-              <div><b>Criptografia de ponta a ponta</b><small>Todas as conexões com a plataforma são protegidas por HTTPS.</small></div>
-            </li>
-            <li>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
-              <div><b>Privacidade de acordo com a LGPD</b><small>Os dados dos seus convidados são usados só para o seu evento.</small></div>
-            </li>
-            <li>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></span>
-              <div><b>Histórico de cada centavo</b><small>Extrato com quem enviou, quanto, quando e como foi pago.</small></div>
-            </li>
-            <li>
-              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-              <div><b>Pagamentos com parceiro regulado</b><small>Pix e cartão processados por instituição de pagamento parceira.</small></div>
-            </li>
+          <h2 class="lp2-titulo">Tecnologia que cuida do seu dinheiro e dos seus dados</h2>
+          <p class="lp2-texto">Por trás de um convite bonito existe uma operação financeira séria. Cada presente é registrado, rastreável e chega ao seu saldo com transparência total.</p>
+          <ul class="lp2-garantias">
+            <li><b>Criptografia em todas as conexões</b><span>Os dados trafegam protegidos por HTTPS, do convite ao pagamento.</span></li>
+            <li><b>Privacidade de acordo com a LGPD</b><span>As informações dos seus convidados são usadas só para o seu evento.</span></li>
+            <li><b>Histórico de cada centavo</b><span>Extrato com quem enviou, quanto, quando e como foi pago.</span></li>
+            <li><b>Pagamentos com parceiro regulado</b><span>Pix e cartão processados por instituição de pagamento parceira.</span></li>
           </ul>
         </div>
+      </div>
+    </section>
 
-        <div class="lp-recibo" aria-hidden="true">
-          <div class="lp-recibo-topo">
-            <span class="lp-recibo-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-            <div><b>Presente confirmado</b><small>Pagamento aprovado</small></div>
-          </div>
-          <div class="lp-recibo-valor">R$ 350,00</div>
-          <dl class="lp-recibo-dados">
-            <div><dt>Presente</dt><dd>Jantar romântico</dd></div>
-            <div><dt>De</dt><dd>Beatriz Lima</dd></div>
-            <div><dt>Forma</dt><dd>Pix</dd></div>
-            <div><dt>Data</dt><dd>12/09/2026 · 14:32</dd></div>
-            <div><dt>Identificador</dt><dd class="lp-mono">E2E·7F3A·91C0·4B2D</dd></div>
-          </dl>
-          <div class="lp-recibo-rodape">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-            Transação protegida e registrada no seu extrato
-          </div>
+    <!-- =======================================================================
+         PARA TODOS OS MOMENTOS
+         ======================================================================= -->
+    <section class="lp2-momentos">
+      <div class="lp-faixa">
+        <h2 class="lp2-titulo-centro">Para todos os momentos</h2>
+        <div class="lp2-momentos-lista">
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-casamento.jpg" alt="" loading="lazy"><span>Casamento</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy"><span>Chá de bebê</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-aniversario.jpg" alt="" loading="lazy"><span>Aniversário</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-bodas.jpg" alt="" loading="lazy"><span>Bodas</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy"><span>Chá de panela</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-revelacao.jpg" alt="" loading="lazy"><span>Chá revelação</span></button>
         </div>
       </div>
     </section>
@@ -414,12 +336,11 @@
     <!-- =======================================================================
          DÚVIDAS
          ======================================================================= -->
-    <section id="duvidas" class="lp-secao lp-secao-branca">
+    <section id="duvidas" class="lp-secao lp-secao-branca lp2-duvidas">
       <div class="lp-faixa lp-duvidas-linha">
         <div class="lp-cab-secao">
-          <span class="lp-sobretitulo">Dúvidas</span>
-          <h2 class="lp-titulo">Perguntas frequentes</h2>
-          <p class="lp-texto">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p>
+          <h2 class="lp2-titulo">Perguntas frequentes</h2>
+          <p class="lp2-texto">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p>
         </div>
         <div class="lp-faq">
           <details open>
@@ -447,20 +368,15 @@
     </section>
 
     <!-- =======================================================================
-         CHAMADA FINAL
+         CHAMADA FINAL — foto em tela cheia
          ======================================================================= -->
-    <section class="lp-secao lp-secao-final">
-      <div class="lp-faixa">
-        <div class="lp-final">
-          <div>
-            <h2>Comece hoje. O seu convite fica pronto em minutos.</h2>
-            <p>Crie o evento grátis e compartilhe com quem você ama.</p>
-          </div>
-          <div class="lp-final-ctas">
-            <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
-            <button type="button" class="btn-trigger-login lp-link-claro">Entrar na minha conta</button>
-          </div>
-        </div>
+    <section class="lp2-final">
+      <img class="lp2-final-foto" src="assets/landing/final.jpg" alt="" loading="lazy">
+      <div class="lp2-final-veu" aria-hidden="true"></div>
+      <div class="lp-faixa lp2-final-conteudo">
+        <h2>Comece hoje.<br>O resto a gente organiza.</h2>
+        <p>Crie o seu evento grátis e compartilhe com quem você ama.</p>
+        <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
       </div>
     </section>
 
@@ -5787,6 +5703,7 @@
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
   <script src="js/app.js?v=20261030_totalconversas"></script>
+  <script src="js/landing.js?v=20261031_landing4"></script>
   <script src="js/carteira.js?v=20261030_convidadosvazio"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
   <script src="js/pedidos-orcamento.js?v=20261030_textosdesk"></script>

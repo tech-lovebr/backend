@@ -15434,3 +15434,7 @@ html body #view-login #form-login-email:has(#login-email-input:is(:not(:placehol
 html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:not(#love-h-a):not(#love-h-b) { background: #EAF0F5 !important; }
 html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:hover:not(#love-h-a):not(#love-h-b) { background: #EAF0F5 !important; box-shadow: inset 0 0 0 1px #183b54; }
 html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:not(#love-h-a):not(#love-h-b) span { color: #183b54 !important; }
+
+/* /login: a frase da foto troca junto com o carrossel (esmaece e volta). */
+#login-carrossel-frase { transition: opacity .45s ease, transform .45s ease; }
+#login-carrossel-frase.is-trocando { opacity: 0; transform: translateY(6px); }

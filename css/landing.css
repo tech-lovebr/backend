@@ -755,3 +755,20 @@
   #view-public-site .lp2-painel h2 { font-size: 30px !important; }
   #view-public-site .lp2-final h2 { font-size: 32px !important; }
 }
+
+/* ==========================================================================
+   LANDING v5 — abertura numa caixa de cantos arredondados (desktop), véu um
+   pouco mais escuro para ler o texto, subtítulo em branco e "Encontrar um
+   evento" sem sublinhado.
+   ========================================================================== */
+#view-public-site .lp2-hero-encontrar, #view-public-site .lp2-hero-encontrar:hover { text-decoration: none !important; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-public-site .lp2-hero { margin: 8px 16px 0; border-radius: var(--lp-raio-card, 10px); overflow: hidden; }
+  #view-public-site .lp2-hero-veu {
+    background:
+      linear-gradient(90deg, rgba(12,22,32,0.82) 0%, rgba(12,22,32,0.6) 45%, rgba(12,22,32,0.25) 80%),
+      linear-gradient(0deg, rgba(12,22,32,0.55) 0%, transparent 45%);
+  }
+  #view-public-site .lp2-hero-sub { color: #FFFFFF !important; }
+  #view-public-site .lp2-hero-encontrar:hover { opacity: .8; }
+}

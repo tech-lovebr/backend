@@ -3478,7 +3478,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
     // um evento não pode ter o mesmo nome de uma página da plataforma.
     const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
-      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'central-de-ajuda', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib'];
+      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'central-de-ajuda', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib', 'encontrar-evento'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -23522,7 +23522,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnFooterFind) {
     btnFooterFind.addEventListener('click', () => {
-      showToast('Digite o nome dos anfitriões na busca para encontrar o evento desejado.', '🔍');
+      window.location.href = '/encontrar-evento';
     });
   }
 

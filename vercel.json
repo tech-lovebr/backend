@@ -9,6 +9,7 @@
     { "source": "/resetar-senha.html", "destination": "/resetar-senha", "permanent": true },
     { "source": "/convite-preview.html", "destination": "/convite-preview", "permanent": true },
     { "source": "/organizador.html", "destination": "/organizador", "permanent": true },
+    { "source": "/encontrar-evento.html", "destination": "/encontrar-evento", "permanent": true },
     { "source": "/duvidas", "destination": "/central-de-ajuda", "permanent": true },
     { "source": "/politica-de-privacidade", "destination": "/privacidade", "permanent": true }
   ],
@@ -17,6 +18,7 @@
     { "source": "/resetar-senha", "destination": "/resetar-senha.html" },
     { "source": "/convite-preview", "destination": "/convite-preview.html" },
     { "source": "/organizador", "destination": "/organizador.html" },
+    { "source": "/encontrar-evento", "destination": "/encontrar-evento.html" },
     { "source": "/login", "destination": "/" },
     { "source": "/termos", "destination": "/api/documento-legal?slug=termos" },
     { "source": "/privacidade", "destination": "/api/documento-legal?slug=privacidade" },

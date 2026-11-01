@@ -705,3 +705,53 @@
   #view-public-site .lp2-momentos .lp2-titulo-centro { text-align: center; }
   #view-public-site .lp2-final h2 { font-size: 34px !important; }
 }
+
+/* ==========================================================================
+   LANDING v4 — fontes da plataforma logada: Plus Jakarta Sans em tudo,
+   títulos em 700 com letras mais juntas (sem serifa); cabeçalho do celular
+   só com "Entrar"; "Encontrar um evento" embaixo do botão da abertura.
+   ========================================================================== */
+#view-public-site, #view-public-site * { font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif !important; }
+#view-public-site :is(.lp2-hero-titulo, .lp2-titulo, .lp2-titulo-centro, .lp2-painel h2, .lp2-final h2, .lp-legal-titulo) {
+  font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif !important; font-weight: 700 !important; letter-spacing: -0.035em !important;
+}
+#view-public-site :is(.lp2-hero-titulo, .lp2-titulo, .lp2-painel h2, .lp2-final h2) em { font-style: normal; }
+#view-public-site .lp2-hero-titulo { max-width: 720px; font-size: 60px !important; line-height: 1.05 !important; }
+#view-public-site .lp2-titulo-centro { font-size: 40px !important; line-height: 1.12 !important; }
+#view-public-site .lp2-titulo { font-size: 38px !important; line-height: 1.12 !important; }
+#view-public-site .lp2-painel h2 { font-size: 44px !important; line-height: 1.08 !important; }
+#view-public-site .lp2-final h2 { font-size: 52px !important; line-height: 1.08 !important; }
+/* Textos corridos no peso e na cor dos textos da plataforma. */
+#view-public-site :is(.lp2-hero-sub, .lp2-sub-centro, .lp2-texto, .lp2-painel p, .lp2-aba span, .lp2-garantias span, .lp2-final p) { font-weight: 400; letter-spacing: -0.005em; }
+#view-public-site :is(.lp2-ladrilho span, .lp2-aba b, .lp2-garantias b, .lp2-momento span, .lp2-paineis-menu a, .lp-faq summary) { letter-spacing: -0.01em; }
+#view-public-site :is(.lp-btn, .lp2-btn-tom, .lp-link-entrar) { font-weight: 600 !important; letter-spacing: -0.01em; }
+
+/* Abertura: o botão e, embaixo dele, "Encontrar um evento". */
+#view-public-site .lp2-hero-ctas { flex-direction: column; align-items: flex-start; gap: 16px; }
+#view-public-site .lp2-hero-conteudo { padding-bottom: 72px; }
+#view-public-site .lp2-hero-encontrar {
+  display: inline-block; padding: 4px 0; font-size: 15px; font-weight: 600; color: #FFFFFF; text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.5); text-underline-offset: 5px;
+}
+#view-public-site .lp2-hero-encontrar:hover { text-decoration-color: #FFFFFF; }
+
+@media (max-width: 1100px) {
+  #view-public-site .lp2-hero-titulo { font-size: 50px !important; }
+  #view-public-site .lp2-painel h2 { font-size: 38px !important; }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Cabeçalho: só "Entrar". */
+  #view-public-site .lp-topo-acoes .lp-btn { display: none; }
+  #view-public-site .lp-link-entrar { display: inline-block !important; font-size: 15px; }
+
+  #view-public-site .lp2-hero-conteudo { padding-bottom: 40px; }
+  #view-public-site .lp2-hero-titulo { font-size: 34px !important; line-height: 1.1 !important; }
+  #view-public-site .lp2-hero-ctas { align-items: stretch; gap: 8px; }
+  #view-public-site .lp2-hero-encontrar { align-self: center; padding: 10px 0; color: var(--lp-azul); text-decoration-color: rgba(24, 59, 84, 0.35); }
+  #view-public-site .lp2-titulo-centro { font-size: 28px !important; }
+  #view-public-site .lp2-titulo { font-size: 28px !important; }
+  #view-public-site .lp2-painel h2 { font-size: 30px !important; }
+  #view-public-site .lp2-final h2 { font-size: 32px !important; }
+}

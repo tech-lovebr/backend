@@ -772,3 +772,20 @@
   #view-public-site .lp2-hero-sub { color: #FFFFFF !important; }
   #view-public-site .lp2-hero-encontrar:hover { opacity: .8; }
 }
+
+/* Abertura no desktop: tudo centralizado e os dois botões lado a lado
+   ("Criar meu evento grátis" branco e "Encontrar um evento" escuro). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-public-site .lp2-hero { justify-content: center; }
+  #view-public-site .lp2-hero-conteudo { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 96px; padding-bottom: 96px; }
+  #view-public-site .lp2-hero-titulo { margin-left: auto; margin-right: auto; max-width: 820px; }
+  #view-public-site .lp2-hero-sub { margin-left: auto; margin-right: auto; max-width: 600px; }
+  #view-public-site .lp2-hero-veu { background: linear-gradient(0deg, rgba(12,22,32,0.7) 0%, rgba(12,22,32,0.5) 50%, rgba(12,22,32,0.6) 100%); }
+  #view-public-site .lp2-hero-ctas { flex-direction: row; justify-content: center; align-items: center; gap: 12px; }
+  #view-public-site .lp2-hero-encontrar {
+    display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 22px;
+    border-radius: var(--lp-raio, 8px); background: #181D24; color: #FFFFFF; font-size: 15px; font-weight: 600;
+    transition: background-color .15s ease;
+  }
+  #view-public-site .lp2-hero-encontrar:hover { opacity: 1; background: #0F1318; }
+}

@@ -12582,3 +12582,15 @@ body[data-theme="dark"] #forms-list > .forms-vazio { background: #252525 !import
   html body [data-tab-panel="formularios"] > #forms-list:has(> .forms-vazio):not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 1 0 auto; display: flex !important; flex-direction: column; }
   html body #forms-list > .forms-vazio:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { flex: 1 0 auto; min-height: 0; }
 }
+
+/* Celular: sem a transição de página (cross-fade da tela inteira). A foto da
+   página antiga era esticada quando a altura da tela mudava (barra do
+   endereço) e a barra de baixo, que chega depois pelo shell, aparecia torta
+   ao entrar ou voltar numa página. Troca direta, sem animação. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  @view-transition { navigation: none; }
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a):not(#love-h-b) { transition: none !important; }
+}

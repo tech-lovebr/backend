@@ -12594,3 +12594,9 @@ body[data-theme="dark"] #forms-list > .forms-vazio { background: #252525 !import
   ::view-transition-new(root) { animation: none !important; }
   html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a):not(#love-h-b) { transition: none !important; }
 }
+
+/* Celular: Minhas tarefas (quadro) com as listas na largura toda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .kanban-board:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr) !important; justify-content: stretch !important; }
+  html body .kanban-board > *:not(#love-h-a):not(#love-h-b) { width: auto !important; max-width: none !important; }
+}

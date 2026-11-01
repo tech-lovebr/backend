@@ -796,3 +796,7 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-public-site .lp2-hero-intro { margin-bottom: 10px; font-size: 15px; color: var(--lp-azul) !important; }
 }
+
+/* Textos sobre os painéis coloridos e a chamada final em branco (uma regra
+   geral de parágrafo deixava cinza #52525B, sem leitura no fundo escuro). */
+#view-public-site :is(.lp2-painel-texto p, .lp2-final p) { color: #FFFFFF !important; }

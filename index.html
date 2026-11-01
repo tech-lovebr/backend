@@ -69,7 +69,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261101_loginfoto">
+  <link rel="stylesheet" href="css/styles.css?v=20261101_logincarrossel">
   <link rel="stylesheet" href="css/landing.css?v=20261101_landing6">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
@@ -602,7 +602,30 @@
 
     <!-- Direita: imagem -->
     <div class="login-imagem hidden lg:flex w-1/2 relative overflow-hidden">
-      <img src="assets/login-banner.jpg?v=20261022" alt="" class="absolute inset-0 w-full h-full object-cover">
+      <!-- Carrossel automático de tipos de evento (sem setas; troca a cada 5s) -->
+      <div class="login-carrossel" aria-hidden="true">
+        <img src="assets/login-banner.jpg?v=20261022" alt="" class="login-carrossel-foto is-ativa" data-tipo="Casamento">
+        <img src="assets/criar-aniversario.jpg" alt="" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Aniversário">
+        <img src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá de bebê">
+        <img src="assets/criar-bodas.jpg" alt="" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Bodas">
+        <img src="assets/criar-revelacao.jpg" alt="" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá revelação">
+        <img src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá de panela">
+        <img src="assets/criar-casamento.jpg" alt="" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Casamento">
+      </div>
+      <script>
+        (function () {
+          var fotos = document.querySelectorAll('.login-carrossel-foto');
+          if (fotos.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          var atual = 0;
+          setInterval(function () {
+            var caixa = document.querySelector('.login-imagem');
+            if (document.hidden || !caixa || !caixa.offsetWidth) return; // só troca com o login aberto no desktop
+            fotos[atual].classList.remove('is-ativa');
+            atual = (atual + 1) % fotos.length;
+            fotos[atual].classList.add('is-ativa');
+          }, 5000);
+        })();
+      </script>
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
       <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
         <div></div>

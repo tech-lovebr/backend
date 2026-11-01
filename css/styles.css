@@ -15364,15 +15364,18 @@ html body .conta-perfil-linha:not(#love-h-a):not(#love-h-b) { display: block; }
   html body #view-login .login-ou-continue:not(#love-h-a) { font-size: 0; }
   html body #view-login .login-ou-continue:not(#love-h-a)::after { content: 'ou'; font-size: 13px; font-weight: 500; color: #71717A; }
 
+  /* Vazio: branco com borda cinza fina. Preenchido: cinza claro. */
   html body #view-login :is(input[type="email"], input[type="password"], input[type="text"]):not(#love-h-a):not(#love-h-b) {
-    background: #F4F6F7 !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important;
+    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important; outline: none !important;
   }
-  html body #view-login :is(input[type="email"], input[type="password"], input[type="text"]):focus:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; border-color: #181D24 !important; }
-  /* Preenchimento automático do navegador (que pinta de azul claro). */
-  html body #view-login input:-webkit-autofill:not(#love-h-a),
-  html body #view-login input:-webkit-autofill:hover:not(#love-h-a),
-  html body #view-login input:-webkit-autofill:focus:not(#love-h-a) {
-    -webkit-box-shadow: 0 0 0 100px #F4F6F7 inset !important; -webkit-text-fill-color: #18181B !important; caret-color: #18181B;
+  html body #view-login :is(input[type="email"], input[type="password"], input[type="text"]):not(:placeholder-shown):not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
+  html body #view-login :is(input[type="email"], input[type="password"], input[type="text"]):focus:not(#love-h-a):not(#love-h-b) { border-color: #181D24 !important; }
+  /* Preenchimento automático do navegador (que pinta de azul claro): cinza claro
+     também. Mais específico que o box-shadow:none acima para valer. */
+  html body #view-login input:is(:-webkit-autofill, :autofill):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    -webkit-box-shadow: 0 0 0 1000px #F4F6F7 inset !important; box-shadow: 0 0 0 1000px #F4F6F7 inset !important;
+    -webkit-text-fill-color: #18181B !important; caret-color: #18181B;
+    transition: background-color 600000s 0s, color 600000s 0s;
   }
 
   html body #view-login :is(#btn-do-email-login, #btn-do-forgot-password):not(#love-h-a):not(#love-h-b) {

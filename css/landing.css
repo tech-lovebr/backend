@@ -789,3 +789,10 @@
   }
   #view-public-site .lp2-hero-encontrar:hover { opacity: 1; background: #0F1318; }
 }
+
+/* Abertura: frase curta antes do título, apresentando o que é a Love. */
+#view-public-site .lp2-hero-intro { margin: 0 0 16px; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; color: #FFFFFF !important; }
+#view-public-site .lp2-hero-intro + .lp2-hero-titulo { margin-top: 0 !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-public-site .lp2-hero-intro { margin-bottom: 10px; font-size: 15px; color: var(--lp-azul) !important; }
+}

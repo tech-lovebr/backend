@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -13,59 +13,380 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Portal do Fornecedor — Love</title>
-  <meta name="description" content="A plataforma completa para assessores e fornecedores parceiros da Love gerenciarem leads, contratos e vitrine de serviços.">
+  <title>Love Hub — Clientes para a sua empresa de eventos</title>
+  <meta name="description" content="Encontre clientes que estão organizando eventos na Love. Receba pedidos de orçamento, envie propostas, feche contratos e receba via Pix numa plataforma só.">
   <meta name="theme-color" content="#183b54">
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <meta name="robots" content="noindex, nofollow">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
-        }
-      }
-    }
-  </script>
-
-  <link rel="stylesheet" href="css/styles.css?v=843">
+  <!-- Mesma landing da Love (css/landing.css, copiado do index), com os textos para fornecedores. -->
+  <link rel="stylesheet" href="css/landing.css?v=1">
 </head>
-<body class="font-sans">
+<body class="hub-landing">
 
-  <header class="landing-header">
-    <div class="landing-header-inner">
-      <a href="/" class="landing-logo">
-        <img src="assets/logo_blue.png" alt="Love">
-      </a>
-      <div class="landing-header-actions">
-        <a href="login" class="btn-secondary">Acesse sua conta</a>
-        <a href="signup" class="btn-primary">Experimente grátis</a>
+  <div id="view-public-site">
+
+    <!-- Cabeçalho: logo, âncoras da página e Entrar / Cadastrar empresa -->
+    <header class="lp-topo">
+      <div class="lp-faixa lp-topo-linha">
+        <a href="/" class="lp-logo" aria-label="Love Hub — início">
+          <img src="assets/logo_blue.png" alt="Love">
+        </a>
+        <nav class="lp-nav" aria-label="Seções da página">
+          <a href="#painel-oportunidades">Oportunidades</a>
+          <a href="#painel-propostas">Propostas</a>
+          <a href="#painel-pix">Cobranças e Pix</a>
+          <a href="#seguranca">Segurança</a>
+          <a href="#duvidas">Dúvidas</a>
+        </nav>
+        <div class="lp-topo-acoes">
+          <a href="login" class="lp-link-entrar">Entrar</a>
+          <a href="signup" class="lp-btn lp-btn-primario">Cadastrar minha empresa</a>
+        </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <main>
-    <section class="landing-hero">
-      <div class="landing-hero-inner">
-        <p class="landing-hero-eyebrow">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25 13.85 8.4a4 4 0 0 0 2.75 2.75L22.75 13l-6.15 1.85a4 4 0 0 0-2.75 2.75L12 23.75l-1.85-6.15a4 4 0 0 0-2.75-2.75L1.25 13l6.15-1.85a4 4 0 0 0 2.75-2.75L12 2.25Z"/></svg>
-          Portal do Fornecedor Love
-        </p>
-        <h1 class="landing-hero-title">Gerencie seus eventos, contratos e clientes em um só lugar.</h1>
-        <p class="landing-hero-subtitle">A plataforma completa para assessores e fornecedores parceiros da Love acompanharem leads, contratos e vitrine de serviços — do primeiro contato ao evento fechado.</p>
-        <div class="landing-hero-actions">
-          <a href="login" class="btn-hero-primary">Solicite uma demonstração</a>
-          <a href="signup" class="btn-hero-secondary">Experimente grátis</a>
+    <div id="public-landing-sections" class="lp">
+
+    <!-- =======================================================================
+         ABERTURA
+         ======================================================================= -->
+    <section class="lp2-hero">
+      <img class="lp2-hero-foto" src="assets/landing/heroi.jpg" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas">
+      <div class="lp2-hero-veu" aria-hidden="true"></div>
+      <div class="lp-faixa lp2-hero-conteudo">
+        <span class="lp2-hero-marca">Love Hub · para fornecedores de eventos</span>
+        <h1 class="lp2-hero-titulo">Seu próximo cliente já está planejando um evento.</h1>
+        <p class="lp2-hero-sub">Milhares de anfitriões organizam casamentos, aniversários e chás na Love. Mostre os seus serviços para quem está contratando agora — e feche o negócio no mesmo lugar.</p>
+        <div class="lp2-hero-ctas">
+          <a href="signup" class="lp-btn lp-btn-branco lp-btn-grande">Cadastrar minha empresa grátis</a>
+          <a href="#como-funciona" class="lp2-hero-encontrar">Ver como funciona</a>
         </div>
       </div>
     </section>
-  </main>
 
+    <!-- =======================================================================
+         TUDO O QUE A SUA EMPRESA PRECISA
+         ======================================================================= -->
+    <section class="lp2-tudo">
+      <div class="lp-faixa">
+        <h2 class="lp2-titulo-centro">Do primeiro contato ao pagamento, num só lugar</h2>
+        <p class="lp2-sub-centro">Para buffets, decoradores, fotógrafos, cerimonialistas, espaços e todo mundo que faz um evento acontecer.</p>
+        <div class="lp2-mosaico">
+          <a href="#painel-oportunidades" class="lp2-ladrilho"><img src="assets/landing/tconvidados.jpg" alt="" loading="lazy"><span>Oportunidades</span></a>
+          <a href="#painel-propostas" class="lp2-ladrilho"><img src="assets/landing/tconvite.jpg" alt="" loading="lazy"><span>Propostas</span></a>
+          <a href="#painel-contratos" class="lp2-ladrilho"><img src="assets/landing/tpresentes.jpg" alt="" loading="lazy"><span>Contratos</span></a>
+          <a href="#painel-vitrine" class="lp2-ladrilho"><img src="assets/landing/tmesas.jpg" alt="" loading="lazy"><span>Vitrine e site</span></a>
+          <a href="#painel-pix" class="lp2-ladrilho"><img src="assets/landing/tcarteira.jpg" alt="" loading="lazy"><span>Cobranças e Pix</span></a>
+          <a href="#detalhes" class="lp2-ladrilho"><img src="assets/landing/trecados.jpg" alt="" loading="lazy"><span>Clientes e mensagens</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         PAINÉIS — menu fixo à esquerda, um painel colorido por recurso
+         ======================================================================= -->
+    <section id="como-funciona" class="lp2-paineis">
+      <div class="lp-faixa lp2-paineis-linha">
+        <nav class="lp2-paineis-menu" aria-label="Recursos">
+          <a href="#painel-oportunidades" class="ativo">Oportunidades</a>
+          <a href="#painel-propostas">Propostas</a>
+          <a href="#painel-contratos">Contratos</a>
+          <a href="#painel-vitrine">Vitrine e site</a>
+          <a href="#painel-pix">Cobranças e Pix</a>
+        </nav>
+        <div class="lp2-paineis-lista">
+
+          <article id="painel-oportunidades" class="lp2-painel" style="--fundo:#183b54;--tom:#CFE3F2">
+            <div class="lp2-painel-texto">
+              <h2>Clientes que já estão <em>procurando você</em></h2>
+              <p>Cadastre os seus produtos e serviços e receba pedidos de orçamento de anfitriões que estão organizando o evento na Love — com data, cidade e número de convidados.</p>
+              <div class="lp2-painel-ctas">
+                <a href="signup" class="lp2-btn-tom">Quero receber pedidos</a>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pconvidados.jpg" alt="Convidados celebrando à mesa" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"/></svg></span>
+                <div><b>Novo pedido de orçamento</b><small>Casamento · 150 convidados · São Paulo</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-propostas" class="lp2-painel" style="--fundo:#0E4A57;--tom:#CDEDEA">
+            <div class="lp2-painel-texto">
+              <h2>Propostas bonitas, <em>em minutos</em></h2>
+              <p>Monte a proposta com os seus produtos, valores e condições e envie com um link. O cliente aceita pelo celular e você acompanha cada etapa do funil.</p>
+              <div class="lp2-painel-ctas">
+                <a href="signup" class="lp2-btn-tom">Criar minha primeira proposta</a>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pcarteira.jpg" alt="Casal sorrindo em frente ao notebook" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+                <div><b>Proposta aceita</b><small>Marina e Pedro · R$ 8.400,00</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-contratos" class="lp2-painel" style="--fundo:#27394f;--tom:#DCE4F5">
+            <div class="lp2-painel-texto">
+              <h2>Contratos <em>sem papelada</em></h2>
+              <p>A proposta aceita vira contrato com o cliente, as parcelas e as datas já preenchidas. Tudo guardado num lugar só, fácil de achar quando precisar.</p>
+              <div class="lp2-painel-ctas">
+                <a href="signup" class="lp2-btn-tom">Organizar meus contratos</a>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/seguranca.jpg" alt="Casal revisando o contrato no notebook" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
+                <div><b>Contrato fechado</b><small>3 parcelas · 1ª em 10/12</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-vitrine" class="lp2-painel" style="--fundo:#1D4466;--tom:#D6E8FA">
+            <div class="lp2-painel-texto">
+              <h2>A sua empresa <em>em destaque</em></h2>
+              <p>Monte a vitrine com fotos, serviços e preços e ganhe um site próprio para divulgar. Quem está organizando um evento na Love encontra você na hora certa.</p>
+              <div class="lp2-painel-ctas">
+                <a href="signup" class="lp2-btn-tom">Montar minha vitrine</a>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pmesas.jpg" alt="Mesa redonda decorada em azul" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                <div><b>248 visitas na vitrine</b><small>nos últimos 30 dias</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-pix" class="lp2-painel" style="--fundo:#122B3D;--tom:#D3EFE0">
+            <div class="lp2-painel-texto">
+              <h2>Receba <em>sem correr atrás</em></h2>
+              <p>Gere cobranças por Pix, boleto ou cartão direto do contrato. O dinheiro entra no seu saldo e você saca para a conta da empresa quando quiser.</p>
+              <div class="lp2-painel-ctas">
+                <a href="signup" class="lp2-btn-tom">Começar agora</a>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/tcarteira.jpg" alt="Cliente pagando pelo celular" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg></span>
+                <div><b>Pagamento recebido via Pix</b><small>R$ 2.800,00 · agora</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         A DIFERENÇA ESTÁ NOS DETALHES
+         ======================================================================= -->
+    <section id="detalhes" class="lp2-detalhes">
+      <div class="lp-faixa lp2-detalhes-linha">
+        <div class="lp2-detalhes-texto">
+          <h2 class="lp2-titulo">Feito para o dia a dia de quem trabalha com eventos</h2>
+          <div class="lp2-abas" role="tablist">
+            <button type="button" class="lp2-aba ativo" role="tab" aria-selected="true" data-foto="assets/landing/drecados.jpg">
+              <b>Mensagens com os clientes</b>
+              <span>Converse com cada cliente dentro da plataforma, com o histórico do evento sempre à mão.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dlista.jpg">
+              <b>Formulários para o cliente</b>
+              <span>Pergunte o que precisa saber antes do evento — cardápio, horários, preferências — e receba as respostas organizadas.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dmapa.jpg">
+              <b>Agenda e tarefas</b>
+              <span>Veja os eventos do mês, as datas livres e o que falta fazer em cada contrato.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dvaquinha.jpg">
+              <b>Equipe com acesso próprio</b>
+              <span>Convide quem trabalha com você e escolha o que cada pessoa pode ver e fazer.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dsaque.jpg">
+              <b>Financeiro sem planilha</b>
+              <span>Faturamento, parcelas a receber e notas fiscais de cada contrato numa tela só.</span>
+            </button>
+          </div>
+        </div>
+        <figure class="lp2-detalhes-foto">
+          <img src="assets/landing/drecados.jpg" alt="" loading="lazy">
+        </figure>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         SEGURANÇA — foto real + comprovante + garantias
+         ======================================================================= -->
+    <section id="seguranca" class="lp2-seguranca">
+      <div class="lp-faixa lp2-seguranca-linha">
+        <figure class="lp2-seguranca-foto">
+          <img src="assets/landing/dsaque.jpg" alt="Pagamento pelo celular" loading="lazy">
+          <div class="lp-recibo lp2-recibo" aria-hidden="true">
+            <div class="lp-recibo-topo">
+              <span class="lp-recibo-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+              <div><b>Parcela recebida</b><small>Pagamento aprovado · Pix</small></div>
+            </div>
+            <div class="lp-recibo-valor">R$ 2.800,00</div>
+            <dl class="lp-recibo-dados">
+              <div><dt>Cliente</dt><dd>Marina Souza</dd></div>
+              <div><dt>Contrato</dt><dd>Parcela 1 de 3</dd></div>
+            </dl>
+          </div>
+        </figure>
+        <div class="lp2-seguranca-texto">
+          <span class="lp-sobretitulo">Segurança</span>
+          <h2 class="lp2-titulo">O dinheiro da sua empresa, com controle total</h2>
+          <p class="lp2-texto">Cada cobrança é registrada e rastreável, do envio ao pagamento. Você sabe quem pagou, quanto, quando — e o que ainda falta receber.</p>
+          <ul class="lp2-garantias">
+            <li><b>Criptografia em todas as conexões</b><span>Os dados trafegam protegidos por HTTPS, da proposta ao pagamento.</span></li>
+            <li><b>Privacidade de acordo com a LGPD</b><span>Os dados dos seus clientes ficam com você e são usados só para o seu trabalho.</span></li>
+            <li><b>Histórico de cada cobrança</b><span>Extrato com cliente, valor, data e forma de pagamento de cada parcela.</span></li>
+            <li><b>Pagamentos com parceiro regulado</b><span>Pix, boleto e cartão processados por instituição de pagamento parceira.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         PARA TODOS OS EVENTOS
+         ======================================================================= -->
+    <section class="lp2-momentos">
+      <div class="lp-faixa">
+        <h2 class="lp2-titulo-centro">Clientes para todos os tipos de evento</h2>
+        <div class="lp2-momentos-lista">
+          <a href="signup" class="lp2-momento"><img src="assets/landing/momento-casamento.jpg" alt="" loading="lazy"><span>Casamento</span></a>
+          <a href="signup" class="lp2-momento"><img src="assets/landing/momento-cha-de-bebe.jpg" alt="" loading="lazy"><span>Chá de bebê</span></a>
+          <a href="signup" class="lp2-momento"><img src="assets/landing/momento-aniversario.jpg" alt="" loading="lazy"><span>Aniversário</span></a>
+          <a href="signup" class="lp2-momento"><img src="assets/landing/momento-bodas.jpg" alt="" loading="lazy"><span>Bodas</span></a>
+          <a href="signup" class="lp2-momento"><img src="assets/landing/momento-cha-de-panela.jpg" alt="" loading="lazy"><span>Chá de panela</span></a>
+          <a href="signup" class="lp2-momento"><img src="assets/landing/momento-revelacao.jpg" alt="" loading="lazy"><span>Chá revelação</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         DÚVIDAS
+         ======================================================================= -->
+    <section id="duvidas" class="lp-secao lp-secao-branca lp2-duvidas">
+      <div class="lp-faixa lp-duvidas-linha">
+        <div class="lp-cab-secao">
+          <h2 class="lp2-titulo">Perguntas frequentes</h2>
+          <p class="lp2-texto">Não achou o que procurava? Fale com a gente pela <a href="central-de-ajuda" class="lp-link-texto">Central de ajuda</a>.</p>
+        </div>
+        <div class="lp-faq">
+          <details open>
+            <summary>Quanto custa cadastrar a minha empresa?</summary>
+            <p>O cadastro é grátis. Você monta a vitrine, cadastra os seus produtos e começa a receber pedidos de orçamento sem pagar nada para começar.</p>
+          </details>
+          <details>
+            <summary>Como os clientes chegam até mim?</summary>
+            <p>Quem organiza um evento na Love procura fornecedores pelo tipo de serviço e pela cidade. Quando o seu produto combina com o evento, o pedido de orçamento aparece em Oportunidades.</p>
+          </details>
+          <details>
+            <summary>Como recebo os pagamentos dos clientes?</summary>
+            <p>Você gera a cobrança pelo contrato e o cliente paga por Pix, boleto ou cartão. O valor entra no seu saldo e você saca para a conta da empresa quando quiser.</p>
+          </details>
+          <details>
+            <summary>Posso usar com clientes que não vieram pela Love?</summary>
+            <p>Pode. Cadastre qualquer cliente e use propostas, contratos, cobranças e agenda do mesmo jeito.</p>
+          </details>
+          <details>
+            <summary>Minha equipe pode acessar também?</summary>
+            <p>Pode. Convide quem trabalha com você e escolha o que cada pessoa vê — vendas, financeiro, agenda ou tudo.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         CHAMADA FINAL — foto em tela cheia
+         ======================================================================= -->
+    <section class="lp2-final">
+      <img class="lp2-final-foto" src="assets/landing/final.jpg" alt="" loading="lazy">
+      <div class="lp2-final-veu" aria-hidden="true"></div>
+      <div class="lp-faixa lp2-final-conteudo">
+        <h2>Tem um evento acontecendo.<br>Faça parte dele.</h2>
+        <p>Cadastre a sua empresa grátis e comece a receber pedidos de orçamento.</p>
+        <a href="signup" class="lp-btn lp-btn-branco lp-btn-grande">Cadastrar minha empresa grátis</a>
+      </div>
+    </section>
+
+    </div><!-- /#public-landing-sections -->
+
+    <!-- Rodapé -->
+    <footer class="lp-rodape">
+      <div class="lp-faixa">
+        <div class="lp-rodape-grade">
+          <div class="lp-rodape-marca">
+            <img src="assets/logo_blue.png" alt="Love" class="lp-rodape-logo">
+            <p>Oportunidades, propostas, contratos e cobranças numa plataforma só — feita para quem faz os eventos acontecerem.</p>
+            <div class="lp-redes">
+              <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
+              </a>
+              <a href="https://x.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="X">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+              </a>
+              <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="lp-rodape-coluna">
+            <h4>Hub</h4>
+            <ul>
+              <li><a href="signup">Cadastrar minha empresa</a></li>
+              <li><a href="login">Entrar</a></li>
+              <li><a href="https://blog.love.com.br" target="_blank" rel="noopener noreferrer">Blog</a></li>
+            </ul>
+          </div>
+
+          <div class="lp-rodape-coluna">
+            <h4>Suporte</h4>
+            <ul>
+              <li><a href="central-de-ajuda">Central de ajuda</a></li>
+              <li><a href="https://love.com.br" target="_blank" rel="noopener noreferrer">Love para anfitriões</a></li>
+            </ul>
+          </div>
+
+          <div class="lp-rodape-coluna">
+            <h4>Segurança</h4>
+            <ul class="lp-rodape-selos">
+              <li><img src="assets/pix-icone.png" alt="" aria-hidden="true">Recebimentos via Pix</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Conexão criptografada</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/></svg>Dados protegidos (LGPD)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="lp-rodape-base">
+          <p>© 2026 Love Hub Ltda. Todos os direitos reservados.</p>
+          <nav aria-label="Links legais">
+            <a href="privacidade">Privacidade</a>
+            <a href="termos">Termos e condições</a>
+          </nav>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="js/landing.js?v=1"></script>
 </body>
 </html>

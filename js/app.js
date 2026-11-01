@@ -2696,6 +2696,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const carteira = activeEvent.wallet || {};
       const arrecadado = pagos || ((Number(carteira.saldoDisponivel) || 0) + (Number(carteira.totalSacado) || 0));
       kpiArrecadado.textContent = `R$ ${arrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      // "Sacar disponível" só fica azul com saldo arrecadado; sem saldo, claro.
+      document.getElementById('home-btn-sacar')?.classList.toggle('is-sem-saldo', !(arrecadado > 0));
       // Celular: a mesma caixa em duas colunas (saldo | presentes recebidos).
       const arrecadadoCel = document.getElementById('kpi-arrecadado-celular');
       if (arrecadadoCel) arrecadadoCel.textContent = kpiArrecadado.textContent;

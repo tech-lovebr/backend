@@ -15418,3 +15418,19 @@ html body #view-login :is(#btn-do-email-login, #btn-do-forgot-password):hover:no
 }
 .login-carrossel-foto.is-ativa { opacity: 1; transform: scale(1); }
 @media (prefers-reduced-motion: reduce) { .login-carrossel-foto { transition: none; transform: none; } }
+
+/* Entrar (login): claro (#EAF0F5) com os campos vazios; azul da sidebar
+   (#183b54) quando e-mail e senha estão preenchidos — à mão ou pelo
+   preenchimento automático do navegador. */
+html body #view-login #form-login-email:has(#login-email-input:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)):has(#login-password-input:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)) #btn-do-email-login:not(#love-h-a):not(#love-h-b) {
+  background: #183b54 !important; color: #FFFFFF !important; box-shadow: none !important;
+}
+html body #view-login #form-login-email:has(#login-email-input:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)):has(#login-password-input:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)) #btn-do-email-login:hover:not(#love-h-a):not(#love-h-b) {
+  background: #122c3f !important; box-shadow: none !important;
+}
+
+/* Home: "Sacar disponível" azul só com saldo arrecadado; sem saldo fica no
+   claro do Entrar vazio (#EAF0F5 / #183b54). */
+html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:not(#love-h-a):not(#love-h-b) { background: #EAF0F5 !important; }
+html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:hover:not(#love-h-a):not(#love-h-b) { background: #EAF0F5 !important; box-shadow: inset 0 0 0 1px #183b54; }
+html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:not(#love-h-a):not(#love-h-b) span { color: #183b54 !important; }

@@ -35,10 +35,10 @@
 }
 .hl *, .hl *::before, .hl *::after { box-sizing: border-box; }
 .hl img { display: block; max-width: 100%; }
-.hl a { color: inherit; }
+:where(.hl) a { color: inherit; }
 .hl-faixa { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
-.hl :is(h1, h2, h3) { margin: 0; font-family: 'Plus Jakarta Sans', Inter, sans-serif; font-weight: 600; letter-spacing: -0.035em; }
-.hl p { margin: 0; }
+:where(.hl) :is(h1, h2, h3) { margin: 0; font-family: 'Plus Jakarta Sans', Inter, sans-serif; font-weight: 600; letter-spacing: -0.035em; }
+:where(.hl) p { margin: 0; }
 
 /* ---------- Botões ---------- */
 .hl-btn {
@@ -462,4 +462,46 @@
   .hl-rodape { padding: 48px 0 24px; }
   .hl-rodape-grade { gap: 32px; }
   .hl-rodape-base { flex-direction: column; align-items: center; text-align: center; margin-top: 40px; }
+}
+
+/* ==========================================================================
+   AJUSTES — título em duas linhas, links sem sublinhado nos blocos e a tela
+   do celular como tela de bloqueio com as notificações do app.
+   ========================================================================== */
+.hl-h1 span { display: block; }
+.hl-btn-azul, .hl-btn-azul:hover { color: #FFFFFF; }
+.hl-bloco-acoes .hl-link { text-decoration: none; color: var(--azul); }
+.hl-bloco-acoes .hl-link:hover { color: var(--azul-hover); }
+
+.hl-bloqueio-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+.hl-celular-tela::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 24, 36, 0.45) 0%, rgba(10, 24, 36, 0.2) 45%, rgba(10, 24, 36, 0.55) 100%); }
+.hl-celular-ilha { z-index: 3; }
+.hl-bloqueio { position: relative; z-index: 2; padding: 56px 12px 0; color: #FFFFFF; text-align: center; }
+.hl-bloqueio-data { font: 500 13px Inter, sans-serif; opacity: .9; }
+.hl-bloqueio-hora { font: 600 64px/1 'Plus Jakarta Sans', Inter, sans-serif; letter-spacing: -0.04em; margin-top: 2px; }
+.hl-notas { display: grid; gap: 8px; margin-top: 28px; text-align: left; }
+.hl-nota {
+  padding: 10px 12px; border-radius: 14px; color: var(--tinta);
+  background: rgba(255, 255, 255, 0.82); -webkit-backdrop-filter: blur(18px) saturate(160%); backdrop-filter: blur(18px) saturate(160%);
+}
+.hl-nota-cab { display: flex; align-items: center; gap: 6px; }
+.hl-nota-app { display: grid; place-items: center; width: 18px; height: 18px; overflow: hidden; border-radius: 5px; background: #FFFFFF; }
+.hl-nota-app img { width: 18px; height: 18px; object-fit: cover; }
+.hl-nota-cab b { flex: 1; font: 600 11px Inter, sans-serif; letter-spacing: 0.01em; text-transform: uppercase; color: var(--suave); }
+.hl-nota-cab small { font-size: 11px; color: var(--suave); }
+.hl-nota strong { display: block; margin-top: 6px; font: 600 13px/1.3 Inter, sans-serif; letter-spacing: -0.01em; }
+.hl-nota p { margin-top: 2px; font-size: 12px; line-height: 1.4; color: var(--texto); }
+.hl-nota-destaque { background: rgba(255, 255, 255, 0.94); }
+.hl-nota-destaque strong { font-size: 14px; }
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .hl-h1 span { display: inline; }
+  .hl-bloqueio { padding-top: 46px; }
+  .hl-bloqueio-hora { font-size: 52px; }
+  .hl-notas { margin-top: 20px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Celular: as notificações já contam a história; sem cartões por cima. */
+  .hl-flut-link, .hl-flut-pago { display: none; }
+  .hl-nota:nth-child(3) { display: none; }
 }

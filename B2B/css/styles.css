@@ -11915,9 +11915,9 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   }
   html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
     box-sizing: border-box; width: 56px; height: 56px; padding: 15px; border-radius: 50%;
-    background: #EAF0F5; color: #183b54; flex-shrink: 0; transition: box-shadow .15s ease;
+    background: #EAF0F5; color: #183b54; flex-shrink: 0; box-shadow: none; transition: background-color .15s ease;
   }
-  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(#love-h-a):active svg { box-shadow: inset 0 0 0 1px #183b54; }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(#love-h-a):active svg { background: #E1E9F0; box-shadow: none; }
 
   /* Caixa do saldo */
   html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dash-saldo-total:not(#love-h-a):not(#love-h-b) {
@@ -12025,10 +12025,10 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   }
   html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
     box-sizing: border-box; width: 56px; height: 56px; padding: 16px; border-radius: 50%; flex-shrink: 0;
-    background: #EAF0F5; color: #183b54; box-shadow: inset 0 0 0 1px transparent; transition: box-shadow .15s ease;
+    background: #EAF0F5; color: #183b54; box-shadow: none; transition: background-color .15s ease;
   }
   html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):hover { color: #181D24; }
-  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):hover svg { box-shadow: inset 0 0 0 1px #183b54; }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):hover svg { background: #E1E9F0; box-shadow: none; }
 
   /* Saldo: caixa como a de Presentes */
   html body[data-page="dashboard"] .dashboard-side-stack > .dash-saldo-total:not(#love-h-a):not(#love-h-b) {
@@ -12648,7 +12648,7 @@ html body .auth-tela input:is(:-webkit-autofill, :autofill):not(#love-h-a):not(#
 html body .auth-tela .auth-entrar:not(#love-h-a):not(#love-h-b) {
   background: #EAF0F5 !important; color: #183b54 !important; box-shadow: none !important; border: 0 !important; border-radius: 8px !important;
 }
-html body .auth-tela .auth-entrar:hover:not(#love-h-a):not(#love-h-b) { box-shadow: inset 0 0 0 1px #183b54 !important; }
+html body .auth-tela .auth-entrar:hover:not(#love-h-a):not(#love-h-b) { background: #E1E9F0 !important; color: #183b54 !important; box-shadow: none !important; outline: none !important; }
 html body .auth-tela #login-form:has(#login-email:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)):has(#login-password:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)) .auth-entrar:not(#love-h-a):not(#love-h-b),
 html body .auth-tela #signup-email-form:has(#signup-email:not(:placeholder-shown)):has(#signup-password:not(:placeholder-shown)) .auth-entrar:not(#love-h-a):not(#love-h-b) {
   background: #183b54 !important; color: #FFFFFF !important; box-shadow: none !important;
@@ -12790,3 +12790,10 @@ html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#lov
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 42px !important; min-height: 0 !important; }
 }
+
+/* Botões claros (#EAF0F5 / #183b54): sem contorno, anel ou outline no hover e
+   no foco; só o fundo escurece para #E1E9F0. Os azuis seguem com #122c3f. */
+html body :is(.auth-tela .auth-entrar, [data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo):not(#love-h-a):not(#love-h-b):not(#love-h-c):focus-visible { background: #E1E9F0 !important; outline: none !important; box-shadow: none !important; }
+html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background: #E1E9F0; color: #183b54; box-shadow: none; outline: none; }
+html body[data-page="dashboard"] :is(.dash-home-caixa, .dashboard-quick-actions) .dashboard-quick-action-btn:not(#love-h-a):focus-visible { outline: none; }
+html body[data-page="dashboard"] :is(.dash-home-caixa, .dashboard-quick-actions) .dashboard-quick-action-btn:not(#love-h-a):focus-visible svg { background: #E1E9F0; box-shadow: none; }

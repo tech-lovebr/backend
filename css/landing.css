@@ -815,3 +815,45 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-public-site :is(.lp2-hero-intro, .lp2-hero-titulo, .lp2-hero-sub) { text-align: center; margin-left: auto; margin-right: auto; }
 }
+
+/* ==========================================================================
+   LANDING v6 (desktop) — abertura no estilo da referência: faixa clara de
+   apresentação acima ("Crie o convite digital do seu evento"), foto numa
+   caixa grande de 1280px com cantos de 10px e o texto à esquerda, embaixo.
+   Celular não muda.
+   ========================================================================== */
+#view-public-site .lp2-faixa-intro { display: none; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-public-site .lp2-faixa-intro {
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    width: calc(100% - 64px); max-width: 1280px; margin: 32px auto 24px; padding: 22px 32px; border-radius: 10px;
+    background: linear-gradient(90deg, #E3EDF5 0%, #D3E3F0 50%, #E6EEF6 100%);
+  }
+  #view-public-site .lp2-faixa-intro p { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: #183b54 !important; }
+  #view-public-site .lp2-faixa-intro-link {
+    display: inline-flex; align-items: center; gap: 8px; padding: 0; background: none; border: 0; cursor: pointer;
+    font-size: 15px; font-weight: 600; color: #183b54;
+  }
+  #view-public-site .lp2-faixa-intro-link svg { width: 16px; height: 16px; transition: transform .15s ease; }
+  #view-public-site .lp2-faixa-intro-link:hover svg { transform: translateX(3px); }
+  /* A frase sai de dentro da foto (fica na faixa). */
+  #view-public-site .lp2-hero .lp2-hero-intro { display: none; }
+
+  #view-public-site .lp2-hero {
+    width: calc(100% - 64px); max-width: 1280px; margin: 0 auto; min-height: 628px; border-radius: 10px;
+    justify-content: flex-end;
+  }
+  #view-public-site .lp2-hero-veu {
+    background:
+      linear-gradient(90deg, rgba(12,22,32,0.78) 0%, rgba(12,22,32,0.5) 45%, rgba(12,22,32,0.1) 80%),
+      linear-gradient(0deg, rgba(12,22,32,0.5) 0%, transparent 50%);
+  }
+  #view-public-site .lp2-hero-conteudo {
+    max-width: none; margin: 0; padding: 0 64px 64px; align-items: flex-start; text-align: left;
+  }
+  #view-public-site .lp2-hero-titulo { margin: 0 !important; max-width: 640px; font-size: 64px !important; line-height: 1.04 !important; text-align: left; }
+  #view-public-site .lp2-hero-sub { margin: 20px 0 0 !important; max-width: 560px; font-size: 19px; line-height: 1.55; text-align: left; }
+  #view-public-site .lp2-hero-ctas { margin-top: 36px; justify-content: flex-start; }
+  /* Cabeçalho alinhado com a faixa e a foto (mesma largura de 1280px). */
+  #view-public-site .lp-topo-linha { width: calc(100% - 64px); max-width: 1280px; padding: 0; }
+}

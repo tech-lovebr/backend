@@ -871,3 +871,8 @@
   #view-public-site .lp-publico-foto a:hover { color: #FFFFFF; }
   #view-public-site .lp-publico-foto a[aria-current="page"] { background: #FFFFFF; color: #183b54; }
 }
+
+/* Celular: título da abertura em no máximo 2 linhas. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-public-site .lp2-hero-titulo { font-size: clamp(18px, calc((100vw - 32px) * 0.078), 30px) !important; line-height: 1.12 !important; text-wrap: balance; }
+}

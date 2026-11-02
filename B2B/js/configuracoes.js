@@ -123,6 +123,9 @@ function initSettingsTabs() {
       }
     });
   });
+  // configuracoes?tab=banco (link do Financeiro) abre direto na aba pedida.
+  const pedida = new URLSearchParams(location.search).get('tab');
+  if (pedida) wrap.querySelector(`[data-settings-tab="${pedida}"]`)?.click();
 }
 
 // Enquanto a pessoa mexe no formulário da aba ativa, o botão do cabeçalho

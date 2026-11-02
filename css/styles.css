@@ -15446,3 +15446,8 @@ html body #view-login .login-barra-previa .login-barra-inicio:not(#love-h-a) { p
 @media (min-width: 1024px) {
   html body #view-login .login-imagem:not(#love-h-a):not(#love-h-b) { border-radius: 16px; }
 }
+
+/* Login: foto da direita com os mesmos cantos da foto da landing (24px). */
+@media (min-width: 1024px) {
+  html body #view-login .login-imagem:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-radius: 24px; }
+}

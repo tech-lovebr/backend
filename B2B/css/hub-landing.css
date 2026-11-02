@@ -87,7 +87,7 @@
 .hl-nav { display: flex; gap: 28px; margin-left: auto; }
 .hl-nav a { font: 500 14px Inter, sans-serif; color: rgba(255, 255, 255, 0.78); text-decoration: none; transition: color .15s; }
 .hl-nav a:hover { color: #FFFFFF; }
-.hl-topo-acoes { display: flex; align-items: center; gap: 20px; margin-left: 12px; }
+.hl-topo-acoes { display: flex; align-items: center; gap: 20px; margin-left: auto; }
 .hl-topo-acoes .hl-link { color: #FFFFFF; text-decoration-color: rgba(255, 255, 255, 0.45); }
 .hl-topo-acoes .hl-btn { height: 40px; }
 

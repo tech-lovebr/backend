@@ -446,3 +446,5 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   .hl-hero { border-radius: 0; }
   .hl-hero-foto { border-radius: 16px; }
 }
+/* Faixa de apresentação com os mesmos cantos de 16px da foto. */
+.hl-faixa-intro { border-radius: 16px; }

@@ -857,3 +857,17 @@
   /* Cabeçalho alinhado com a faixa e a foto (mesma largura de 1280px). */
   #view-public-site .lp-topo-linha { width: calc(100% - 64px); max-width: 1280px; padding: 0; }
 }
+
+/* Desktop: a escolha "Para anfitriões | Para fornecedores" sai do cabeçalho e
+   fica dentro da foto, acima do título (versão para fundo escuro). */
+#view-public-site .lp-publico-foto { display: none; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-public-site .lp-topo .lp-publico { display: none; }
+  #view-public-site .lp-publico-foto {
+    display: inline-flex; margin-bottom: 28px; border-color: rgba(255, 255, 255, 0.28);
+    background: rgba(12, 22, 32, 0.25); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+  #view-public-site .lp-publico-foto a { padding: 6px 14px; font-size: 14px; color: rgba(255, 255, 255, 0.75); }
+  #view-public-site .lp-publico-foto a:hover { color: #FFFFFF; }
+  #view-public-site .lp-publico-foto a[aria-current="page"] { background: #FFFFFF; color: #183b54; }
+}

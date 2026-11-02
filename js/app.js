@@ -10580,6 +10580,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (textoVazio) { textoVazio.textContent = 'Cadastre a sua lista de convidados para enviar convites e acompanhar as confirmações de presença em tempo real.'; textoVazio.hidden = !semNinguem; }
         if (semNinguem) carregarPlayerLottie();
         emptyStateEl.classList.remove('hidden');
+        // Celular: guarda a altura do ícone para o Mapa vazio usar a mesma.
+        if (semNinguem) setTimeout(guardarAlturaDoVazioDeConvidados, 360);
       }
       renderRsvpPagination(0);
       return;
@@ -13521,9 +13523,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const rBarra = barra ? barra.getBoundingClientRect() : null;
     const fimDaTela = rBarra && rBarra.height ? rBarra.top : window.innerHeight;
     let delta = fimDaTela / 2 - (topo + base) / 2;
+    // Mesma altura do ícone de "Adicione os seus primeiros convidados" (o
+    // texto vem logo abaixo, no mesmo respiro de 12px).
+    const alturaConvidados = alturaDoVazioDeConvidados();
+    if (alturaConvidados != null) delta = alturaConvidados - topo;
     // Sem sair da área do mapa.
     delta = Math.max(caixa.top + 16 - topo, Math.min(caixa.bottom - 16 - base, delta));
     hint.style.transform = `translateY(${Math.round(delta)}px)`;
+  }
+  // Altura (na tela) do ícone do vazio de Meus convidados no celular, guardada
+  // junto com a altura da tela para só valer no mesmo aparelho/orientação.
+  function guardarAlturaDoVazioDeConvidados() {
+    if (!plantaNoCelular()) return;
+    const icone = document.querySelector('#rsvp-empty-state:not(.hidden) .rsvp-vazio-icone');
+    if (!icone || !icone.offsetHeight) return;
+    const topo = Math.round(icone.getBoundingClientRect().top);
+    if (topo <= 0 || topo >= window.innerHeight) return;
+    try { localStorage.setItem('love-vazio-icone-topo', JSON.stringify({ topo, tela: window.innerHeight })); } catch (e) {}
+  }
+  function alturaDoVazioDeConvidados() {
+    try {
+      const salvo = JSON.parse(localStorage.getItem('love-vazio-icone-topo') || 'null');
+      if (salvo && Math.abs(salvo.tela - window.innerHeight) <= 80) return salvo.topo;
+    } catch (e) {}
+    return null;
   }
   let observadorVazioDoMapa = null;
   function agendarCentralizarVazioDoMapa() {

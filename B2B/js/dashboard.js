@@ -690,10 +690,12 @@ function saldoEscondido() {
 function desenharSaldoCelular() {
   const esconder = saldoEscondido();
   const valor = v => (v == null ? '—' : esconder ? 'R$ ••••' : formatCurrency(v));
-  setText('dash-saldo-celular-saldo', valor(saldoCelular.saldo));
+  const reais = v => (v == null ? '—' : esconder ? 'R$ ••••' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  setText('dash-saldo-celular-saldo', reais(saldoCelular.saldo));
   setText('dash-saldo-celular-faturamento', valor(saldoCelular.faturamento));
   setText('dash-saldo-celular-contratos', saldoCelular.contratos == null ? '—' : String(saldoCelular.contratos));
   document.getElementById('dash-saldo-celular-sacar')?.classList.toggle('is-sem-saldo', !(saldoCelular.saldo > 0));
+  ajustarFonteSaldoCelular();
   const olho = document.getElementById('dash-saldo-celular-olho');
   if (olho) {
     olho.innerHTML = esconder ? ICONE_OLHO_FECHADO : ICONE_OLHO_ABERTO;
@@ -702,6 +704,26 @@ function desenharSaldoCelular() {
     olho.dataset.dica = dica;
   }
 }
+/* Saldo disponível e Contratos ativos sempre inteiros: começam em 28px e, se
+   um deles não couber na coluna, os dois diminuem juntos até caber. */
+function ajustarFonteSaldoCelular() {
+  const els = ['dash-saldo-celular-saldo', 'dash-saldo-celular-contratos'].map(id => document.getElementById(id)).filter(Boolean);
+  if (!els.length) return;
+  const MAX = 28, MIN = 12;
+  els.forEach(el => { el.style.fontSize = MAX + 'px'; });
+  let escala = 1;
+  els.forEach(el => {
+    const col = el.parentElement;
+    if (!col || !col.clientWidth) return;
+    const cs = getComputedStyle(col);
+    const livre = col.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (el.scrollWidth > livre) escala = Math.min(escala, livre / el.scrollWidth);
+  });
+  const tam = Math.max(MIN, Math.floor(MAX * escala * 10) / 10);
+  els.forEach(el => { el.style.fontSize = tam + 'px'; });
+}
+window.addEventListener('resize', () => ajustarFonteSaldoCelular());
+
 function ligarSaldoCelular() {
   const caixa = document.querySelector('.dash-saldo-celular');
   if (!caixa || caixa.dataset.ligada) return;

@@ -12804,3 +12804,9 @@ html body[data-page="dashboard"] :is(.dash-home-caixa, .dashboard-quick-actions)
    "Cadastrar novo produto" em Oportunidades e Propostas enviadas. */
 html body .vazio-celular .vazio-celular-titulo:not(#love-h-a):not(#love-h-b) { color: #183b54; }
 html body :is(#op-sem-produtos, #op-propostas-sem-produtos) .produtos-vazio-criar strong:not(#love-h-a):not(#love-h-b) { color: #183b54; }
+
+/* Home (celular): Saldo disponível e Contratos ativos sempre inteiros, sem
+   reticências; o JS diminui a fonte dos dois juntos quando não cabe. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a):not(#love-h-b) { max-width: none; overflow: visible; text-overflow: clip; }
+}

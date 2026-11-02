@@ -810,3 +810,8 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-public-site .lp-publico { display: none; }
 }
+
+/* Celular: frase de cima, título e subtítulo da abertura centralizados. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-public-site :is(.lp2-hero-intro, .lp2-hero-titulo, .lp2-hero-sub) { text-align: center; margin-left: auto; margin-right: auto; }
+}

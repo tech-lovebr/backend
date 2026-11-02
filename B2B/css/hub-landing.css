@@ -439,3 +439,10 @@ html { scroll-behavior: smooth; overflow-x: clip; }
    seu evento"): degradê azul-claro e texto na cor primária. */
 .hl-faixa-intro { background: linear-gradient(90deg, #E3EDF5 0%, #D3E3F0 50%, #E6EEF6 100%); }
 .hl-faixa-intro p, .hl-faixa-intro-link { color: #183b54; }
+
+/* Foto da abertura com cantos mais arredondados (16px). */
+.hl-hero { border-radius: 16px; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .hl-hero { border-radius: 0; }
+  .hl-hero-foto { border-radius: 16px; }
+}

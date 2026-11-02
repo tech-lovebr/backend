@@ -434,3 +434,8 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   .hl-hero-ctas .hl-btn-branco { background: var(--azul); color: #FFFFFF; }
   .hl-hero-segundo { color: var(--azul); }
 }
+
+/* Faixa de apresentação igual à da love.com.br ("Crie o convite digital do
+   seu evento"): degradê azul-claro e texto na cor primária. */
+.hl-faixa-intro { background: linear-gradient(90deg, #E3EDF5 0%, #D3E3F0 50%, #E6EEF6 100%); }
+.hl-faixa-intro p, .hl-faixa-intro-link { color: #183b54; }

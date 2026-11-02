@@ -12797,3 +12797,10 @@ html body :is(.auth-tela .auth-entrar, [data-page="dashboard"] .dash-saldo-celul
 html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background: #E1E9F0; color: #183b54; box-shadow: none; outline: none; }
 html body[data-page="dashboard"] :is(.dash-home-caixa, .dashboard-quick-actions) .dashboard-quick-action-btn:not(#love-h-a):focus-visible { outline: none; }
 html body[data-page="dashboard"] :is(.dash-home-caixa, .dashboard-quick-actions) .dashboard-quick-action-btn:not(#love-h-a):focus-visible svg { background: #E1E9F0; box-shadow: none; }
+
+/* Listas vazias: ícones no cinza #D4D4D8 (o desenho de Clientes foi
+   recolorido) e o primeiro texto na primária, como "Adicione seu primeiro
+   cliente": vale para Contratos, Orçamentos e os demais no celular e para
+   "Cadastrar novo produto" em Oportunidades e Propostas enviadas. */
+html body .vazio-celular .vazio-celular-titulo:not(#love-h-a):not(#love-h-b) { color: #183b54; }
+html body :is(#op-sem-produtos, #op-propostas-sem-produtos) .produtos-vazio-criar strong:not(#love-h-a):not(#love-h-b) { color: #183b54; }

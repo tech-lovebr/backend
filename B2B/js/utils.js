@@ -1531,7 +1531,7 @@ function desenharVazioNoCelular(card, cfg, n) {
     return;
   }
   const arte = v.lottie
-    ? `<dotlottie-wc class="vazio-celular-lottie" src="assets/lottie/${escapeHtml(v.lottie)}.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>`
+    ? `<dotlottie-wc class="vazio-celular-lottie" src="assets/lottie/${escapeHtml(v.lottie)}.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>`
     : (v.icone || ICONE_VAZIO_DOCUMENTO);
   const podeAbrir = v.abrirSel && document.querySelector(v.abrirSel);
   caixa.innerHTML = `${arte}

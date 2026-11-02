@@ -7,7 +7,6 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-GTSEBKVH96');
   </script>
 
@@ -21,309 +20,294 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="css/hub-landing.css?v=4">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/hub-landing.css?v=5">
 </head>
 <body class="hl">
 
-  <!-- =======================================================================
-       ABERTURA — cabeçalho, título e o celular com os cartões em volta
-       ======================================================================= -->
-  <section class="hl-abertura">
-    <header class="hl-topo">
-      <div class="hl-faixa hl-topo-linha">
-        <a href="/" class="hl-logo" aria-label="Love Hub, início"><img src="assets/logo-white.png" alt="Love"></a>
+  <!-- Cabeçalho: mesma geometria da love.com.br (68px, 1280px de largura) -->
+  <header class="hl-topo">
+    <div class="hl-topo-linha">
+      <a href="/" class="hl-logo" aria-label="Love Hub, início"><img src="assets/logo-white.png" alt="Love"></a>
+      <div class="hl-topo-acoes">
+        <a href="login" class="hl-entrar">Entrar</a>
+        <a href="signup" class="hl-btn hl-btn-branco">Cadastre-se grátis</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Desktop: faixa de apresentação acima da foto -->
+    <div class="hl-faixa-intro">
+      <p>Receba pedidos de quem está organizando um evento</p>
+      <a href="signup" class="hl-faixa-intro-link">Começar agora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+
+    <!-- =====================================================================
+         ABERTURA: foto numa caixa de 1280px, texto à esquerda, embaixo
+         ===================================================================== -->
+    <section class="hl-hero">
+      <img class="hl-hero-foto" src="assets/landing/pmesas.jpg" alt="Mesa de festa montada por um bufê, com toalha azul e flores brancas">
+      <div class="hl-hero-veu" aria-hidden="true"></div>
+      <div class="hl-hero-conteudo">
+        <p class="hl-hero-intro">Clientes e cobranças num lugar só</p>
         <nav class="hl-publico" aria-label="Escolha o público">
-          <a href="/" aria-current="page">Para fornecedores</a>
           <a href="https://love.com.br" rel="noopener">Para anfitriões</a>
+          <a href="/" aria-current="page">Para fornecedores</a>
         </nav>
-        <div class="hl-topo-acoes">
-          <a href="login" class="hl-link">Entrar</a>
-          <a href="signup" class="hl-btn hl-btn-gelo">Cadastre-se grátis</a>
+        <h1 class="hl-hero-titulo">Mais eventos na agenda. Mais dinheiro na conta.</h1>
+        <p class="hl-hero-sub">Receba pedidos de quem organiza um evento na Love, mande a proposta e cobre por link, Pix ou cartão, do bufê à confeiteira.</p>
+        <div class="hl-hero-ctas">
+          <a href="signup" class="hl-btn hl-btn-branco hl-btn-grande">Cadastre-se grátis</a>
+          <a href="#como-funciona" class="hl-hero-segundo">Ver como funciona</a>
         </div>
       </div>
-    </header>
+    </section>
 
-    <div class="hl-faixa hl-abertura-texto">
-      <h1 class="hl-h1">Mais eventos na agenda. <span>Mais dinheiro na conta.</span></h1>
-      <p class="hl-abertura-sub">Receba pedidos de quem está organizando um evento na Love, mande a proposta e cobre por link, Pix ou cartão, do bufê completo à confeiteira do brigadeiro.</p>
-      <div class="hl-abertura-ctas">
-        <a href="signup" class="hl-btn hl-btn-gelo hl-btn-grande">Cadastre-se grátis</a>
+    <!-- =====================================================================
+         TUDO O QUE VOCÊ PRECISA: 6 fotos que levam aos painéis
+         ===================================================================== -->
+    <section class="hl-tudo">
+      <div class="hl-faixa">
+        <h2 class="hl-titulo-centro">Tudo o que o seu negócio de eventos precisa</h2>
+        <p class="hl-sub-centro">Vender, organizar e receber, num sistema só.</p>
+        <div class="hl-mosaico">
+          <a href="#painel-oportunidades" class="hl-ladrilho"><img src="assets/landing/tconvidados.jpg" alt="" loading="lazy"><span>Pedidos de clientes</span></a>
+          <a href="#painel-propostas" class="hl-ladrilho"><img src="assets/landing/tconvite.jpg" alt="" loading="lazy"><span>Propostas e contratos</span></a>
+          <a href="#painel-cobrancas" class="hl-ladrilho"><img src="assets/landing/tcarteira.jpg" alt="" loading="lazy"><span>Link de cobrança</span></a>
+          <a href="#painel-agenda" class="hl-ladrilho"><img src="assets/landing/tmesas.jpg" alt="" loading="lazy"><span>Agenda e tarefas</span></a>
+          <a href="#painel-financeiro" class="hl-ladrilho"><img src="assets/landing/tpresentes.jpg" alt="" loading="lazy"><span>Saldo e saque via Pix</span></a>
+          <a href="#detalhes" class="hl-ladrilho"><img src="assets/landing/trecados.jpg" alt="" loading="lazy"><span>Mensagens com clientes</span></a>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="hl-palco" aria-hidden="true">
-      <div class="hl-arcos"><i></i><i></i><i></i></div>
+    <!-- =====================================================================
+         PAINÉIS: menu fixo à esquerda, um painel colorido por recurso
+         ===================================================================== -->
+    <section id="como-funciona" class="hl-paineis">
+      <div class="hl-faixa hl-paineis-linha">
+        <nav class="hl-paineis-menu" aria-label="Recursos">
+          <a href="#painel-oportunidades" class="ativo">Pedidos de clientes</a>
+          <a href="#painel-propostas">Propostas e contratos</a>
+          <a href="#painel-cobrancas">Link de cobrança</a>
+          <a href="#painel-agenda">Agenda e tarefas</a>
+          <a href="#painel-financeiro">Saldo e saque via Pix</a>
+        </nav>
+        <div class="hl-paineis-lista">
 
-      <!-- O Hub no celular: Oportunidades -->
-      <div class="hl-celular">
-        <div class="hl-celular-tela">
-          <span class="hl-celular-ilha"></span>
-          <img class="hl-bloqueio-foto" src="assets/landing/heroi.jpg" alt="">
-          <div class="hl-bloqueio">
-            <div class="hl-bloqueio-data">sábado, 12 de setembro</div>
-            <div class="hl-bloqueio-hora">9:41</div>
-            <div class="hl-notas">
-              <div class="hl-nota hl-nota-destaque">
-                <div class="hl-nota-cab"><span class="hl-nota-app"><img src="assets/love-logo-google-120.png" alt=""></span><b>Love Hub</b><small>agora</small></div>
-                <strong>15 novas solicitações de contratação</strong>
-                <p>Clientes querem o seu orçamento. Toque para verificar.</p>
-              </div>
-              <div class="hl-nota">
-                <div class="hl-nota-cab"><span class="hl-nota-app"><img src="assets/love-logo-google-120.png" alt=""></span><b>Love Hub</b><small>8 min</small></div>
-                <strong>Proposta aceita</strong>
-                <p>Marina Souza aceitou o orçamento do casamento.</p>
-              </div>
-              <div class="hl-nota">
-                <div class="hl-nota-cab"><span class="hl-nota-app"><img src="assets/love-logo-google-120.png" alt=""></span><b>Love Hub</b><small>1 h</small></div>
-                <strong>Pix recebido</strong>
-                <p>R$ 780,00 do bolo da festa da Júlia.</p>
-              </div>
+          <article id="painel-oportunidades" class="hl-painel" style="--fundo:#0F2B40;--tom:#CFE3F2">
+            <div class="hl-painel-texto">
+              <h2>Clientes que já estão procurando você</h2>
+              <p>Quem organiza casamento, aniversário ou chá na Love procura fornecedores ali mesmo. Cadastre seus serviços e receba pedidos com data, cidade e número de convidados.</p>
+              <div class="hl-painel-ctas"><a href="signup" class="hl-btn-tom">Quero receber pedidos</a></div>
             </div>
-          </div>
-        </div>
-      </div>
+            <figure class="hl-painel-foto">
+              <img src="assets/landing/pconvidados.jpg" alt="Convidados celebrando à mesa da festa" loading="lazy">
+              <figcaption class="hl-chip">
+                <span class="hl-chip-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></span>
+                <div><b>15 novas solicitações</b><small>Casamento · 150 convidados</small></div>
+              </figcaption>
+            </figure>
+          </article>
 
-      <!-- Cartões em volta -->
-      <div class="hl-flut hl-flut-link">
-        <div class="linha">
-          <span class="hl-flut-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg></span>
-          <div><small>Link de pagamento</small><b>Bolo 3 andares + 200 doces</b></div>
-        </div>
-        <div class="valor">R$ 780,00</div>
-        <div class="copiar"><span>pay.love.com.br/doce-ana/7f3a</span><em>Copiar</em></div>
-      </div>
-
-      <div class="hl-flut hl-flut-foto"><img src="assets/landing/tconvidados.jpg" alt=""></div>
-      <div class="hl-flut hl-flut-balao"><b>Vocês atendem 150 convidados em setembro?</b><small>09:24</small></div>
-
-      <div class="hl-flut hl-flut-arquivo">
-        <div class="linha">
-          <span class="hl-flut-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>
-          <div><b>Proposta_Casamento.pdf</b><small>Enviada para Marina</small></div>
-        </div>
-        <div class="barra"><i></i></div>
-        <div class="pe"><span>Visualizada</span><span>09:31</span></div>
-      </div>
-
-      <div class="hl-flut hl-flut-pago">
-        <span class="hl-flut-icone verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-        <b>Pagamento recebido via Pix</b>
-        <small>Sinal do casamento · Marina Souza</small>
-        <div class="valor">+ R$ 2.800,00</div>
-      </div>
-
-      <div class="hl-flut hl-flut-metodos">
-        <span class="hl-flut-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h3"/></svg></span>
-        <b>Pix, cartão e boleto</b>
-        <small>no mesmo link</small>
-      </div>
-
-      <span class="hl-flut hl-flut-cobrar">Cobrar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7Z"/></svg></span>
-    </div>
-  </section>
-
-  <!-- =======================================================================
-       FAIXA CLARA — do pedido ao Pix
-       ======================================================================= -->
-  <section class="hl-fluxo">
-    <div class="hl-faixa">
-      <div class="hl-fluxo-topo">
-        <div>
-          <h2 class="hl-h2">Do pedido de orçamento ao dinheiro na conta</h2>
-          <p class="hl-lead">Sem planilha, sem caderninho e sem correr atrás de cliente no WhatsApp. Cada etapa fica registrada no Hub.</p>
-        </div>
-        <div class="hl-fluxo-numero">
-          <small>Tudo num lugar só</small>
-          <b>4 passos</b>
-        </div>
-      </div>
-      <div class="hl-degraus escondido" data-degraus>
-        <div class="hl-degrau"><span>01</span><div style="--h:34%;--a:.06"><b>Pedido de orçamento</b><small>O cliente encontra você na Love.</small></div></div>
-        <div class="hl-degrau"><span>02</span><div style="--h:52%;--a:.12"><b>Proposta enviada</b><small>Com seus produtos, valores e condições.</small></div></div>
-        <div class="hl-degrau"><span>03</span><div style="--h:70%;--a:.2"><b>Contrato fechado</b><small>Parcelas e datas já preenchidas.</small></div></div>
-        <div class="hl-degrau"><span>04</span><div style="--h:88%"><b>Pagamento recebido</b><small>Pix, cartão ou boleto direto no seu saldo.</small></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =======================================================================
-       BLOCOS — texto + foto com balões
-       ======================================================================= -->
-  <section class="hl-blocos">
-    <div class="hl-faixa">
-
-      <div id="oportunidades" class="hl-bloco" data-surge>
-        <div class="hl-bloco-texto">
-          <span class="hl-sobre">Oportunidades</span>
-          <h2 class="hl-h2">Clientes que já estão procurando você</h2>
-          <p class="hl-lead">Quem organiza casamento, aniversário ou chá na Love procura fornecedores ali mesmo. Cadastre seus serviços e receba pedidos com data, cidade e número de convidados.</p>
-          <div class="hl-bloco-acoes">
-            <a href="signup" class="hl-btn hl-btn-azul">Quero receber pedidos</a>
-            <a href="#para-quem" class="hl-link">Quem pode usar</a>
-          </div>
-        </div>
-        <figure class="hl-bloco-foto">
-          <img src="assets/landing/pconvidados.jpg" alt="Casal de noivos à mesa da festa" loading="lazy">
-          <div class="hl-baloes" aria-hidden="true">
-            <div class="hl-balao">Oi! Vocês fazem o jantar para 150 convidados no dia 12/09?<small>09:24</small></div>
-            <div class="hl-balao hl-balao-meu">Fazemos sim! Te mando a proposta agora.<small>09:26</small></div>
-            <div class="hl-balao hl-balao-proposta">
-              <span class="hl-flut-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/></svg></span>
-              <div><b style="font-weight:600">Proposta enviada</b><small style="text-align:left">Jantar completo · R$ 18.900,00</small></div>
+          <article id="painel-propostas" class="hl-painel" style="--fundo:#0E4A57;--tom:#CDEDEA">
+            <div class="hl-painel-texto">
+              <h2>Do orçamento ao contrato, sem papelada</h2>
+              <p>Monte a proposta com seus produtos e envie com um link. Quando o cliente aceita, ela vira contrato com as parcelas e as datas já preenchidas.</p>
+              <div class="hl-painel-ctas"><a href="signup" class="hl-btn-tom">Enviar minha proposta</a></div>
             </div>
+            <figure class="hl-painel-foto">
+              <img src="assets/landing/pconvite.jpg" alt="Casal de noivos sorrindo" loading="lazy">
+              <figcaption class="hl-chip">
+                <span class="hl-chip-icone hl-chip-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+                <div><b>Proposta aceita</b><small>Marina Souza · Decoração</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-cobrancas" class="hl-painel" style="--fundo:#1F4A69;--tom:#DCE4F5">
+            <div class="hl-painel-texto">
+              <h2>A sua maquininha agora cabe num link</h2>
+              <p>Gere um link de cobrança em segundos e mande pelo WhatsApp. O cliente paga com Pix, cartão ou boleto, e o valor entra no seu saldo.</p>
+              <div class="hl-painel-ctas"><a href="signup" class="hl-btn-tom">Criar meu primeiro link</a></div>
+            </div>
+            <figure class="hl-painel-foto">
+              <img src="assets/landing/pcarteira.jpg" alt="Cliente pagando pelo notebook" loading="lazy">
+              <figcaption class="hl-chip">
+                <span class="hl-chip-icone hl-chip-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                <div><b>Pix recebido</b><small>R$ 2.800,00 · Sinal do casamento</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-agenda" class="hl-painel" style="--fundo:#12364F;--tom:#D6E8FA">
+            <div class="hl-painel-texto">
+              <h2>Cada data no lugar certo</h2>
+              <p>As datas do mês, os dias livres e o que falta fazer em cada evento, com a equipe vendo o mesmo calendário.</p>
+              <div class="hl-painel-ctas"><a href="signup" class="hl-btn-tom">Organizar minha agenda</a></div>
+            </div>
+            <figure class="hl-painel-foto">
+              <img src="assets/landing/pmesas.jpg" alt="Mesa redonda decorada em azul" loading="lazy">
+              <figcaption class="hl-chip">
+                <span class="hl-chip-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+                <div><b>Sábado, 12 de setembro</b><small>Casamento Marina e Pedro</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-financeiro" class="hl-painel" style="--fundo:#0B2232;--tom:#D3EFE0">
+            <div class="hl-painel-texto">
+              <h2>O seu dinheiro, com transparência</h2>
+              <p>Cada pagamento entra no seu saldo com o nome do cliente e do contrato. Acompanhe o extrato e saque para a sua conta via Pix quando quiser.</p>
+              <div class="hl-painel-ctas"><a href="signup" class="hl-btn-tom">Começar agora</a></div>
+            </div>
+            <figure class="hl-painel-foto">
+              <img src="assets/landing/ppresentes.jpg" alt="Caixa azul com laço" loading="lazy">
+              <figcaption class="hl-chip">
+                <span class="hl-chip-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+                <div><b>Saldo disponível</b><small>R$ 12.480,00</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DETALHES: abas à esquerda, foto à direita
+         ===================================================================== -->
+    <section id="detalhes" class="hl-detalhes">
+      <div class="hl-faixa hl-detalhes-linha">
+        <div class="hl-detalhes-texto">
+          <h2 class="hl-titulo">A diferença está nos detalhes</h2>
+          <div class="hl-abas" role="tablist">
+            <button type="button" class="hl-aba ativo" role="tab" aria-selected="true" data-foto="assets/landing/dmapa.jpg">
+              <b>Vitrine e site próprio</b>
+              <span>Fotos, serviços e preços numa página para divulgar onde quiser.</span>
+            </button>
+            <button type="button" class="hl-aba" role="tab" aria-selected="false" data-foto="assets/landing/dlista.jpg">
+              <b>Formulários para o cliente</b>
+              <span>Pergunte cardápio, horários e preferências e receba tudo organizado.</span>
+            </button>
+            <button type="button" class="hl-aba" role="tab" aria-selected="false" data-foto="assets/landing/drecados.jpg">
+              <b>Mensagens com clientes</b>
+              <span>Toda a conversa de cada evento num lugar só, com o histórico à mão.</span>
+            </button>
+            <button type="button" class="hl-aba" role="tab" aria-selected="false" data-foto="assets/landing/dvaquinha.jpg">
+              <b>Equipe com acesso próprio</b>
+              <span>Convide quem trabalha com você e escolha o que cada pessoa vê.</span>
+            </button>
+            <button type="button" class="hl-aba" role="tab" aria-selected="false" data-foto="assets/landing/dsaque.jpg">
+              <b>Saque via Pix</b>
+              <span>O dinheiro das cobranças vai para a sua conta quando você quiser, sem complicação.</span>
+            </button>
           </div>
+        </div>
+        <figure class="hl-detalhes-foto">
+          <img src="assets/landing/dmapa.jpg" alt="" loading="lazy">
         </figure>
       </div>
+    </section>
 
-      <div id="cobrancas" class="hl-bloco hl-bloco-invertido" data-surge>
-        <div class="hl-bloco-texto">
-          <span class="hl-sobre">Cobranças</span>
-          <h2 class="hl-h2">A sua maquininha agora cabe num link</h2>
-          <p class="hl-lead">Gere um link de cobrança em segundos e mande pelo WhatsApp. O cliente paga com Pix, cartão ou boleto, e o valor entra no seu saldo para sacar quando quiser.</p>
-          <ul class="hl-pontos">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Sinal, parcelas e quitação no mesmo contrato</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Aviso na hora em que o cliente paga</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>Serve para MEI, autônomo e empresa</li>
-          </ul>
-          <div class="hl-bloco-acoes">
-            <a href="signup" class="hl-btn hl-btn-azul">Criar meu primeiro link</a>
-          </div>
-        </div>
-        <figure class="hl-bloco-foto">
-          <img src="assets/landing/tcarteira.jpg" alt="Cliente pagando pelo celular" loading="lazy">
-          <div class="hl-cartao-solto hl-cobranca" aria-hidden="true">
-            <small>Cobrança para Ana Lima</small>
-            <b>Mesa de doces, 15 anos</b>
-            <div class="valor">R$ 1.250,00</div>
-            <div class="hl-metodos">
-              <span><img src="assets/pix-icone.png" alt="">Pix</span>
-              <span>Cartão</span>
-              <span>Boleto</span>
-            </div>
-            <span class="hl-btn hl-btn-azul">Enviar link pelo WhatsApp</span>
-          </div>
-        </figure>
-      </div>
-
-      <div id="contratos" class="hl-bloco" data-surge>
-        <div class="hl-bloco-texto">
-          <span class="hl-sobre">Propostas e contratos</span>
-          <h2 class="hl-h2">Do orçamento ao contrato, sem papelada</h2>
-          <p class="hl-lead">Monte a proposta com seus produtos e envie com um link. Quando o cliente aceita, ela vira contrato com as parcelas e as datas já preenchidas.</p>
-          <div class="hl-bloco-acoes">
-            <a href="signup" class="hl-btn hl-btn-azul">Começar agora</a>
-            <a href="#recursos" class="hl-link">Ver todos os recursos</a>
-          </div>
-        </div>
-        <figure class="hl-bloco-foto">
+    <!-- =====================================================================
+         SEGURANÇA: foto + comprovante + garantias
+         ===================================================================== -->
+    <section id="seguranca" class="hl-seguranca">
+      <div class="hl-faixa hl-seguranca-linha">
+        <figure class="hl-seguranca-foto">
           <img src="assets/landing/seguranca.jpg" alt="Casal revisando a proposta no notebook" loading="lazy">
-          <div class="hl-cartao-solto hl-contrato" aria-hidden="true">
-            <div class="hl-contrato-topo"><b>Contrato · Decoração</b><small>3 parcelas</small></div>
-            <ul class="hl-parcelas">
-              <li><span>Sinal</span><b>R$ 1.500,00</b><em class="hl-tag hl-tag-verde">Pago</em></li>
-              <li><span>2ª parcela</span><b>R$ 1.500,00</b><em class="hl-tag hl-tag-verde">Pago</em></li>
-              <li><span>Quitação</span><b>R$ 2.000,00</b><em class="hl-tag hl-tag-cinza">10/12</em></li>
-            </ul>
+          <div class="hl-recibo" aria-hidden="true">
+            <div class="hl-recibo-topo">
+              <span class="hl-recibo-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <div><b>Pagamento recebido</b><small>Pagamento aprovado · Pix</small></div>
+            </div>
+            <div class="hl-recibo-valor">R$ 2.800,00</div>
+            <dl class="hl-recibo-dados">
+              <div><dt>De</dt><dd>Marina Souza</dd></div>
+              <div><dt>Identificador</dt><dd class="hl-mono">E2E·7F3A·91C0</dd></div>
+            </dl>
           </div>
         </figure>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- =======================================================================
-       PARA QUEM — carrossel
-       ======================================================================= -->
-  <section id="para-quem" class="hl-quem">
-    <div class="hl-faixa hl-centro" data-surge>
-      <h2 class="hl-h2">Para quem faz a festa acontecer</h2>
-      <p class="hl-lead">Do bufê com equipe grande à confeiteira que trabalha em casa: se você vive de evento, o Hub é para você.</p>
-    </div>
-    <div class="hl-trilho" data-trilho>
-      <article class="hl-perfil"><img src="assets/landing/pmesas.jpg" alt="" loading="lazy"><div><b>Bufês e gastronomia</b><span>Cardápios, degustação e sinal cobrados sem planilha.</span></div></article>
-      <article class="hl-perfil"><img src="assets/landing/momento-aniversario.jpg" alt="" loading="lazy"><div><b>Bolos e doces</b><span>Encomendas e link de pagamento direto no WhatsApp.</span></div></article>
-      <article class="hl-perfil"><img src="assets/landing/dmapa.jpg" alt="" loading="lazy"><div><b>Decoração</b><span>Proposta com fotos dos seus trabalhos e contrato em parcelas.</span></div></article>
-      <article class="hl-perfil"><img src="assets/landing/momento-casamento.jpg" alt="" loading="lazy"><div><b>Foto e vídeo</b><span>Pacotes, agenda das datas e cobrança do sinal.</span></div></article>
-      <article class="hl-perfil"><img src="assets/landing/dlista.jpg" alt="" loading="lazy"><div><b>Cerimonial e assessoria</b><span>Clientes, formulários e tarefas de cada evento.</span></div></article>
-      <article class="hl-perfil"><img src="assets/landing/heroi.jpg" alt="" loading="lazy"><div><b>Espaços e salões</b><span>Vitrine com fotos e pedidos com data e convidados.</span></div></article>
-    </div>
-    <div class="hl-setas">
-      <button type="button" class="hl-seta" data-seta="-1" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
-      <button type="button" class="hl-seta" data-seta="1" aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
-    </div>
-  </section>
-
-  <!-- =======================================================================
-       RECURSOS
-       ======================================================================= -->
-  <section id="recursos" class="hl-recursos">
-    <div class="hl-faixa">
-      <div class="hl-recursos-cab" data-surge>
-        <h2 class="hl-h2">Tudo o que um pequeno negócio de eventos precisa</h2>
-        <p class="hl-lead">Um sistema só para vender, organizar e receber, no computador ou no celular.</p>
-      </div>
-      <div class="hl-grade">
-        <div class="hl-recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg><h3>Vitrine e site próprio</h3><p>Fotos, serviços e preços numa página para divulgar onde quiser.</p></div>
-        <div class="hl-recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><h3>Formulários para o cliente</h3><p>Pergunte cardápio, horários e preferências e receba tudo organizado.</p></div>
-        <div class="hl-recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><h3>Agenda e tarefas</h3><p>As datas do mês, os dias livres e o que falta fazer em cada evento.</p></div>
-        <div class="hl-recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12Z"/></svg><h3>Mensagens com clientes</h3><p>Toda a conversa de cada evento num lugar só, com o histórico à mão.</p></div>
-        <div class="hl-recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg><h3>Equipe com acesso próprio</h3><p>Convide quem trabalha com você e escolha o que cada pessoa vê.</p></div>
-        <div class="hl-recurso"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-6"/></svg><h3>Financeiro e notas fiscais</h3><p>Faturamento, parcelas a receber e notas de cada contrato numa tela.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- =======================================================================
-       DÚVIDAS
-       ======================================================================= -->
-  <section id="duvidas" class="hl-duvidas">
-    <div class="hl-faixa hl-duvidas-linha">
-      <div data-surge>
-        <h2 class="hl-h2">Perguntas frequentes</h2>
-        <p class="hl-lead">Não achou o que procurava? Fale com a gente pela <a href="central-de-ajuda" class="hl-link-texto">Central de ajuda</a>.</p>
-      </div>
-      <div class="hl-faq">
-        <details open>
-          <summary>Quanto custa para começar?</summary>
-          <p>O cadastro é grátis. Você monta a vitrine, cadastra seus produtos e começa a receber pedidos de orçamento sem pagar nada para começar.</p>
-        </details>
-        <details>
-          <summary>Sou MEI ou autônomo. Posso usar?</summary>
-          <p>Pode. O Hub foi pensado para quem trabalha sozinho ou com uma equipe pequena, da confeiteira que faz os doces em casa ao bufê com vários funcionários.</p>
-        </details>
-        <details>
-          <summary>Preciso de maquininha para receber?</summary>
-          <p>Não. Você gera um link de cobrança e o cliente paga por Pix, cartão ou boleto pelo celular. O valor entra no seu saldo e você saca para a sua conta quando quiser.</p>
-        </details>
-        <details>
-          <summary>Como os clientes chegam até mim?</summary>
-          <p>Quem organiza um evento na Love procura fornecedores pelo tipo de serviço e pela cidade. Quando o seu serviço combina com o evento, o pedido aparece em Oportunidades.</p>
-        </details>
-        <details>
-          <summary>Posso usar com clientes que não vieram pela Love?</summary>
-          <p>Pode. Cadastre qualquer cliente e use propostas, contratos, cobranças e agenda do mesmo jeito.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- =======================================================================
-       CHAMADA FINAL
-       ======================================================================= -->
-  <section class="hl-final">
-    <div class="hl-faixa">
-      <div class="hl-final-caixa" data-surge>
-        <div class="hl-final-texto">
-          <h2 class="hl-h2">Tem uma festa acontecendo. Faça parte dela.</h2>
-          <p>Cadastre a sua empresa grátis e receba o primeiro pedido de orçamento.</p>
-          <a href="signup" class="hl-btn hl-btn-gelo hl-btn-grande">Cadastre-se grátis</a>
+        <div class="hl-seguranca-texto">
+          <span class="hl-sobretitulo">Segurança</span>
+          <h2 class="hl-titulo">Tecnologia que cuida do seu dinheiro e dos dados dos seus clientes</h2>
+          <p class="hl-texto">Cada cobrança é registrada, rastreável e chega ao seu saldo com transparência total, do sinal à quitação.</p>
+          <ul class="hl-garantias">
+            <li><b>Criptografia em todas as conexões</b><span>Os dados trafegam protegidos por HTTPS, da proposta ao pagamento.</span></li>
+            <li><b>Privacidade de acordo com a LGPD</b><span>As informações dos seus clientes são usadas só para o seu trabalho.</span></li>
+            <li><b>Histórico de cada centavo</b><span>Extrato com quem pagou, quanto, quando e como foi pago.</span></li>
+            <li><b>Pagamentos com parceiro regulado</b><span>Pix, cartão e boleto processados por instituição de pagamento parceira.</span></li>
+          </ul>
         </div>
-        <div class="hl-final-foto"><img src="assets/landing/final.jpg" alt="" loading="lazy"></div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- =====================================================================
+         PARA QUEM FAZ A FESTA ACONTECER
+         ===================================================================== -->
+    <section id="para-quem" class="hl-momentos">
+      <div class="hl-faixa">
+        <h2 class="hl-titulo-centro">Para quem faz a festa acontecer</h2>
+        <div class="hl-momentos-lista">
+          <a href="signup" class="hl-momento"><img src="assets/landing/pmesas.jpg" alt="" loading="lazy"><span>Bufês</span></a>
+          <a href="signup" class="hl-momento"><img src="assets/landing/momento-aniversario.jpg" alt="" loading="lazy"><span>Bolos e doces</span></a>
+          <a href="signup" class="hl-momento"><img src="assets/landing/dmapa.jpg" alt="" loading="lazy"><span>Decoração</span></a>
+          <a href="signup" class="hl-momento"><img src="assets/landing/momento-casamento.jpg" alt="" loading="lazy"><span>Foto e vídeo</span></a>
+          <a href="signup" class="hl-momento"><img src="assets/landing/dlista.jpg" alt="" loading="lazy"><span>Cerimonial</span></a>
+          <a href="signup" class="hl-momento"><img src="assets/landing/heroi.jpg" alt="" loading="lazy"><span>Espaços</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         DÚVIDAS
+         ===================================================================== -->
+    <section id="duvidas" class="hl-duvidas">
+      <div class="hl-faixa hl-duvidas-linha">
+        <div>
+          <h2 class="hl-titulo">Perguntas frequentes</h2>
+          <p class="hl-texto">Não achou o que procurava? Fale com a gente pela <a href="central-de-ajuda">Central de ajuda</a>.</p>
+        </div>
+        <div class="hl-faq">
+          <details open>
+            <summary>Quanto custa para começar?</summary>
+            <p>O cadastro é grátis. Você monta a vitrine, cadastra seus produtos e começa a receber pedidos de orçamento sem pagar nada para começar.</p>
+          </details>
+          <details>
+            <summary>Sou MEI ou autônomo. Posso usar?</summary>
+            <p>Pode. O Hub foi pensado para quem trabalha sozinho ou com uma equipe pequena, da confeiteira que faz os doces em casa ao bufê com vários funcionários.</p>
+          </details>
+          <details>
+            <summary>Preciso de maquininha para receber?</summary>
+            <p>Não. Você gera um link de cobrança e o cliente paga por Pix, cartão ou boleto pelo celular. O valor entra no seu saldo e você saca para a sua conta quando quiser.</p>
+          </details>
+          <details>
+            <summary>Como os clientes chegam até mim?</summary>
+            <p>Quem organiza um evento na Love procura fornecedores pelo tipo de serviço e pela cidade. Quando o seu serviço combina com o evento, o pedido aparece em Oportunidades.</p>
+          </details>
+          <details>
+            <summary>Posso usar com clientes que não vieram pela Love?</summary>
+            <p>Pode. Cadastre qualquer cliente e use propostas, contratos, cobranças e agenda do mesmo jeito.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         CHAMADA FINAL
+         ===================================================================== -->
+    <section class="hl-final">
+      <img class="hl-final-foto" src="assets/landing/final.jpg" alt="" loading="lazy">
+      <div class="hl-final-veu" aria-hidden="true"></div>
+      <div class="hl-faixa hl-final-conteudo">
+        <h2>Tem uma festa acontecendo.<br>Faça parte dela.</h2>
+        <p>Cadastre a sua empresa grátis e receba o primeiro pedido de orçamento.</p>
+        <a href="signup" class="hl-btn hl-btn-branco hl-btn-grande">Cadastre-se grátis</a>
+      </div>
+    </section>
+  </main>
 
   <!-- =======================================================================
        RODAPÉ
@@ -332,15 +316,15 @@
     <div class="hl-faixa">
       <div class="hl-rodape-grade">
         <div class="hl-rodape-marca">
-          <img src="assets/logo_blue.png" alt="Love" class="hl-rodape-logo">
+          <img src="assets/logo-white.png" alt="Love" class="hl-rodape-logo">
           <p>Clientes, propostas, contratos e cobranças numa plataforma só, feita para quem faz os eventos acontecerem.</p>
           <div class="hl-redes">
-            <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
-            <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
-            <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+            <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".5" fill="currentColor"/></svg></a>
+            <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+            <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24 24 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49 49 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24 24 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49 49 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg></a>
           </div>
         </div>
-        <div>
+        <div class="hl-rodape-coluna">
           <h4>Hub</h4>
           <ul>
             <li><a href="signup">Cadastrar minha empresa</a></li>
@@ -348,19 +332,17 @@
             <li><a href="https://blog.love.com.br" target="_blank" rel="noopener noreferrer">Blog</a></li>
           </ul>
         </div>
-        <div>
+        <div class="hl-rodape-coluna">
           <h4>Suporte</h4>
           <ul>
             <li><a href="central-de-ajuda">Central de ajuda</a></li>
             <li><a href="https://love.com.br" rel="noopener">Love para anfitriões</a></li>
           </ul>
         </div>
-        <div>
+        <div class="hl-rodape-coluna">
           <h4>Segurança</h4>
-          <ul class="hl-selos">
+          <ul class="hl-rodape-selos">
             <li><img src="assets/pix-icone.png" alt="" aria-hidden="true">Recebimentos via Pix</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Conexão criptografada</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/></svg>Dados protegidos (LGPD)</li>
           </ul>
         </div>
       </div>
@@ -374,6 +356,6 @@
     </div>
   </footer>
 
-  <script src="js/hub-landing.js?v=1"></script>
+  <script src="js/hub-landing.js?v=2"></script>
 </body>
 </html>

@@ -1,57 +1,51 @@
-// Landing do Hub (index.html): blocos surgem ao rolar, os degraus do fluxo
-// crescem quando aparecem, âncoras rolam suave e as setas movem o carrossel.
+// Landing do Hub (index.html), no mesmo funcionamento da landing da Love:
+// o menu fixo dos painéis acompanha a rolagem, as âncoras rolam suave e as
+// abas de "A diferença está nos detalhes" trocam a foto.
 (function () {
-  var semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Surgir ao rolar (só esconde se o navegador souber mostrar de volta).
-  var alvos = document.querySelectorAll('[data-surge], [data-degraus]');
-  if ('IntersectionObserver' in window && !semMovimento) {
+  // Menu dos painéis: marca o painel que está no meio da tela.
+  var links = document.querySelectorAll('.hl-paineis-menu a');
+  if (links.length && 'IntersectionObserver' in window) {
+    var porId = {};
+    links.forEach(function (a) { porId[a.getAttribute('href').slice(1)] = a; });
     var obs = new IntersectionObserver(function (entradas) {
       entradas.forEach(function (e) {
         if (!e.isIntersecting) return;
-        e.target.classList.remove('escondido');
-        obs.unobserve(e.target);
+        links.forEach(function (a) { a.classList.remove('ativo'); });
+        var a = porId[e.target.id];
+        if (a) a.classList.add('ativo');
       });
-    }, { rootMargin: '0px 0px -12% 0px' });
-    alvos.forEach(function (el) {
-      if (el.getBoundingClientRect().top > window.innerHeight) el.classList.add('escondido');
-      else el.classList.remove('escondido');
-      obs.observe(el);
-    });
-  } else {
-    alvos.forEach(function (el) { el.classList.remove('escondido'); });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('.hl-painel').forEach(function (p) { obs.observe(p); });
   }
 
-  // Âncoras internas: rolagem suave sem mudar o endereço.
+  // Âncoras internas rolam suave sem mexer no endereço da página.
   document.addEventListener('click', function (ev) {
     var a = ev.target instanceof Element ? ev.target.closest('a[href^="#"]') : null;
     if (!a) return;
     var alvo = document.getElementById(a.getAttribute('href').slice(1));
     if (!alvo) return;
     ev.preventDefault();
-    alvo.scrollIntoView({ behavior: semMovimento ? 'auto' : 'smooth', block: 'start' });
+    alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  // Carrossel "Para quem": setas andam um cartão e se apagam nas pontas.
-  var trilho = document.querySelector('[data-trilho]');
-  var setas = document.querySelectorAll('[data-seta]');
-  if (trilho && setas.length) {
-    var passo = function () {
-      var cartao = trilho.firstElementChild;
-      return cartao ? cartao.getBoundingClientRect().width + 20 : 300;
-    };
-    var atualizar = function () {
-      var fim = trilho.scrollWidth - trilho.clientWidth - 2;
-      setas[0].disabled = trilho.scrollLeft <= 2;
-      setas[1].disabled = trilho.scrollLeft >= fim;
-    };
-    setas.forEach(function (b) {
-      b.addEventListener('click', function () {
-        trilho.scrollBy({ left: Number(b.getAttribute('data-seta')) * passo(), behavior: semMovimento ? 'auto' : 'smooth' });
+  // Abas dos detalhes.
+  var foto = document.querySelector('.hl-detalhes-foto img');
+  var abas = document.querySelectorAll('.hl-aba');
+  abas.forEach(function (aba) {
+    aba.addEventListener('click', function () {
+      if (aba.classList.contains('ativo')) return;
+      abas.forEach(function (b) {
+        b.classList.toggle('ativo', b === aba);
+        b.setAttribute('aria-selected', b === aba ? 'true' : 'false');
       });
+      if (!foto) return;
+      var nova = aba.getAttribute('data-foto');
+      var pre = new Image();
+      pre.onload = function () {
+        foto.classList.add('trocando');
+        setTimeout(function () { foto.src = nova; foto.classList.remove('trocando'); }, 200);
+      };
+      pre.src = nova;
     });
-    trilho.addEventListener('scroll', atualizar, { passive: true });
-    window.addEventListener('resize', atualizar);
-    atualizar();
-  }
+  });
 })();

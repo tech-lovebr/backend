@@ -12716,3 +12716,13 @@ body[data-theme="dark"] .auth-tela .auth-ou::before, body[data-theme="dark"] .au
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body.ficha-na-pagina-aberta .agenda-evento-fundo:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }
+
+/* Celular: Propostas enviadas sem produto com o aviso no meio da caixa, como
+   Oportunidades; e a animação de Clientes vazio no tamanho do ícone dessas
+   duas abas (64px). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body [data-leads-painel] > #op-propostas-sem-produtos:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: grid; grid-template-columns: fit-content(100%); justify-content: center; align-content: center; gap: 20px;
+  }
+  html body #leads-table-card .vazio-celular .vazio-celular-lottie:not(#love-h-a):not(#love-h-b) { width: 64px; height: 64px; margin: 0 0 6px; }
+}

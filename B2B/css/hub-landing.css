@@ -415,3 +415,22 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   .hl-hero-sub { color: rgba(255, 255, 255, 0.86); }
   .hl-painel { border-width: 1px 0 0; }
 }
+
+/* Abertura e cabeçalho no cinza do fundo da plataforma (#F4F6F7), o mesmo de
+   "A diferença está nos detalhes": logo azul, Entrar escuro e o botão azul. */
+.hl-topo { background: rgba(244, 246, 247, 0.92); border-bottom-color: #E4E4E7; }
+.hl-entrar { color: var(--tinta); }
+.hl-entrar:hover { opacity: 1; color: var(--azul); }
+.hl-btn-azul { background: var(--azul); color: #FFFFFF; }
+.hl-btn-azul:hover { background: var(--azul-hover); }
+.hl-abertura { background: var(--cinza); color: var(--tinta); }
+.hl-topo :focus-visible { outline-color: #181D24; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Celular: o texto da abertura fica sobre o cinza, então em tons escuros. */
+  .hl-abertura :focus-visible { outline-color: #181D24; }
+  .hl-hero-intro { color: var(--azul); }
+  .hl-hero-titulo { color: var(--tinta); }
+  .hl-hero-sub { color: var(--texto-suave); }
+  .hl-hero-ctas .hl-btn-branco { background: var(--azul); color: #FFFFFF; }
+  .hl-hero-segundo { color: var(--azul); }
+}

@@ -884,3 +884,8 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-public-site .lp2-hero-foto { border-radius: 16px; }
 }
+
+/* Desktop: título da abertura em no máximo 2 linhas. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-public-site .lp2-hero-titulo { max-width: 860px; font-size: clamp(36px, 4.4vw, 64px) !important; text-wrap: balance; }
+}

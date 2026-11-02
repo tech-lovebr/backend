@@ -800,3 +800,13 @@
 /* Textos sobre os painéis coloridos e a chamada final em branco (uma regra
    geral de parágrafo deixava cinza #52525B, sem leitura no fundo escuro). */
 #view-public-site :is(.lp2-painel-texto p, .lp2-final p) { color: #FFFFFF !important; }
+
+/* Cabeçalho: no lugar das âncoras, a escolha do público como no Hub
+   (Para anfitriões | Para fornecedores), na versão clara. Só no desktop. */
+#view-public-site .lp-publico { display: flex; gap: 2px; padding: 3px; border: 1px solid #E4E4E7; border-radius: var(--lp-raio, 8px); }
+#view-public-site .lp-publico a { padding: 5px 10px; border-radius: 6px; font-size: 13px; font-weight: 500; color: #71717A; text-decoration: none; transition: color .15s; }
+#view-public-site .lp-publico a:hover { color: #181D24; }
+#view-public-site .lp-publico a[aria-current="page"] { background: #F4F6F7; color: #181D24; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-public-site .lp-publico { display: none; }
+}

@@ -349,3 +349,69 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   .hl-hero-ctas .hl-btn { min-width: 209.1px; }
   .hl-hero-segundo { min-width: 193.8px; }
 }
+
+/* ==========================================================================
+   Fundo claro: o azul fica só na abertura (cabeçalho, faixa e foto). O resto
+   da página volta ao branco, com as faixas alternadas e os painéis no cinza
+   do fundo da plataforma logada (#F4F6F7), textos escuros como na Love.
+   ========================================================================== */
+.hl {
+  --cinza: #F4F6F7;
+  --tinta: #18181B;
+  --caixa: #FFFFFF;
+  --caixa-borda: #E4E4E7;
+  --divisor: #E4E4E7;
+  --texto: #18181B;
+  --texto-suave: #52525B;
+  background: var(--cinza);
+}
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; }
+
+/* Abertura azul */
+.hl-topo { border-bottom-color: rgba(255, 255, 255, 0.12); }
+.hl-abertura { display: flow-root; background: var(--azul); padding-bottom: 32px; color: #FFFFFF; }
+
+/* Seções brancas e cinzas (as que eram azul-escuras ficam cinza) */
+.hl-tudo, .hl-paineis, .hl-seguranca, .hl-duvidas, .hl-rodape { background: #FFFFFF; }
+.hl-detalhes, .hl-momentos { background: var(--cinza); }
+
+.hl-sub-centro, .hl-texto { color: var(--texto-suave); }
+.hl-texto a { color: var(--azul); }
+.hl-sobretitulo { color: var(--azul); }
+.hl-ladrilho img { outline-color: rgba(0, 0, 0, 0.06); }
+.hl-ladrilho:hover span, .hl-momento:hover span { color: var(--azul); }
+
+/* Painéis no cinza da plataforma, com título azul e botão azul */
+.hl-painel { background: var(--cinza); border-color: var(--caixa-borda); }
+.hl-painel h2 { color: var(--tinta); }
+.hl-painel p { color: var(--texto-suave); }
+.hl-btn-tom { background: var(--azul); color: #FFFFFF; }
+.hl-btn-tom:hover { background: var(--azul-hover); }
+.hl-paineis-menu a { border-left-color: var(--divisor); color: #71717A; }
+.hl-paineis-menu a:hover { color: var(--tinta); }
+.hl-paineis-menu a.ativo { border-left-color: var(--azul); color: var(--tinta); }
+.hl-chip { border: 1px solid var(--caixa-borda); }
+
+/* Abas, dúvidas e rodapé em texto escuro */
+.hl-aba b { color: #71717A; }
+.hl-aba:hover b, .hl-aba.ativo b { color: var(--tinta); }
+.hl-aba.ativo { border-left-color: var(--azul); }
+.hl-detalhes-foto img { outline-color: rgba(0, 0, 0, 0.06); }
+.hl-recibo { border: 1px solid var(--caixa-borda); }
+.hl-faq summary::after { border-color: #71717A; }
+.hl-redes a { color: var(--texto-suave); }
+.hl-redes a:hover { border-color: #181D24; color: #181D24; }
+.hl-rodape-coluna a:hover, .hl-rodape-base a:hover { color: var(--tinta); }
+.hl-rodape-selos img { filter: none; opacity: 1; }
+.hl :focus-visible { outline-color: #181D24; }
+.hl-abertura :focus-visible, .hl-topo :focus-visible, .hl-final :focus-visible { outline-color: #FFFFFF; }
+
+/* Chamada final continua com a foto e o texto branco */
+.hl-final { color: #FFFFFF; }
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .hl-abertura { padding-bottom: 0; }
+  .hl-hero-sub { color: rgba(255, 255, 255, 0.86); }
+  .hl-painel { border-width: 1px 0 0; }
+}

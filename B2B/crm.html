@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=858">
+  <link rel="stylesheet" href="css/styles.css?v=860">
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -69,6 +69,8 @@
               </div>
             </div>
           </div>
+          <!-- Propostas enviadas: "+" abre o novo orçamento; salvo, ele aparece na lista. -->
+          <a href="vendas?novo=orcamento" class="op-propostas-novo" id="op-propostas-novo" aria-label="Novo orçamento" data-dica="Novo orçamento" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></a>
           <!-- Celular, Clientes: "+" abre a gaveta Manualmente / Importar contatos. -->
           <button type="button" class="so-celular-clientes" id="lead-add-celular" aria-label="Adicionar cliente"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
           <button type="button" id="lead-add-btn" hidden aria-hidden="true" tabindex="-1"></button>
@@ -415,6 +417,6 @@
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="js/crm.js?v=37"></script>
   <script src="js/cliente-pagina.js?v=1"></script>
-  <script src="js/oportunidades.js?v=32"></script>
+  <script src="js/oportunidades.js?v=33"></script>
 </body>
 </html>

@@ -13,6 +13,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   await initProposalForm();
   initOrcamentosLista();
   await preencherPropostaDoPedido();
+  // Clientes › Propostas enviadas (+) e o atalho Orçamento da Home:
+  // vendas?novo=orcamento abre o formulário e, ao salvar ou cancelar, volta
+  // para Propostas enviadas (onde o orçamento aparece na lista).
+  if (new URLSearchParams(location.search).get('novo') === 'orcamento') {
+    voltarParaPropostasEnviadas = true;
+    history.replaceState(null, '', location.pathname);
+    await abrirPropostaNova();
+  }
   renderNotasFiscais();
   initNotasFiscaisActions();
   window.b2bPageReady?.();
@@ -483,7 +491,9 @@ function mostrarListaOrcamentos() {
 
 /* A proposta aberta ganha uma entrada no histórico: o Voltar do navegador
    (e o "Orçamentos" do caminho do topo) volta para a lista. */
+let voltarParaPropostasEnviadas = false;
 function voltarParaListaOrcamentos() {
+  if (voltarParaPropostasEnviadas) { location.href = 'crm?aba=propostas'; return; }
   if (history.state && history.state.propostaAberta) history.back();
   else mostrarListaOrcamentos();
 }

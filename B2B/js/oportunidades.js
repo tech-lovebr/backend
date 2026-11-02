@@ -153,6 +153,9 @@ async function opCarregarPropostas() {
     .eq('fornecedor_id', opEmpresaId)
     .order('created_at', { ascending: false });
   opPropostas = error ? [] : (data || []);
+  // Orçamentos criados pelo "+" (tabela orcamentos) entram na mesma lista.
+  const orc = await supabaseClient.from('orcamentos').select('id, numero, cliente_nome, valor_total, status, data_evento, endereco_evento, created_at').eq('fornecedor_id', opEmpresaId).order('created_at', { ascending: false });
+  opOrcamentos = orc.error ? [] : (orc.data || []);
   await opCarregarNomes(opPropostas.map(pr => pr.pedido && pr.pedido.cliente_id));
   opAtualizarCota();
   return !error;
@@ -660,24 +663,48 @@ async function opEnviarProposta(e) {
 /* -------------------- Minhas propostas -------------------- */
 
 let opPropostasPaginacao = null;
+let opOrcamentos = [];
+
+// Linha de um orçamento (criado pelo "+") na lista de Propostas enviadas.
+function opLinhaOrcamento(o) {
+  const aceito = o.status === 'aceito' || o.status === 'pago';
+  const st = aceito ? OP_STATUS.aceita : OP_STATUS.enviada;
+  const dataEv = o.data_evento ? new Date(o.data_evento + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+  const titulo = `Orçamento${o.numero ? ' nº ' + o.numero : ''}${o.cliente_nome ? ' · ' + o.cliente_nome : ''}`;
+  return `
+      <tr class="op-linha-orcamento">
+        <td class="col-principal">${escapeHtml(titulo)}</td>
+        <td>${escapeHtml(dataEv)}</td>
+        <td>${escapeHtml(o.endereco_evento || '—')}</td>
+        <td class="finance-valor">${escapeHtml(opBRL(o.valor_total))}</td>
+        <td><span class="op-status ${st.classe}">${st.label}</span></td>
+        <td>${new Date(o.created_at).toLocaleDateString('pt-BR')}</td>
+        <td class="tabela-col-acoes"></td>
+      </tr>`;
+}
+
 function opRenderPropostas() {
   const body = document.getElementById('op-propostas-body');
   if (!body) return;
   if (!opPropostasPaginacao) opPropostasPaginacao = montarPaginacaoTabela(document.getElementById('op-propostas-card'), () => opRenderPropostas());
-  const daPagina = paginarLinhas(opPropostasPaginacao, opPropostas);
+  // Propostas das Oportunidades e orçamentos do "+", do mais novo ao mais antigo.
+  const todas = [...opPropostas, ...opOrcamentos.map(o => ({ ...o, _orcamento: true }))]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const daPagina = paginarLinhas(opPropostasPaginacao, todas);
   // Sem produto e sem propostas: o aviso para cadastrar um produto no lugar da tabela.
-  const semProduto = opSemProdutos && !opPropostas.length;
+  const semProduto = opSemProdutos && !todas.length;
   const avisoSemProduto = document.getElementById('op-propostas-sem-produtos');
   if (avisoSemProduto) {
     avisoSemProduto.hidden = !semProduto;
     document.getElementById('op-propostas-card').hidden = semProduto;
     if (semProduto && typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
   }
-  if (!opPropostas.length) {
+  if (!todas.length) {
     body.innerHTML = '<tr><td colspan="7" class="tabela-vazia-cheia">Você ainda não enviou propostas.</td></tr>';
     return;
   }
   body.innerHTML = daPagina.map(pr => {
+    if (pr._orcamento) return opLinhaOrcamento(pr);
     const p = pr.pedido || {};
     const st = OP_STATUS[pr.status] || OP_STATUS.enviada;
     const podeRetirar = pr.status === 'enviada' || pr.status === 'vista';
@@ -925,6 +952,8 @@ function leadsMostrarAba(aba) {
   if (titulo) titulo.textContent = aba === 'eventos' ? 'Oportunidades' : (aba === 'propostas' ? 'Propostas enviadas' : 'Meus clientes');
   const acoes = document.getElementById('leads-acoes-topo');
   if (acoes) acoes.hidden = aba !== 'leads';
+  const novoOrcamento = document.getElementById('op-propostas-novo');
+  if (novoOrcamento) novoOrcamento.hidden = aba !== 'propostas';
   // Ícone animado carregado com a aba escondida nasce com tamanho zero (pequeno
   // e borrado): ao mostrar a aba, redesenha no tamanho certo.
   requestAnimationFrame(() => document.querySelectorAll(`[data-leads-painel="${aba}"] dotlottie-wc`).forEach(l => {

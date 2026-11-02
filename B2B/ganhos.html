@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-GTSEBKVH96');
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ganhos — Portal do Fornecedor Love</title>
+  <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#537bae">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } }
+    }
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css?v=860">
+</head>
+<body class="font-sans" data-page="ganhos">
+
+  <div class="b2b-shell">
+    <div id="shell-sidebar"></div>
+
+    <div class="b2b-main">
+      <div id="shell-topbar"></div>
+      <main class="b2b-content">
+        <div class="b2b-header-bar">
+          <h2 class="text-xl font-bold text-zinc-900">Ganhos</h2>
+        </div>
+
+        <!-- Ganhos: no modelo do perfil do Upwork. Empresa no topo, os três
+             números (saldo, ganhos e contratos ativos) e "Ver perfil", que
+             leva para Configurações, onde esses dados são editados. -->
+        <section class="ganhos-caixa" aria-label="Ganhos da empresa">
+          <div class="ganhos-empresa">
+            <div class="ganhos-avatar-wrap">
+              <span class="ganhos-avatar" id="ganhos-avatar" aria-hidden="true"></span>
+              <a href="configuracoes" class="ganhos-lapis ganhos-lapis--avatar" aria-label="Editar foto" data-dica="Editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4.5 19.5l.71-4 11.65-11.01Z"/><path d="m14.5 6.5 3 3"/></svg></a>
+            </div>
+            <div class="ganhos-empresa-textos">
+              <p class="ganhos-nome" id="ganhos-nome">—</p>
+              <p class="ganhos-local" id="ganhos-local" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span></span></p>
+              <p class="ganhos-plano" id="ganhos-plano"></p>
+            </div>
+          </div>
+
+          <div class="ganhos-numeros">
+            <div><p class="ganhos-valor" id="ganhos-saldo">—</p><p class="ganhos-rotulo">Saldo disponível</p></div>
+            <div><p class="ganhos-valor" id="ganhos-total">—</p><p class="ganhos-rotulo">Total de ganhos</p></div>
+            <div><p class="ganhos-valor" id="ganhos-contratos">—</p><p class="ganhos-rotulo">Contratos ativos</p></div>
+          </div>
+
+          <div class="ganhos-perfil">
+            <div class="ganhos-perfil-topo">
+              <h3 class="ganhos-perfil-titulo">Ver perfil</h3>
+              <a href="configuracoes" class="ganhos-lapis" aria-label="Editar perfil" data-dica="Editar perfil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4.5 19.5l.71-4 11.65-11.01Z"/><path d="m14.5 6.5 3 3"/></svg></a>
+            </div>
+            <dl class="ganhos-dados" id="ganhos-dados"></dl>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/data.js?v=19"></script>
+  <script src="js/utils.js?v=48"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="js/supabase-init.js?v=4"></script>
+  <script src="js/shell.js?v=71"></script>
+  <script src="js/ganhos.js?v=1"></script>
+</body>
+</html>

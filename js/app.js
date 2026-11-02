@@ -1167,6 +1167,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 150);
   };
 
+  // Saque sem conta → Configurações › Contas bancárias.
+  window.loveAbrirContasBancarias = () => openAccountSettingsPage({ aba: 'contas' });
+
   function openAccountSettingsPage(opts = {}) {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
     const abaInicial = opts.aba || 'conta';
@@ -1174,7 +1177,8 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'conta', rotulo: 'Informações' },
       { id: 'privacidade', rotulo: 'Privacidade' },
       { id: 'preferencias', rotulo: 'Preferências' },
-      { id: 'eventos', rotulo: 'Meu evento' }
+      { id: 'eventos', rotulo: 'Meu evento' },
+      { id: 'contas', rotulo: 'Contas bancárias' }
     ], abaInicial, mostrarAbaDeConfiguracoes);
     mostrarAbaDeConfiguracoes(abaInicial);
     preencherConfiguracoesDaConta();
@@ -22657,7 +22661,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.drawerSubItemsList?.querySelectorAll('[data-pagina-item]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.paginaItem === aba));
     }
     const tituloDaPagina = document.getElementById('account-settings-header-title');
-    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
+    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'contas' ? 'Contas bancárias' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', aba !== 'privacidade');
     if (aba === 'privacidade') refreshMfaStatus();
@@ -22666,6 +22670,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
     if (aba === 'eventos') renderMeuEvento();
+    document.getElementById('config-painel-contas')?.classList.toggle('hidden', aba !== 'contas');
+    if (aba === 'contas') /** @type {any} */ (window).LoveCarteira?.contasBancarias();
   }
   document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));
 

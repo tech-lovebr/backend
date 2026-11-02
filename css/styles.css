@@ -10848,13 +10848,10 @@ body[data-theme="dark"] .rfp-post[data-rascunho-id] button.rfp-post-titulo.rfp-p
    ========================================================================== */
 html body #tab-wallet #wallet-sub-digital:not(#love-h-a) { margin-top: 0 !important; }
 #carteira-raiz { display: flex; flex-direction: column; }
-html body #carteira-raiz .cart-abas:not(#love-h-a) { margin: 0 !important; border-bottom: 1px solid #E4E4E7 !important; }
-.cart-abas button.love-tab-item.love-tab-item.love-tab-item { border-radius: 0 !important; }
 .cart-aviso { order: 9; margin: 12px 0 0; font-size: 13px; color: #067647; }
 .cart-aviso.is-erro { color: #c7305b; }
 .cart-aviso[hidden] { display: none; }
 .cart-caixa { background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; }
-html body #carteira-raiz > section.cart-caixa:first-of-type:not(#love-h-a) { border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
 .cart-resumo { padding: 16px 24px 28px; }
 .cart-resumo-topo { display: flex; justify-content: flex-end; }
 html body button.cart-link:not(#love-h-a) { display: inline-flex; align-items: center; gap: 6px; padding: 0; background: none; border: 0; font-family: inherit; font-size: 13px; font-weight: 600; color: #183b54; cursor: pointer; text-decoration: underline; text-decoration-color: rgba(24, 59, 84, 0.3); text-underline-offset: 4px; }

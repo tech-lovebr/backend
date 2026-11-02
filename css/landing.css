@@ -889,3 +889,32 @@
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   #view-public-site .lp2-hero-titulo { max-width: 860px; font-size: clamp(36px, 4.4vw, 64px) !important; text-wrap: balance; }
 }
+
+/* ==========================================================================
+   LANDING v7 — cantos e estados como na referência (Upwork), nas cores da
+   Love: faixa e foto com 24px; botões em pílula; seletor de público em
+   trilho translúcido com o ativo escuro (#181D24).
+   ========================================================================== */
+html body #view-public-site :is(.lp-btn, .lp2-btn-tom, .lp2-hero-encontrar):not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-radius: 999px !important; }
+/* Cabeçalho: "Entrar" só texto; "Criar evento grátis" em pílula de 40px. */
+#view-public-site .lp-topo-acoes .lp-btn { height: 40px; padding: 0 24px; font-size: 14px; }
+
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-public-site :is(.lp2-faixa-intro, .lp2-hero) { border-radius: 24px; }
+  /* Botões da foto: pílulas de 60px. */
+  #view-public-site .lp2-hero-ctas .lp-btn, #view-public-site .lp2-hero-encontrar { height: 60px; padding: 0 28px; font-size: 16px; }
+  #view-public-site .lp2-hero-encontrar { background: rgba(255, 255, 255, 0.3); color: #FFFFFF; }
+  #view-public-site .lp2-hero-encontrar:hover { background: rgba(255, 255, 255, 0.4); }
+
+  /* Seletor de público: trilho branco a 30%, 4px de folga, abas de 32px. */
+  #view-public-site .lp-publico-foto {
+    gap: 0; padding: 4px; border: 0; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.3); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+  #view-public-site .lp-publico-foto a {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 120px; height: 32px; padding: 0 24px;
+    border-radius: 999px; font-size: 14px; font-weight: 400; color: #FFFFFF;
+  }
+  #view-public-site .lp-publico-foto a:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.12); }
+  #view-public-site .lp-publico-foto a[aria-current="page"] { background: #181D24; color: #FFFFFF; font-weight: 600; }
+}

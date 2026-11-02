@@ -15441,3 +15441,8 @@ html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:not(#lov
 
 /* /login no celular: na prévia da barra de baixo só o Início clica (volta para a landing). */
 html body #view-login .login-barra-previa .login-barra-inicio:not(#love-h-a) { pointer-events: auto; cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+
+/* Login: foto da direita com cantos mais arredondados (16px). */
+@media (min-width: 1024px) {
+  html body #view-login .login-imagem:not(#love-h-a):not(#love-h-b) { border-radius: 16px; }
+}

@@ -87,6 +87,8 @@ function initWorkViewTabs() {
     });
     const shareLabel = document.getElementById('share-board-btn-label');
     if (shareLabel) shareLabel.textContent = btn.dataset.view === 'agenda' ? 'Compartilhar agenda' : 'Compartilhar tarefas';
+    const shareBtn = document.getElementById('share-board-btn');
+    if (shareBtn && shareLabel) { shareBtn.setAttribute('aria-label', shareLabel.textContent); shareBtn.title = shareLabel.textContent; }
     moverBotaoCompartilhar(btn.dataset.view === 'agenda');
   };
 

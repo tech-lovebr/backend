@@ -45,6 +45,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderPaymentLinksList();
   initPaymentLinkModal();
   fichaNaPaginaNoDesktop('payment-link-modal', { painel: '[data-view-panel="receber"]', mover: '.modal-card', fechar: '#payment-link-modal-close' });
+  // Contratos › Gerar link de pagamento: pagamentos?cobrar=<valor> abre
+  // Cobranças com o link já preenchido com o valor da próxima parcela.
+  const cobrar = Number(new URLSearchParams(location.search).get('cobrar'));
+  if (cobrar > 0) {
+    history.replaceState(null, '', location.pathname);
+    document.querySelector('#payments-view-tabs [data-view="receber"]')?.click();
+    document.getElementById('generate-payment-link-btn')?.click();
+    const campo = document.getElementById('payment-link-amount');
+    if (campo) campo.value = cobrar.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
   initWithdrawalModal();
   initChargeDrawer();
   window.b2bPageReady?.();

@@ -19,6 +19,7 @@ const CONTRATO_EXEMPLO = () => {
     parcelasPagas: 1,
     parcelasTotal: 3,
     status: 'em_dia',
+    proximaParcela: new Date(Date.now() + 20 * 86400000).toISOString().slice(0, 10),
     evento: { nome: 'Casamento Ana & Pedro', data, horario: '19:00', local: 'Espaço Jardim, São Paulo - SP', produto: 'Buffet completo' },
     convidados: [
       { id: 'exemplo-g1', nome: 'Mariana Costa', status: 'confirmado', mesa: '1', whatsapp: '(11) 90000-0001', comentarios: [] },

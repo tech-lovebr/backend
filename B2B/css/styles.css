@@ -12731,3 +12731,54 @@ body[data-theme="dark"] .auth-tela .auth-ou::before, body[data-theme="dark"] .au
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #leads-table-card .vazio-celular .vazio-celular-lottie:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 88px; height: 50px; margin: 0 0 6px; }
 }
+
+/* Gestão: "Compartilhar" só com o ícone da pessoa com o "+", sem caixa. */
+html body #share-board-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; min-width: 0; padding: 0; gap: 0;
+  background: transparent !important; border: 0 !important; box-shadow: none !important; color: #3F3F46;
+}
+html body #share-board-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { color: #181D24; background: transparent !important; }
+html body #share-board-btn svg:not(#love-h-a):not(#love-h-b) { width: 20px; height: 20px; }
+body[data-theme="dark"] #share-board-btn { color: #D4D4D8 !important; }
+/* Celular: a caixa da agenda (horários) vem antes de Avisos. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .agenda-calendar-layout > .agenda-left-col:not(#love-h-a) { display: contents; }
+  html body .agenda-calendar-layout .agenda-mini-calendar:not(#love-h-a) { order: 1; }
+  html body .agenda-calendar-layout > .agenda-timeline-panel:not(#love-h-a) { order: 2; }
+  html body .agenda-calendar-layout .agenda-notifications-card:not(#love-h-a) { order: 3; }
+}
+
+/* Contratos: nome do cliente como o nome do convidado na lista do
+   love.com.br (negrito, sublinha ao passar o mouse) e, ao clicar, a ficha do
+   contrato só para leitura dentro da caixa. */
+html body .contrato-nome-btn:not(#love-h-a) { padding: 0; border: 0; background: transparent; font: inherit; font-weight: 600 !important; color: #18181B; text-align: left; cursor: pointer; }
+html body .contrato-nome-btn:not(#love-h-a):hover { text-decoration: underline; text-underline-offset: 2px; }
+body[data-theme="dark"] .contrato-nome-btn { color: #FFFFFF !important; }
+html body .contrato-ficha-topo:not(#love-h-a) { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+html body .contrato-ficha-titulo:not(#love-h-a) { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+html body .contrato-ficha-sub:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+html body .contrato-ficha-fechar:not(#love-h-a) { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; padding: 0; border: 0; background: transparent; color: #71717A; cursor: pointer; }
+html body .contrato-ficha-fechar:not(#love-h-a):hover { color: #181D24; }
+html body .contrato-ficha-fechar svg:not(#love-h-a) { width: 18px; height: 18px; }
+html body .contrato-ficha-grade:not(#love-h-a) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+html body .contrato-ficha-rotulo:not(#love-h-a) { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: #3F3F46; }
+html body .contrato-ficha-valor:not(#love-h-a) {
+  display: flex; align-items: center; min-height: 44px; padding: 10px 14px; box-sizing: border-box;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #FAFAFA; font-size: 14px; color: #18181B; font-variant-numeric: tabular-nums;
+}
+html body .contrato-situacao:not(#love-h-a) { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+html body .contrato-situacao.is-quitado:not(#love-h-a) { background: #ECFDF3; color: #15803D; }
+html body .contrato-situacao.is-em-dia:not(#love-h-a) { background: #EAF0F5; color: #183b54; }
+html body .contrato-situacao.is-atrasado:not(#love-h-a) { background: #FEF3F2; color: #B42318; }
+html body .contrato-ficha-acoes:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 28px; }
+html body .contrato-ficha-voltar:not(#love-h-a) { padding: 8px; border: 0; background: transparent; font-size: 14px; font-weight: 500; color: #3F3F46; cursor: pointer; }
+html body .contrato-ficha-voltar:not(#love-h-a):hover { color: #181D24; }
+html body .contrato-ficha-link:not(#love-h-a) { text-decoration: none; }
+body[data-theme="dark"] .contrato-ficha-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .contrato-ficha-valor { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .contrato-pagina:not(#love-h-a) { padding: 16px; }
+  html body .contrato-ficha-grade:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  html body .contrato-ficha-acoes:not(#love-h-a) { flex-direction: column-reverse; align-items: stretch; }
+  html body .contrato-ficha-link:not(#love-h-a) { justify-content: center; height: 48px; }
+}

@@ -12810,3 +12810,11 @@ html body :is(#op-sem-produtos, #op-propostas-sem-produtos) .produtos-vazio-cria
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a):not(#love-h-b) { max-width: none; overflow: visible; text-overflow: clip; }
 }
+
+/* Gestão › Minha agenda (celular): data do dia menor e inteira, quebrando em
+   duas linhas quando não cabe (antes cortava com "…"). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .agenda-dia-nav h3#agenda-timeline-date-label:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 auto; min-width: 0; margin-left: 4px; font-size: 14px; line-height: 1.25; white-space: normal; overflow: visible; text-overflow: clip;
+  }
+}

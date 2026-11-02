@@ -12782,3 +12782,11 @@ body[data-theme="dark"] .contrato-ficha-valor { background: #333333 !important; 
   html body .contrato-ficha-acoes:not(#love-h-a) { flex-direction: column-reverse; align-items: stretch; }
   html body .contrato-ficha-link:not(#love-h-a) { justify-content: center; height: 48px; }
 }
+
+/* Home (celular): "Solicitar saque" como o "Sacar disponível" do
+   love.com.br: claro (#EAF0F5 / #183b54) sem saldo; azul da sidebar com saldo. */
+html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #EAF0F5; color: #183b54; }
+html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background: #E1E9F0; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 42px !important; min-height: 0 !important; }
+}

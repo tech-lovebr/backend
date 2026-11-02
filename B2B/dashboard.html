@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=853">
+  <link rel="stylesheet" href="css/styles.css?v=854">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -67,19 +67,15 @@
               <p class="dash-saldo-total-rotulo">Saldo total · Todos os saldos</p>
               <p class="dash-saldo-total-valor" id="dash-saldo-total-valor">—</p>
               <div class="dash-saldo-total-grafico" id="dash-saldo-total-grafico"></div>
-              <!-- Celular: caixa como a de Presentes no anfitrião (valor em cima, nome embaixo e botão). -->
+              <!-- Celular: igual à caixa Presentes da Home do anfitrião (love.com.br):
+                   Saldo disponível | Contratos ativos e o botão Solicitar saque
+                   (claro sem saldo; azul da sidebar com saldo). -->
               <div class="dash-saldo-celular">
-                <!-- Abas Saldo / Faturamento no topo e o olho para esconder os valores. -->
-                <div class="dash-saldo-celular-topo">
-                  <div class="dash-saldo-celular-abas" role="tablist">
-                    <button type="button" class="dash-saldo-celular-aba active" role="tab" aria-selected="true" data-saldo-aba="saldo">Saldo</button>
-                    <button type="button" class="dash-saldo-celular-aba" role="tab" aria-selected="false" data-saldo-aba="faturamento">Faturamento</button>
-                  </div>
-                  <button type="button" class="dash-saldo-celular-olho" id="dash-saldo-celular-olho" aria-label="Esconder valores" data-dica="Esconder valores"></button>
+                <div class="dash-saldo-celular-colunas">
+                  <div><span class="dash-saldo-celular-valor" id="dash-saldo-celular-saldo">—</span><span class="dash-saldo-celular-nome">Saldo disponível</span></div>
+                  <div><span class="dash-saldo-celular-valor" id="dash-saldo-celular-contratos">—</span><span class="dash-saldo-celular-nome">Contratos ativos</span></div>
                 </div>
-                <div class="dash-saldo-celular-painel" data-saldo-painel="saldo"><span class="dash-saldo-celular-valor" id="dash-saldo-celular-saldo">—</span><span class="dash-saldo-celular-nome">Saldo disponível</span></div>
-                <div class="dash-saldo-celular-painel" data-saldo-painel="faturamento" hidden><span class="dash-saldo-celular-valor" id="dash-saldo-celular-faturamento">—</span><span class="dash-saldo-celular-nome">Faturamento em 30 dias</span></div>
-                <a href="pagamentos" class="dash-saldo-celular-botao">Ver financeiro</a>
+                <a href="pagamentos" class="dash-saldo-celular-botao is-sem-saldo" id="dash-saldo-celular-sacar">Solicitar saque</a>
               </div>
             </div>
 
@@ -356,6 +352,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=71"></script>
-  <script src="js/dashboard.js?v=78"></script>
+  <script src="js/dashboard.js?v=79"></script>
 </body>
 </html>

@@ -681,7 +681,7 @@ function renderGreeting() {
 /* -------------------- Caixa do saldo (Home) --------------------
    Abas Saldo / Faturamento em 30 dias no topo e o olho que esconde os
    valores (a mesma escolha de "Esconder valores" do Financeiro). */
-const saldoCelular = { saldo: null, faturamento: null };
+const saldoCelular = { saldo: null, faturamento: null, contratos: null };
 const ICONE_OLHO_ABERTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const ICONE_OLHO_FECHADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.6 6.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
 function saldoEscondido() {
@@ -692,6 +692,8 @@ function desenharSaldoCelular() {
   const valor = v => (v == null ? '—' : esconder ? 'R$ ••••' : formatCurrency(v));
   setText('dash-saldo-celular-saldo', valor(saldoCelular.saldo));
   setText('dash-saldo-celular-faturamento', valor(saldoCelular.faturamento));
+  setText('dash-saldo-celular-contratos', saldoCelular.contratos == null ? '—' : String(saldoCelular.contratos));
+  document.getElementById('dash-saldo-celular-sacar')?.classList.toggle('is-sem-saldo', !(saldoCelular.saldo > 0));
   const olho = document.getElementById('dash-saldo-celular-olho');
   if (olho) {
     olho.innerHTML = esconder ? ICONE_OLHO_FECHADO : ICONE_OLHO_ABERTO;
@@ -739,6 +741,11 @@ async function renderSaldoTotal() {
   const sinal = t => (t.type === 'credit' ? 1 : -1) * Number(t.amount || 0);
   valorEl.textContent = formatCurrency(transacoes.reduce((soma, t) => soma + sinal(t), 0));
   saldoCelular.saldo = transacoes.reduce((soma, t) => soma + sinal(t), 0);
+  // Contratos ativos: os que ainda não foram quitados.
+  if (session) {
+    const { count } = await supabaseClient.from('contracts').select('id', { count: 'exact', head: true }).eq('fornecedor_id', empresaId(session)).neq('status', 'quitado');
+    saldoCelular.contratos = count || 0;
+  } else saldoCelular.contratos = 0;
 
   // Faturamento (créditos) de cada um dos últimos 30 dias.
   const DIA = 24 * 60 * 60 * 1000;

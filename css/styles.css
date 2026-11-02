@@ -15438,3 +15438,6 @@ html body #tab-overview .home-kpis > div > #home-btn-sacar.is-sem-saldo:not(#lov
 /* /login: a frase da foto troca junto com o carrossel (esmaece e volta). */
 #login-carrossel-frase { transition: opacity .45s ease, transform .45s ease; }
 #login-carrossel-frase.is-trocando { opacity: 0; transform: translateY(6px); }
+
+/* /login no celular: na prévia da barra de baixo só o Início clica (volta para a landing). */
+html body #view-login .login-barra-previa .login-barra-inicio:not(#love-h-a) { pointer-events: auto; cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent; }

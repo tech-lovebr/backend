@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Importar e Exportar (o que está filtrado/buscado no momento).
   leadsTabelaEstado = montarBarraTabela(document.getElementById('leads-table-card'), {
     placeholder: 'Pesquisar cliente, e-mail ou CPF...',
-    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', vazio: { lottie: 'clientes-vazio', titulo: 'Adicione seu primeiro cliente', texto: 'Quem você cadastrar ou quem pedir orçamento pelo chat aparece aqui.', abrirSel: '#lead-add-celular' }, nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
+    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', vazio: { lottie: 'clientes-lista-vazio', titulo: 'Adicione seu primeiro cliente', texto: 'Quem você cadastrar ou quem pedir orçamento pelo chat aparece aqui.', abrirSel: '#lead-add-celular' }, nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
     filtros: [
       { chave: 'tipo', rotulo: 'Tipo do evento', opcoes: () => [...new Set(crmLeads.map(l => l.tipo_evento).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'produto', rotulo: 'Produto/serviço', opcoes: () => [...new Set(crmLeads.map(l => l.event_name).filter(Boolean))].sort().map(v => [v, v]) },

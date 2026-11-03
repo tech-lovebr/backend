@@ -10,7 +10,11 @@
        localStorage se existe sessão Supabase e esconde a home nesse caso —
        só um palpite visual; js/app.js confirma de verdade depois e corrige
        caso esteja errado (ver switchView, que remove essa classe). -->
-  <style>html.love-likely-logged-in #view-public-site, html.love-rota-login #view-public-site { display: none !important; }</style>
+  <style>html.love-likely-logged-in #view-public-site, html.love-rota-login #view-public-site { display: none !important; }
+  /* planwithlove.com: a landing fica escondida até o script logo depois dela
+     trocar os textos pra inglês (ver data-en/data-en-html/data-en-alt) — sem
+     isso, piscaria o texto em português por um instante. */
+  html.love-en-domain:not(.love-en-pronta) #view-public-site { visibility: hidden; }</style>
   <script>
     try {
       if (localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token')) {
@@ -19,6 +23,13 @@
         // Abriu /login (ex.: "Entre por aqui" do cadastro): já começa na tela
         // de login, sem piscar a página inicial (ver o script logo após #view-login).
         document.documentElement.classList.add('love-rota-login');
+      }
+      // planwithlove.com: mesma landing do love.com.br, só que em inglês (ver
+      // data-en nos textos e o script logo após #view-public-site). love.com.br
+      // e qualquer outro domínio continuam em português, sem nenhuma mudança.
+      if (/(^|\.)planwithlove\.com$/i.test(location.hostname)) {
+        document.documentElement.classList.add('love-en-domain');
+        document.documentElement.lang = 'en';
       }
     } catch (e) {}
   </script>
@@ -38,6 +49,16 @@
   <title>Love - Event OS & Lista de Presentes</title>
   <meta name="description" content="Sistema Operacional completo para seus eventos pessoais e de casamento. Crie seu site, gerencie confirmações RSVP, receba presentes em dinheiro via PIX e contrate assessoria certificada.">
   <meta name="theme-color" content="#3B82F6">
+  <script>
+    // planwithlove.com: título e descrição em inglês (ver love-en-domain acima).
+    try {
+      if (document.documentElement.classList.contains('love-en-domain')) {
+        document.title = 'Love — Event OS & Gift Registry';
+        var loveMetaDesc = document.querySelector('meta[name="description"]');
+        if (loveMetaDesc) loveMetaDesc.setAttribute('content', 'The complete Event OS for your personal and wedding celebrations. Build your site, manage RSVPs, receive cash gifts via Pix, and hire certified planners.');
+      }
+    } catch (e) {}
+  </script>
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <link rel="apple-touch-icon" href="assets/love-logo-google-120.png?v=1">
 
@@ -87,12 +108,12 @@
         </a>
         <!-- Desktop: escolha do público, como no Hub (anfitriões | fornecedores) -->
         <nav class="lp-publico" aria-label="Escolha o público">
-          <a href="/" aria-current="page">Para anfitriões</a>
-          <a href="https://hub.love.com.br" rel="noopener">Para fornecedores</a>
+          <a href="/" aria-current="page" data-en="For hosts">Para anfitriões</a>
+          <a href="https://hub.love.com.br" rel="noopener" data-en="For vendors">Para fornecedores</a>
         </nav>
         <div class="lp-topo-acoes">
-          <button type="button" class="btn-trigger-login lp-link-entrar">Entrar</button>
-          <button type="button" class="btn-trigger-register lp-btn lp-btn-primario">Criar evento grátis</button>
+          <button type="button" class="btn-trigger-login lp-link-entrar" data-en="Log in">Entrar</button>
+          <button type="button" class="btn-trigger-register lp-btn lp-btn-primario" data-en="Create event for free">Criar evento grátis</button>
         </div>
       </div>
     </header>
@@ -107,24 +128,24 @@
          ======================================================================= -->
     <!-- Desktop: faixa de apresentação acima da foto da abertura -->
     <div class="lp2-faixa-intro">
-      <p>Crie o convite digital do seu evento</p>
-      <button type="button" class="btn-trigger-register lp2-faixa-intro-link">Começar agora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <p data-en="Create your event's digital invitation">Crie o convite digital do seu evento</p>
+      <button type="button" class="btn-trigger-register lp2-faixa-intro-link"><span data-en="Get started">Começar agora</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
     <section class="lp2-hero">
-      <img class="lp2-hero-foto" src="assets/landing/heroi.jpg" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas">
+      <img class="lp2-hero-foto" src="assets/landing/heroi.jpg" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas" data-en-alt="Outdoor party table with blue napkins and white flowers">
       <div class="lp2-hero-veu" aria-hidden="true"></div>
       <div class="lp-faixa lp2-hero-conteudo">
-        <p class="lp2-hero-intro">Crie o convite digital do seu evento</p>
+        <p class="lp2-hero-intro" data-en="Create your event's digital invitation">Crie o convite digital do seu evento</p>
         <!-- Desktop: escolha do público dentro da foto, acima do título -->
         <nav class="lp-publico lp-publico-foto" aria-label="Escolha o público">
-          <a href="/" aria-current="page">Para anfitriões</a>
-          <a href="https://hub.love.com.br" rel="noopener">Para fornecedores</a>
+          <a href="/" aria-current="page" data-en="For hosts">Para anfitriões</a>
+          <a href="https://hub.love.com.br" rel="noopener" data-en="For vendors">Para fornecedores</a>
         </nav>
-        <h1 class="lp2-hero-titulo">A plataforma definitiva para suas celebrações.</h1>
-        <p class="lp2-hero-sub">Crie seu site, gerencie convites, receba presentes em dinheiro e contrate fornecedores sem complicação.</p>
+        <h1 class="lp2-hero-titulo" data-en="The ultimate platform for your celebrations.">A plataforma definitiva para suas celebrações.</h1>
+        <p class="lp2-hero-sub" data-en="Build your site, manage invitations, receive cash gifts, and hire vendors — all without the hassle.">Crie seu site, gerencie convites, receba presentes em dinheiro e contrate fornecedores sem complicação.</p>
         <div class="lp2-hero-ctas">
-          <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
-          <a href="/encontrar-evento" class="lp2-hero-encontrar">Encontrar um evento</a>
+          <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande" data-en="Create my event for free">Criar meu evento grátis</button>
+          <a href="/encontrar-evento" class="lp2-hero-encontrar" data-en="Find an event">Encontrar um evento</a>
         </div>
       </div>
     </section>
@@ -134,15 +155,15 @@
          ======================================================================= -->
     <section class="lp2-tudo">
       <div class="lp-faixa">
-        <h2 class="lp2-titulo-centro">Tudo o que o seu evento precisa, num só lugar</h2>
-        <p class="lp2-sub-centro">Para todos os dias até o grande dia, e para o dia seguinte também.</p>
+        <h2 class="lp2-titulo-centro" data-en="Everything your event needs, in one place">Tudo o que o seu evento precisa, num só lugar</h2>
+        <p class="lp2-sub-centro" data-en="For every day leading up to the big day — and the day after, too.">Para todos os dias até o grande dia, e para o dia seguinte também.</p>
         <div class="lp2-mosaico">
-          <a href="#painel-convite" class="lp2-ladrilho"><img src="assets/landing/tconvite.jpg" alt="" loading="lazy"><span>Convite digital</span></a>
-          <a href="#painel-convidados" class="lp2-ladrilho"><img src="assets/landing/tconvidados.jpg" alt="" loading="lazy"><span>Confirmação de presença</span></a>
-          <a href="#painel-presentes" class="lp2-ladrilho"><img src="assets/landing/tpresentes.jpg" alt="" loading="lazy"><span>Lista de presentes</span></a>
-          <a href="#painel-mesas" class="lp2-ladrilho"><img src="assets/landing/tmesas.jpg" alt="" loading="lazy"><span>Mapa do evento</span></a>
-          <a href="#painel-carteira" class="lp2-ladrilho"><img src="assets/landing/tcarteira.jpg" alt="" loading="lazy"><span>Carteira e Pix</span></a>
-          <a href="#detalhes" class="lp2-ladrilho"><img src="assets/landing/trecados.jpg" alt="" loading="lazy"><span>Recados com carinho</span></a>
+          <a href="#painel-convite" class="lp2-ladrilho"><img src="assets/landing/tconvite.jpg" alt="" loading="lazy"><span data-en="Digital invitation">Convite digital</span></a>
+          <a href="#painel-convidados" class="lp2-ladrilho"><img src="assets/landing/tconvidados.jpg" alt="" loading="lazy"><span data-en="RSVP">Confirmação de presença</span></a>
+          <a href="#painel-presentes" class="lp2-ladrilho"><img src="assets/landing/tpresentes.jpg" alt="" loading="lazy"><span data-en="Gift registry">Lista de presentes</span></a>
+          <a href="#painel-mesas" class="lp2-ladrilho"><img src="assets/landing/tmesas.jpg" alt="" loading="lazy"><span data-en="Seating chart">Mapa do evento</span></a>
+          <a href="#painel-carteira" class="lp2-ladrilho"><img src="assets/landing/tcarteira.jpg" alt="" loading="lazy"><span data-en="Wallet &amp; Pix">Carteira e Pix</span></a>
+          <a href="#detalhes" class="lp2-ladrilho"><img src="assets/landing/trecados.jpg" alt="" loading="lazy"><span data-en="Heartfelt messages">Recados com carinho</span></a>
         </div>
       </div>
     </section>
@@ -153,95 +174,95 @@
     <section id="como-funciona" class="lp2-paineis">
       <div class="lp-faixa lp2-paineis-linha">
         <nav class="lp2-paineis-menu" aria-label="Recursos">
-          <a href="#painel-convite" class="ativo">Convite digital</a>
-          <a href="#painel-convidados">Confirmação de presença</a>
-          <a href="#painel-presentes">Lista de presentes</a>
-          <a href="#painel-mesas">Mapa do evento</a>
-          <a href="#painel-carteira">Carteira e Pix</a>
+          <a href="#painel-convite" class="ativo" data-en="Digital invitation">Convite digital</a>
+          <a href="#painel-convidados" data-en="RSVP">Confirmação de presença</a>
+          <a href="#painel-presentes" data-en="Gift registry">Lista de presentes</a>
+          <a href="#painel-mesas" data-en="Seating chart">Mapa do evento</a>
+          <a href="#painel-carteira" data-en="Wallet &amp; Pix">Carteira e Pix</a>
         </nav>
         <div class="lp2-paineis-lista">
 
           <article id="painel-convite" class="lp2-painel" style="--fundo:#183b54;--tom:#CFE3F2">
             <div class="lp2-painel-texto">
-              <h2>Um convite digital <em>à sua altura</em></h2>
-              <p>Modelos elegantes para personalizar com as suas fotos, a sua história, o local com mapa e a contagem regressiva. Compartilhe com um link só seu.</p>
+              <h2 data-en-html="A digital invitation &lt;em&gt;that matches your style&lt;/em&gt;">Um convite digital <em>à sua altura</em></h2>
+              <p data-en="Elegant templates you can personalize with your photos, your story, a map to the venue, and a countdown. Share it with a link that's all your own.">Modelos elegantes para personalizar com as suas fotos, a sua história, o local com mapa e a contagem regressiva. Compartilhe com um link só seu.</p>
               <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom">Criar meu convite</button>
+                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Create my invitation">Criar meu convite</button>
               </div>
             </div>
             <figure class="lp2-painel-foto">
-              <img src="assets/landing/pconvite.jpg" alt="Casal de noivos sorrindo" loading="lazy">
+              <img src="assets/landing/pconvite.jpg" alt="Casal de noivos sorrindo" loading="lazy" data-en-alt="Smiling engaged couple">
               <figcaption class="lp-aviso lp2-chip">
                 <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
-                <div><b>Convite publicado</b><small>love.com.br/marina-e-pedro</small></div>
+                <div><b data-en="Invitation published">Convite publicado</b><small data-en="planwithlove.com/marina-e-pedro">love.com.br/marina-e-pedro</small></div>
               </figcaption>
             </figure>
           </article>
 
           <article id="painel-convidados" class="lp2-painel" style="--fundo:#0E4A57;--tom:#CDEDEA">
             <div class="lp2-painel-texto">
-              <h2>Sua lista de convidados, <em>sempre em dia</em></h2>
-              <p>Cada convidado confirma a presença em poucos toques, com acompanhantes e restrições alimentares. Você vê tudo em tempo real, sem planilha.</p>
+              <h2 data-en-html="Your guest list, &lt;em&gt;always up to date&lt;/em&gt;">Sua lista de convidados, <em>sempre em dia</em></h2>
+              <p data-en="Guests RSVP in just a few taps, with plus-ones and dietary restrictions. You see everything in real time — no spreadsheets needed.">Cada convidado confirma a presença em poucos toques, com acompanhantes e restrições alimentares. Você vê tudo em tempo real, sem planilha.</p>
               <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom">Montar minha lista</button>
+                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Build my guest list">Montar minha lista</button>
               </div>
             </div>
             <figure class="lp2-painel-foto">
-              <img src="assets/landing/pconvidados.jpg" alt="Convidados celebrando à mesa" loading="lazy">
+              <img src="assets/landing/pconvidados.jpg" alt="Convidados celebrando à mesa" loading="lazy" data-en-alt="Guests celebrating at the table">
               <figcaption class="lp-aviso lp2-chip">
                 <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-                <div><b>Ana confirmou presença</b><small>128 de 150 convidados</small></div>
+                <div><b data-en="Ana confirmed her RSVP">Ana confirmou presença</b><small data-en="128 of 150 guests">128 de 150 convidados</small></div>
               </figcaption>
             </figure>
           </article>
 
           <article id="painel-presentes" class="lp2-painel" style="--fundo:#27394f;--tom:#DCE4F5">
             <div class="lp2-painel-texto">
-              <h2>Presentes que <em>viram dinheiro</em></h2>
-              <p>Monte a lista do seu jeito ou comece por uma lista pronta. Os convidados presenteiam com Pix ou cartão, e os presentes maiores ganham vaquinha.</p>
+              <h2 data-en-html="Gifts that &lt;em&gt;turn into cash&lt;/em&gt;">Presentes que <em>viram dinheiro</em></h2>
+              <p data-en="Build your registry your way, or start from a ready-made list. Guests can gift via Pix or card, and bigger gifts can be group-funded.">Monte a lista do seu jeito ou comece por uma lista pronta. Os convidados presenteiam com Pix ou cartão, e os presentes maiores ganham vaquinha.</p>
               <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom">Criar minha lista</button>
+                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Create my registry">Criar minha lista</button>
               </div>
             </div>
             <figure class="lp2-painel-foto">
-              <img src="assets/landing/ppresentes.jpg" alt="Caixa de presente azul com laço" loading="lazy">
+              <img src="assets/landing/ppresentes.jpg" alt="Caixa de presente azul com laço" loading="lazy" data-en-alt="Blue gift box with a bow">
               <figcaption class="lp-aviso lp2-chip">
                 <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span>
-                <div><b>Novo presente recebido</b><small>R$ 250,00 via Pix · agora</small></div>
+                <div><b data-en="New gift received">Novo presente recebido</b><small data-en="R$ 250.00 via Pix · just now">R$ 250,00 via Pix · agora</small></div>
               </figcaption>
             </figure>
           </article>
 
           <article id="painel-mesas" class="lp2-painel" style="--fundo:#1D4466;--tom:#D6E8FA">
             <div class="lp2-painel-texto">
-              <h2>Cada convidado <em>no lugar certo</em></h2>
-              <p>Monte o mapa do evento arrastando os convidados para as mesas. Redondas, retangulares, pista de dança, do jeito que o salão é.</p>
+              <h2 data-en-html="Every guest &lt;em&gt;in the right seat&lt;/em&gt;">Cada convidado <em>no lugar certo</em></h2>
+              <p data-en="Build your seating chart by dragging guests to their tables. Round, rectangular, dance floor — however your venue is laid out.">Monte o mapa do evento arrastando os convidados para as mesas. Redondas, retangulares, pista de dança, do jeito que o salão é.</p>
               <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom">Montar meu mapa</button>
+                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Build my seating chart">Montar meu mapa</button>
               </div>
             </div>
             <figure class="lp2-painel-foto">
-              <img src="assets/landing/pmesas.jpg" alt="Mesa redonda decorada em azul" loading="lazy">
+              <img src="assets/landing/pmesas.jpg" alt="Mesa redonda decorada em azul" loading="lazy" data-en-alt="Round table decorated in blue">
               <figcaption class="lp-aviso lp2-chip">
                 <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="4" rx="1"/><path d="M6 13v6M18 13v6"/></svg></span>
-                <div><b>Mesa 7 completa</b><small>8 de 8 lugares</small></div>
+                <div><b data-en="Table 7 is full">Mesa 7 completa</b><small data-en="8 of 8 seats">8 de 8 lugares</small></div>
               </figcaption>
             </figure>
           </article>
 
           <article id="painel-carteira" class="lp2-painel" style="--fundo:#122B3D;--tom:#D3EFE0">
             <div class="lp2-painel-texto">
-              <h2>O seu dinheiro, <em>com transparência</em></h2>
-              <p>Cada presente entra no saldo da sua Carteira com o recado de quem enviou. Acompanhe o extrato e saque para a sua conta via Pix quando quiser.</p>
+              <h2 data-en-html="Your money, &lt;em&gt;fully transparent&lt;/em&gt;">O seu dinheiro, <em>com transparência</em></h2>
+              <p data-en="Every gift lands in your Wallet balance along with a note from who sent it. Track your statement and withdraw to your bank account via Pix whenever you like.">Cada presente entra no saldo da sua Carteira com o recado de quem enviou. Acompanhe o extrato e saque para a sua conta via Pix quando quiser.</p>
               <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom">Começar agora</button>
+                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Get started">Começar agora</button>
               </div>
             </div>
             <figure class="lp2-painel-foto">
-              <img src="assets/landing/pcarteira.jpg" alt="Casal sorrindo em frente ao notebook" loading="lazy">
+              <img src="assets/landing/pcarteira.jpg" alt="Casal sorrindo em frente ao notebook" loading="lazy" data-en-alt="Couple smiling in front of a laptop">
               <figcaption class="lp-aviso lp2-chip">
                 <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg></span>
-                <div><b>Saldo disponível</b><small>R$ 12.480,00</small></div>
+                <div><b data-en="Available balance">Saldo disponível</b><small data-en="R$ 12,480.00">R$ 12.480,00</small></div>
               </figcaption>
             </figure>
           </article>
@@ -256,27 +277,27 @@
     <section id="detalhes" class="lp2-detalhes">
       <div class="lp-faixa lp2-detalhes-linha">
         <div class="lp2-detalhes-texto">
-          <h2 class="lp2-titulo">A diferença está nos detalhes</h2>
+          <h2 class="lp2-titulo" data-en="The difference is in the details">A diferença está nos detalhes</h2>
           <div class="lp2-abas" role="tablist">
             <button type="button" class="lp2-aba ativo" role="tab" aria-selected="true" data-foto="assets/landing/dvaquinha.jpg">
-              <b>Vaquinha nos presentes maiores</b>
-              <span>Vários convidados se juntam para dar aquele presente especial, como a viagem, o sofá ou a lua de mel.</span>
+              <b data-en="Group-funding for bigger gifts">Vaquinha nos presentes maiores</b>
+              <span data-en="Multiple guests can chip in together for that special gift — the honeymoon, the sofa, the big trip.">Vários convidados se juntam para dar aquele presente especial, como a viagem, o sofá ou a lua de mel.</span>
             </button>
             <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/drecados.jpg">
-              <b>Recados guardados para sempre</b>
-              <span>Junto com cada presente chega uma mensagem de quem você ama, reunida num só lugar.</span>
+              <b data-en="Messages kept forever">Recados guardados para sempre</b>
+              <span data-en="Every gift arrives with a heartfelt message from the people you love, all gathered in one place.">Junto com cada presente chega uma mensagem de quem você ama, reunida num só lugar.</span>
             </button>
             <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dmapa.jpg">
-              <b>Mapa de mesas inteligente</b>
-              <span>Arraste, troque e veja na hora quantos lugares ainda estão livres em cada mesa.</span>
+              <b data-en="Smart seating chart">Mapa de mesas inteligente</b>
+              <span data-en="Drag, swap, and instantly see how many seats are still open at each table.">Arraste, troque e veja na hora quantos lugares ainda estão livres em cada mesa.</span>
             </button>
             <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dsaque.jpg">
-              <b>Saque via Pix</b>
-              <span>O dinheiro dos presentes vai para a sua conta quando você quiser, sem complicação.</span>
+              <b data-en="Withdraw via Pix">Saque via Pix</b>
+              <span data-en="Your gift money goes straight to your account whenever you want, hassle-free.">O dinheiro dos presentes vai para a sua conta quando você quiser, sem complicação.</span>
             </button>
             <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dlista.jpg">
-              <b>Lista de convidados completa</b>
-              <span>Grupos, acompanhantes, restrições e contatos, importe direto da agenda do celular.</span>
+              <b data-en="A complete guest list">Lista de convidados completa</b>
+              <span data-en="Groups, plus-ones, dietary needs, and contacts — import them straight from your phone.">Grupos, acompanhantes, restrições e contatos, importe direto da agenda do celular.</span>
             </button>
           </div>
         </div>
@@ -296,24 +317,24 @@
           <div class="lp-recibo lp2-recibo" aria-hidden="true">
             <div class="lp-recibo-topo">
               <span class="lp-recibo-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-              <div><b>Presente confirmado</b><small>Pagamento aprovado · Pix</small></div>
+              <div><b data-en="Gift confirmed">Presente confirmado</b><small data-en="Payment approved · Pix">Pagamento aprovado · Pix</small></div>
             </div>
-            <div class="lp-recibo-valor">R$ 350,00</div>
+            <div class="lp-recibo-valor" data-en="R$ 350.00">R$ 350,00</div>
             <dl class="lp-recibo-dados">
-              <div><dt>De</dt><dd>Beatriz Lima</dd></div>
-              <div><dt>Identificador</dt><dd class="lp-mono">E2E·7F3A·91C0</dd></div>
+              <div><dt data-en="From">De</dt><dd>Beatriz Lima</dd></div>
+              <div><dt data-en="Reference">Identificador</dt><dd class="lp-mono">E2E·7F3A·91C0</dd></div>
             </dl>
           </div>
         </figure>
         <div class="lp2-seguranca-texto">
-          <span class="lp-sobretitulo">Segurança</span>
-          <h2 class="lp2-titulo">Tecnologia que cuida do seu dinheiro e dos seus dados</h2>
-          <p class="lp2-texto">Por trás de um convite bonito existe uma operação financeira séria. Cada presente é registrado, rastreável e chega ao seu saldo com transparência total.</p>
+          <span class="lp-sobretitulo" data-en="Security">Segurança</span>
+          <h2 class="lp2-titulo" data-en="Technology that looks after your money and your data">Tecnologia que cuida do seu dinheiro e dos seus dados</h2>
+          <p class="lp2-texto" data-en="Behind a beautiful invitation is a serious financial operation. Every gift is logged, traceable, and lands in your balance with full transparency.">Por trás de um convite bonito existe uma operação financeira séria. Cada presente é registrado, rastreável e chega ao seu saldo com transparência total.</p>
           <ul class="lp2-garantias">
-            <li><b>Criptografia em todas as conexões</b><span>Os dados trafegam protegidos por HTTPS, do convite ao pagamento.</span></li>
-            <li><b>Privacidade de acordo com a LGPD</b><span>As informações dos seus convidados são usadas só para o seu evento.</span></li>
-            <li><b>Histórico de cada centavo</b><span>Extrato com quem enviou, quanto, quando e como foi pago.</span></li>
-            <li><b>Pagamentos com parceiro regulado</b><span>Pix e cartão processados por instituição de pagamento parceira.</span></li>
+            <li><b data-en="Encryption on every connection">Criptografia em todas as conexões</b><span data-en="Your data stays protected by HTTPS, from invitation to payment.">Os dados trafegam protegidos por HTTPS, do convite ao pagamento.</span></li>
+            <li><b data-en="Privacy under LGPD">Privacidade de acordo com a LGPD</b><span data-en="Your guests' information is used only for your event.">As informações dos seus convidados são usadas só para o seu evento.</span></li>
+            <li><b data-en="A record of every cent">Histórico de cada centavo</b><span data-en="A statement showing who sent what, when, and how it was paid.">Extrato com quem enviou, quanto, quando e como foi pago.</span></li>
+            <li><b data-en="Payments through a regulated partner">Pagamentos com parceiro regulado</b><span data-en="Pix and card payments processed by a licensed payment partner.">Pix e cartão processados por instituição de pagamento parceira.</span></li>
           </ul>
         </div>
       </div>
@@ -324,14 +345,14 @@
          ======================================================================= -->
     <section class="lp2-momentos">
       <div class="lp-faixa">
-        <h2 class="lp2-titulo-centro">Para todos os momentos</h2>
+        <h2 class="lp2-titulo-centro" data-en="For every occasion">Para todos os momentos</h2>
         <div class="lp2-momentos-lista">
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-casamento.jpg" alt="" loading="lazy"><span>Casamento</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy"><span>Chá de bebê</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-aniversario.jpg" alt="" loading="lazy"><span>Aniversário</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-bodas.jpg" alt="" loading="lazy"><span>Bodas</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy"><span>Chá de panela</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-revelacao.jpg" alt="" loading="lazy"><span>Chá revelação</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-casamento.jpg" alt="" loading="lazy"><span data-en="Wedding">Casamento</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy"><span data-en="Baby shower">Chá de bebê</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-aniversario.jpg" alt="" loading="lazy"><span data-en="Birthday">Aniversário</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-bodas.jpg" alt="" loading="lazy"><span data-en="Anniversary">Bodas</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy"><span data-en="Kitchen shower">Chá de panela</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-revelacao.jpg" alt="" loading="lazy"><span data-en="Gender reveal">Chá revelação</span></button>
         </div>
       </div>
     </section>
@@ -342,29 +363,29 @@
     <section id="duvidas" class="lp-secao lp-secao-branca lp2-duvidas">
       <div class="lp-faixa lp-duvidas-linha">
         <div class="lp-cab-secao">
-          <h2 class="lp2-titulo">Perguntas frequentes</h2>
-          <p class="lp2-texto">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p>
+          <h2 class="lp2-titulo" data-en="Frequently asked questions">Perguntas frequentes</h2>
+          <p class="lp2-texto" data-en="Can't find what you're looking for? Reach out through our Help Center.">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p>
         </div>
         <div class="lp-faq">
           <details open>
-            <summary>Quanto custa criar o meu evento?</summary>
-            <p>Criar o evento, o convite digital e a lista de presentes é grátis. Você começa agora mesmo e só publica quando estiver do seu jeito.</p>
+            <summary data-en="How much does it cost to create my event?">Quanto custa criar o meu evento?</summary>
+            <p data-en="Creating your event, digital invitation, and gift registry is free. You can start right now and only publish when it's exactly how you want it.">Criar o evento, o convite digital e a lista de presentes é grátis. Você começa agora mesmo e só publica quando estiver do seu jeito.</p>
           </details>
           <details>
-            <summary>Como recebo os presentes em dinheiro?</summary>
-            <p>Quando um convidado presenteia, o valor cai no saldo da sua Carteira na Love, com o recado de quem enviou. Depois é só sacar para a sua conta via Pix, direto pela plataforma.</p>
+            <summary data-en="How do I receive cash gifts?">Como recebo os presentes em dinheiro?</summary>
+            <p data-en="When a guest sends a gift, the amount lands in your Love Wallet balance along with their message. From there, just withdraw it to your bank account via Pix, right from the platform.">Quando um convidado presenteia, o valor cai no saldo da sua Carteira na Love, com o recado de quem enviou. Depois é só sacar para a sua conta via Pix, direto pela plataforma.</p>
           </details>
           <details>
-            <summary>Meus convidados precisam criar conta?</summary>
-            <p>Não. Eles abrem o link do convite, confirmam a presença e escolhem o presente em poucos toques, pelo celular ou pelo computador.</p>
+            <summary data-en="Do my guests need to create an account?">Meus convidados precisam criar conta?</summary>
+            <p data-en="No. They open your invitation link, RSVP, and pick a gift in just a few taps — on their phone or computer.">Não. Eles abrem o link do convite, confirmam a presença e escolhem o presente em poucos toques, pelo celular ou pelo computador.</p>
           </details>
           <details>
-            <summary>É seguro pagar e receber pela Love?</summary>
-            <p>Sim. As conexões são criptografadas, os pagamentos são processados por instituição de pagamento parceira e cada presente fica registrado no seu extrato, com data, valor e forma de pagamento.</p>
+            <summary data-en="Is it safe to pay and receive through Love?">É seguro pagar e receber pela Love?</summary>
+            <p data-en="Yes. Connections are encrypted, payments are processed by a licensed payment partner, and every gift is logged in your statement with date, amount, and payment method.">Sim. As conexões são criptografadas, os pagamentos são processados por instituição de pagamento parceira e cada presente fica registrado no seu extrato, com data, valor e forma de pagamento.</p>
           </details>
           <details>
-            <summary>Serve para outros eventos além de casamento?</summary>
-            <p>Serve. Há modelos para chá de bebê, chá revelação, chá de panela, aniversário, bodas e outras comemorações.</p>
+            <summary data-en="Does it work for events other than weddings?">Serve para outros eventos além de casamento?</summary>
+            <p data-en="Yes. There are templates for baby showers, gender reveals, kitchen showers, birthdays, anniversaries, and other celebrations.">Serve. Há modelos para chá de bebê, chá revelação, chá de panela, aniversário, bodas e outras comemorações.</p>
           </details>
         </div>
       </div>
@@ -377,9 +398,9 @@
       <img class="lp2-final-foto" src="assets/landing/final.jpg" alt="" loading="lazy">
       <div class="lp2-final-veu" aria-hidden="true"></div>
       <div class="lp-faixa lp2-final-conteudo">
-        <h2>Comece hoje.<br>O resto a gente organiza.</h2>
-        <p>Crie o seu evento grátis e compartilhe com quem você ama.</p>
-        <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
+        <h2 data-en-html="Start today.&lt;br&gt;We'll handle the rest.">Comece hoje.<br>O resto a gente organiza.</h2>
+        <p data-en="Create your event for free and share it with the people you love.">Crie o seu evento grátis e compartilhe com quem você ama.</p>
+        <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande" data-en="Create my event for free">Criar meu evento grátis</button>
       </div>
     </section>
 
@@ -392,7 +413,7 @@
          ======================================================================= -->
     <section id="legal-doc-page" class="lp-legal hidden">
       <div class="lp-legal-faixa">
-        <div id="legal-doc-loading" class="lp-legal-carregando hidden">Carregando...</div>
+        <div id="legal-doc-loading" class="lp-legal-carregando hidden" data-en="Loading...">Carregando...</div>
         <h1 id="legal-doc-title" class="lp-legal-titulo"></h1>
         <p id="legal-doc-date" class="lp-legal-data"></p>
         <div id="legal-doc-body" class="legal-doc-body"></div>
@@ -405,7 +426,7 @@
         <div class="lp-rodape-grade">
           <div class="lp-rodape-marca">
             <img src="assets/logo.png" alt="Love" class="lp-rodape-logo">
-            <p>Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
+            <p data-en="Digital invitations, gift registry, and RSVPs — all in one platform, built for the most important days of your life.">Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
             <div class="lp-redes">
               <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
@@ -426,45 +447,65 @@
           </div>
 
           <div class="lp-rodape-coluna">
-            <h4>Plataforma</h4>
+            <h4 data-en="Platform">Plataforma</h4>
             <ul>
-              <li><button type="button" id="btn-footer-create-event">Criar novo evento</button></li>
-              <li><button type="button" id="btn-footer-find-event">Encontre um evento</button></li>
-              <li><button type="button" id="btn-footer-b2b-advisors">Painel de assessores</button></li>
-              <li><button type="button" id="btn-footer-blog">Blog</button></li>
+              <li><button type="button" id="btn-footer-create-event" data-en="Create new event">Criar novo evento</button></li>
+              <li><button type="button" id="btn-footer-find-event" data-en="Find an event">Encontre um evento</button></li>
+              <li><button type="button" id="btn-footer-b2b-advisors" data-en="Advisor dashboard">Painel de assessores</button></li>
+              <li><button type="button" id="btn-footer-blog" data-en="Blog">Blog</button></li>
             </ul>
           </div>
 
           <div class="lp-rodape-coluna">
-            <h4>Suporte</h4>
+            <h4 data-en="Support">Suporte</h4>
             <ul>
-              <li><button type="button" id="btn-footer-help-center">Central de ajuda</button></li>
-              <li><button type="button" id="btn-footer-contact">Fale conosco</button></li>
-              <li><button type="button" class="btn-trigger-login">Área do anfitrião</button></li>
+              <li><button type="button" id="btn-footer-help-center" data-en="Help Center">Central de ajuda</button></li>
+              <li><button type="button" id="btn-footer-contact" data-en="Contact us">Fale conosco</button></li>
+              <li><button type="button" class="btn-trigger-login" data-en="Host area">Área do anfitrião</button></li>
             </ul>
           </div>
 
           <div class="lp-rodape-coluna">
-            <h4>Segurança</h4>
+            <h4 data-en="Security">Segurança</h4>
             <ul class="lp-rodape-selos">
-              <li><img src="assets/pix-icone.png" alt="" aria-hidden="true">Presentes via Pix</li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Conexão criptografada</li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/></svg>Dados protegidos (LGPD)</li>
+              <li><img src="assets/pix-icone.png" alt="" aria-hidden="true"><span data-en="Gifts via Pix">Presentes via Pix</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-en="Encrypted connection">Conexão criptografada</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/></svg><span data-en="Data protected (LGPD)">Dados protegidos (LGPD)</span></li>
             </ul>
           </div>
         </div>
 
         <div class="lp-rodape-base">
-          <p>© 2026 Love Hub Ltda. Todos os direitos reservados.</p>
+          <p data-en="© 2026 Love Hub Ltda. All rights reserved.">© 2026 Love Hub Ltda. Todos os direitos reservados.</p>
           <nav aria-label="Links legais">
-            <a href="/privacidade">Privacidade</a>
-            <a href="/termos">Termos e condições</a>
+            <a href="/privacidade" data-en="Privacy">Privacidade</a>
+            <a href="/termos" data-en="Terms &amp; conditions">Termos e condições</a>
           </nav>
         </div>
       </div>
     </footer>
 
   </div>
+
+  <!-- planwithlove.com: troca os textos da landing (acima) pelo inglês de
+       data-en/data-en-html/data-en-alt — só esse domínio; love.com.br e
+       qualquer outro continuam em português, sem rodar nada disso. -->
+  <script>
+    (function () {
+      try {
+        if (!document.documentElement.classList.contains('love-en-domain')) return;
+        var root = document.getElementById('view-public-site');
+        if (root) {
+          root.querySelectorAll('[data-en]').forEach(function (el) { el.textContent = el.getAttribute('data-en'); });
+          root.querySelectorAll('[data-en-html]').forEach(function (el) { el.innerHTML = el.getAttribute('data-en-html'); });
+          root.querySelectorAll('img[data-en-alt]').forEach(function (el) { el.alt = el.getAttribute('data-en-alt'); });
+        }
+      } finally {
+        // Revela a landing mesmo se algo acima falhar — nunca fica escondida pra sempre.
+        document.documentElement.classList.add('love-en-pronta');
+      }
+    })();
+  </script>
 
   <!-- =======================================================================
        VIEW 1.5: PÁGINA DE LOGIN (antes era um popup — agora página própria)

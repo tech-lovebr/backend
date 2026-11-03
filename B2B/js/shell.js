@@ -1170,20 +1170,30 @@ function montarMenuDoCelular() {
   // Seções da sidebar: primeiro os itens soltos (Dashboard, Produtos,
   // Clientes, Contratos, Financeiro); depois as categorias, cada uma com o
   // título e os itens embaixo — Construtor (Editar meu site, Formulários),
-  // Gestão (Tarefas, Agenda) — e, no fim, Mais (Workshops, Dúvidas).
+  // Gestão (Tarefas, Agenda) — juntas em Minha empresa (com Cobranças depois
+  // de Agenda) e, no fim, Mais (Configurações, Workshops, Dúvidas).
   const ICONE_TAREFAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5L7.5 17"/></svg>';
   const ICONE_AGENDA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
+  const ICONE_COBRANCAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a3.5 3.5 0 0 0 5 0l4-4a3.5 3.5 0 0 0-5-5l-.5.5"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-4 4a3.5 3.5 0 0 0 5 5l.5-.5"/></svg>';
   const desenharNav = () => {
     const sidebar = document.querySelector('.b2b-sidebar');
     if (!sidebar) return;
     let soltos = '';
     let categorias = '';
+    // Construtor e Gestão juntos numa seção só: Minha empresa.
+    let temMinhaEmpresa = false;
+    const abrirMinhaEmpresa = () => {
+      if (temMinhaEmpresa) return;
+      temMinhaEmpresa = true;
+      categorias += '<p class="menu-celular-secao">Minha empresa</p>';
+    };
+    const naCobrancas = pagina === 'contratos' && !!document.querySelector('#payments-view-tabs [data-view="receber"].active');
     sidebar.querySelectorAll('.sidebar-nav > .sidebar-nav-item[data-page], .sidebar-nav > .sidebar-nav-group').forEach(el => {
       if (el.classList.contains('sidebar-nav-group')) {
         const titulo = (el.querySelector('.sidebar-nav-text')?.textContent || '').trim();
         const ic = icone(el.querySelector('.sidebar-nav-toggle'));
         const aba = new URLSearchParams(location.search).get('tab') || 'editar';
-        categorias += `<p class="menu-celular-secao">${escapeHtml(titulo)}</p>`;
+        abrirMinhaEmpresa();
         el.querySelectorAll('.sidebar-subnav-item').forEach(sub => {
           const a = /** @type {HTMLAnchorElement} */ (sub);
           const ativo = pagina === 'paginas-site' && a.dataset.construtorAba === aba;
@@ -1196,12 +1206,14 @@ function montarMenuDoCelular() {
         // Gestão: Tarefas e Agenda separados (abrem a aba certa da página).
         const abaAtiva = document.querySelector('#work-view-tabs .category-tab.active')?.getAttribute('data-view') || new URLSearchParams(location.search).get('view') || 'agenda';
         const naGestao = pagina === 'agenda';
-        categorias += '<p class="menu-celular-secao">Gestão</p>';
+        abrirMinhaEmpresa();
         categorias += linha('agenda?view=quadro', 'Tarefas', ICONE_TAREFAS, naGestao && abaAtiva === 'quadro');
         categorias += linha('agenda?view=agenda', 'Agenda', ICONE_AGENDA, naGestao && abaAtiva === 'agenda');
+        // Cobranças: a lista de links de pagamento (aba Cobranças de Meus ganhos).
+        categorias += linha('pagamentos?tab=receber', 'Cobranças', ICONE_COBRANCAS, naCobrancas);
         return;
       }
-      soltos += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active'));
+      soltos += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active') && !(a.dataset.page === 'contratos' && naCobrancas));
     });
     let html = soltos + categorias;
     const extras = Array.from(sidebar.querySelectorAll('.sidebar-bottom > .sidebar-nav-item[data-page]'));

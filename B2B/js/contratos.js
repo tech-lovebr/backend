@@ -88,6 +88,11 @@ function initPaymentsViewTabs() {
         panel.style.display = panel.dataset.viewPanel === btn.dataset.view ? '' : 'none';
       });
       if (btn.dataset.view === 'financeiro') renderFinanceStats();
+      // Celular: sem as abas, o título diz onde a pessoa está (Cobranças vem do menu).
+      const titulo = document.querySelector('.b2b-header-bar h2');
+      if (titulo && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
+        titulo.textContent = btn.dataset.view === 'receber' ? 'Cobranças' : 'Meus ganhos';
+      }
     });
   });
 

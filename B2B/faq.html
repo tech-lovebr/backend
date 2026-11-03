@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=870">
+  <link rel="stylesheet" href="css/styles.css?v=871">
 </head>
 <body class="font-sans" data-page="faq">
 
@@ -41,6 +41,8 @@
       <main class="b2b-content">
       <!-- Cabeçalho padrão das páginas do Hub. -->
       <div class="b2b-header-bar">
+        <!-- Celular: seta para voltar à tela anterior (no computador fica escondida). -->
+        <a href="dashboard" class="header-voltar-celular" aria-label="Voltar" onclick="if (history.length > 1) { history.back(); return false; }"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg></a>
         <h2 class="text-xl font-bold text-zinc-900">Central de ajuda</h2>
       </div>
 

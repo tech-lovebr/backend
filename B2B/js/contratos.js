@@ -156,11 +156,6 @@ function renderFinanceStats() {
   const disponivel = computeSaldoDisponivel();
   disp.textContent = finValor(disponivel);
   disp.classList.toggle('is-escondido', finEsconder);
-  // Faixa do computador: saldo, total de ganhos (créditos) e contratos ativos.
-  const setFin = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-  setFin('fin-ganhos-saldo', finValor(disponivel));
-  setFin('fin-ganhos-total', finValor(bWalletTransactions.filter(t => t.type === 'credit').reduce((s, t) => s + Number(t.amount || 0), 0)));
-  setFin('fin-ganhos-contratos', String((bContracts || []).filter(c => c.status !== 'quitado').length));
   const pend = document.getElementById('fin-saldo-pendente');
   pend.textContent = finValor(computeSaldoAReceber());
   pend.classList.toggle('is-escondido', finEsconder);

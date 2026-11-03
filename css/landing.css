@@ -874,7 +874,7 @@
 
 /* Celular: título da abertura em no máximo 2 linhas. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  #view-public-site .lp2-hero-titulo { font-size: clamp(18px, calc((100vw - 32px) * 0.078), 30px) !important; line-height: 1.12 !important; text-wrap: balance; }
+  #view-public-site .lp2-hero-titulo { font-size: clamp(20px, calc((100vw - 32px) * 0.092), 36px) !important; line-height: 1.12 !important; text-wrap: balance; }
 }
 
 /* Foto da abertura com cantos mais arredondados (16px). */

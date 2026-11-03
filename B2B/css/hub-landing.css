@@ -284,7 +284,10 @@ html { scroll-behavior: smooth; overflow-x: clip; }
   .hl-hero-veu { display: none; }
   .hl-hero-conteudo { align-items: stretch; padding: 28px 16px 40px; text-align: center; }
   .hl-hero-intro { display: block; margin-bottom: 12px; font-size: 15px; line-height: 1.6; font-weight: 600; letter-spacing: -0.01em; color: #9CC3E4; }
-  .hl-hero-titulo { max-width: none; font-size: 34px; line-height: 1.1; letter-spacing: -0.035em; }
+  /* Título sempre em duas linhas (uma frase por linha), no maior tamanho que
+     cabe: a frase mais longa ocupa ~11,15x o tamanho da fonte. */
+  .hl-hero-titulo { max-width: none; font-size: min(40px, calc((100vw - 42px) * 0.087)); line-height: 1.1; letter-spacing: -0.035em; }
+  .hl-hero-linha { display: block; white-space: nowrap; }
   .hl-hero-sub { max-width: none; margin-top: 14px; font-size: 15px; line-height: 1.6; color: var(--texto-suave); }
   .hl-hero-ctas { flex-direction: column; align-items: stretch; gap: 8px; margin-top: 24px; }
   .hl-hero-ctas .hl-btn { width: 100%; }

@@ -920,14 +920,14 @@ html body #view-public-site :is(.lp-btn, .lp2-btn-tom, .lp2-hero-encontrar):not(
 }
 
 /* ---------- v8: cabeçalho do celular como a Zola ----------
-   Mais alto (72px), hambúrguer à esquerda, logo maior no meio e "Entrar" à
+   Mais alto (72px), hambúrguer e logo maior à esquerda e "Entrar" à
    direita. O hambúrguer abre o menu logo abaixo do cabeçalho. Desktop intocado. */
 #view-public-site .lp-menu-btn, #view-public-site .lp-menu-celular { display: none; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  #view-public-site .lp-topo-linha { position: relative; height: 72px; justify-content: space-between; }
-  #view-public-site .lp-logo { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  /* Logo colado no hambúrguer, à esquerda (como a Zola). */
+  #view-public-site .lp-topo-linha { height: 72px; gap: 8px; }
   #view-public-site .lp-logo img { height: 36px; }
-  #view-public-site .lp-topo-acoes { margin-left: 0; }
+  #view-public-site .lp-topo-acoes { margin-left: auto; }
   #view-public-site .lp-link-entrar { font-size: 16px !important; }
 
   #view-public-site .lp-menu-btn {

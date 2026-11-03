@@ -12902,3 +12902,12 @@ html body #payments-view-tabs > .category-tab[hidden]:not(#love-h-a) { display: 
 }
 /* Meus ganhos sem o "Esconder valores": o respiro de cima fica igual ao de baixo (28px). */
 html body .fin-resumo > .cart-resumo-cols:first-child:not(#love-h-a) { margin-top: 12px; }
+
+/* Configurações no celular: só 3 abas (Informações, Preferências, Contas
+   bancárias); as seções juntadas ganham título e o mesmo respiro entre elas. */
+html body .settings-so-celular:not(#love-h-a):not(#love-h-b) { display: none; }
+html body .settings-contas-conectadas:not(#love-h-a) { display: contents; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .settings-so-celular:not(#love-h-a):not(#love-h-b) { display: block; }
+  html body [data-settings-panel]:not([style*="none"]) ~ [data-settings-panel]:not([style*="none"]):not(#love-h-a) { margin-top: 1.5rem; }
+}

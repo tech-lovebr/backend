@@ -93,6 +93,31 @@ function initAccordionCards() {
 // sozinhas, sem esse botão.
 const SETTINGS_TABS_COM_SALVAR_TOPO = { perfil: 'profile-form', empresa: 'company-form' };
 
+// Celular: só 3 abas. Informações junta Dados da empresa; Preferências junta
+// Contas conectadas, Privacidade e URLs; Contas bancárias fica sozinha.
+const SETTINGS_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+const SETTINGS_GRUPOS_CELULAR = { perfil: ['perfil', 'empresa'], preferencias: ['preferencias', 'seguranca', 'urls'], banco: ['banco'] };
+const SETTINGS_ABA_NO_CELULAR = { empresa: 'perfil', seguranca: 'preferencias', urls: 'preferencias' };
+
+function arrumarAbasNoCelular() {
+  const wrap = document.getElementById('settings-tabs');
+  if (!wrap) return;
+  const celular = SETTINGS_CELULAR.matches;
+  Object.keys(SETTINGS_ABA_NO_CELULAR).forEach(tab => {
+    const b = wrap.querySelector(`[data-settings-tab="${tab}"]`);
+    if (b) b.hidden = celular;
+  });
+  // Contas conectadas: em Preferências no celular, em Informações no computador.
+  const contas = document.getElementById('settings-contas-conectadas');
+  const destino = document.querySelector(celular ? '[data-settings-panel="preferencias"]' : '[data-settings-panel="perfil"]');
+  if (contas && destino && contas.parentElement !== destino) destino.appendChild(contas);
+  // Reabre a aba ativa (no celular, a aba que a junta).
+  const ativa = wrap.querySelector('[data-settings-tab].active');
+  const tab = ativa ? ativa.dataset.settingsTab : 'perfil';
+  const alvo = celular ? (SETTINGS_ABA_NO_CELULAR[tab] || tab) : tab;
+  wrap.querySelector(`[data-settings-tab="${alvo}"]`)?.click();
+}
+
 function resetSalvarTopoLabel() {
   const salvarTopo = document.getElementById('settings-salvar-topo');
   if (salvarTopo) salvarTopo.textContent = 'Salvar';
@@ -106,8 +131,9 @@ function initSettingsTabs() {
       wrap.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.toggle('active', b === btn));
       // O título da página é o nome da aba escolhida no menu lateral.
       setText('settings-titulo-pagina', btn.dataset.titulo || btn.textContent.trim());
+      const mostrar = SETTINGS_CELULAR.matches ? (SETTINGS_GRUPOS_CELULAR[btn.dataset.settingsTab] || [btn.dataset.settingsTab]) : [btn.dataset.settingsTab];
       document.querySelectorAll('[data-settings-panel]').forEach(panel => {
-        panel.style.display = panel.dataset.settingsPanel === btn.dataset.settingsTab ? '' : 'none';
+        panel.style.display = mostrar.includes(panel.dataset.settingsPanel) ? '' : 'none';
       });
       // Mesmo botão no cabeçalho pra Suas informações e Dados da empresa —
       // só muda qual formulário ele envia. Volta a dizer "Salvar" (em vez
@@ -117,7 +143,8 @@ function initSettingsTabs() {
       if (salvarTopo) {
         const tab = btn.dataset.settingsTab;
         const formDaAba = SETTINGS_TABS_COM_SALVAR_TOPO[tab];
-        salvarTopo.hidden = !formDaAba;
+        // No celular cada formulário salva pelo botão do rodapé (Informações tem dois).
+        salvarTopo.hidden = !formDaAba || SETTINGS_CELULAR.matches;
         if (formDaAba) salvarTopo.setAttribute('form', formDaAba);
         resetSalvarTopoLabel();
       }
@@ -126,6 +153,8 @@ function initSettingsTabs() {
   // configuracoes?tab=banco (link do Financeiro) abre direto na aba pedida.
   const pedida = new URLSearchParams(location.search).get('tab');
   if (pedida) wrap.querySelector(`[data-settings-tab="${pedida}"]`)?.click();
+  arrumarAbasNoCelular();
+  SETTINGS_CELULAR.addEventListener?.('change', arrumarAbasNoCelular);
 }
 
 // Enquanto a pessoa mexe no formulário da aba ativa, o botão do cabeçalho

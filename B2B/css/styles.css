@@ -9345,8 +9345,12 @@ html body .settings-imagens:not(#love-h-a) { display: grid; grid-template-column
 html body .settings-imagens .profile-avatar-picker:not(#love-h-a) { width: 140px; height: 140px; aspect-ratio: auto; }
 html body .settings-imagens .profile-logo-picker:not(#love-h-a) { width: 100%; height: 140px; aspect-ratio: auto; }
 html body .settings-imagens .profile-logo-hint:not(#love-h-a) { margin-top: 0.4rem; }
-@media (max-width: 640px) {
-  html body .settings-imagens:not(#love-h-a) { grid-template-columns: 1fr; }
+/* Celular: imagem de perfil e capa na mesma linha (como no LinkedIn), menores. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .settings-imagens:not(#love-h-a) { grid-template-columns: 88px minmax(0, 1fr); gap: 12px; }
+  html body .settings-imagens .profile-avatar-picker:not(#love-h-a):not(#love-h-b) { width: 88px; height: 88px; }
+  html body .settings-imagens .profile-logo-picker:not(#love-h-a):not(#love-h-b) { height: 88px; }
+  html body .settings-imagens .profile-logo-hint:not(#love-h-a) { font-size: 11px; }
 }
 
 /* Mídia › Adicionar imagens: as 6 vagas aparecem de uma vez (o "Adicionar"

@@ -62,3 +62,6 @@ as $$
 $$;
 revoke all on function buscar_eventos(text) from public;
 grant execute on function buscar_eventos(text) to anon, authenticated;
+
+-- Faz a API do Supabase enxergar a função na hora.
+notify pgrst, 'reload schema';

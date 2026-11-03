@@ -7439,7 +7439,7 @@ html body button.b2b-profile-empresa-link:not(#love-h-a):hover { color: #416799;
 .b2b-estrela-vazia { color: #D4D4D8; }
 .b2b-avaliacao { padding: .85rem 1rem; border: 1px solid #EEEEF0; border-radius: 10px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); }
 /* Redes sociais do fornecedor, logo abaixo das estrelas de avaliação. */
-.b2b-profile-social-links { display: inline-flex; align-items: center; gap: 8px; }
+.b2b-profile-social-links { display: inline-flex; align-items: center; gap: 8px; margin: 6px 0; }
 .b2b-profile-social-btn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #F4F4F5; color: #52525B; transition: background-color .15s, color .15s; }
 .b2b-profile-social-btn:hover { background: #E4E4E7; color: #18181B; }
 .b2b-profile-social-btn svg { width: 15px; height: 15px; }
@@ -13754,9 +13754,11 @@ html body .rfp-voltar-explorar-celular:not(#love-h-a) { display: none !important
   html body #b2b-vendor-profile-view .b2b-perfil-acoes:not(#love-h-a) { order: 3; display: flex !important; gap: 8px !important; margin-top: 16px; width: 100%; }
   html body #b2b-vendor-profile-view .b2b-perfil-acoes > :is(#btn-b2b-profile-share, #btn-b2b-profile-favorite):not(#love-h-a) { flex: 0 0 44px; width: 44px !important; height: 44px !important; }
   html body #b2b-vendor-profile-view .b2b-perfil-acoes > :is(#btn-b2b-profile-message, #btn-b2b-profile-hire):not(#love-h-a) { flex: 1 1 0; min-width: 0; height: 44px !important; justify-content: center; font-size: 15px !important; }
-  html body #b2b-vendor-profile-view #b2b-profile-location:not(#love-h-a) { display: none !important; }
-  html body #b2b-vendor-profile-view .b2b-perfil-sobre-endereco:not(.hidden):not(#love-h-a) { display: block !important; margin: 12px 0 0; font-size: 14px; color: #52525B; }
 }
+/* Endereço: some do cabeçalho (nome/empresa) e fica só no final do Sobre,
+   padronizado — desktop e celular (antes só saía do cabeçalho no celular). */
+html body #b2b-vendor-profile-view #b2b-profile-location:not(#love-h-a) { display: none !important; }
+html body #b2b-vendor-profile-view .b2b-perfil-sobre-endereco:not(.hidden):not(#love-h-a) { display: block !important; margin: 12px 0 0; font-size: 14px; color: #52525B; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* Título e empresa na largura toda; Mensagem logo abaixo. */
   html body #b2b-cards-list-container .b2b-item-card .flex-nowrap:not(#love-h-a) { flex-wrap: wrap !important; row-gap: 12px; }

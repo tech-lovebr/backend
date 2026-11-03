@@ -19516,7 +19516,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Ícones das redes sociais do fornecedor (mesmas de Configurações › Minha
   // Empresa no Hub, B2B/configuracoes.html) — mostradas na página do
-  // fornecedor, logo abaixo das estrelas de avaliação.
+  // fornecedor, logo abaixo do nome da empresa.
   const ICONES_REDE_SOCIAL = {
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
     linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>',
@@ -20783,7 +20783,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ratingWrap.classList.remove('hidden');
       ratingWrap.innerHTML = estrelasHtml(item.avaliacaoMedia, item.avaliacaoTotal);
     }
-    // Redes sociais do fornecedor, logo abaixo das estrelas de avaliação.
+    // Redes sociais do fornecedor, logo abaixo do nome da empresa.
     if (socialWrap) {
       const socialHtml = socialLinksHtml(item.socialLinks);
       socialWrap.innerHTML = socialHtml;

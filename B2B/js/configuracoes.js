@@ -193,6 +193,18 @@ function initProfileForm() {
       if (typeof wireNameCaseInput === 'function') wireNameCaseInput(i);
       i.addEventListener('input', juntar);
     });
+    // Celular: o nome do responsável num campo só; reparte em primeiro nome e sobrenome.
+    const responsavelInput = document.getElementById('profile-responsavel');
+    if (responsavelInput) {
+      responsavelInput.value = String(p.name || '').trim();
+      if (typeof wireNameCaseInput === 'function') wireNameCaseInput(responsavelInput);
+      responsavelInput.addEventListener('input', () => {
+        const ps = responsavelInput.value.trim().split(/\s+/).filter(Boolean);
+        primeiroInput.value = ps.shift() || '';
+        sobrenomeInput.value = ps.join(' ');
+        nomeInput.value = responsavelInput.value.trim().replace(/\s+/g, ' ');
+      });
+    }
   }
   const birthdatePicker = initDatePicker(document.getElementById('profile-birthdate'), p.birthDate || '');
   document.getElementById('profile-phone').value = p.phone || '';
@@ -235,7 +247,7 @@ function initProfileForm() {
     // No celular o CNPJ é pedido em Contas bancárias, não aqui.
     const pedeDocumento = !SETTINGS_CELULAR.matches;
     if (!company || !name || (pedeDocumento && !documentNumber)) {
-      showToast(pedeDocumento ? `Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.` : 'Preencha nome, sobrenome e nome fantasia para continuar.', true);
+      showToast(pedeDocumento ? `Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.` : 'Preencha o nome da empresa e o nome do responsável para continuar.', true);
       return;
     }
 

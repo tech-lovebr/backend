@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=871">
+  <link rel="stylesheet" href="css/styles.css?v=872">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -92,7 +92,7 @@
                   <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
                 </div>
                 <div>
-                  <label for="profile-company" class="field-label">Nome fantasia <span style="color:#DC2626;">*</span></label>
+                  <label for="profile-company" class="field-label"><span class="settings-so-desktop">Nome fantasia</span><span class="settings-so-celular-inline">Nome da empresa</span> <span style="color:#DC2626;">*</span></label>
                   <div class="field-with-inline-link">
                     <input id="profile-company" type="text" class="field-input">
                   </div>
@@ -180,11 +180,16 @@
               <!-- Pessoal (responsável pela conta) -->
               <div class="settings-info-painel" data-info-painel="pessoal" hidden>
                 <p class="settings-info-dica settings-conta-digital">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
-                <div>
+                <!-- Celular: nome do responsável num campo só (no computador, primeiro nome e sobrenome). -->
+                <div class="settings-so-celular">
+                  <label for="profile-responsavel" class="field-label">Nome do responsável <span style="color:#DC2626;">*</span></label>
+                  <input id="profile-responsavel" type="text" class="field-input" autocomplete="name">
+                </div>
+                <div class="settings-so-desktop">
                   <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
                 </div>
-                <div>
+                <div class="settings-so-desktop">
                   <label for="profile-last-name" class="field-label">Sobrenome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-last-name" type="text" class="field-input" autocomplete="family-name">
                 </div>
@@ -685,7 +690,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=75"></script>
-  <script src="js/configuracoes.js?v=76"></script>
+  <script src="js/configuracoes.js?v=77"></script>
   <script src="js/contas-bancarias.js?v=5"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>

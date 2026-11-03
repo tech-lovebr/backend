@@ -12944,3 +12944,8 @@ html body .header-voltar-celular:not(#love-h-a) { display: none; }
   html body .header-voltar-celular svg:not(#love-h-a) { width: 22px; height: 22px; }
   body[data-theme="dark"] .header-voltar-celular { color: #FFFFFF !important; }
 }
+/* Rótulo trocado só no celular (Nome fantasia → Nome da empresa). */
+html body .settings-so-celular-inline:not(#love-h-a) { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .settings-so-celular-inline:not(#love-h-a):not(#love-h-b) { display: inline; }
+}

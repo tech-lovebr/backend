@@ -271,11 +271,13 @@ html { scroll-behavior: smooth; overflow-x: clip; }
 /* ---------- Celular (mesmo corte da plataforma) ---------- */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .hl-faixa { padding: 0 16px; }
-  /* Cabeçalho: logo e "Entrar". */
-  .hl-topo-linha { width: auto; height: 60px; gap: 12px; padding: 0 16px; }
-  .hl-logo img { height: 28px; }
+  /* Cabeçalho igual ao da Love: 72px, logo de 36px à esquerda e "Entrar"
+     (16px) à direita, os dois a 16px da borda; sem menu hambúrguer. */
+  .hl-topo-linha { width: auto; height: 72px; gap: 12px; padding: 0 16px; }
+  .hl-logo img { height: 36px; width: auto; display: block; }
   .hl-topo-acoes .hl-btn { display: none; }
-  .hl-entrar { font-size: 15px; }
+  .hl-topo-acoes { margin-left: auto; }
+  .hl-entrar { font-size: 16px !important; }
 
   /* Abertura: foto numa caixa no topo e o texto embaixo, centralizado. */
   .hl-faixa-intro, .hl-publico { display: none; }

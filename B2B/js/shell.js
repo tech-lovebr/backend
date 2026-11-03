@@ -1094,7 +1094,7 @@ function montarMenuDoCelular() {
     <aside id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
       <div class="menu-celular-topo">
         ${logo}
-        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></button>
+        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <nav class="menu-celular-nav" aria-label="Seções"></nav>
       <button type="button" class="menu-celular-conta" aria-haspopup="dialog">

@@ -10653,8 +10653,8 @@ html body .cart-rotulo:not(#love-h-a) { margin: 0; font-size: 13px; font-weight:
 html body .cart-numero:not(#love-h-a) { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; font-variant-numeric: tabular-nums; }
 .cart-numero.is-escondido { letter-spacing: 0.08em; }
 html body .cart-dica:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: #71717A; }
-html body button.cart-link-texto:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-html body .cart-dica button.cart-link-texto:not(#love-h-a) { font-size: inherit; }
+html body :is(button, a).cart-link-texto:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+html body .cart-dica :is(button, a).cart-link-texto:not(#love-h-a) { font-size: inherit; }
 html body .cart-ver:not(#love-h-a) { margin-top: 8px; }
 html body .cart-sacar:not(#love-h-a) { height: 42px; margin-top: 8px; padding: 0 20px; }
 html body .cart-sacar:disabled:not(#love-h-a) { background: #A1A1AA !important; border-color: #A1A1AA !important; color: #FFFFFF !important; cursor: default; }

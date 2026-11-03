@@ -70,7 +70,7 @@
 
   <!-- Custom Styles -->
   <link rel="stylesheet" href="css/styles.css?v=20261102_semabascart">
-  <link rel="stylesheet" href="css/landing.css?v=20261102_landing18">
+  <link rel="stylesheet" href="css/landing.css?v=20261103_landing19">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -82,6 +82,10 @@
     <!-- Cabeçalho público: logo, anfitriões | fornecedores (desktop) e Entrar / Criar evento grátis -->
     <header class="lp-topo">
       <div class="lp-faixa lp-topo-linha">
+        <!-- Celular: menu hambúrguer à esquerda, logo no meio (como a Zola) -->
+        <button type="button" class="lp-menu-btn" id="lp-menu-btn" aria-label="Abrir menu" aria-expanded="false" aria-controls="lp-menu-celular">
+          <span></span><span></span><span></span>
+        </button>
         <a href="/" class="lp-logo" aria-label="Início da Love">
           <img src="assets/logo.png?v=2" alt="Love">
         </a>
@@ -95,6 +99,30 @@
           <button type="button" class="btn-trigger-register lp-btn lp-btn-primario">Criar evento grátis</button>
         </div>
       </div>
+      <!-- Celular: menu aberto pelo hambúrguer, logo abaixo do cabeçalho -->
+      <nav class="lp-menu-celular" id="lp-menu-celular" aria-label="Menu" hidden>
+        <a href="/" aria-current="page">Para anfitriões</a>
+        <a href="https://hub.love.com.br" rel="noopener">Para fornecedores</a>
+        <a href="/encontrar-evento">Encontrar um evento</a>
+        <button type="button" class="btn-trigger-login">Entrar</button>
+        <button type="button" class="btn-trigger-register lp-btn lp-btn-primario lp-menu-criar">Criar evento grátis</button>
+      </nav>
+      <script>
+        (function () {
+          var btn = document.getElementById('lp-menu-btn');
+          var menu = document.getElementById('lp-menu-celular');
+          if (!btn || !menu) return;
+          function abrir(sim) {
+            menu.hidden = !sim;
+            btn.setAttribute('aria-expanded', sim ? 'true' : 'false');
+            btn.setAttribute('aria-label', sim ? 'Fechar menu' : 'Abrir menu');
+            btn.classList.toggle('is-aberto', sim);
+          }
+          btn.addEventListener('click', function () { abrir(menu.hidden); });
+          menu.addEventListener('click', function (e) { if (e.target.closest('a, button')) abrir(false); });
+          document.addEventListener('click', function (e) { if (!menu.hidden && !e.target.closest('.lp-topo')) abrir(false); });
+        })();
+      </script>
     </header>
 
     <!-- Conteúdo de marketing da home — escondido como bloco único quando uma

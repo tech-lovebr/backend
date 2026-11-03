@@ -954,7 +954,10 @@ function formatDateKey(date) {
 }
 
 function formatFriendlyDate(date) {
-  return capitalize(date.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }));
+  // 'Terça, 03/11': o dia da semana sem o '-feira' e a data em números.
+  const dia = date.toLocaleDateString('pt-BR', { weekday: 'long' }).replace(/-feira$/, '');
+  const data = date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  return `${capitalize(dia)}, ${data}`;
 }
 
 function formatShortDateLabel(dateKey) {

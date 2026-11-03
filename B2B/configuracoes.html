@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=869">
+  <link rel="stylesheet" href="css/styles.css?v=870">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -84,8 +84,10 @@
               <div class="settings-info-painel" data-info-painel="empresa">
                 <p class="settings-info-dica"><span style="color:#DC2626;">*</span> indica campo obrigatório</p>
                 <!-- Razão social e CNPJ, depois de preenchidos, não mudam mais;
-                     só o nome fantasia (o que os clientes veem) muda. -->
-                <div>
+                     só o nome fantasia (o que os clientes veem) muda.
+                     Celular: os dados da conta digital (settings-conta-digital)
+                     saem daqui e são pedidos em Contas bancárias. -->
+                <div class="settings-conta-digital">
                   <label for="profile-razao-social" class="field-label">Razão social <span style="color:#DC2626;">*</span></label>
                   <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
                 </div>
@@ -95,7 +97,7 @@
                     <input id="profile-company" type="text" class="field-input">
                   </div>
                 </div>
-                <div class="settings-doc-linha">
+                <div class="settings-doc-linha settings-conta-digital">
                   <div>
                     <label class="field-label">Tipo de documento</label>
                     <div class="plan-billing-toggle" id="profile-doc-type-toggle" style="margin-bottom:0; width:fit-content;">
@@ -114,7 +116,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div data-so-cnpj>
                     <label for="profile-tipo-empresa" class="field-label">Tipo de empresa <span style="color:#DC2626;">*</span></label>
                     <select id="profile-tipo-empresa" class="field-select">
@@ -138,7 +140,7 @@
                     </select>
                   </div>
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div>
                     <label for="profile-cep" class="field-label">CEP <span style="color:#DC2626;">*</span></label>
                     <input id="profile-cep" type="text" inputmode="numeric" maxlength="9" class="field-input" placeholder="00000-000" autocomplete="postal-code">
@@ -148,7 +150,7 @@
                     <input id="profile-bairro" type="text" class="field-input">
                   </div>
                 </div>
-                <div class="settings-endereco-trio">
+                <div class="settings-endereco-trio settings-conta-digital">
                   <div>
                     <label for="profile-address" class="field-label">Endereço <span style="color:#DC2626;">*</span></label>
                     <input id="profile-address" type="text" class="field-input" placeholder="Rua, avenida…" autocomplete="address-line1">
@@ -162,7 +164,7 @@
                     <input id="profile-complemento" type="text" class="field-input" placeholder="Opcional">
                   </div>
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div>
                     <label for="profile-state" class="field-label">Estado</label>
                     <select id="profile-state" class="field-select"></select>
@@ -177,7 +179,7 @@
 
               <!-- Pessoal (responsável pela conta) -->
               <div class="settings-info-painel" data-info-painel="pessoal" hidden>
-                <p class="settings-info-dica">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
+                <p class="settings-info-dica settings-conta-digital">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
                 <div>
                   <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
@@ -186,7 +188,7 @@
                   <label for="profile-last-name" class="field-label">Sobrenome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-last-name" type="text" class="field-input" autocomplete="family-name">
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div data-so-cnpj>
                     <label for="profile-resp-cpf" class="field-label">CPF</label>
                     <input id="profile-resp-cpf" type="text" inputmode="numeric" maxlength="14" class="field-input" placeholder="000.000.000-00">
@@ -375,10 +377,15 @@
               </div>
             </div>
 
-            <div class="settings-zola-bloco">
+            <!-- Celular: sem Forma e condições de pagamento (fica no produto);
+                 o Salvar vem logo depois de Redes sociais. -->
+            <div class="settings-so-celular">
+              <button type="submit" class="informacoes-salvar-rodape settings-zola-salvar">Salvar alterações</button>
+            </div>
+            <div class="settings-zola-bloco settings-so-desktop">
               <h3 class="settings-secao-titulo settings-secao-titulo--painel">Forma e condições de pagamento</h3>
             </div>
-            <div class="dash-card settings-zola-card">
+            <div class="dash-card settings-zola-card settings-so-desktop">
               <div class="settings-zola-form">
                 <!-- Parcelamento em duas etapas (revelação progressiva): 1) quem paga
                      os juros; 2) só se o fornecedor assumir, até quantas vezes sem
@@ -491,7 +498,7 @@
 
           <div class="dash-card settings-zola-card">
             <div class="settings-seguranca-linhas">
-              <div class="settings-switch-row">
+              <div class="settings-switch-row settings-so-desktop">
                 <div>
                   <p class="settings-switch-label">Autenticação de dois fatores</p>
                   <p class="settings-switch-desc" id="profile-2fa-desc">Peça um código do Google Authenticator ao entrar.</p>
@@ -499,7 +506,7 @@
                 <button type="button" class="btn-secondary profile-security-action-btn" id="profile-2fa-btn">Permitir</button>
               </div>
 
-              <div class="settings-switch-row">
+              <div class="settings-switch-row settings-so-desktop">
                 <div>
                   <p class="settings-switch-label">Verificação de conta</p>
                   <p class="settings-switch-desc" id="profile-selfie-desc"></p>
@@ -678,8 +685,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=75"></script>
-  <script src="js/configuracoes.js?v=75"></script>
-  <script src="js/contas-bancarias.js?v=4"></script>
+  <script src="js/configuracoes.js?v=76"></script>
+  <script src="js/contas-bancarias.js?v=5"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

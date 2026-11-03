@@ -232,8 +232,10 @@ function initProfileForm() {
     const documentNumber = document.getElementById('profile-document').value.trim();
     const docLabel = p.documentType === 'cpf' ? 'CPF' : 'CNPJ';
 
-    if (!company || !name || !documentNumber) {
-      showToast(`Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.`, true);
+    // No celular o CNPJ é pedido em Contas bancárias, não aqui.
+    const pedeDocumento = !SETTINGS_CELULAR.matches;
+    if (!company || !name || (pedeDocumento && !documentNumber)) {
+      showToast(pedeDocumento ? `Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.` : 'Preencha nome, sobrenome e nome fantasia para continuar.', true);
       return;
     }
 

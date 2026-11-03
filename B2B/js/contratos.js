@@ -146,8 +146,8 @@ function formatDateOnly(dateStr) {
 /* Topo do Financeiro no modelo da Carteira Digital (love.com.br):
    saldo disponível para saque + Solicitar saque, saldo pendente, "Esconder
    valores" e os atalhos para o histórico de saques e o extrato. */
-let finEsconder = false;
-try { finEsconder = localStorage.getItem('b2b-fin-esconder') === '1'; } catch (e) { /* sem armazenamento */ }
+// Esconder valores saiu: os valores aparecem sempre.
+const finEsconder = false;
 const finValor = v => (finEsconder ? 'R$ ••••' : formatCurrency(v));
 
 function renderFinanceStats() {
@@ -159,8 +159,6 @@ function renderFinanceStats() {
   const pend = document.getElementById('fin-saldo-pendente');
   pend.textContent = finValor(computeSaldoAReceber());
   pend.classList.toggle('is-escondido', finEsconder);
-  const esconder = document.querySelector('#fin-esconder span');
-  if (esconder) esconder.textContent = finEsconder ? 'Mostrar valores' : 'Esconder valores';
 
   const temConta = !!((typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.pixKey) || window.b2bTemContaBancaria);
   document.getElementById('fin-dica-conta').hidden = temConta;
@@ -169,11 +167,6 @@ function renderFinanceStats() {
   if (!sacar.dataset.ligado) {
     sacar.dataset.ligado = '1';
     sacar.addEventListener('click', openWithdrawalModal);
-    document.getElementById('fin-esconder')?.addEventListener('click', () => {
-      finEsconder = !finEsconder;
-      try { localStorage.setItem('b2b-fin-esconder', finEsconder ? '1' : '0'); } catch (e) { /* sem armazenamento */ }
-      renderFinanceStats();
-    });
     document.querySelectorAll('[data-fin-ver]').forEach(b => b.addEventListener('click', () => {
       mostrarListaFinanceira(b.dataset.finVer);
       document.getElementById('finance-lista-titulo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -13,7 +13,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Financeiro — Portal do Fornecedor Love</title>
+  <title>Meus ganhos — Portal do Fornecedor Love</title>
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#537bae">
@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=864">
+  <link rel="stylesheet" href="css/styles.css?v=865">
 </head>
 <body class="font-sans" data-page="contratos">
   <div class="b2b-shell">
@@ -31,11 +31,11 @@
       <div id="shell-topbar"></div>
       <main class="b2b-content">
         <div class="b2b-header-bar">
-          <h2 class="text-xl font-bold text-zinc-900">Financeiro</h2>
+          <h2 class="text-xl font-bold text-zinc-900">Meus ganhos</h2>
         </div>
 
         <div class="category-tabs-bar" id="payments-view-tabs">
-          <button type="button" class="category-tab active" data-view="financeiro">Financeiro</button>
+          <button type="button" class="category-tab active" data-view="financeiro">Meus ganhos</button>
           <button type="button" class="category-tab" data-view="receber">Cobranças</button>
           <button type="button" class="category-tab" data-view="contas" hidden>Contas bancárias</button>
         </div>
@@ -45,9 +45,6 @@
                para saque (com Solicitar saque) e saldo pendente; abaixo, o
                extrato completo. -->
           <section class="cart-caixa cart-resumo fin-resumo">
-            <div class="cart-resumo-topo">
-              <button type="button" class="cart-link" id="fin-esconder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>Esconder valores</span></button>
-            </div>
             <div class="cart-resumo-cols fin-resumo-cols">
               <div class="cart-resumo-col">
                 <p class="cart-rotulo">Saldo disponível para saque</p>
@@ -385,7 +382,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=72"></script>
-  <script src="js/contratos.js?v=48"></script>
+  <script src="js/contratos.js?v=49"></script>
   <script src="js/contas-bancarias.js?v=4"></script>
 </body>
 </html>

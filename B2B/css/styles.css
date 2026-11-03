@@ -12899,3 +12899,5 @@ html body #payments-view-tabs > .category-tab[hidden]:not(#love-h-a) { display: 
   /* Sem as abas em cima, a primeira caixa volta a ter a borda de cima e os cantos. */
   html body :is(.fin-resumo, .fin-contas):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-top: 1px solid var(--borda-suave) !important; border-top-left-radius: 10px !important; border-top-right-radius: 10px !important; }
 }
+/* Meus ganhos sem o "Esconder valores": o respiro de cima fica igual ao de baixo (28px). */
+html body .fin-resumo > .cart-resumo-cols:first-child:not(#love-h-a) { margin-top: 12px; }

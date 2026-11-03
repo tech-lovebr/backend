@@ -1207,6 +1207,9 @@ function montarMenuDoCelular() {
     const extras = Array.from(sidebar.querySelectorAll('.sidebar-bottom > .sidebar-nav-item[data-page]'));
     if (extras.length) {
       html += '<p class="menu-celular-secao">Mais</p>';
+      // Configurações fica aqui (antes de Workshops), não no menu Minha conta.
+      const config = document.querySelector('#avatar-dropdown > .topbar-dropdown-item[href="configuracoes"]');
+      if (config) html += linha('configuracoes', 'Configurações', icone(config), pagina === 'configuracoes');
       extras.forEach(el => {
         const a = /** @type {HTMLAnchorElement} */ (el);
         html += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active'));
@@ -1268,7 +1271,7 @@ function montarMenuDoCelular() {
   };
   const desenharItensConta = () => {
     itensConta.innerHTML = '';
-    document.querySelectorAll('#avatar-dropdown > .topbar-dropdown-item:not(.topbar-item-adicionar-empresa):not(.topbar-item-sair)').forEach(orig => {
+    document.querySelectorAll('#avatar-dropdown > .topbar-dropdown-item:not(.topbar-item-adicionar-empresa):not(.topbar-item-sair):not([href="configuracoes"])').forEach(orig => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'menu-conta-item';

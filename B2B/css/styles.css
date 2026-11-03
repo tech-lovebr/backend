@@ -12678,7 +12678,7 @@ html body .auth-tela #signup-email-form:has(#signup-email:not(:placeholder-shown
 /* Celular: prévia da barra de baixo do Hub (só enfeite). */
 .auth-tela .login-barra-previa { display: none; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body .auth-tela :is(#auth-view-login, #auth-view-signup):not(#love-h-a):not(#love-h-b) { padding-bottom: 72px; }
+  html body .auth-tela:has(.login-barra-previa) :is(#auth-view-login, #auth-view-signup):not(#love-h-a):not(#love-h-b) { padding-bottom: 72px; }
   .auth-tela .login-barra-previa {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex;
     height: calc(64px + env(safe-area-inset-bottom, 0px)); padding: 6px 8px env(safe-area-inset-bottom, 0px);

@@ -131,10 +131,10 @@ const PRODUCT_WEEKDAYS = [
   { key: 'dom', label: 'Dom' }
 ];
 
-const PI_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>';
-const PI_TRASH = '<svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
+const PI_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>';
+const PI_TRASH = '<svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
 const PI_IMAGE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>';
-const PI_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+const PI_CLOSE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
 
 // O atributo `hidden` sozinho não basta aqui: elementos com classe
 // flex/grid do Tailwind (ex: "flex flex-col gap-4") continuam visíveis
@@ -319,7 +319,7 @@ function renderProducts() {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
   const total = document.getElementById('produtos-total');
-  if (total) total.innerHTML = `<b>${bProducts.length}</b> ${bProducts.length === 1 ? 'produto cadastrado' : 'produtos cadastrados'}`;
+  if (total) total.innerHTML = `<b>${bProducts.length}</b> ${bProducts.length === 1 ? 'produto' : 'produtos'}`;
 
   const termo = produtosBusca.trim().toLowerCase();
   const items = (activeCategory === 'Todos'
@@ -328,13 +328,25 @@ function renderProducts() {
     .filter(p => !termo || [p.name, p.sku, ...(p.packages || []).map(k => k.sku)].some(v => String(v || '').toLowerCase().includes(termo)));
 
   if (!items.length) {
+    // Busca sem resultado: só o aviso. Sem nenhum produto: a caixa cheia de
+    // Meus presentes no anfitrião, com o cartão pontilhado de cadastrar.
+    if (termo) {
+      grid.innerHTML = `<div class="produtos-vazio produtos-vazio-busca" style="grid-column:1/-1;"><p class="produtos-vazio-texto">Nenhum produto encontrado para "${escapeHtml(produtosBusca.trim())}".</p></div>`;
+      return;
+    }
     grid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1;">
-        <div class="empty-state-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5 12 2.25 3 7.5m18 0-9 5.25M21 7.5v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+      <div class="produtos-vazio" style="grid-column:1/-1;">
+        <p class="produtos-vazio-texto">Você ainda não tem nenhum produto cadastrado. <button type="button" class="produtos-vazio-link" data-produto-vazio-criar>Que tal cadastrar um novo?</button></p>
+        <div class="produtos-vazio-cards">
+          <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar>
+            <dotlottie-wc class="produtos-vazio-lottie" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
+            <strong>Cadastrar novo produto</strong>
+            <span class="produtos-vazio-criar-sub">Crie um produto ou serviço do zero</span>
+          </button>
         </div>
-        <p class="text-sm font-medium text-zinc-700">${termo ? 'Nenhum item encontrado.' : 'Nenhum item nessa categoria ainda.'}</p>
       </div>`;
+    if (typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
+    grid.querySelectorAll('[data-produto-vazio-criar]').forEach(b => b.addEventListener('click', () => document.getElementById('product-add-btn')?.click()));
     return;
   }
 
@@ -1159,7 +1171,7 @@ function renderCategoryTree(filterText) {
         const rowHtml = `
           <div class="category-tree-row ${selectedCategory === cat ? 'active' : ''} ${isExpanded ? 'is-open' : ''}" data-category-row="${escapeHtml(cat)}">
             <span>${escapeHtml(cat)}</span>
-            ${subs.length ? `<svg class="category-tree-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>` : ''}
+            ${subs.length ? `<svg class="category-tree-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>` : ''}
           </div>`;
         const subHtml = (subs.length && isExpanded)
           ? subs.map(sub => `
@@ -1795,7 +1807,7 @@ function initProductDrawer() {
         } else {
           const { error } = await supabaseClient.from('products').insert({ fornecedor_id: empresaId(session), ...row });
           if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
-          showToast('Produto adicionado à vitrine.');
+          avisarAdicionado(name, 'Produto adicionado à vitrine.');
         }
         await loadProducts();
         renderCategoryTabs();

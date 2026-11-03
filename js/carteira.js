@@ -1,6 +1,6 @@
 // @ts-check
-// Carteira digital (Carteira › Carteira digital) — abas Saque e Contas
-// bancárias, no modelo das carteiras de plataformas de pagamento:
+// Carteira digital (Carteira › Carteira digital): Saque; Contas bancárias
+// ficam em Configurações › Contas bancárias. No modelo das carteiras de plataformas de pagamento:
 //   Saque: saldo total, disponível para saque (com "Solicitar saque") e
 //          pendente; ao lado, o extrato dos presentes comprados e o
 //          histórico de saques (quando, quanto, para qual conta e status).
@@ -254,7 +254,7 @@
     return `
       <h3 class="cart-lista-titulo">Extrato completo</h3>
       <section class="dash-card love-tabela-caixa cart-lista">
-        ${barraDaTabela('Buscar convidado ou presente...', `${todos.length} ${todos.length === 1 ? 'presente recebido' : 'presentes recebidos'}`)}
+        ${barraDaTabela('Pesquisar convidado ou presente...', `${todos.length} ${todos.length === 1 ? 'presente recebido' : 'presentes recebidos'}`)}
         <div class="w-full overflow-x-auto">
           <table class="love-tabela w-full text-left border-collapse font-sans">
             <thead><tr><th>Data</th><th>Convidado</th><th>Presente</th><th class="cart-num">Valor</th></tr></thead>
@@ -277,7 +277,7 @@
     return `
       <h3 class="cart-lista-titulo">Histórico de saques</h3>
       <section class="dash-card love-tabela-caixa cart-lista">
-        ${barraDaTabela('Buscar saque...', `${saques.length} ${saques.length === 1 ? 'saque' : 'saques'}`)}
+        ${barraDaTabela('Pesquisar saque...', `${saques.length} ${saques.length === 1 ? 'saque' : 'saques'}`)}
         <div class="w-full overflow-x-auto">
           <table class="love-tabela w-full text-left border-collapse font-sans cart-tabela-saques">
             <thead><tr><th>Solicitado em</th><th>Valor</th><th>Conta</th><th>Status</th></tr></thead>
@@ -526,10 +526,6 @@
     if (!raiz) return;
     if (aba !== 'contas') { cadastrando = false; etapaVerif = ''; }
     raiz.innerHTML = `
-      <div class="love-tabs-nav cart-abas" role="tablist">
-        <button type="button" class="love-tab-item${aba === 'saque' ? ' active' : ''}" data-cart-aba="saque">Saque</button>
-        <button type="button" class="love-tab-item${aba === 'contas' ? ' active' : ''}" data-cart-aba="contas">Contas bancárias</button>
-      </div>
       <p class="cart-aviso" id="cart-aviso" role="status" hidden></p>
       ${aba === 'contas' ? htmlContas() : htmlSaque()}`;
   }
@@ -754,7 +750,7 @@
   function abrirSaque() {
     const n = numeros();
     const lista = contas().filter(c => c.status !== 'recusado');
-    if (!lista.length) { aba = 'contas'; desenhar(); return; }
+    if (!lista.length) { irParaContas(); return; }
     const m = abrirPopup('cart-modal-saque', `
       <h3 class="cart-modal-titulo">Solicitar saque</h3>
       <div class="cart-saque-saldo"><span>Saldo disponível</span><b>${esc(reais(n.disponivel))}</b></div>
@@ -831,7 +827,7 @@
     document.querySelectorAll('.cart-menu:not([hidden])').forEach(m => { if (!m.parentElement?.contains(alvo)) /** @type {HTMLElement} */ (m).hidden = true; });
     if (!alvo.closest('#carteira-raiz')) return;
     const a = /** @type {HTMLElement|null} */ (alvo.closest('[data-cart-aba]'));
-    if (a) { aba = a.dataset.cartAba === 'contas' ? 'contas' : 'saque'; desenhar(); return; }
+    if (a) { if (a.dataset.cartAba === 'contas') irParaContas(); return; }
     if (alvo.closest('[data-cart-esconder]')) { esconder = !esconder; desenhar(); return; }
     if (alvo.closest('[data-cart-periodo]')) {
       periodoAberto = !periodoAberto;
@@ -900,7 +896,29 @@
     if (novo) { novo.focus(); if (pos !== null) novo.setSelectionRange(pos, pos); }
   });
 
+  // Sem abas: a Carteira mostra o Saque e as Contas bancárias ficam em
+  // Configurações › Contas bancárias. A mesma raiz (#carteira-raiz) muda de
+  // lugar, então todos os seletores continuam valendo.
+  /** @param {string} idDoLugar */
+  function moverRaizPara(idDoLugar) {
+    const raiz = document.getElementById('carteira-raiz');
+    const lugar = document.getElementById(idDoLugar);
+    if (raiz && lugar && raiz.parentElement !== lugar) lugar.appendChild(raiz);
+  }
+  function irParaContas() {
+    if (typeof w.loveAbrirContasBancarias === 'function') w.loveAbrirContasBancarias();
+  }
+
+  async function contasBancarias() {
+    moverRaizPara('config-contas-lugar');
+    if (aba !== 'contas') { aba = 'contas'; cadastrando = false; etapaVerif = ''; }
+    desenhar();
+    if (!verificacaoCarregada) { await carregarVerificacao(); desenhar(); }
+  }
+
   async function render() {
+    moverRaizPara('wallet-sub-digital');
+    aba = 'saque';
     const ev = evento();
     const id = ev ? String(ev.id) : '';
     desenhar();
@@ -911,5 +929,5 @@
     }
   }
 
-  w.LoveCarteira = { render };
+  w.LoveCarteira = { render, contasBancarias };
 })();

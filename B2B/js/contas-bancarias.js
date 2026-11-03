@@ -20,6 +20,14 @@
   let cadastrando = false;
   let docTipo = 'rg';
   const arquivos = { cnpj: null, frente: null, verso: null, selfie: null };
+  // Dados da conta digital (tipo, faturamento, endereço, CPF e nascimento).
+  // No celular eles saíram de Configurações › Informações e são pedidos aqui.
+  let contaDigital = {};
+  const CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  const UFS = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'];
+  const soDigitosCb = v => String(v || '').replace(/\D/g, '');
+  const mascaraCep = v => { const d = soDigitosCb(v).slice(0, 8); return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; };
+  const mascaraCpf = v => soDigitosCb(v).slice(0, 11).replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 
   const esc = s => (typeof escapeHtml === 'function' ? escapeHtml(String(s == null ? '' : s)) : String(s == null ? '' : s));
   const soDigitos = v => String(v || '').replace(/\D/g, '');
@@ -40,7 +48,7 @@
   const ILUSTRACAO_DOCUMENTOS = `
     <svg viewBox="0 0 140 140" aria-hidden="true">
       <circle cx="70" cy="70" r="64" fill="#EBF4FF"/>
-      <circle cx="70" cy="70" r="52" fill="none" stroke="#CFE0F5" stroke-width="2"/>
+      <circle cx="70" cy="70" r="52" fill="none" stroke="#CFE0F5" stroke-width="1.75"/>
       <rect x="40" y="30" width="60" height="76" rx="8" fill="#183b54"/>
       <rect x="49" y="39" width="42" height="26" rx="5" fill="#27394f"/>
       <circle cx="70" cy="48" r="7" fill="#FFFFFF"/>
@@ -50,9 +58,9 @@
       <rect x="50" y="89" width="36" height="3.5" rx="1.75" fill="#FFFFFF" opacity=".85"/>
       <circle cx="94" cy="100" r="15" fill="#FFFFFF"/>
       <circle cx="94" cy="100" r="12" fill="#2F9E62"/>
-      <path d="m88.5 100.2 3.8 3.8 7.4-7.6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="m88.5 100.2 3.8 3.8 7.4-7.6" fill="none" stroke="#FFFFFF" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
-  const ICONE_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+  const ICONE_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
   const ICONE_ENVIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>';
 
   /* -------------------- Dados -------------------- */
@@ -75,6 +83,36 @@
       contas = [{ id: 'pix', metodo: 'pix', pix: { tipo: f.data.pix_key_type, chave: f.data.pix_key }, status: 'aprovado' }];
     }
     window.b2bTemContaBancaria = contas.some(c => c.status !== 'recusado');
+    // Consulta à parte: se as colunas da conta digital (migration 110) faltarem, o resto segue.
+    const cd = await supabaseClient.from('fornecedores')
+      .select('tipo_empresa, faturamento_mensal, cep, endereco_numero, endereco_complemento, bairro, responsavel_cpf, data_nascimento, address, city, state')
+      .eq('id', fid).maybeSingle();
+    contaDigital = (!cd.error && cd.data) || {};
+  }
+
+  /* Celular: endereço, tipo, faturamento, CPF e nascimento (no computador
+     eles continuam em Configurações › Informações; o CSS esconde este bloco). */
+  function htmlContaDigital() {
+    const d = contaDigital;
+    const opc = (lista, atual) => lista.map(([v, t]) => `<option value="${v}"${String(atual == null ? '' : atual) === v ? ' selected' : ''}>${t}</option>`).join('');
+    const fat = d.faturamento_mensal != null ? String(Math.round(Number(d.faturamento_mensal))) : '';
+    return `
+        <div class="cart-conta-digital">
+          <h4 class="cart-verif-titulo">Endereço e responsável</h4>
+          <div class="cart-form-grade">
+            <label class="cart-campo"><span>Tipo de empresa</span><select data-cd="tipo_empresa">${opc([['', 'Escolha'], ['MEI', 'MEI'], ['LIMITED', 'Sociedade limitada (Ltda)'], ['INDIVIDUAL', 'Empresário individual'], ['ASSOCIATION', 'Associação']], d.tipo_empresa)}</select></label>
+            <label class="cart-campo"><span>Faturamento mensal</span><select data-cd="faturamento_mensal">${opc([['', 'Escolha'], ['5000', 'Até R$ 5 mil'], ['10000', 'R$ 5 mil a R$ 10 mil'], ['20000', 'R$ 10 mil a R$ 20 mil'], ['50000', 'R$ 20 mil a R$ 50 mil'], ['100000', 'R$ 50 mil a R$ 100 mil'], ['200000', 'Acima de R$ 100 mil']], fat)}</select></label>
+            <label class="cart-campo"><span>CEP</span><input type="text" data-cd="cep" inputmode="numeric" maxlength="9" placeholder="00000-000" value="${esc(d.cep ? mascaraCep(d.cep) : '')}" autocomplete="postal-code"></label>
+            <label class="cart-campo"><span>Bairro</span><input type="text" data-cd="bairro" value="${esc(d.bairro || '')}"></label>
+            <label class="cart-campo cart-campo-largo"><span>Endereço</span><input type="text" data-cd="address" placeholder="Rua, avenida…" value="${esc(d.address || '')}" autocomplete="address-line1"></label>
+            <label class="cart-campo"><span>Número</span><input type="text" data-cd="endereco_numero" value="${esc(d.endereco_numero || '')}"></label>
+            <label class="cart-campo"><span>Complemento</span><input type="text" data-cd="endereco_complemento" placeholder="Opcional" value="${esc(d.endereco_complemento || '')}"></label>
+            <label class="cart-campo"><span>Estado</span><select data-cd="state">${opc([['', 'Escolha'], ...UFS.map(u => [u, u])], d.state)}</select></label>
+            <label class="cart-campo"><span>Cidade</span><input type="text" data-cd="city" value="${esc(d.city || '')}"></label>
+            <label class="cart-campo"><span>CPF do responsável</span><input type="text" data-cd="responsavel_cpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" value="${esc(d.responsavel_cpf ? mascaraCpf(d.responsavel_cpf) : '')}"></label>
+            <label class="cart-campo"><span>Data de nascimento</span><input type="date" data-cd="data_nascimento" value="${esc(d.data_nascimento || '')}"></label>
+          </div>
+        </div>`;
   }
   const documentosEnviados = () => !!verificacao && verificacao.status !== 'recusada';
 
@@ -108,6 +146,7 @@
             </select>
           </label>
         </div>
+        ${htmlContaDigital()}
         <div class="cart-verif-arquivos">
           <label class="cart-arquivo${arquivos.cnpj ? ' tem-arquivo' : ''}" data-cb-arquivo="cnpj">
             <input type="file" accept="image/jpeg,image/png,image/webp,application/pdf" data-cb-doc="cnpj">
@@ -311,6 +350,30 @@
     if (docTipo !== 'passaporte' && !arquivos.verso) return falhar('Envie o verso do documento do sócio.');
     if (!arquivos.selfie) return falhar('Envie a selfie segurando o documento.');
     if (!pixChave) return falhar('Informe a chave Pix.');
+    // Celular: os dados da conta digital vêm deste formulário.
+    let digital = null;
+    if (CELULAR.matches && cartao.querySelector('.cart-conta-digital')) {
+      const c = k => String((cartao.querySelector(`[data-cd="${k}"]`) || { value: '' }).value || '').trim();
+      if (!c('tipo_empresa')) return falhar('Escolha o tipo de empresa.');
+      if (!c('faturamento_mensal')) return falhar('Escolha o faturamento mensal.');
+      if (soDigitosCb(c('cep')).length !== 8) return falhar('CEP incompleto.');
+      if (!c('bairro')) return falhar('Informe o bairro.');
+      if (!c('address')) return falhar('Informe o endereço.');
+      if (!c('endereco_numero')) return falhar('Informe o número do endereço.');
+      digital = {
+        tipo_empresa: c('tipo_empresa'),
+        faturamento_mensal: Number(c('faturamento_mensal')),
+        cep: soDigitosCb(c('cep')),
+        bairro: c('bairro'),
+        address: c('address'),
+        endereco_numero: c('endereco_numero'),
+        endereco_complemento: c('endereco_complemento') || null,
+        state: c('state') || null,
+        city: c('city') || null,
+        responsavel_cpf: soDigitosCb(c('responsavel_cpf')) || null,
+        data_nascimento: c('data_nascimento') || null
+      };
+    }
     const btn = cartao.querySelector('[data-cb-enviar]');
     btn.disabled = true; btn.textContent = 'Enviando…';
     try {
@@ -333,6 +396,13 @@
       const { error } = await supabaseClient.from('verificacoes_conta').insert({ fornecedor_id: fid, documentos });
       if (error) throw error;
       await supabaseClient.from('fornecedores').update({ pix_key: pixChave, pix_key_type: pixTipo }).eq('id', fid);
+      if (digital) {
+        const { error: erroDigital } = await supabaseClient.from('fornecedores').update(digital).eq('id', fid);
+        if (!erroDigital) {
+          contaDigital = Object.assign({}, contaDigital, digital);
+          if (typeof B2B_DATA !== 'undefined') Object.assign(B2B_DATA.professional, { address: digital.address, city: digital.city, state: digital.state });
+        }
+      }
       if (typeof B2B_DATA !== 'undefined') { B2B_DATA.professional.pixKey = pixChave; B2B_DATA.professional.pixKeyType = pixTipo; }
       verificacao = { status: 'em_analise' };
     } catch (e) {
@@ -368,6 +438,8 @@
   document.addEventListener('input', e => {
     const el = e.target;
     if (el && el.matches && el.matches('#carteira-raiz [data-cb-campo="cnpj"]')) el.value = mascaraCnpj(el.value);
+    if (el && el.matches && el.matches('#carteira-raiz [data-cd="cep"]')) el.value = mascaraCep(el.value);
+    if (el && el.matches && el.matches('#carteira-raiz [data-cd="responsavel_cpf"]')) el.value = mascaraCpf(el.value);
   });
   document.addEventListener('change', e => {
     const el = e.target;

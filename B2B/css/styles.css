@@ -3293,7 +3293,7 @@ body[data-theme="dark"] .metric-ring { background: conic-gradient(var(--ring-col
 
 /* Responsive */
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .conv-list { width: 240px; }
   .bubble { max-width: 80%; }
 }
@@ -3647,7 +3647,7 @@ body[data-theme="dark"] .plan-billing-option.active .plan-billing-option-title {
 .mobile-nav-overlay { display: none; }
 .mobile-nav-sheet { display: none; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .b2b-sidebar { display: none; }
   .b2b-main { margin-left: 0; background-color: var(--bg-dashboard); }
   body[data-theme="dark"] .b2b-main { background-color: #1C2125 !important; }
@@ -4573,17 +4573,17 @@ body[data-theme="dark"] [class*="border-b-2"].active * {
   background: #ffffff;
   border-color: transparent;
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-canvas[data-page-key="checkout"] [data-fixed-key="checkout"] > .builder-columns-row > .builder-column { padding: 20px; }
 }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .builder-section { min-height: 100dvh; }
   .builder-section > .builder-columns-row { max-width: 100%; padding: 0 16px; }
 }
 
 /* botões: altura mínima de toque no mobile */
 .builder-canvas[data-device="mobile"] .be-button { min-height: 44px; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .be-button { min-height: 44px; }
 }
 
@@ -6202,7 +6202,7 @@ body[data-theme="dark"] .agenda-notif-item:hover { background: #1c1c1c !importan
 }
 .agenda-event-delete-btn:hover { text-decoration: underline; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .agenda-calendar-layout { grid-template-columns: 1fr; }
 }
 
@@ -6279,7 +6279,7 @@ body[data-theme="dark"] .agenda-timeline-lines-col { border-left-color: #404040 
 
 .contratos-drawer-box { white-space: normal; line-height: 1.5; min-height: unset; }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   .contratos-clientes-layout { grid-template-columns: 1fr; }
 }
 
@@ -7685,7 +7685,7 @@ body[data-theme="dark"] .dashboard-help-header .dashboard-help-title { color: #F
 
 /* Painel › Precisa de ajuda?: duas caixas (Canais de suporte e Central de ajuda). */
 .dashboard-help-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (max-width: 768px) { .dashboard-help-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) { .dashboard-help-grid { grid-template-columns: 1fr; } }
 a.guide-link { display: block; text-decoration: none; }
 
 /* Lápis da imagem de perfil/capa: fundo branco translúcido (com um leve
@@ -8332,7 +8332,7 @@ body.sidebar-flutuando .b2b-sidebar { box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 8p
    com a mesma largura, ocupando a linha toda. */
 html body .dashboard-quick-actions:not(#love-h-a) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
 html body .dashboard-quick-actions .dashboard-quick-action-btn:not(#love-h-a) { width: 100%; justify-content: center; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .dashboard-quick-actions:not(#love-h-a) { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }
 }
 /* Painel: sem a data no canto superior direito. */
@@ -9345,8 +9345,12 @@ html body .settings-imagens:not(#love-h-a) { display: grid; grid-template-column
 html body .settings-imagens .profile-avatar-picker:not(#love-h-a) { width: 140px; height: 140px; aspect-ratio: auto; }
 html body .settings-imagens .profile-logo-picker:not(#love-h-a) { width: 100%; height: 140px; aspect-ratio: auto; }
 html body .settings-imagens .profile-logo-hint:not(#love-h-a) { margin-top: 0.4rem; }
-@media (max-width: 640px) {
-  html body .settings-imagens:not(#love-h-a) { grid-template-columns: 1fr; }
+/* Celular: imagem de perfil e capa na mesma linha (como no LinkedIn), menores. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .settings-imagens:not(#love-h-a) { grid-template-columns: 88px minmax(0, 1fr); gap: 12px; }
+  html body .settings-imagens .profile-avatar-picker:not(#love-h-a):not(#love-h-b) { width: 88px; height: 88px; }
+  html body .settings-imagens .profile-logo-picker:not(#love-h-a):not(#love-h-b) { height: 88px; }
+  html body .settings-imagens .profile-logo-hint:not(#love-h-a) { font-size: 11px; }
 }
 
 /* Mídia › Adicionar imagens: as 6 vagas aparecem de uma vez (o "Adicionar"
@@ -10653,8 +10657,8 @@ html body .cart-rotulo:not(#love-h-a) { margin: 0; font-size: 13px; font-weight:
 html body .cart-numero:not(#love-h-a) { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; font-variant-numeric: tabular-nums; }
 .cart-numero.is-escondido { letter-spacing: 0.08em; }
 html body .cart-dica:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: #71717A; }
-html body button.cart-link-texto:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
-html body .cart-dica button.cart-link-texto:not(#love-h-a) { font-size: inherit; }
+html body :is(button, a).cart-link-texto:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+html body .cart-dica :is(button, a).cart-link-texto:not(#love-h-a) { font-size: inherit; }
 html body .cart-ver:not(#love-h-a) { margin-top: 8px; }
 html body .cart-sacar:not(#love-h-a) { height: 42px; margin-top: 8px; padding: 0 20px; }
 html body .cart-sacar:disabled:not(#love-h-a) { background: #A1A1AA !important; border-color: #A1A1AA !important; color: #FFFFFF !important; cursor: default; }
@@ -10962,7 +10966,7 @@ html body .forms-vazio:not(#love-h-a) { min-height: calc(100vh - 300px); justify
 html body[data-page="produtos"] #category-tabs:not(#love-h-a) { margin-bottom: 0 !important; }
 html body .produtos-barra-caixa:not(#love-h-a) {
   display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  margin: 0 0 24px; padding: 14px 16px !important; border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
+  margin: 0 0 24px; padding: 14px 16px !important;
 }
 html body .produtos-barra-caixa .produtos-busca:not(#love-h-a) { width: 280px; max-width: 100%; margin: 0; }
 html body .produtos-total:not(#love-h-a) { margin: 0; font-size: 14px; color: #52525B; }
@@ -10988,7 +10992,7 @@ html body .parcelas-opcoes .parcelas-card-sub:not(#love-h-a) { margin-top: 2px; 
 
 /* Caixas grudadas nas abas (Meus produtos, Suas informações): a regra geral
    das caixas devolvia a borda e os cantos de cima — aqui ganha dela. */
-html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   border-top: 0 !important; border-top-left-radius: 0 !important; border-top-right-radius: 0 !important;
 }
 
@@ -11001,7 +11005,7 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
    - Toques de pelo menos 44 × 44 px nos botões e links principais.
    - Campos com 16px de letra (o Safari não dá zoom ao focar).
    ========================================================================== */
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   :root { --b2b-content-pad-x: 16px; }
   html, body { overflow-x: hidden; max-width: 100%; }
   html body .b2b-shell:not(#love-h-a), html body .b2b-main:not(#love-h-a) { min-height: 100dvh; overflow-x: hidden; }
@@ -11032,7 +11036,7 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
    768px; o desktop não muda.
    ========================================================================== */
 .submenu-celular { display: none; }
-@media (max-width: 768px) {
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   :root {
     --navbar-height-mobile: calc(60px + env(safe-area-inset-top, 0px));
     --bottom-bar-height-mobile: calc(64px + env(safe-area-inset-bottom, 0px));
@@ -11105,4 +11109,1843 @@ html body :is(#produtos-barra-caixa, .settings-info-caixa):not(#love-h-a):not(#l
   body[data-theme="dark"] .b2b-content > .submenu-celular { background: #1F1F1F; border-color: #333333; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item { color: #A1A1AA; }
   body[data-theme="dark"] .submenu-celular .submenu-celular-item.is-ativo { background: #333333; border-color: #404040; color: #FFFFFF; }
+}
+
+/* ==========================================================================
+   Celular do Hub igual ao do anfitrião (valores medidos no anfitrião a 375px):
+   barra de baixo, cabeçalho das telas, abas do submenu e menu (☰) com a
+   conta. Só no celular (inclusive deitado); o desktop não muda.
+   ========================================================================== */
+.menu-celular-botao, .logo-celular, .notif-tempo-curto { display: none; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  .menu-celular, .menu-celular-fundo, .menu-conta, .menu-conta-fundo { display: none !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  :root { --bottom-bar-height-mobile: calc(64px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Base do layout de celular (também com o celular deitado). */
+  html body .b2b-sidebar:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .b2b-main:not(#love-h-a):not(#love-h-b) { margin-left: 0 !important; }
+  html body .b2b-footer:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  /* Altura da tela em dvh (não pula com a barra do navegador). Quem rola é a
+     caixa do conteúdo, como no desktop; as abas grudam no topo dela. */
+  html body :is(.b2b-shell, .b2b-main):not(#love-h-a):not(#love-h-b) { height: 100dvh !important; }
+
+  /* ---------- Barra de baixo: fixa, de ponta a ponta, vidro claro ---------- */
+  html body .mobile-bottom-nav:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 0 !important;
+    position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important; width: 100% !important;
+    height: var(--bottom-bar-height-mobile) !important; z-index: 70 !important;
+    padding: 0 6px env(safe-area-inset-bottom, 0px) !important; box-sizing: border-box !important;
+    border-radius: 0 !important; border: 1px solid rgba(0, 0, 0, 0.09) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(244, 246, 247, 0.42) 100%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%); backdrop-filter: blur(24px) saturate(190%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+      inset 0 -8px 16px rgba(255, 255, 255, 0.25),
+      0 8px 24px rgba(0, 0, 0, 0.10) !important;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 0 !important; width: auto !important; min-width: 0 !important; height: 52px !important; min-height: 44px !important; margin: 0 !important;
+    display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 3px !important;
+    padding: 4px 2px !important; border: 0 !important; border-radius: 8px !important;
+    background: transparent !important; box-shadow: none !important; transform: none !important;
+    color: #52525B !important; position: relative; -webkit-tap-highlight-color: transparent;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a):not(#love-h-b) svg {
+    width: 21px !important; height: 21px !important; flex-shrink: 0;
+    color: currentColor !important; stroke: currentColor !important; stroke-width: 2.15px !important;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b) svg { stroke-width: 2.25px !important; }
+  html body .mobile-bottom-nav .mobile-nav-item > span:last-child:not(.nav-badge):not(#love-h-a):not(#love-h-b) {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 10.5px !important; font-weight: 500 !important; line-height: 1.2 !important; letter-spacing: normal !important; color: currentColor !important;
+  }
+  html body .mobile-bottom-nav .mobile-nav-item.active > span:last-child:not(.nav-badge):not(#love-h-a):not(#love-h-b) { font-weight: 600 !important; }
+  html body:not([data-theme="dark"]) .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b) { background: #EBF4FF !important; color: #183b54 !important; box-shadow: none !important; }
+  html body .mobile-bottom-nav .mobile-nav-item .nav-badge:not(#love-h-a):not(#love-h-b) { top: 2px; right: calc(50% - 20px); }
+  body[data-theme="dark"] .mobile-bottom-nav {
+    background: linear-gradient(180deg, rgba(60, 60, 60, 0.55) 0%, rgba(30, 30, 30, 0.45) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+  }
+  body[data-theme="dark"] .mobile-bottom-nav .mobile-nav-item { color: #A1A1AA !important; }
+  body[data-theme="dark"] .mobile-bottom-nav .mobile-nav-item.active { background: #2A2A2A !important; color: #FFFFFF !important; }
+
+  /* ---------- Topo: só no Dashboard (logo à esquerda; sino e ☰ à direita) ---------- */
+  html body:not([data-page="dashboard"]) .b2b-topbar:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] .b2b-topbar:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center !important; gap: 0 !important; position: relative !important; top: auto !important; z-index: 40;
+    height: calc(60px + env(safe-area-inset-top, 0px)) !important; min-height: 0 !important;
+    padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)) !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important; box-sizing: border-box;
+  }
+  html body[data-page="dashboard"] .b2b-topbar > :is(.topbar-account-wrap, .topbar-search-trigger):not(#love-h-a):not(#love-h-b),
+  html body[data-page="dashboard"] .b2b-topbar #topbar-icon-group > :not(:has(#notif-trigger)):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] .b2b-topbar > .logo-celular:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; gap: 8px; order: 0; margin-right: auto; height: 100%; cursor: pointer; text-decoration: none;
+  }
+  html body .b2b-topbar > .logo-celular .logo-celular-icone:not(#love-h-a) { height: 36px; width: auto; }
+  html body .b2b-topbar > .logo-celular .logo-celular-nome:not(#love-h-a) { height: 28px; width: auto; }
+  .logo-celular .logo-escuro { display: none; }
+  body[data-theme="dark"] .logo-celular .logo-claro { display: none; }
+  body[data-theme="dark"] .logo-celular .logo-escuro { display: block; }
+  html body[data-page="dashboard"] .b2b-topbar #topbar-icon-group:not(#love-h-a):not(#love-h-b) { order: 1; display: flex !important; align-items: center; gap: 0 !important; margin: 0 !important; }
+  html body[data-page="dashboard"] .b2b-topbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b) { order: 2; margin-left: 10px !important; }
+  html body[data-page="dashboard"] .b2b-topbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b),
+  html body[data-page="dashboard"] .b2b-topbar #notif-trigger:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex !important; align-items: center !important; justify-content: center !important; position: relative;
+    width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important; color: #18181B !important; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body[data-page="dashboard"] .b2b-topbar > .menu-celular-botao:not(#love-h-a) svg { width: 24px !important; height: 24px !important; stroke-width: 2px; }
+  html body[data-page="dashboard"] .b2b-topbar #notif-trigger:not(#love-h-a) svg { width: 24px !important; height: 24px !important; stroke-width: 2.15px !important; }
+  html body[data-page="dashboard"] .b2b-topbar #notif-trigger .topbar-icon-badge:not(#love-h-a):not(#love-h-b) { top: 4px !important; right: 4px !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-topbar :is(.menu-celular-botao, #notif-trigger) { background: transparent !important; border: 0 !important; color: #FFFFFF !important; }
+  /* O sino/perfil não vão mais para dentro do "Olá" (agora estão no topo e no ☰). */
+  html body[data-page="dashboard"] :is(.dashboard-greeting-mobile-avatar, .dashboard-greeting-mobile-icons):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] .b2b-content:not(#love-h-a):not(#love-h-b) { padding-top: 0 !important; }
+
+  /* ---------- Cabeçalho das outras telas: branco até o topo, título 20/700 ---------- */
+  html body:not([data-page="dashboard"]) .b2b-content:not(#love-h-a):not(#love-h-b) { padding-top: calc(20px + env(safe-area-inset-top, 0px)) !important; }
+  html body .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b) {
+    position: relative; isolation: isolate; z-index: 30;
+    display: flex !important; align-items: center !important; flex-wrap: wrap !important; column-gap: 8px !important; row-gap: 12px !important;
+    min-height: 0 !important; flex-shrink: 0 !important; box-sizing: border-box;
+    margin: calc(-20px - env(safe-area-inset-top, 0px)) -16px 16px !important;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 18px max(16px, env(safe-area-inset-left, 0px)) !important;
+    background: #FFFFFF !important; border: 0 !important; box-shadow: none !important;
+  }
+  html body .b2b-content > .b2b-header-bar > :first-child:not(#love-h-a):not(#love-h-b) { flex: 1 1 auto; min-width: 0; }
+  html body .b2b-content > .b2b-header-bar :is(h1, h2):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex; align-items: center; min-height: 44px; margin: 0 !important;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important; letter-spacing: -0.4px !important; color: #18181B !important;
+    overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  }
+  html body .b2b-content > .b2b-header-bar .produto-titulo-wrap:not(#love-h-a):not(#love-h-b) { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  /* Seta de voltar: ícone de 20px, botão de 44px a 10px da borda; título em 62px. */
+  html body .b2b-content > .b2b-header-bar .produto-voltar:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    display: inline-flex !important; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important; margin: 0 0 0 -6px !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #18181B !important;
+  }
+  html body .b2b-content > .b2b-header-bar .produto-voltar:not(#love-h-a):not(#love-h-b) svg { width: 20px !important; height: 20px !important; stroke-width: 2 !important; }
+  /* Botões do cabeçalho: só o ícone escuro, sem caixa, 44px, à direita. */
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):has(svg):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: relative; flex: 0 0 auto; width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important;
+    padding: 0 !important; gap: 0 !important; justify-content: center !important; font-size: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #18181B !important;
+  }
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):has(svg) > :not(svg):not(.op-filtrar-qtd):not(#love-h-a) { display: none !important; }
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):has(svg):not(#love-h-a) svg { width: 22px !important; height: 22px !important; color: currentColor !important; }
+  html body .b2b-content > .b2b-header-bar .op-filtrar-qtd:not([hidden]):not(#love-h-a) { position: absolute; top: 4px; right: 2px; font-size: 10px !important; }
+  /* Sem ícone (Salvar, Marcar todas como lidas): texto na cor primária, sem caixa. */
+  html body .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):not(:has(svg)):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 0 0 auto; height: 44px !important; min-height: 44px !important; padding: 0 4px !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important;
+    color: #183b54 !important; font-size: 14px !important; font-weight: 600 !important;
+  }
+  /* Busca do cabeçalho: linha de baixo, largura toda. */
+  html body .b2b-content > .b2b-header-bar :is(.produtos-header-acoes, .op-header-acoes):not(#love-h-a):not(#love-h-b) { display: contents !important; }
+  html body .b2b-content > .b2b-header-bar .tabela-busca:not(#love-h-a):not(#love-h-b) { order: 5; flex: 1 1 100% !important; width: 100% !important; max-width: none !important; }
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar { background: #1F1F1F !important; }
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar :is(h1, h2),
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar :is(.produto-voltar, .btn-primary:has(svg), .btn-secondary:has(svg)) { color: #FFFFFF !important; }
+  body[data-theme="dark"] .b2b-content > .b2b-header-bar :is(.btn-primary, .btn-secondary):not(:has(svg)) { color: #EBF4FF !important; }
+
+  /* ---------- Abas do submenu: grudadas no topo, mesma largura, linha em cima ---------- */
+  html body .settings-shell > #settings-tabs:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .b2b-content > .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    position: sticky; top: -20px; z-index: 20; /* encosta no topo (o conteúdo tem 20px de respiro em cima) */
+    display: flex; flex-shrink: 0; gap: 0; width: auto; max-width: none; box-sizing: border-box;
+    margin: -16px -16px 16px !important; padding: 0;
+    background: #FFFFFF !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important; border-radius: 0 !important; box-shadow: none !important;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  html body .b2b-content > .submenu-celular::-webkit-scrollbar { display: none; }
+  html body .b2b-content > .submenu-celular .submenu-celular-item:not(#love-h-a):not(#love-h-b) {
+    position: relative; flex: 1 0 auto; min-width: 33.333%; min-height: 46px; display: inline-flex; align-items: center; justify-content: center;
+    padding: 0 14px; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none;
+    background: #FFFFFF !important; color: #52525B !important;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 14px !important; font-weight: 500 !important; line-height: 1 !important; letter-spacing: -0.01em !important;
+    white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .b2b-content > .submenu-celular:not(:has(> :nth-child(4))) .submenu-celular-item:not(#love-h-a):not(#love-h-b) { flex: 1 1 0 !important; min-width: 0 !important; }
+  html body .b2b-content > .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; color: #18181B !important; font-weight: 600 !important; }
+  html body .b2b-content > .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #183b54; border-radius: 0;
+  }
+  /* O cabeçalho fica sem a margem de baixo quando as abas vêm logo depois. */
+  html body .b2b-content > .b2b-header-bar:has(+ .submenu-celular:not([hidden])):not(#love-h-a):not(#love-h-b) { margin-bottom: 0 !important; }
+  html body .b2b-content > .b2b-header-bar + .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular:not([hidden]) { background: #1F1F1F !important; border-top-color: #333333 !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular .submenu-celular-item { background: #1F1F1F !important; color: #A1A1AA !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular .submenu-celular-item.is-ativo { background: #1A1A1A !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .b2b-content > .submenu-celular .submenu-celular-item.is-ativo::before { background: #EBF4FF; }
+
+  /* ---------- Menu (☰): gaveta lateral com as seções e a conta embaixo ---------- */
+  body.menu-celular-aberto { overflow: hidden; }
+  .menu-celular-fundo, .menu-conta-fundo { display: block; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.35); opacity: 0; pointer-events: none; transition: opacity .22s ease; }
+  .menu-celular-fundo { z-index: 88; }
+  .menu-conta-fundo { z-index: 92; background: rgba(0, 0, 0, 0.2); }
+  .menu-celular-fundo.is-aberta, .menu-conta-fundo.is-aberta { opacity: 1; pointer-events: auto; }
+  .menu-celular {
+    display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 90;
+    width: min(80vw, 330px); background: #FFFFFF; font-family: Inter, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateX(-100%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .26s;
+  }
+  .menu-celular.is-aberta { transform: translateX(0); visibility: visible; transition: transform .26s cubic-bezier(.2, .8, .2, 1); }
+  .menu-celular button, .menu-conta button, .menu-celular a, .menu-conta a { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; text-decoration: none; }
+  .menu-celular-topo { display: flex; align-items: center; justify-content: space-between; height: 68px; padding: 0 12px 0 20px; flex-shrink: 0; }
+  .menu-celular-topo .logo-celular { display: flex; align-items: center; gap: 8px; }
+  .menu-celular-topo .logo-celular-icone { height: 28px; width: auto; }
+  .menu-celular-topo .logo-celular-nome { height: 21px; width: auto; }
+  .menu-celular-fechar { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; color: #18181B; }
+  .menu-celular-fechar svg { width: 24px; height: 24px; }
+  .menu-celular-nav { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 12px 16px; }
+  .menu-celular-secao { margin: 22px 8px 6px; font-size: 13px; font-weight: 500; color: #A1A1AA; }
+  .menu-celular-link { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 14px; padding: 0 8px; background: transparent; border: 0; border-radius: 8px; font-size: 16px; font-weight: 400; color: #18181B; text-align: left; }
+  .menu-celular-link svg { width: 23px; height: 23px; flex-shrink: 0; color: #3F3F46; }
+  .menu-celular-link.is-ativo { font-weight: 600; color: #183b54; }
+  .menu-celular-link.is-ativo svg { color: #183b54; }
+  .menu-celular-conta {
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0; width: 100%; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+    background: #FFFFFF; border: 0; border-top: 1px solid rgba(0, 0, 0, 0.06); text-align: left;
+  }
+  .menu-celular-conta-textos { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .menu-celular-conta .menu-celular-nome { font-size: 16px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-celular-conta .menu-celular-empresa-nome { font-size: 13px; font-weight: 400; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-celular-conta-seta { width: 20px; height: 20px; flex-shrink: 0; color: #A1A1AA; }
+  html body .menu-celular .menu-celular-avatar:not(#love-h-a),
+  html body .menu-conta .menu-conta-avatar:not(#love-h-a) { width: 44px; height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 50%; background: #EBF4FF; color: #183b54; font-size: 15px; font-weight: 600; }
+  html body .menu-conta .menu-conta-avatar:not(#love-h-a) { width: 72px; height: 72px; min-width: 72px; font-size: 24px; }
+  :is(.menu-celular-avatar, .menu-conta-avatar) :is(img, .b2b-avatar, svg) { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 50%; }
+
+  /* Pop-up da conta (sobe de baixo, por cima da gaveta) */
+  .menu-conta {
+    display: flex; flex-direction: column; position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 94; max-height: calc(100dvh - 72px);
+    padding: 6px 20px calc(16px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: #FFFFFF; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-family: Inter, sans-serif;
+    transform: translateY(calc(100% + 16px)); visibility: hidden; transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .28s;
+  }
+  .menu-conta.is-aberta { transform: translateY(0); visibility: visible; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
+  .menu-conta-alca { width: 40px; height: 5px; margin: 4px auto 0; border-radius: 999px; background: #D4D4D8; flex-shrink: 0; }
+  .menu-conta-fechar {
+    position: absolute; top: 14px; left: 14px; width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0;
+    border-radius: 50%; color: #52525B; background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(0, 0, 0, 0.06);
+    -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  }
+  .menu-conta-fechar svg { width: 20px; height: 20px; }
+  .menu-conta-cabeca { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 26px 0 16px; text-align: center; }
+  .menu-conta-nome { margin: 8px 0 0; font-size: 17px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+  .menu-conta-email { margin: 0; font-size: 13px; color: #71717A; }
+  .menu-conta-email:empty { display: none; }
+  .menu-conta-empresas { margin-bottom: 8px; }
+  .menu-conta .menu-celular-empresa-atual { width: 100%; min-height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; text-align: left; color: #18181B; }
+  .menu-conta .menu-celular-empresa-textos { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .menu-conta .menu-celular-empresa-rotulo { font-size: 11px; font-weight: 500; color: #A1A1AA; }
+  .menu-conta .menu-celular-empresa-atual .menu-celular-empresa-nome { font-size: 16px; font-weight: 600; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-conta .menu-celular-empresa-seta { width: 20px; height: 20px; flex-shrink: 0; color: #71717A; transition: transform .15s ease; }
+  .menu-conta .menu-celular-empresa-atual[aria-expanded="true"] .menu-celular-empresa-seta { transform: rotate(180deg); }
+  .menu-conta .menu-celular-empresas-lista { margin-top: 8px; border: 1px solid #E4E4E7; border-radius: 10px; overflow: hidden; }
+  .menu-conta .menu-celular-empresa { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 14px; background: #FFFFFF; border: 0; border-bottom: 1px solid rgba(0, 0, 0, 0.06); font-size: 15px; color: #18181B; text-align: left; }
+  .menu-conta .menu-celular-empresa:last-child { border-bottom: 0; }
+  .menu-conta .menu-celular-empresa > span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .menu-conta .menu-celular-empresa svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .menu-conta .menu-celular-empresa.is-ativo { font-weight: 600; color: #183b54; }
+  .menu-conta .menu-celular-empresa.is-criar { justify-content: flex-start; font-weight: 600; color: #183b54; }
+  .menu-conta-itens { display: flex; flex-direction: column; }
+  .menu-conta-item { width: 100%; min-height: 54px; display: flex; align-items: center; gap: 16px; padding: 0 4px; background: transparent; border: 0; font-size: 16px; font-weight: 400; color: #18181B; text-align: left; }
+  .menu-conta-item svg { width: 23px; height: 23px; flex-shrink: 0; color: #3F3F46; }
+  .menu-conta-item span { flex: 1 1 auto; min-height: 54px; display: flex; align-items: center; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+  .menu-conta-sair { margin: 14px auto 0; padding: 8px 16px; background: transparent; border: 0; font-size: 16px; font-weight: 500; color: #183b54; }
+  body[data-theme="dark"] :is(.menu-celular, .menu-celular-conta, .menu-conta) { background: #1A1A1A; }
+  body[data-theme="dark"] :is(.menu-celular-fechar, .menu-celular-link, .menu-celular-conta .menu-celular-nome, .menu-conta-nome, .menu-conta-item, .menu-conta .menu-celular-empresa, .menu-conta .menu-celular-empresa-atual .menu-celular-empresa-nome) { color: #FFFFFF; }
+  body[data-theme="dark"] :is(.menu-celular-link svg, .menu-conta-item svg) { color: #D4D4D8; }
+  body[data-theme="dark"] .menu-celular-link.is-ativo, body[data-theme="dark"] .menu-celular-link.is-ativo svg, body[data-theme="dark"] .menu-conta-sair { color: #EBF4FF; }
+  body[data-theme="dark"] :is(.menu-conta .menu-celular-empresa-atual, .menu-conta .menu-celular-empresa) { background: #252525; border-color: #404040; }
+  body[data-theme="dark"] :is(.menu-celular-conta, .menu-conta-item span, .menu-conta .menu-celular-empresa) { border-color: rgba(255, 255, 255, 0.08); }
+  body[data-theme="dark"] .menu-conta-fechar { background: rgba(37, 37, 37, 0.72); border-color: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
+  /* O perfil do topo vira só o ☰ no celular (a conta abre pela gaveta). */
+  html body .profile-dropdown:not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  /* ---------- Notificações com texto de app e data curta DD/MM/AA ---------- */
+  html body #notifications-list:not(#love-h-a) { margin: 0 -16px !important; max-width: none !important; }
+  html body #notifications-list .notification-row:not(#love-h-a) { margin: 0 !important; padding: 14px 16px !important; gap: 12px !important; border-radius: 0 !important; }
+  html body #notifications-list .notification-row > div:first-child:not(#love-h-a) { width: 40px; height: 40px; min-width: 40px; border-radius: 10px !important; }
+  html body #notifications-list .notification-row > div:first-child svg:not(#love-h-a) { width: 22px; height: 22px; }
+  html body #notifications-list .notification-row p:not(#love-h-a) { font-size: 15px !important; line-height: 1.4 !important; }
+  html body #notifications-list .notification-row p.font-bold:not(#love-h-a) { font-weight: 600 !important; }
+  html body #notifications-list .notification-row > div:last-child:not(#love-h-a) { gap: 10px !important; }
+  html body #notifications-list .notif-tempo-longo:not(#love-h-a) { display: none !important; }
+  html body #notifications-list .notif-tempo-curto:not(#love-h-a) {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+    font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; line-height: 1.2; color: #A1A1AA; font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
+  html body #notifications-list .notification-row > div:last-child > div:last-child:not(#love-h-a) { align-items: flex-start !important; padding-top: 2px; }
+}
+
+/* ==========================================================================
+   Celular do Hub: avisos (toasts) no topo da tela, como o #builder-toast do
+   anfitrião; "adicionado" em verde com o nome (Ana S. foi adicionado).
+   ========================================================================== */
+#b2b-toast .toast-icone { width: 20px; height: 20px; flex-shrink: 0; }
+#b2b-toast span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-toast.toast:not(#love-h-a) {
+    left: 16px; right: 16px; bottom: auto; top: calc(env(safe-area-inset-top, 0px) + 12px); max-width: 480px; margin: 0 auto;
+    padding: 12px 14px; border-radius: 8px; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.3;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); transform: translateY(-12px); z-index: 300;
+  }
+  html body #b2b-toast.toast.show:not(#love-h-a) { transform: translateY(0); }
+  html body #b2b-toast.toast[data-tipo="neutro"]:not(#love-h-a) { background: #181D24 !important; }
+  html body #b2b-toast.toast[data-tipo="sucesso"]:not(#love-h-a) { background: #1E7A55 !important; }
+  body[data-theme="dark"] #b2b-toast.toast[data-tipo="neutro"]:not(#love-h-a) { background: #2A2A2A !important; color: #FFFFFF; }
+  body[data-theme="dark"] #b2b-toast.toast[data-tipo="sucesso"]:not(#love-h-a) { background: #1E7A55 !important; color: #FFFFFF; }
+}
+
+/* ==========================================================================
+   Celular do Hub: listas como Meus convidados do anfitrião (js/utils.js:
+   listaNoCelular). Caixa de ponta a ponta sem borda, "N clientes" acima da
+   busca, filtro "Rótulo ⌄" ao lado dela, linha com iniciais + nome + uma
+   informação à direita, sem Importar/Exportar e sem páginas.
+   ========================================================================== */
+.tabela-total-celular, .lc-iniciais { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content .dash-card.lista-celular:not(#love-h-a):not(#love-h-b) {
+    margin-left: -16px !important; margin-right: -16px !important; border: 0 !important; border-radius: 0 !important;
+    box-shadow: none !important; background: #FFFFFF !important; padding: 16px 0 0 !important; overflow: visible !important;
+  }
+  html body .dash-card.lista-celular > .tabela-total-celular:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 0; padding: 0 16px 12px; font-family: Inter, sans-serif;
+    font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
+  }
+  /* Barra: busca e o filtro na mesma linha, linha fina embaixo. */
+  html body .dash-card.lista-celular > .tabela-barra:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; flex-wrap: nowrap !important; align-items: center; gap: 8px;
+    padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7;
+  }
+  html body .dash-card.lista-celular .tabela-busca:not(#love-h-a):not(#love-h-b) { flex: 1 1 0 !important; width: auto !important; max-width: none !important; min-width: 0; }
+  html body .dash-card.lista-celular .tabela-busca input:not(#love-h-a):not(#love-h-b) { height: 40px !important; font-size: 16px !important; border-radius: 8px !important; border-color: #E4E4E7 !important; }
+  html body .dash-card.lista-celular .tabela-barra-acoes:not(#love-h-a):not(#love-h-b) { flex: 0 0 auto; flex-wrap: nowrap; }
+  html body .dash-card.lista-celular :is([data-tabela-importar], [data-tabela-exportar], .tabela-lixeira-btn):not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular > .tabela-barra > :not(.tabela-busca):not(.tabela-barra-acoes):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b) {
+    height: 40px !important; min-height: 40px !important; padding: 0 12px 0 16px !important; gap: 6px !important;
+    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; color: #18181B !important;
+  }
+  html body .dash-card.lista-celular [data-tabela-filtrar] > :not(.tabela-filtro-contador):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b)::before {
+    content: attr(data-rotulo-celular); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 500;
+  }
+  html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b)::after {
+    content: ''; width: 18px; height: 18px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 18px no-repeat;
+  }
+  html body .dash-card.lista-celular .tabela-filtro-menu:not(#love-h-a):not(#love-h-b) { right: 0; max-width: calc(100vw - 32px); }
+
+  /* Tabela vira lista. */
+  html body .dash-card.lista-celular > :is(.overflow-x-auto, .leads-table-wrap):not(#love-h-a):not(#love-h-b) { overflow: visible !important; border-radius: 0 !important; }
+  html body .dash-card.lista-celular table:not(#love-h-a):not(#love-h-b) { min-width: 0 !important; width: 100% !important; display: block; }
+  html body .dash-card.lista-celular thead:not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular .tabela-paginacao:not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular tr.lc-linha > td:not(.lc-nome):not(.lc-info):not(.lc-acoes):not(#love-h-a):not(#love-h-b),
+  html body .dash-card.lista-celular .lc-nome :is(input[type="checkbox"], .lead-origem-tag, .tabela-copiar-email):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular tbody:not(#love-h-a):not(#love-h-b) { display: block; background-image: none !important; }
+  html body .dash-card.lista-celular tr.lc-linha:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 0 16px; box-sizing: border-box;
+    background: #FFFFFF !important; border: 0 !important; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .dash-card.lista-celular tr.lc-linha > td:not(#love-h-a):not(#love-h-b) { padding: 0 !important; border: 0 !important; height: auto !important; background: transparent !important; }
+  html body .dash-card.lista-celular tr.lc-linha > td.lc-nome:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center; gap: 14px; flex: 1 1 auto; min-width: 0; padding: 11px 0 !important;
+    font-family: Inter, sans-serif; font-size: 17px !important; font-weight: 400 !important; color: #18181B !important;
+    white-space: nowrap; overflow: hidden;
+  }
+  html body .dash-card.lista-celular td.lc-nome *:not(.lc-iniciais):not(#love-h-a):not(#love-h-b) {
+    font-size: 17px !important; font-weight: 400 !important; color: #18181B !important; text-decoration: none !important;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; background: transparent !important; padding: 0 !important; border: 0 !important;
+  }
+  html body .dash-card.lista-celular .lc-iniciais:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%;
+    background: #FFFFFF; border: 1px solid #E4E4E7; color: #183b54; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0;
+  }
+  html body .dash-card.lista-celular tr.lc-linha > td.lc-info:not(#love-h-a):not(#love-h-b) {
+    display: block !important; flex: 0 0 auto; max-width: 42%; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: Inter, sans-serif; font-size: 13px !important; color: #71717A !important;
+  }
+  html body .dash-card.lista-celular tr.lc-vazia > td:not(#love-h-a):not(#love-h-b) { display: block; border: 0 !important; }
+
+  body[data-theme="dark"] .b2b-content .dash-card.lista-celular,
+  body[data-theme="dark"] .dash-card.lista-celular tr.lc-linha { background: #1F1F1F !important; }
+  body[data-theme="dark"] .dash-card.lista-celular > .tabela-total-celular { color: #A1A1AA; }
+  body[data-theme="dark"] .dash-card.lista-celular > .tabela-barra { border-bottom-color: #333333; }
+  body[data-theme="dark"] .dash-card.lista-celular td.lc-nome,
+  body[data-theme="dark"] .dash-card.lista-celular td.lc-nome *:not(.lc-iniciais) { color: #FFFFFF !important; }
+  body[data-theme="dark"] .dash-card.lista-celular .lc-iniciais { background: #2A2A2A; border-color: #404040; color: #FFFFFF; }
+  body[data-theme="dark"] .dash-card.lista-celular [data-tabela-filtrar] { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .dash-card.lista-celular [data-tabela-filtrar]::after { filter: invert(1); }
+}
+
+/* Celular, Meus produtos: "N produtos cadastrados" acima da busca, caixa sem borda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content #produtos-barra-caixa:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; flex-direction: column; align-items: stretch; gap: 12px;
+    margin-left: -16px !important; margin-right: -16px !important; padding: 16px !important;
+    border: 0 !important; border-bottom: 1px solid #E4E4E7 !important; border-radius: 0 !important; box-shadow: none !important; background: #FFFFFF !important;
+  }
+  html body #produtos-barra-caixa .produtos-total:not(#love-h-a):not(#love-h-b) {
+    order: -1; margin: 0; font-family: Inter, sans-serif; font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
+  }
+  html body #produtos-barra-caixa .produtos-total b:not(#love-h-a) { font-weight: 600; color: inherit; }
+  html body #produtos-barra-caixa .tabela-busca:not(#love-h-a):not(#love-h-b) { width: 100% !important; max-width: none !important; }
+  html body #produtos-barra-caixa .tabela-busca input:not(#love-h-a):not(#love-h-b) { height: 40px !important; font-size: 16px !important; border-color: #E4E4E7 !important; }
+  body[data-theme="dark"] .b2b-content #produtos-barra-caixa { background: #1F1F1F !important; border-bottom-color: #333333 !important; }
+  body[data-theme="dark"] #produtos-barra-caixa .produtos-total { color: #A1A1AA; }
+}
+
+/* ==========================================================================
+   Celular do Hub: arrastar a linha para a esquerda mostra Editar/Abrir
+   (#183b54) e Remover (#c7305b), retos e da altura da linha, ícone no meio
+   (js/utils.js: prepararArrasteDaLinha). Fechada, as ações ficam fora da
+   caixa: nenhuma faixa aparece.
+   ========================================================================== */
+.lc-acoes { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dash-card.lista-celular tbody:not(#love-h-a):not(#love-h-b) { overflow-x: clip; }
+  html body .dash-card.lista-celular tr.lc-linha.tem-arraste:not(#love-h-a):not(#love-h-b) {
+    position: relative; touch-action: pan-y; will-change: transform; -webkit-user-select: none; user-select: none;
+  }
+  html body .dash-card.lista-celular tr.lc-linha > td.lc-acoes:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; position: absolute; top: 0; bottom: 0; left: 100%; padding: 0 !important; margin: 0;
+  }
+  html body .dash-card.lista-celular tr.lc-linha:not(.acoes-visiveis) > td.lc-acoes:not(#love-h-a):not(#love-h-b) { visibility: hidden; }
+  html body .lc-acao:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; justify-content: center; width: 80px; height: 100%; padding: 0; margin: 0;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important; color: #FFFFFF !important; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  html body .lc-acao svg:not(#love-h-a):not(#love-h-b) { width: 22px; height: 22px; }
+  html body .lc-acao-editar:not(#love-h-a):not(#love-h-b) { background: #183b54 !important; }
+  html body .lc-acao-remover:not(#love-h-a):not(#love-h-b) { background: #c7305b !important; }
+  body[data-theme="dark"] .lc-acao-editar { background: #183b54 !important; }
+  body[data-theme="dark"] .lc-acao-remover { background: #c7305b !important; }
+}
+
+/* ==========================================================================
+   Celular do Hub, Mensagens: de ponta a ponta, "N conversas" acima da busca,
+   linha com avatar, nome e prévia; arrastar mostra Abrir/Remover; a
+   conversa abre em tela cheia com a seta para voltar (js/mensagens.js).
+   ========================================================================== */
+.chat-voltar-celular, .chat-total-celular, .conv-acoes { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="chat"] .chat-shell:not(#love-h-a):not(#love-h-b) { margin: 0 -16px !important; width: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #FFFFFF !important; }
+  html body[data-page="chat"] .b2b-chat-contacts-column:not(#love-h-a):not(#love-h-b) { width: 100% !important; min-width: 0 !important; border-right: 0 !important; }
+  html body[data-page="chat"] .chat-total-celular:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 0; padding: 16px 16px 12px; font-family: Inter, sans-serif;
+    font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
+  }
+  html body[data-page="chat"] .b2b-chat-contacts-header:not(#love-h-a):not(#love-h-b) { height: auto !important; padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
+  html body[data-page="chat"] #chat-search-input:not(#love-h-a):not(#love-h-b) {
+    height: 40px !important; font-size: 16px !important; border-radius: 8px !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important; padding-left: 36px !important;
+  }
+  html body[data-page="chat"] #chat-search-input:focus:not(#love-h-a):not(#love-h-b) { border-color: #181D24 !important; }
+
+  /* Linhas */
+  html body #conv-list .conv-item:not(#love-h-a):not(#love-h-b) {
+    border-left: 0 !important; padding: 12px 16px !important; gap: 12px !important; align-items: center !important; min-height: 72px; box-sizing: border-box;
+    background: #FFFFFF; -webkit-tap-highlight-color: transparent;
+  }
+  html body #conv-list .conv-item.active:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+  html body #conv-list .conv-item .b2b-avatar-square:not(#love-h-a):not(#love-h-b) { width: 44px !important; height: 44px !important; border-radius: 50% !important; }
+  html body #conv-list .conv-item h4:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 16px !important; font-weight: 600 !important; color: #18181B !important; }
+  html body #conv-list .conv-item p:not(#love-h-a):not(#love-h-b) { font-size: 14px !important; line-height: 1.35 !important; }
+  html body #conv-list .conv-item p.text-zinc-500:not(#love-h-a):not(#love-h-b) { color: #71717A !important; }
+  html body #conv-list .conv-item-mais:not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  /* Arrastar: o card anda por cima de Abrir/Remover. */
+  html body #conv-list .conv-linha:not(#love-h-a):not(#love-h-b) { position: relative; overflow: hidden; }
+  html body #conv-list .conv-linha > .conv-item:not(#love-h-a):not(#love-h-b) {
+    position: relative; z-index: 1; touch-action: pan-y; will-change: translate; -webkit-user-select: none; user-select: none;
+  }
+  html body #conv-list .conv-linha > .conv-acoes:not(#love-h-a):not(#love-h-b) { display: flex; position: absolute; top: 0; right: 0; bottom: 0; z-index: 0; }
+  html body #conv-list .conv-linha:not(.acoes-visiveis) > .conv-acoes:not(#love-h-a):not(#love-h-b) { visibility: hidden; }
+
+  /* Conversa aberta: tela cheia, sem o título, a lista e a barra de baixo. */
+  html body[data-page="chat"]:not(.chat-conversa-aberta) .chat-coluna-conversa:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="chat"].chat-conversa-aberta :is(.b2b-chat-contacts-column, .mobile-bottom-nav):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="chat"].chat-conversa-aberta .chat-coluna-conversa:not(#love-h-a):not(#love-h-b) {
+    position: fixed; inset: 0; z-index: 70; height: 100dvh !important; padding-top: env(safe-area-inset-top, 0px); background: #FFFFFF;
+  }
+  html body[data-page="chat"] .chat-coluna-conversa > div:first-child:not(#love-h-a):not(#love-h-b) { height: 60px !important; padding: 0 16px 0 10px !important; }
+  html body[data-page="chat"] .chat-coluna-conversa > div:first-child > div:first-child:not(#love-h-a):not(#love-h-b) { gap: 8px !important; }
+  html body[data-page="chat"] .chat-voltar-celular:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body[data-page="chat"] .chat-voltar-celular svg:not(#love-h-a) { width: 20px; height: 20px; }
+  html body[data-page="chat"] #chat-header-name:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 16px !important; font-weight: 600 !important; }
+  html body[data-page="chat"] #chat-messages:not(#love-h-a):not(#love-h-b) { padding: 16px !important; }
+  html body[data-page="chat"] .chat-coluna-conversa > div:last-child:not(#love-h-a):not(#love-h-b) { padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) !important; }
+  html body[data-page="chat"] #chat-input:not(#love-h-a):not(#love-h-b) { font-size: 16px !important; height: 44px; border-radius: 8px !important; }
+
+  body[data-theme="dark"][data-page="chat"] .chat-shell,
+  body[data-theme="dark"] #conv-list .conv-item,
+  body[data-theme="dark"][data-page="chat"].chat-conversa-aberta .chat-coluna-conversa { background: #1F1F1F !important; }
+  body[data-theme="dark"][data-page="chat"] .chat-total-celular { color: #A1A1AA; }
+  body[data-theme="dark"] #conv-list .conv-item h4 { color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="chat"] .b2b-chat-contacts-header { border-bottom-color: #333333 !important; }
+  body[data-theme="dark"][data-page="chat"] #chat-search-input { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="chat"] .chat-voltar-celular { color: #FFFFFF; }
+}
+
+/* ==========================================================================
+   Celular do Hub: Adicionar/Editar em tela cheia (js/utils.js:
+   prepararFichaDoCelular), como #drawer-add-gift / .ficha-convidado do
+   anfitrião. Cabeçalho branco (seta de 20px num botão de 44px a 10px da
+   borda, título 20/700, "Salvar" claro com texto na primária); corpo
+   #F4F6F7 sem caixas brancas; campos brancos de 46px, 1px #E4E4E7, 8px,
+   letra de 16px; 16px de margem lateral e 24px entre as seções.
+   ========================================================================== */
+.ficha-voltar-celular, .ficha-salvar-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .form-drawer.ficha-celular:not(#love-h-a):not(#love-h-b) {
+    top: 0; right: 0; bottom: 0; left: 0; width: 100%; max-width: none !important; height: 100dvh;
+    border-radius: 0 !important; box-shadow: none !important; background: #F4F6F7 !important; z-index: 120;
+  }
+  html body .form-drawer.ficha-celular > .form-drawer-header:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; gap: 4px; min-height: 0; height: calc(60px + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) 16px 0 10px !important; background: #FFFFFF !important; border-bottom: 1px solid #E4E4E7 !important;
+    position: relative; flex-shrink: 0;
+  }
+  html body .form-drawer.ficha-celular > .form-drawer-header > .form-drawer-close:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .form-drawer.ficha-celular .form-drawer-header-main:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 auto; min-width: 0; padding: 0 !important; background: transparent !important; border-radius: 0 !important; backdrop-filter: none;
+  }
+  html body .form-drawer.ficha-celular .form-drawer-header-main > :not(h1):not(h2):not(h3):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .form-drawer.ficha-celular .form-drawer-header :is(h1, h2, h3):not(#love-h-a):not(#love-h-b) {
+    margin: 0 !important; font-family: 'Plus Jakarta Sans', Inter, sans-serif; font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important;
+    letter-spacing: -0.4px; color: #18181B !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body .ficha-voltar-celular:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .ficha-voltar-celular svg:not(#love-h-a) { width: 20px; height: 20px; }
+  html body .ficha-salvar-celular:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; height: 40px; padding: 0 16px; margin: 0 0 0 8px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: none;
+    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: #183b54; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .ficha-salvar-celular:active:not(#love-h-a) { border-color: #181D24; }
+
+  /* Corpo: cinza, sem caixas brancas, 16px de lado e 24px entre as seções. */
+  html body .form-drawer.ficha-celular > .form-drawer-body:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 24px 16px calc(32px + env(safe-area-inset-bottom, 0px)) !important; background: #F4F6F7 !important; border: 0 !important; border-radius: 0 !important;
+  }
+  html body .form-drawer.ficha-celular .form-drawer-body :is(form, .space-y-4, .space-y-5):not(#love-h-a) { display: flex; flex-direction: column; gap: 24px; }
+  html body .form-drawer.ficha-celular .form-drawer-body :is(form, .space-y-4, .space-y-5) > *:not(#love-h-a) { margin-top: 0 !important; margin-bottom: 0 !important; }
+  html body .form-drawer.ficha-celular .form-drawer-body :is(.dash-card, .task-drawer-comment-card, .form-field-card, .lead-origem):not(#love-h-a):not(#love-h-b) {
+    background: transparent !important; border: 0 !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important;
+  }
+  html body .form-drawer.ficha-celular .form-drawer-body .grid.grid-cols-2:not(#love-h-a):not(#love-h-b) { grid-template-columns: 1fr !important; gap: 24px !important; }
+  html body .form-drawer.ficha-celular .field-label:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #71717A; margin-bottom: 6px; }
+  html body .form-drawer.ficha-celular :is(.field-input, .field-select, input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], input[type="search"], select):not(.ficha-salvar-celular):not(#love-h-a):not(#love-h-b) {
+    height: 46px !important; min-height: 46px; padding-left: 12px; padding-right: 12px; font-size: 16px !important;
+    background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body .form-drawer.ficha-celular :is(textarea, .field-textarea):not(#love-h-a):not(#love-h-b) {
+    font-size: 16px !important; background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body .form-drawer.ficha-celular :is(input, select, textarea):focus:not(#love-h-a):not(#love-h-b) { border-color: #181D24 !important; outline: none !important; box-shadow: none !important; }
+
+  /* O Salvar/Cancelar de baixo foi para o cabeçalho (a seta faz o Cancelar). */
+  html body .form-drawer.ficha-celular :is(.ficha-salvar-alvo, [id$="-cancel"]):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .form-drawer.ficha-celular > .form-drawer-footer:not(:has(button:not(.ficha-salvar-alvo):not([id$="-cancel"]):not([hidden]))):not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  body[data-theme="dark"] .form-drawer.ficha-celular,
+  body[data-theme="dark"] .form-drawer.ficha-celular > .form-drawer-body { background: #1A1A1A !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular > .form-drawer-header { background: #1F1F1F !important; border-bottom-color: #333333 !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular .form-drawer-header :is(h1, h2, h3),
+  body[data-theme="dark"] .ficha-voltar-celular { color: #FFFFFF !important; }
+  body[data-theme="dark"] .ficha-salvar-celular { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular :is(.field-input, .field-select, input, select, textarea) { background-color: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .form-drawer.ficha-celular .field-label { color: #A1A1AA; }
+}
+
+/* Celular do Hub: sem pop-ups. As janelas (.modal-card) viram tela cheia no
+   fundo cinza, com os campos no padrão das fichas; só as confirmações
+   ("Remover...?", "Alterações não salvas") continuam pequenas. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card:not(#love-h-a):not(#love-h-b) {
+    position: fixed; inset: 0; width: 100% !important; max-width: none !important; height: 100dvh; max-height: none !important; margin: 0 !important;
+    border: 0 !important; border-radius: 0 !important; box-shadow: none !important; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 16px calc(32px + env(safe-area-inset-bottom, 0px)) !important;
+    background: #F4F6F7 !important; transform: none !important; z-index: 120;
+  }
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card :is(.field-input, .field-select):not(#love-h-a):not(#love-h-b) {
+    height: 46px !important; font-size: 16px !important; background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card :is(textarea, .field-textarea):not(#love-h-a):not(#love-h-b) { font-size: 16px !important; }
+  body[data-theme="dark"] .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card { background: #1A1A1A !important; }
+}
+
+/* ==========================================================================
+   Celular do Hub: lista vazia (js/utils.js: desenharVazioNoCelular), como
+   Meus convidados vazio do anfitrião — caixa branca de no mínimo 420px,
+   cantos 10px, borda preta a 6%, tudo no centro; animação de 140px; título
+   clicável na primária; texto 13px #71717A.
+   ========================================================================== */
+.vazio-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dash-card.lista-celular.tem-vazio-celular > :is(.overflow-x-auto, .leads-table-wrap):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .dash-card.lista-celular > .vazio-celular:not([hidden]):not(#love-h-a):not(#love-h-b),
+  html body #conv-list > .vazio-celular:not(#love-h-a):not(#love-h-b) {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; text-align: center;
+    min-height: 420px; margin: 16px; padding: 24px 20px; box-sizing: border-box;
+    background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03);
+    font-family: Inter, sans-serif;
+  }
+  html body .vazio-celular .vazio-celular-lottie:not(#love-h-a) { display: block; width: 140px; height: 140px; margin: 0 0 12px; }
+  html body .vazio-celular .vazio-celular-icone:not(#love-h-a) { display: block; width: 72px; height: 72px; margin: 0 0 16px; }
+  html body .vazio-celular .vazio-celular-titulo:not(#love-h-a):not(#love-h-b) {
+    margin: 0; padding: 0; background: none; border: 0; font-family: Inter, sans-serif; font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: #18181B;
+  }
+  html body .vazio-celular button.vazio-celular-titulo:not(#love-h-a):not(#love-h-b) { color: #183b54; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  html body .vazio-celular .vazio-celular-texto:not(#love-h-a) { max-width: 280px; margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: #71717A; }
+  html body .vazio-celular .vazio-celular-nenhum:not(#love-h-a) { margin: 0; font-size: 14px; color: #71717A; }
+  body[data-theme="dark"] .vazio-celular { background: #252525 !important; border-color: #404040 !important; }
+  body[data-theme="dark"] .vazio-celular .vazio-celular-titulo { color: #FFFFFF !important; }
+}
+
+/* ==========================================================================
+   Celular do Hub: gaveta de opções que sobe de baixo (js/utils.js:
+   abrirGavetaDeOpcoes). Cantos de 10px em cima, alça cinza, itens de 48px,
+   sombra só na gaveta. E o "+" de Clientes, que abre essa gaveta.
+   ========================================================================== */
+.so-celular-clientes { display: none; }
+.gaveta-opcoes { position: fixed; inset: 0; z-index: 140; font-family: Inter, sans-serif; }
+.gaveta-opcoes-fundo { position: absolute; inset: 0; background: rgba(24, 29, 36, 0.32); opacity: 0; transition: opacity .2s ease; }
+.gaveta-opcoes-folha {
+  position: absolute; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto;
+  padding: 8px 8px calc(12px + env(safe-area-inset-bottom, 0px)); box-sizing: border-box;
+  background: #FFFFFF; border-radius: 10px 10px 0 0; box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(100%); transition: transform .22s cubic-bezier(.2, .8, .2, 1);
+}
+.gaveta-opcoes.is-aberta .gaveta-opcoes-fundo { opacity: 1; }
+.gaveta-opcoes.is-aberta .gaveta-opcoes-folha { transform: translateY(0); }
+.gaveta-opcoes-alca { display: block; width: 36px; height: 4px; margin: 2px auto 10px; border-radius: 2px; background: #D4D4D8; }
+.gaveta-opcoes-titulo { margin: 0; padding: 4px 12px 8px; font-size: 13px; font-weight: 500; color: #71717A; }
+.gaveta-opcoes-item {
+  display: flex; align-items: center; gap: 12px; width: 100%; height: 48px; padding: 0 12px; margin: 0;
+  background: transparent; border: 0; border-radius: 8px; font-family: inherit; font-size: 16px; font-weight: 500; color: #18181B;
+  text-align: left; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.gaveta-opcoes-item:active { background: #F4F6F7; }
+.gaveta-opcoes-item svg { width: 22px; height: 22px; flex-shrink: 0; color: #3F3F46; }
+body[data-theme="dark"] .gaveta-opcoes-folha { background: #252525; }
+body[data-theme="dark"] .gaveta-opcoes-item { color: #FFFFFF; }
+body[data-theme="dark"] .gaveta-opcoes-item svg { color: #D4D4D8; }
+body[data-theme="dark"] .gaveta-opcoes-item:active { background: #333333; }
+body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content:has([data-leads-painel="leads"]:not([hidden])) > .b2b-header-bar > #lead-add-celular:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: auto; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body #lead-add-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
+  body[data-theme="dark"] #lead-add-celular { color: #FFFFFF !important; }
+}
+
+/* ==========================================================================
+   Construtor no celular — prévia em tela cheia + gaveta do elemento tocado
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.construtor-celular .builder-narrow-notice:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; padding: 10px 12px;
+    font-size: 13px; line-height: 1.4; font-weight: 500; border-radius: 8px; flex-shrink: 0;
+  }
+  html body.construtor-celular .builder-narrow-notice svg:not(#love-h-a) { width: 16px; height: 16px; margin-top: 1px; }
+  html body.construtor-celular .builder-wrap:not(#love-h-a):not(#love-h-b) {
+    display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0;
+    margin: 0 -16px; border: none; border-radius: 0; box-shadow: none; background: #FFFFFF;
+  }
+  html body.construtor-celular .builder-body:not(#love-h-a) { flex: 1 1 auto; min-height: 0; display: block; position: relative; }
+  html body.construtor-celular .builder-canvas-viewport:not(#love-h-a):not(#love-h-b) {
+    padding: 0; background: #FFFFFF; height: 100%; width: 100%; display: block; overflow: hidden;
+  }
+  html body.construtor-celular .builder-canvas-frame:not(#love-h-a):not(#love-h-b) {
+    max-width: none; width: 100%; height: 100%; border: none; border-radius: 0; box-shadow: none; margin: 0;
+  }
+  html body.construtor-celular .builder-canvas-scroll:not(#love-h-a) { height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  /* Sem mover, duplicar, apagar nem redimensionar. */
+  html body.construtor-celular .builder-block-toolbar:not(#love-h-a),
+  html body.construtor-celular .builder-column-resizer:not(#love-h-a) { display: none !important; }
+
+  /* Seletor de página: 20px na cor primária, com a seta. */
+  html body.construtor-celular #site-titulo-pagina:not(#love-h-a) { display: none !important; }
+  html body.construtor-celular #builder-page-select-btn:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; gap: 6px; padding: 0; background: transparent; border: none;
+  }
+  html body.construtor-celular #builder-page-select-label:not(#love-h-a):not(#love-h-b) {
+    display: inline !important; line-height: 1.2 !important; height: auto !important; font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+  }
+  html body.construtor-celular #builder-page-select-btn .site-seletor-seta:not(#love-h-a) {
+    display: block; width: 20px; height: 20px; color: #183b54; flex-shrink: 0;
+  }
+  /* Ações do cabeçalho: só "Publicar" enquanto o site não está no ar. */
+  html body.construtor-celular .site-cabecalho-acoes:not(#love-h-a):not(#love-h-b) { display: flex; margin-left: auto; align-items: center; }
+  html body.construtor-celular .site-cabecalho-acoes > :not(.builder-toolbar-right):not(#love-h-a),
+  html body.construtor-celular .builder-toolbar-right > :not(#builder-publish):not(#love-h-a) { display: none !important; }
+  html body.construtor-celular .builder-toolbar-right:not(#love-h-a) { display: flex; gap: 0; }
+  html body.construtor-celular #builder-publish:not(#love-h-a):not(#love-h-b) {
+    height: 36px !important; min-height: 36px !important; padding: 0 14px; border-radius: 8px; background: #FFFFFF; color: #183b54;
+    border: 1px solid #E4E4E7; font-size: 14px; font-weight: 600; box-shadow: none;
+  }
+  html body.construtor-celular.construtor-publicado #builder-publish:not(#love-h-a) { display: none !important; }
+
+  /* Gaveta do elemento tocado. */
+  html body.construtor-celular #builder-elements-panel:not(#love-h-a):not(#love-h-b) {
+    display: none; position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 130; width: auto;
+    max-height: 60dvh; border: none; border-radius: 10px 10px 0 0; background: #FFFFFF;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.08); padding-top: 16px; padding-bottom: env(safe-area-inset-bottom, 0px);
+    flex-direction: column; overflow: hidden;
+  }
+  html body.construtor-celular.construtor-com-selecao #builder-elements-panel:not(#love-h-a):not(#love-h-b) { display: flex; }
+  html body.construtor-celular #builder-elements-panel:not(#love-h-a)::before {
+    content: ''; position: absolute; top: 6px; left: 50%; width: 36px; height: 4px; margin-left: -18px; border-radius: 2px; background: #D4D4D8;
+  }
+  html body.construtor-celular #builder-elements-panel .inspector-tabs:not(#love-h-a),
+  html body.construtor-celular #builder-elements-panel .builder-panel-tabs:not(#love-h-a) { display: none; }
+  html body.construtor-celular #builder-elements-panel .inspector-body:not(#love-h-a) { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+  html body.construtor-celular #builder-elements-panel :is(input, textarea, select):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(#love-h-a) { font-size: 16px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-theme="dark"].construtor-celular .builder-wrap:not(#love-h-a):not(#love-h-b),
+  html body[data-theme="dark"].construtor-celular .builder-canvas-viewport:not(#love-h-a):not(#love-h-b) { background: #1E1E1E; }
+  html body[data-theme="dark"].construtor-celular #builder-elements-panel:not(#love-h-a):not(#love-h-b) { background: #252525; box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4); }
+  html body[data-theme="dark"].construtor-celular #builder-elements-panel:not(#love-h-a)::before { background: #52525B; }
+  html body[data-theme="dark"].construtor-celular #builder-page-select-label:not(#love-h-a):not(#love-h-b),
+  html body[data-theme="dark"].construtor-celular #builder-page-select-btn .site-seletor-seta:not(#love-h-a) { color: #E4E4E7; }
+  html body[data-theme="dark"].construtor-celular #builder-publish:not(#love-h-a):not(#love-h-b) { background: #252525; color: #E4E4E7; border-color: #404040; }
+}
+
+/* Desktop: ficha dentro da página, sem pop-up (fichaNaPaginaNoDesktop em utils.js).
+   Ocupa a largura toda no lugar da lista; borda fina, raio 10, sem sombra e sem fundo escuro. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .com-ficha-na-pagina > :not(.na-pagina):not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+  html body.ficha-na-pagina-aberta .drawer-backdrop:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body :is(.form-drawer, .agenda-evento-popup, .modal-card).na-pagina:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: static !important; inset: auto !important; transform: none !important; translate: none !important; z-index: auto !important;
+    width: 100% !important; max-width: none !important; height: auto !important; max-height: none !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03) !important; border-radius: 10px !important;
+    overflow: visible !important; background: #FFFFFF !important; transition: none !important;
+  }
+  html body .form-drawer.na-pagina > *:not(#love-h-a):not(#love-h-b) { max-height: none !important; overflow: visible !important; }
+  html body .modal-backdrop.ficha-movida:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .escondido-pela-ficha:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+  html body .agenda-evento-popup.na-pagina .agenda-evento-alca:not(#love-h-a) { visibility: hidden; }
+  html body .agenda-evento-popup.na-pagina:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: block !important; padding: 0.5rem 1.5rem 1.5rem !important; }
+  html body .modal-card.na-pagina:not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding: 1.5rem !important; margin: 0 !important; }
+  /* Cancelar é só texto. */
+  html body .form-drawer.na-pagina [id$="-cancel"]:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    background: transparent !important; border-color: transparent !important; box-shadow: none !important; padding-left: 8px !important; padding-right: 8px !important;
+  }
+  body[data-theme="dark"] :is(.form-drawer, .agenda-evento-popup, .modal-card).na-pagina { background: #252525 !important; border-color: #404040 !important; }
+}
+
+/* Dashboard no celular, ordem aprovada: Saldo, Ações rápidas, Sua agenda,
+   Analytics, Notícias e eventos e, por último, Precisa de ajuda?
+   As duas pilhas viram uma só (display: contents) para poder reordenar. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack:not(#love-h-a) { display: contents; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > :not(#love-h-a) { order: 10; min-width: 0; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dash-saldo-total:not(#love-h-a) { order: 1; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-quick-actions:not(#love-h-a) { order: 2; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(#agenda-list):not(#love-h-a) { order: 3; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-analytics-card):not(#love-h-a) { order: 4; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-news-card):not(#love-h-a) { order: 5; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-help-section:not(#love-h-a) { order: 6; margin-top: 0; }
+}
+
+/* ==========================================================================
+   Dashboard no celular, como a Home do anfitrião:
+   - caixa do "Olá, empresa!" (Inter 22/600) com os atalhos redondos dentro
+     (Cobrar, Orçamento, Construtor: bola 56px #EAF0F5, ícone 26px #183b54,
+     nome 13/500 #3F3F46);
+   - caixa do saldo como a de Presentes (valor 28/700 #183b54 em cima, nome
+     13/500 embaixo e botão primário de 44px);
+   - carrossel antes de Sua agenda;
+   - cabeçalho rola junto (js: cabecalhoRolaNoCelular).
+   Desktop não muda.
+   ========================================================================== */
+.dash-saldo-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content > #shell-topbar.topo-rola-junto:not(#love-h-a) { flex-shrink: 0; margin: 0 calc(-1 * var(--b2b-content-pad-x, 16px)); }
+
+  /* Caixa do Olá + atalhos (as duas partes formam uma caixa só) */
+  html body[data-page="dashboard"] .dashboard-greeting:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 0; padding: 20px 12px 20px; text-align: center;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-bottom: 0; border-radius: 10px 10px 0 0;
+  }
+  html body[data-page="dashboard"] .dashboard-greeting > :not(.dashboard-greeting-text):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b) {
+    margin: 0; font-family: Inter, sans-serif !important; font-size: 22px !important; font-weight: 600 !important; letter-spacing: -0.025em !important; line-height: 1.25; color: #18181B;
+    white-space: normal; text-align: center;
+  }
+  html body[data-page="dashboard"] #greeting-date:not(#love-h-a):not(#love-h-b) {
+    display: block; margin: 6px 0 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 400; color: #52525B; text-align: center;
+  }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b) {
+    order: 1; position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 8px;
+    padding: 20px 12px 18px; background: #FFFFFF; border: 1px solid #E4E4E7; border-top: 0; border-radius: 0 0 10px 10px;
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions:not(#love-h-a)::before {
+    content: ""; position: absolute; top: 0; left: 12px; right: 12px; height: 1px; background: rgba(0, 0, 0, 0.06);
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(.dashboard-quick-action-mobile-hide):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
+    min-height: 44px; height: auto; width: auto; padding: 0; margin: 0;
+    background: transparent; border: 0; border-radius: 0; box-shadow: none;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center;
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
+    box-sizing: border-box; width: 56px; height: 56px; padding: 15px; border-radius: 50%;
+    background: #EAF0F5; color: #183b54; flex-shrink: 0; box-shadow: none; transition: background-color .15s ease;
+  }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(#love-h-a):active svg { background: #E1E9F0; box-shadow: none; }
+
+  /* Caixa do saldo */
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dash-saldo-total:not(#love-h-a):not(#love-h-b) {
+    order: 2; padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none; overflow: hidden;
+  }
+  html body[data-page="dashboard"] .dash-saldo-total > :not(.dash-saldo-celular):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] .dash-saldo-celular:not(#love-h-a) { display: block; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas:not(#love-h-a) { display: grid; grid-template-columns: 1fr 1fr; padding: 24px 0 20px; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px; text-align: center; min-width: 0; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div + div:not(#love-h-a) { border-left: 1px solid #F4F4F5; }
+  html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a) {
+    font-family: Inter, sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+    font-variant-numeric: tabular-nums; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; justify-content: center; height: 44px; margin: 0 16px 16px; padding: 0 16px;
+    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):active { background: #122c3f; }
+
+  /* Carrossel antes de Sua agenda */
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dash-ads-card:not(#love-h-a):not(#love-h-b) { display: block; order: 3; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(#agenda-list):not(#love-h-a):not(#love-h-b) { order: 4; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-analytics-card):not(#love-h-a):not(#love-h-b) { order: 5; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-panel-section:has(.dash-news-card):not(#love-h-a):not(#love-h-b) { order: 6; }
+  html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-help-section:not(#love-h-a):not(#love-h-b) { order: 7; }
+
+  body[data-theme="dark"][data-page="dashboard"] :is(.dashboard-greeting, .dashboard-quick-actions, .dash-saldo-total) { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"][data-page="dashboard"] #greeting-title { color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="dashboard"] :is(#greeting-date, .dash-saldo-celular-nome, .dashboard-quick-action-btn) { color: #D4D4D8 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dashboard-quick-action-btn svg { background: #252525 !important; color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dashboard-quick-actions::before { background: #333333 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-valor { color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-colunas > div + div { border-left-color: #333333 !important; }
+}
+
+/* Dashboard no celular: faixa azul no topo (o azul do sidebar em degradê,
+   igual à faixa do Admin) atrás do cabeçalho e da caixa do Olá, como a foto
+   na Home do anfitrião; logo e ícones brancos por cima. Atalhos sem caixa. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content:not(#love-h-a):not(#love-h-b) {
+    --faixa-h: 160px;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%) top / 100% var(--faixa-h) no-repeat local,
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%) top / 100% var(--faixa-h) no-repeat local,
+      #F4F6F7;
+  }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto .b2b-topbar:not(#love-h-a):not(#love-h-b) { background: transparent !important; border-bottom-color: transparent !important; box-shadow: none !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto .logo-claro:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto .logo-escuro:not(#love-h-a):not(#love-h-b) { display: block !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto :is(#notif-trigger, #btn-menu-celular):not(#love-h-a):not(#love-h-b) { color: #FFFFFF !important; background: transparent !important; }
+  html body[data-page="dashboard"] #shell-topbar.topo-rola-junto :is(#notif-trigger, #btn-menu-celular) svg *:not(#love-h-a) { stroke: #FFFFFF !important; }
+  html body[data-page="dashboard"] .dashboard-greeting:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-top: 16px; }
+  html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) { box-shadow: none !important; outline: none !important; border: 0 !important; background: transparent !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-content {
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .35) 0%, rgba(42, 120, 214, 0) 55%) top / 100% 160px no-repeat local,
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%) top / 100% 160px no-repeat local,
+      #1C2125 !important;
+  }
+}
+
+/* ==========================================================================
+   Desktop, Dashboard como a Home do anfitrião (js: homeDoDesktop):
+   faixa azul de 260px (azul do sidebar em degradê, como no Admin) no lugar
+   da foto; caixa por cima (-80px, 32px das bordas) com "Olá, empresa!"
+   26/600 + data à esquerda e os atalhos redondos à direita; saldo na caixa
+   no formato de Presentes. Para voltar ao desktop antigo, apagar este bloco
+   e a função homeDoDesktop em js/dashboard.js.
+   ========================================================================== */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body[data-page="dashboard"] .dashboard-greeting.home-desktop:not(#love-h-a):not(#love-h-b) {
+    display: block; position: relative; margin: 0 0 28px; padding: 180px 32px 0;
+  }
+  html body[data-page="dashboard"] .dashboard-greeting.home-desktop > :not(.dash-home-faixa):not(.dash-home-caixa):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] .dash-home-faixa:not(#love-h-a) {
+    position: absolute; top: 0; left: 0; right: 0; height: 260px; border-radius: 10px;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%),
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%);
+  }
+  html body[data-page="dashboard"] .dash-home-caixa:not(#love-h-a) {
+    position: relative; padding: 24px 28px;
+    display: grid; grid-template-columns: minmax(150px, 1fr) minmax(248px, 505px); align-items: center; gap: 12px 32px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; text-align: left;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa > .dashboard-greeting-text:not(#love-h-a) { display: contents; }
+  html body[data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b) {
+    grid-column: 1; align-self: end; margin: 0; font-family: Inter, sans-serif !important; font-size: 26px !important; font-weight: 600 !important;
+    letter-spacing: -0.025em !important; line-height: 1.2; color: #18181B; white-space: normal;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa #greeting-date:not(#love-h-a):not(#love-h-b) {
+    display: block !important; grid-column: 1; align-self: start; margin: -6px 0 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b) {
+    grid-column: 2; grid-row: 1 / span 2; display: grid; grid-template-columns: repeat(4, minmax(56px, 112px)); justify-content: end; gap: 8px;
+    margin: 0; padding: 0 0 0 32px; background: transparent; border: 0; border-left: 1px solid rgba(0, 0, 0, 0.06); border-radius: 0;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex !important; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
+    width: auto; height: auto; min-height: 0; padding: 0; margin: 0; cursor: pointer;
+    background: transparent !important; border: 0 !important; border-radius: 0; box-shadow: none !important; outline: none;
+    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center; transition: color .15s ease;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
+    box-sizing: border-box; width: 56px; height: 56px; padding: 16px; border-radius: 50%; flex-shrink: 0;
+    background: #EAF0F5; color: #183b54; box-shadow: none; transition: background-color .15s ease;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):hover { color: #181D24; }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):hover svg { background: #E1E9F0; box-shadow: none; }
+
+  /* Saldo: caixa como a de Presentes */
+  html body[data-page="dashboard"] .dashboard-side-stack > .dash-saldo-total:not(#love-h-a):not(#love-h-b) {
+    padding: 0; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none; overflow: hidden;
+  }
+  html body[data-page="dashboard"] .dash-saldo-total > :not(.dash-saldo-celular):not(#love-h-a) { display: none !important; }
+  html body[data-page="dashboard"] .dash-saldo-celular:not(#love-h-a) { display: block; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas:not(#love-h-a) { display: grid; grid-template-columns: 1fr 1fr; padding: 24px 0 20px; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px; text-align: center; min-width: 0; }
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas > div + div:not(#love-h-a) { border-left: 1px solid #F4F4F5; }
+  html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a) {
+    font-family: Inter, sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+    font-variant-numeric: tabular-nums; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b) {
+    display: flex; align-items: center; justify-content: center; height: 42px; margin: 0 20px 20px; padding: 0 16px;
+    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; transition: background-color .15s ease;
+  }
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):hover { background: #122c3f; }
+
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa,
+  body[data-theme="dark"][data-page="dashboard"] .dashboard-side-stack > .dash-saldo-total { background: #1F1F1F !important; border-color: #404040 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-title { color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="dashboard"] :is(.dash-home-caixa #greeting-date, .dash-home-caixa .dashboard-quick-action-btn, .dash-saldo-celular-nome) { color: #D4D4D8 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa .dashboard-quick-actions { border-left-color: #333333 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg { background: #252525 !important; color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-valor { color: #EBF4FF !important; }
+  body[data-theme="dark"][data-page="dashboard"] .dash-saldo-celular-colunas > div + div { border-left-color: #333333 !important; }
+}
+
+/* Meus produtos: 3 por linha no desktop (mesmo com a tela menor), 2 no celular. */
+html body[data-page="produtos"] #products-grid:not(#love-h-a) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="produtos"] #products-grid:not(#love-h-a):not(#love-h-b) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+/* Sem as abas, a caixa da busca fica a 24px do título (padrão de respiro). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body[data-page="produtos"] .b2b-header-bar + #produtos-barra-caixa:not(#love-h-a):not(#love-h-b) { margin-top: 4px; }
+}
+
+/* Dashboard: o topo da Home usa a imagem de capa da empresa (Configurações ›
+   Imagem de capa), como a foto do convite na Home do anfitrião. Sem capa,
+   fica o azul do sidebar em degradê. No celular a faixa é um elemento no
+   topo da área que rola (js: homeDoDesktop), atrás do cabeçalho e do Olá. */
+html body[data-page="dashboard"].tem-capa-empresa .dash-home-faixa:not(#love-h-a):not(#love-h-b) {
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0) 50%),
+    var(--capa-empresa) center / cover no-repeat,
+    #E8EEF4;
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content:not(#love-h-a):not(#love-h-b) { position: relative; background: #F4F6F7; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-content { background: #1C2125 !important; }
+  html body[data-page="dashboard"] .b2b-content > .dash-home-faixa:not(#love-h-a) {
+    position: absolute; top: 0; left: 0; right: 0; height: 160px; border-radius: 0; pointer-events: none;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(42, 120, 214, .55) 0%, rgba(42, 120, 214, 0) 55%),
+      linear-gradient(180deg, #183b54 0%, #1d4664 100%);
+  }
+  html body[data-page="dashboard"].tem-capa-empresa .b2b-content > .dash-home-faixa:not(#love-h-a):not(#love-h-b) {
+    height: 200px;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0) 120px),
+      var(--capa-empresa) center / cover no-repeat,
+      #E8EEF4;
+  }
+  html body[data-page="dashboard"] .b2b-content > #shell-topbar.topo-rola-junto:not(#love-h-a):not(#love-h-b),
+  html body[data-page="dashboard"] .b2b-content > .dashboard-greeting:not(#love-h-a):not(#love-h-b) { position: relative; }
+}
+
+/* ==========================================================================
+   Desktop: espaço como no anfitrião (index). Margem de 32px entre o sidebar
+   e o conteúdo em todas as telas (o Dashboard tinha 88px) e, em tela
+   grande, só o conteúdo numa faixa centralizada de até 1280px
+   (--love-conteudo-max); o cabeçalho continua de ponta a ponta. Ficam de
+   fora o Construtor do site e Mensagens (usam a tela toda).
+   ========================================================================== */
+:root { --love-conteudo-max: 1280px; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body[data-page="dashboard"]:not(#love-h-a) {
+    --b2b-dashboard-pad-x: var(--b2b-content-pad-x);
+    --b2b-dashboard-pad-y: var(--b2b-content-pad-y);
+  }
+  /* Faixa central: o que passa de 1280px vira margem dos dois lados do
+     conteúdo; cabeçalho, descrição e rodapé voltam até a borda (32px). */
+  html body:not([data-page="paginas-site"]):not([data-page="chat"]) .b2b-content:not(#love-h-a) {
+    --faixa-extra: max(0px, (var(--largura-conteudo, 0px) - 2 * var(--b2b-content-pad-x) - var(--love-conteudo-max)) / 2);
+  }
+  html body:not([data-page="paginas-site"]):not([data-page="chat"]) .b2b-content:not(#love-h-a):not(#love-h-b) {
+    padding-left: calc(var(--b2b-content-pad-x) + var(--faixa-extra)); padding-right: calc(var(--b2b-content-pad-x) + var(--faixa-extra));
+  }
+  html body:not([data-page="paginas-site"]):not([data-page="chat"]) .b2b-content > :is(.b2b-header-bar, .b2b-header-bar + p, .b2b-footer):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    margin-left: calc(-1 * (var(--b2b-content-pad-x) + var(--faixa-extra))); margin-right: calc(-1 * (var(--b2b-content-pad-x) + var(--faixa-extra)));
+  }
+}
+
+/* Privacidade e Termos (logado), como no anfitrião (#tab-legal-doc): tela
+   toda branca (cabeçalho também), texto começando à esquerda, alinhado com
+   o título, numa coluna de 60% da largura, 24px abaixo do cabeçalho; data
+   em cinza #A1A1AA. No celular a coluna ocupa a largura toda. */
+html body[data-legal-slug]:not([data-theme="dark"]) :is(.b2b-content, .b2b-content > .b2b-header-bar):not(#love-h-a):not(#love-h-b) { background-color: #FFFFFF !important; }
+html body[data-legal-slug] .legal-doc-coluna:not(#love-h-a):not(#love-h-b) { max-width: 60%; width: auto; margin: 0; padding-top: 24px; }
+html body[data-legal-slug] #legal-doc-date-dash:not(#love-h-a) { color: #A1A1AA; font-size: 14px; margin: 0 0 20px; }
+html body[data-legal-slug] .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b) { margin-bottom: 0; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-legal-slug] .legal-doc-coluna:not(#love-h-a):not(#love-h-b) { max-width: none; }
+}
+
+/* Meus produtos vazio, como Meus presentes vazio no anfitrião: caixa branca
+   cheia (420px, borda fina, raio 10) com a frase e o cartão pontilhado
+   "Cadastrar novo produto" (260 × 240px). Busca sem resultado: só o aviso. */
+html body .produtos-vazio:not(#love-h-a) {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 420px;
+  padding: 40px 24px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; box-shadow: none;
+}
+html body .produtos-vazio.produtos-vazio-busca:not(#love-h-a) { min-height: 0; padding: 64px 24px; }
+html body .produtos-vazio-busca .produtos-vazio-texto:not(#love-h-a) { margin: 0; }
+html body .produtos-vazio-texto:not(#love-h-a) { margin: 0 0 20px; font-size: 14px; font-weight: 500; color: #71717A; text-align: center; }
+html body .produtos-vazio-texto b:not(#love-h-a) { font-weight: 700; color: #18181B; }
+html body .produtos-vazio-cards:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 260px); width: 100%; justify-content: center; }
+html body .produtos-vazio-criar:not(#love-h-a) {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 240px; padding: 24px;
+  background: #FFFFFF; border: 1px dashed #E4E4E7; border-radius: 10px; text-align: center; cursor: pointer; font-family: Inter, sans-serif; transition: border-color .15s;
+}
+html body .produtos-vazio-criar:not(#love-h-a):hover { border-color: #A1A1AA; }
+html body .produtos-vazio-criar-icone:not(#love-h-a) { width: 48px; height: 48px; border-radius: 999px; background: #F4F6F7; display: inline-flex; align-items: center; justify-content: center; color: #18181B; margin-bottom: 6px; }
+html body .produtos-vazio-criar-icone svg:not(#love-h-a) { width: 22px; height: 22px; }
+html body .produtos-vazio-criar strong:not(#love-h-a) { font-size: 16px; font-weight: 600; color: #18181B; }
+html body .produtos-vazio-criar-sub:not(#love-h-a) { margin-top: 2px; font-size: 13px; color: #71717A; }
+body[data-theme="dark"] .produtos-vazio, body[data-theme="dark"] .produtos-vazio-criar { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] .produtos-vazio-texto b, body[data-theme="dark"] .produtos-vazio-criar strong { color: #FFFFFF !important; }
+body[data-theme="dark"] .produtos-vazio-criar-icone { background: #333333 !important; color: #FFFFFF !important; }
+
+/* Letras suavizadas como no anfitrião (html { -webkit-font-smoothing:
+   antialiased }): sem isso, no Mac o texto do Hub fica mais grosso que o do
+   index com o mesmo peso (ex.: o "Olá, empresa!" da Home). */
+html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+/* Sua agenda (Dashboard): o dia de hoje com o mesmo fundo das bolinhas dos
+   atalhos (Cobrar, Orçamento, Financeiro, Construtor), desktop e celular. */
+html body .day-strip-cell.today:not(#love-h-a):not(#love-h-b) { background: #EAF0F5 !important; }
+html body .day-strip-cell.today:not(#love-h-a) :is(.dow, .dom) { color: #183b54 !important; }
+html body .day-strip-cell.today:not(#love-h-a) .day-strip-dot { background: #183b54 !important; }
+body[data-theme="dark"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #252525 !important; }
+body[data-theme="dark"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b) :is(.dow, .dom) { color: #EBF4FF !important; }
+body[data-theme="dark"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b) .day-strip-dot { background: #EBF4FF !important; }
+
+/* Telas vazias ocupando o espaço até o rodapé, como Meus presentes do
+   anfitrião: Meus produtos, Oportunidades, Propostas enviadas e Clientes.
+   A caixa cresce (flex) e o aviso fica no meio dela. Só no desktop. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-content > :is(#products-grid:has(> .produtos-vazio), [data-leads-painel]:not([hidden]):has(#op-sem-produtos:not([hidden]), #op-vazio:not([hidden]), td.tabela-vazia-cheia)):not(#love-h-a):not(#love-h-b) {
+    flex: 1 0 auto; display: flex !important; flex-direction: column;
+  }
+  html body #products-grid > .produtos-vazio:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; justify-content: center; min-height: 420px; }
+
+  /* Oportunidades sem produto: caixa branca cheia, aviso no meio. */
+  html body [data-leads-painel] > #op-sem-produtos:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    flex: 1 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; min-height: 420px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-style: solid; border-radius: 10px;
+  }
+  /* Oportunidades sem pedidos: a caixa da lista cresce e o aviso fica no meio. */
+  html body [data-leads-painel] > #op-conteudo:has(#op-vazio:not([hidden])):not([hidden]):not(#love-h-a) { flex: 1 0 auto; display: flex; flex-direction: column; }
+  html body #op-conteudo > .op-caixa:has(> #op-vazio:not([hidden])):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; display: flex; flex-direction: column; min-height: 420px; }
+  html body .op-caixa > #op-vazio:not([hidden]):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; text-align: center; }
+  html body .op-caixa:has(> #op-vazio:not([hidden])) > .op-posts:not(#love-h-a):not(#love-h-b) { flex: 0 0 auto; }
+
+  /* Propostas enviadas e Clientes vazios: a tabela vai até o rodapé, sem as
+     linhas de fundo, e o aviso no meio. */
+  html body :is(#op-propostas-card, #leads-table-card):has(td.tabela-vazia-cheia):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; min-height: 420px; }
+  html body :is(#op-propostas-card, #leads-table-card):has(td.tabela-vazia-cheia) > .leads-table-wrap:not(#love-h-a):not(#love-h-b)::after { display: none; }
+  html body :is(#op-propostas-card, #leads-table-card):has(td.tabela-vazia-cheia) > .leads-table-wrap > table:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; }
+  html body :is(#op-propostas-card, #leads-table-card) td.tabela-vazia-cheia:not(#love-h-a):not(#love-h-b) { padding: 48px 16px !important; text-align: center; vertical-align: middle; }
+
+  body[data-theme="dark"] [data-leads-painel] > #op-sem-produtos:not([hidden]) { background: #252525 !important; border-color: #404040 !important; }
+}
+/* Caixas de tabela sem padding: a tabela começa no topo da caixa (antes o
+   cabeçalho de Propostas enviadas subia 24px por cima das abas). */
+html body :is(#leads-table-card, #op-propostas-card, #finance-lista-card, #team-table-card, #orcamentos-table-card, #contratos-clientes-card) > .leads-table-wrap:first-child:not(#love-h-a):not(#love-h-b) { margin: 0; }
+/* Com a tela vazia ocupando a página, o respiro até o rodapé é de 32px. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-content:has(> #products-grid > .produtos-vazio, [data-leads-painel]:not([hidden]) :is(#op-sem-produtos:not([hidden]), #op-conteudo:not([hidden]) #op-vazio:not([hidden]), td.tabela-vazia-cheia)) > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b) { height: 2rem; }
+}
+
+/* Meus produtos vazio: a caixa pontilhada "Cadastrar novo produto" com a
+   mesma largura do texto de cima. */
+html body .produtos-vazio:not(.produtos-vazio-busca):not(#love-h-a):not(#love-h-b) {
+  display: grid; grid-template-columns: fit-content(100%); justify-content: center; align-content: center;
+}
+html body .produtos-vazio:not(.produtos-vazio-busca) > .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr); }
+
+/* Fixar menu (computador): botão ao lado do logotipo. Fixado, o menu fica
+   aberto (256px) e o conteúdo vai para a direita; desafixado, volta a abrir
+   só ao passar o mouse, por cima do conteúdo. */
+html body .sidebar-fixar:not(#love-h-a) { display: none; }
+html body.sidebar-hover-mode:not(.sidebar-collapsed) .sidebar-brand-top > .sidebar-fixar:not(#love-h-a):not(#love-h-b) {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 32px; height: 32px; margin-left: auto; padding: 0; cursor: pointer;
+  background: transparent; border: 0; border-radius: 8px; outline: none; box-shadow: none;
+  color: rgba(255, 255, 255, 0.55); transition: color .15s ease;
+}
+html body .sidebar-brand-top > .sidebar-fixar svg:not(#love-h-a) { width: 18px; height: 18px; transition: transform .15s ease; }
+html body .sidebar-brand-top > .sidebar-fixar:not(#love-h-a):hover,
+html body .sidebar-brand-top > .sidebar-fixar:not(#love-h-a):focus-visible { color: #FFFFFF; }
+html body .sidebar-brand-top > .sidebar-fixar[aria-pressed="true"]:not(#love-h-a) { color: #FFFFFF; }
+html body .sidebar-brand-top > .sidebar-fixar[aria-pressed="true"] svg:not(#love-h-a) { transform: rotate(45deg); fill: currentColor; }
+html body.sidebar-hover-mode.sidebar-fixo .b2b-main:not(#love-h-a) { margin-left: var(--sidebar-width); }
+html body.sidebar-hover-mode.sidebar-fixo .b2b-sidebar:not(#love-h-a) { box-shadow: none; }
+
+/* Meus produtos vazio: ícone animado no lugar do "+", no tamanho, cor e
+   traço dos ícones de Adicionar presente do anfitrião (64px, #D4D4D8, 2px). */
+html body .produtos-vazio-criar .produtos-vazio-lottie:not(#love-h-a) { display: block; width: 64px; height: 64px; margin: 0 auto 6px; }
+
+/* Adicionar/editar produto aberto: a caixa de "nenhum produto" some (a regra
+   da tela vazia ocupando a página não pode trazê-la de volta). */
+html body.produto-editor-aberto .b2b-content > #products-grid:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+html body.produto-editor-aberto .b2b-content > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 6.5rem; }
+
+/* Avisos de "vazio" num padrão só (o de Oportunidades sem produto): 15px,
+   peso normal, #3F3F46. Vale para Meus produtos, Oportunidades, Propostas
+   enviadas, Clientes, Contratos, Orçamentos e Colaboradores. */
+html body :is(.produtos-vazio-texto, .op-sem-produtos > p, .op-vazio, td.tabela-vazia-cheia, .op-prop-vazio):not(#love-h-a):not(#love-h-b) {
+  font-family: inherit; font-size: 15px !important; font-weight: 400; line-height: 1.5; color: #3F3F46 !important; letter-spacing: normal;
+}
+html body .produtos-vazio-texto b:not(#love-h-a):not(#love-h-b) { font-weight: inherit; color: inherit; }
+body[data-theme="dark"] :is(.produtos-vazio-texto, .op-sem-produtos > p, .op-vazio, td.tabela-vazia-cheia, .op-prop-vazio) { color: #D4D4D8 !important; }
+
+/* Oportunidades sem produto: o mesmo cartão pontilhado de Meus produtos,
+   na largura do texto. */
+html body #op-sem-produtos:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  display: grid; grid-template-columns: fit-content(100%); justify-content: center; align-content: center; gap: 20px;
+}
+html body #op-sem-produtos > .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr); }
+html body #op-sem-produtos a.produtos-vazio-criar:not(#love-h-a) { text-decoration: none; color: inherit; }
+
+/* Contratos e Orçamentos vazios: a tabela vai até o rodapé com o aviso no
+   meio, como Clientes e Propostas enviadas. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-content > [data-view-panel]:not([style*="none"]):not([hidden]):has(:is(#orcamentos-table-card, #contratos-clientes-card) td.tabela-vazia-cheia):not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body [data-view-panel] > #orcamentos-lista-view:not([style*="none"]):not([hidden]):has(td.tabela-vazia-cheia):not(#love-h-a):not(#love-h-b) {
+    flex: 1 0 auto; display: flex !important; flex-direction: column;
+  }
+  html body :is(#orcamentos-table-card, #contratos-clientes-card):has(td.tabela-vazia-cheia):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; min-height: 420px; }
+  html body :is(#orcamentos-table-card, #contratos-clientes-card):has(td.tabela-vazia-cheia) > .leads-table-wrap:not(#love-h-a):not(#love-h-b)::after { display: none; }
+  html body :is(#orcamentos-table-card, #contratos-clientes-card):has(td.tabela-vazia-cheia) > .leads-table-wrap > table:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; }
+  html body :is(#orcamentos-table-card, #contratos-clientes-card) td.tabela-vazia-cheia:not(#love-h-a):not(#love-h-b) { padding: 48px 16px !important; text-align: center; vertical-align: middle; }
+  html body .b2b-content:has(> [data-view-panel]:not([style*="none"]):not([hidden]) :is(#orcamentos-table-card, #contratos-clientes-card) td.tabela-vazia-cheia) > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b) { height: 2rem; }
+}
+html body .leads-table tbody td.tabela-vazia-cheia:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 15px !important; font-weight: 400; color: #3F3F46 !important; }
+body[data-theme="dark"] .leads-table tbody td.tabela-vazia-cheia:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #D4D4D8 !important; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-content > [data-view-panel]:not([style*="none"]):has(:is(#orcamentos-table-card, #contratos-clientes-card) td.tabela-vazia-cheia):not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-bottom: 0 !important; }
+}
+
+/* Meus produtos vazio: "Que tal cadastrar um novo?" em negrito e clicável
+   (abre o Adicionar produto). */
+html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):not(#love-h-b) {
+  display: inline; padding: 0; margin: 0; background: none; border: 0; border-radius: 0; box-shadow: none; outline: none; cursor: pointer;
+  font: inherit; font-weight: 700; color: #18181B; text-decoration: none;
+}
+html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):hover,
+html body .produtos-vazio-texto .produtos-vazio-link:not(#love-h-a):focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+body[data-theme="dark"] .produtos-vazio-texto .produtos-vazio-link { color: #FFFFFF !important; }
+
+/* Home do Hub: "Olá, empresa!" e a data na mesma fonte do "Olá, nome!" do
+   anfitrião — Plus Jakarta Sans normal (400), 26px, cinza #52525B. */
+html body[data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-size: 26px !important; font-weight: 400 !important; letter-spacing: -0.025em !important; line-height: 1.2 !important; color: #52525B !important;
+}
+html body[data-page="dashboard"] .dash-home-caixa #greeting-date:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+}
+html body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-date { color: #D4D4D8 !important; }
+
+/* Meus contratos sempre até o rodapé (mesmo com contratos ou o de exemplo),
+   como Orçamentos; Formulários vazio também; respiro de 32px até o rodapé. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-content > [data-view-panel="contratos"]:not([style*="none"]):not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto; display: flex !important; flex-direction: column; padding-bottom: 0 !important;
+  }
+  html body [data-view-panel="contratos"] > #contratos-clientes-card:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; min-height: 420px; }
+  html body .b2b-content:has(> [data-view-panel="contratos"]:not([style*="none"]):not([hidden])) > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b) { height: 2rem; }
+
+  html body:not(.form-editor-aberto) .b2b-content > [data-tab-panel="formularios"]:not([style*="none"]):has(> #forms-list > .forms-vazio):not(#love-h-a):not(#love-h-b) {
+    flex: 1 0 auto; display: flex !important; flex-direction: column;
+  }
+  html body [data-tab-panel="formularios"] > #forms-list:has(> .forms-vazio):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; display: flex; flex-direction: column; }
+  html body #forms-list > .forms-vazio:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; min-height: 420px; }
+  html body:not(.form-editor-aberto) .b2b-content:has(> [data-tab-panel="formularios"]:not([style*="none"]) > #forms-list > .forms-vazio) > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b) { height: 2rem; }
+
+  /* Propostas enviadas sem produto: o mesmo aviso de Oportunidades. */
+  html body .b2b-content > [data-leads-painel]:not([hidden]):has(> #op-propostas-sem-produtos:not([hidden])):not(#love-h-a):not(#love-h-b) {
+    flex: 1 0 auto; display: flex !important; flex-direction: column;
+  }
+  html body [data-leads-painel] > #op-propostas-sem-produtos:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto; display: grid; grid-template-columns: fit-content(100%); justify-content: center; align-content: center; gap: 20px; min-height: 420px;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-style: solid; border-radius: 10px;
+  }
+  html body .b2b-content:has(> [data-leads-painel]:not([hidden]) > #op-propostas-sem-produtos:not([hidden])) > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b) { height: 2rem; }
+  body[data-theme="dark"] [data-leads-painel] > #op-propostas-sem-produtos:not([hidden]) { background: #252525 !important; border-color: #404040 !important; }
+}
+html body #op-propostas-sem-produtos[hidden]:not(#love-h-a):not(#love-h-b) { display: none !important; }
+html body #op-propostas-sem-produtos > .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr); }
+html body #op-propostas-sem-produtos a.produtos-vazio-criar:not(#love-h-a) { text-decoration: none; color: inherit; }
+html body #op-propostas-card[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+
+/* Celular: "Olá, empresa!" e a data na mesma fonte do Olá do anfitrião no
+   celular — Plus Jakarta Sans normal (400), 22px, cinza #52525B. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-size: 22px !important; font-weight: 400 !important; letter-spacing: -0.025em !important; line-height: 1.25 !important; color: #52525B !important;
+  }
+  html body[data-page="dashboard"] #greeting-date:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+  }
+  html body[data-theme="dark"][data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
+  body[data-theme="dark"][data-page="dashboard"] #greeting-date { color: #D4D4D8 !important; }
+}
+
+/* Banner da home: sem as setas; troca sozinho (e no celular, arrastando). */
+html body .dash-ads-nav:not(#love-h-a):not(#love-h-b) { display: none !important; }
+html body .dash-ads-carousel:not(#love-h-a) { touch-action: pan-y; }
+
+/* Oportunidades no celular: arrastar a linha para a esquerda mostra
+   "Enviar proposta" na cor primária e, passando de 35%, abre a proposta. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #op-grade.op-posts:not(#love-h-a) { overflow-x: clip; }
+  html body #op-grade .op-post:not(#love-h-a) { position: relative; touch-action: pan-y; }
+  html body #op-grade .op-post.op-arrastando:not(#love-h-a) { background: #FFFFFF; }
+  html body #op-grade .op-post:not(#love-h-a)::after {
+    content: "Enviar proposta"; position: absolute; top: 0; bottom: 0; left: 100%; width: 100%;
+    display: flex; align-items: center; padding-left: 24px;
+    background: #183b54; color: #FFFFFF; font-size: 14px; font-weight: 600; letter-spacing: -0.01em;
+    opacity: .85; transition: opacity .15s ease; pointer-events: none;
+  }
+  html body #op-grade .op-post.op-arraste-pronto:not(#love-h-a)::after { opacity: 1; }
+  body[data-theme="dark"] #op-grade .op-post.op-arrastando { background: #252525 !important; }
+
+  /* Filtrar por: campos de 40px (antes cada um esticava até 140px). */
+  html body .op-filtrar-menu:not(#love-h-a):not(#love-h-b) { gap: 12px; padding: 16px; width: min(300px, calc(100vw - 32px)); }
+  html body .op-filtrar-campo:not(#love-h-a):not(#love-h-b) { gap: 6px; }
+  html body .op-filtrar-campo .op-filtro-select:not(#love-h-a):not(#love-h-b) { flex: 0 0 auto; height: 40px; }
+}
+
+/* Celular: as abas de Oportunidades/Propostas/Clientes, Gestão (Minha agenda/
+   Minhas tarefas), Contratos e Financeiro no mesmo formato da barra de
+   submenus do anfitrião (.submenu-celular): de ponta a ponta, grudada no
+   topo, mesma largura, texto limpo e a linha da primária em cima da ativa. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: sticky; top: -20px; z-index: 20;
+    display: flex; flex-shrink: 0; gap: 0 !important; width: auto; max-width: none; box-sizing: border-box;
+    margin: 0 -16px 16px !important; padding: 0 !important;
+    background: #FFFFFF !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important; border-radius: 0 !important; box-shadow: none !important;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs)::-webkit-scrollbar { display: none; }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: relative; flex: 1 0 auto !important; min-width: 0 !important; min-height: 46px; height: auto !important; display: inline-flex; align-items: center; justify-content: center;
+    margin: 0 !important; padding: 0 6px !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none;
+    background: #FFFFFF !important; color: #52525B !important;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 14px !important; font-weight: 500 !important; line-height: 1 !important; letter-spacing: -0.01em !important;
+    white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    background: #F4F6F7 !important; color: #18181B !important; font-weight: 600 !important;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active:not(#love-h-a):not(#love-h-b)::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #183b54; border-radius: 0;
+  }
+  html body .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab:not(#love-h-a)::after { display: none !important; }
+  /* O que vem logo antes das abas (cabeçalho ou descrição) fica sem margem embaixo. */
+  html body .b2b-content > :has(+ :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs)):not(#love-h-a):not(#love-h-b) { margin-bottom: 0 !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) { background: #1F1F1F !important; border-top-color: #333333 !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab { background: #1F1F1F !important; color: #A1A1AA !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active { background: #1A1A1A !important; color: #FFFFFF !important; }
+  body[data-theme="dark"] .b2b-content > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs) > .category-tab.active::before { background: #EBF4FF; }
+}
+
+/* Mensagens: atalho para Oportunidades só no cabeçalho do celular. */
+.chat-oportunidades-btn { display: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content > .b2b-header-bar > a.chat-oportunidades-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { display: inline-flex !important; align-items: center; text-decoration: none; }
+}
+
+/* Celular: rodapé só na Home — "© ano Love Hub Ltda." e, embaixo,
+   Privacidade e Termos e condições, centralizado e pequeno. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content > .b2b-footer:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: block !important; flex-shrink: 0; margin: 8px -16px 0 !important; padding: 20px 16px 24px !important;
+    background: transparent !important; border: 0 !important; border-top: 1px solid #E4E4E7 !important; text-align: center;
+  }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-bottom:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 8px; margin: 0; padding: 0; border: 0;
+  }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-bottom p:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 12px !important; color: #71717A !important; }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-frase:not(#love-h-a) { display: none; }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-legal-links:not(#love-h-a):not(#love-h-b) { display: flex !important; justify-content: center; gap: 16px; margin: 0 !important; }
+  html body[data-page="dashboard"] .b2b-footer .b2b-footer-legal-links a:not(#love-h-a):not(#love-h-b) { font-size: 12px !important; font-weight: 500; color: #52525B !important; text-decoration: none; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-content > .b2b-footer { border-top-color: #333333 !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-footer .b2b-footer-bottom p { color: #A1A1AA !important; }
+  body[data-theme="dark"][data-page="dashboard"] .b2b-footer .b2b-footer-legal-links a { color: #D4D4D8 !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .b2b-content > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 16px !important; }
+}
+
+/* Oportunidades: a busca do cabeçalho some nas outras abas também no celular
+   (o display: contents passava por cima do hidden). */
+html body #op-header-acoes[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+
+/* Celular: janelas em tela cheia (Nova cobrança, Sacar Pix…) com o
+   cabeçalho branco das páginas — título 20px/700 à esquerda e o X à direita,
+   grudado no topo. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card > div.flex.items-center.justify-between:first-child:has(> h3):not(#love-h-a):not(#love-h-b) {
+    position: sticky; top: calc(-20px - env(safe-area-inset-top, 0px)); z-index: 5;
+    margin: calc(-20px - env(safe-area-inset-top, 0px)) -16px 16px !important;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 6px 18px 16px !important; min-height: 82px; box-sizing: border-box;
+    background: #FFFFFF !important; border: 0 !important;
+  }
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card > div.flex.items-center.justify-between:first-child > h3:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex; align-items: center; min-height: 44px; margin: 0 !important;
+    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important; letter-spacing: -0.4px !important; color: #18181B !important;
+  }
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card > div.flex.items-center.justify-between:first-child > button:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B !important;
+  }
+  html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card > div.flex.items-center.justify-between:first-child > button svg:not(#love-h-a) { width: 22px; height: 22px; }
+  body[data-theme="dark"] .modal-backdrop > .modal-card > div.flex.items-center.justify-between:first-child:has(> h3) { background: #1F1F1F !important; }
+  body[data-theme="dark"] .modal-backdrop > .modal-card > div.flex.items-center.justify-between:first-child > :is(h3, button) { color: #FFFFFF !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Oportunidades no formato de Clientes: o número de filtros ligados continua aparecendo. */
+  html body .dash-card.lista-celular #op-filtrar-btn > .op-filtrar-qtd:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: inline !important; position: static; font-size: 15px !important; font-weight: 500; }
+  html body .dash-card.lista-celular .op-filtrar-menu:not(#love-h-a):not(#love-h-b):not(#love-h-c) { right: 0; left: auto; top: calc(100% + 6px); }
+}
+
+/* ==========================================================================
+   Celular: a caixa da lista (Clientes, Oportunidades, Meus contratos,
+   Orçamentos) usa a tela toda — colada nas abas e indo até a barra de baixo,
+   sem a faixa cinza do respiro do rodapé (o rodapé só aparece na Home).
+   Mensagens: sem a faixa de outro cinza entre o cabeçalho e "N conversas",
+   um cinza só (o da página), linha fina embaixo do cabeçalho, como no index.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-footer-respiro:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 0 !important; }
+
+  html body .b2b-content:has(> :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]) > .dash-card.lista-celular, > :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]) > :not([hidden]):not([style*="none"]) > .dash-card.lista-celular) > :is(#leads-abas, #work-view-tabs, #sales-view-tabs, #payments-view-tabs, .category-tabs-bar):not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-bottom: 0 !important; }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]):has(> .dash-card.lista-celular, > :not([hidden]):not([style*="none"]) > .dash-card.lista-celular):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; display: flex !important; flex-direction: column; min-height: 0;
+    padding-bottom: 0 !important; margin-bottom: calc(-88px - env(safe-area-inset-bottom, 0px)) !important;
+  }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]):not([hidden]):not([style*="none"]) > :not([hidden]):not([style*="none"]):has(> .dash-card.lista-celular):not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 1 0 auto !important; display: flex !important; flex-direction: column; margin-bottom: 0 !important; }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]) .dash-card.lista-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; margin-top: 0 !important; margin-bottom: 0 !important; padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  html body .b2b-content > :is([data-view-panel], [data-leads-painel]) .dash-card.lista-celular > .vazio-celular:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 1 0 auto; min-height: 320px; }
+
+  /* Oportunidades: filtros rápidos dentro da caixa, abaixo da busca. */
+  html body #op-caixa > #op-barra-celular:has(+ #op-filtros):not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-bottom: 12px !important; border-bottom: 0 !important; }
+  html body #op-caixa > #op-filtros:not(#love-h-a):not(#love-h-b) { flex-wrap: nowrap; gap: 8px; margin: 0; padding: 0 16px 16px; border-bottom: 1px solid #E4E4E7; overflow-x: auto; scrollbar-width: none; }
+  body[data-theme="dark"] #op-caixa > #op-filtros { border-bottom-color: #333333; }
+
+  /* Mensagens */
+  html body[data-page="chat"] .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-bottom: 0 !important; border-bottom: 1px solid #E4E4E7 !important; }
+  html body[data-page="chat"] :is(.chat-shell, .b2b-chat-contacts-column, .b2b-chat-contacts-header, #conv-list):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+  html body[data-page="chat"] .chat-total-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #18181B; }
+  body[data-theme="dark"][data-page="chat"] .b2b-content > .b2b-header-bar { border-bottom-color: #333333 !important; }
+  body[data-theme="dark"][data-page="chat"] .chat-total-celular { color: #FFFFFF; }
+}
+
+/* ==========================================================================
+   Home: caixa do saldo com abas Saldo / Faturamento no topo (texto com
+   sublinhado na primária, como os submenus) e o olho à direita para
+   esconder os valores. Um valor por vez, centralizado; botão igual.
+   ========================================================================== */
+html body .dash-saldo-celular .dash-saldo-celular-topo:not(#love-h-a) {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 0 8px 0 20px; border-bottom: 1px solid #F4F4F5;
+}
+html body .dash-saldo-celular .dash-saldo-celular-abas:not(#love-h-a) { display: flex; align-items: stretch; gap: 20px; min-width: 0; }
+html body .dash-saldo-celular .dash-saldo-celular-aba:not(#love-h-a):not(#love-h-b) {
+  height: 46px; margin: 0 0 -1px; padding: 0; background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
+  font-family: Inter, sans-serif; font-size: 14px; font-weight: 500; color: #71717A; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+html body .dash-saldo-celular .dash-saldo-celular-aba:not(#love-h-a):not(#love-h-b):hover { color: #181D24; }
+html body .dash-saldo-celular .dash-saldo-celular-aba.active:not(#love-h-a):not(#love-h-b) { border-bottom-color: #183b54; color: #183b54; font-weight: 600; }
+html body .dash-saldo-celular .dash-saldo-celular-olho:not(#love-h-a):not(#love-h-b) {
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 40px; width: 40px; height: 40px; padding: 0;
+  background: transparent; border: 0; border-radius: 8px; color: #71717A; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+html body .dash-saldo-celular .dash-saldo-celular-olho:not(#love-h-a):not(#love-h-b):hover { color: #181D24; }
+html body .dash-saldo-celular .dash-saldo-celular-olho svg:not(#love-h-a) { width: 20px; height: 20px; }
+html body .dash-saldo-celular .dash-saldo-celular-painel:not([hidden]):not(#love-h-a) {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 22px 20px 20px; text-align: center; min-width: 0;
+}
+html body .dash-saldo-celular .dash-saldo-celular-painel[hidden]:not(#love-h-a) { display: none; }
+body[data-theme="dark"] .dash-saldo-celular .dash-saldo-celular-topo { border-bottom-color: #333333; }
+body[data-theme="dark"] .dash-saldo-celular :is(.dash-saldo-celular-aba, .dash-saldo-celular-olho) { color: #A1A1AA !important; }
+body[data-theme="dark"] .dash-saldo-celular .dash-saldo-celular-aba.active { color: #FFFFFF !important; border-bottom-color: #FFFFFF !important; }
+
+/* ==========================================================================
+   Celular: listas vazias e avisos de "sem produto" no mesmo padrão — caixa
+   branca sobre o fundo cinza, descendo até 16px acima da barra de baixo.
+   - Clientes, Contratos, Orçamentos vazios: sem o branco de ponta a ponta
+     atrás da caixa "Adicione seu primeiro…".
+   - Oportunidades e Propostas enviadas sem produto: a caixa estica até embaixo.
+   Barra de baixo: item ativo com o fundo #EAF0F5 e o ícone #183b54 dos
+   atalhos Cobrar / Orçamento / Construtor da Home.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content .dash-card.lista-celular.tem-vazio-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+  html body .dash-card.lista-celular.tem-vazio-celular > .tabela-barra:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-bottom-color: transparent !important; }
+  body[data-theme="dark"] .b2b-content .dash-card.lista-celular.tem-vazio-celular { background: transparent !important; }
+
+  html body .b2b-content > [data-leads-painel]:not([hidden]):has(> :is(#op-sem-produtos, #op-propostas-sem-produtos):not([hidden])):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; display: flex !important; flex-direction: column; margin-bottom: -8px !important; padding-bottom: 0 !important;
+  }
+  html body .b2b-content > [data-leads-painel] > :is(#op-sem-produtos, #op-propostas-sem-produtos):not([hidden]):not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; align-content: center; margin-bottom: 0 !important; }
+
+  html body:not([data-theme="dark"]) .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #EAF0F5 !important; color: #183b54 !important; }
+}
+
+/* ==========================================================================
+   Formulários vazios no padrão de Oportunidades sem produto: caixa branca
+   na largura do conteúdo (borda contínua, cantos 10px), texto em cima e o
+   cartão pontilhado "Cadastrar novo formulário" no meio. No celular a caixa
+   desce até 16px acima da barra de baixo.
+   ========================================================================== */
+html body #forms-list:has(> .forms-vazio):not(#love-h-a):not(#love-h-b) { max-width: none !important; width: 100%; }
+html body #forms-list > .forms-vazio:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  display: grid !important; grid-template-columns: fit-content(100%); justify-content: center; align-content: center; gap: 20px;
+  padding: 40px 24px; background: #FFFFFF; border: 1px solid #E4E4E7 !important; border-radius: 10px;
+}
+html body #forms-list > .forms-vazio > .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr); }
+html body .forms-vazio button.produtos-vazio-criar:not(#love-h-a):not(#love-h-b) { width: 100%; font: inherit; color: inherit; }
+html body .forms-vazio .forms-vazio-icone:not(#love-h-a) { display: block; width: 64px; height: 64px; margin: 0 auto 6px; }
+body[data-theme="dark"] #forms-list > .forms-vazio { background: #252525 !important; border-color: #404040 !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not(.form-editor-aberto) .b2b-content > [data-tab-panel="formularios"]:not([style*="none"]):has(> #forms-list > .forms-vazio):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    flex: 1 0 auto !important; display: flex !important; flex-direction: column; margin-bottom: -8px !important; padding-bottom: 0 !important;
+  }
+  html body [data-tab-panel="formularios"] > #forms-list:has(> .forms-vazio):not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 1 0 auto; display: flex !important; flex-direction: column; }
+  html body #forms-list > .forms-vazio:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { flex: 1 0 auto; min-height: 0; }
+}
+
+/* Celular: sem a transição de página (cross-fade da tela inteira). A foto da
+   página antiga era esticada quando a altura da tela mudava (barra do
+   endereço) e a barra de baixo, que chega depois pelo shell, aparecia torta
+   ao entrar ou voltar numa página. Troca direta, sem animação. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  @view-transition { navigation: none; }
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+  html body .mobile-bottom-nav .mobile-nav-item:not(#love-h-a):not(#love-h-b) { transition: none !important; }
+}
+
+/* Celular: Minhas tarefas (quadro) com as listas na largura toda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .kanban-board:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1fr) !important; justify-content: stretch !important; }
+  html body .kanban-board > *:not(#love-h-a):not(#love-h-b) { width: auto !important; max-width: none !important; }
+}
+
+/* ==========================================================================
+   Login do Hub (login/signup) no mesmo modelo do login da love.com.br:
+   logo no meio sem título, Google em cima, "ou" e depois e-mail/senha;
+   campos brancos com borda cinza (cinza claro quando preenchidos); Entrar
+   claro (#EAF0F5) com os campos vazios e azul (#183b54) quando preenchidos;
+   foto da direita numa caixa com carrossel; no celular, prévia da barra de
+   baixo do Hub (só enfeite).
+   ========================================================================== */
+html body .auth-tela :is(#auth-view-login, #auth-view-signup):not(#love-h-a) { max-width: 400px; margin-left: auto; margin-right: auto; }
+.auth-tela .auth-logo { margin-bottom: 32px; text-align: center; }
+.auth-tela .auth-logo img { margin: 0 auto; }
+.auth-tela .auth-ou { display: flex; align-items: center; gap: 12px; margin: 20px 0; }
+.auth-tela .auth-ou::before, .auth-tela .auth-ou::after { content: ''; flex: 1; height: 1px; background: #E4E4E7; }
+.auth-tela .auth-ou span { font: 500 13px/1 Inter, sans-serif; color: #71717A; }
+html body .auth-tela a.auth-esqueceu-senha:not(#love-h-a) { font-size: 12px; font-weight: 500; color: #71717A; text-decoration: none; }
+html body .auth-tela a.auth-esqueceu-senha:not(#love-h-a):hover { color: #181D24; text-decoration: underline; }
+.auth-tela .auth-trocar { display: flex; justify-content: center; gap: 4px; padding-top: 28px; font-size: 14px; color: #71717A; }
+html body .auth-tela .auth-trocar a:not(#love-h-a) { font-weight: 700; color: #183b54; text-decoration: none; }
+html body .auth-tela .auth-trocar a:not(#love-h-a):hover { text-decoration: underline; }
+.auth-tela .auth-termos { margin-top: 16px; text-align: center; font-size: 11px; line-height: 1.6; color: #A1A1AA; }
+html body .auth-tela .auth-termos a:not(#love-h-a) { font-weight: 600; color: #71717A; text-decoration: none; }
+html body .auth-tela .auth-termos a:not(#love-h-a):hover { color: #181D24; text-decoration: underline; }
+html body .auth-tela #auth-view-signup > div:first-child:not(#love-h-a) { text-align: center; }
+html body .auth-tela #auth-view-signup > div:first-child img:not(#love-h-a) { margin-left: auto; margin-right: auto; }
+
+/* Botão do Google: branco, borda fina; hover só escurece a borda. */
+html body .auth-tela :is(#google-login-btn, #google-signup-btn):not(#love-h-a):not(#love-h-b) {
+  background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important; border-radius: 8px !important; color: #18181B !important;
+}
+html body .auth-tela :is(#google-login-btn, #google-signup-btn):hover:not(#love-h-a):not(#love-h-b) { border-color: #181D24 !important; }
+
+/* Campos: vazio branco com borda cinza fina; preenchido cinza claro. */
+html body .auth-tela :is(input[type="email"], input[type="password"], input[type="text"]):not(#love-h-a):not(#love-h-b) {
+  background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important; outline: none !important; border-radius: 8px !important;
+}
+html body .auth-tela :is(input[type="email"], input[type="password"], input[type="text"]):not(:placeholder-shown):not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
+html body .auth-tela :is(input[type="email"], input[type="password"], input[type="text"]):focus:not(#love-h-a):not(#love-h-b) { border-color: #181D24 !important; }
+html body .auth-tela input:is(:-webkit-autofill, :autofill):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  -webkit-box-shadow: 0 0 0 1000px #F4F6F7 inset !important; box-shadow: 0 0 0 1000px #F4F6F7 inset !important;
+  -webkit-text-fill-color: #18181B !important; caret-color: #18181B;
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+/* Entrar / Criar conta: claro com os campos vazios, azul quando preenchidos. */
+html body .auth-tela .auth-entrar:not(#love-h-a):not(#love-h-b) {
+  background: #EAF0F5 !important; color: #183b54 !important; box-shadow: none !important; border: 0 !important; border-radius: 8px !important;
+}
+html body .auth-tela .auth-entrar:hover:not(#love-h-a):not(#love-h-b) { background: #E1E9F0 !important; color: #183b54 !important; box-shadow: none !important; outline: none !important; }
+html body .auth-tela #login-form:has(#login-email:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)):has(#login-password:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)) .auth-entrar:not(#love-h-a):not(#love-h-b),
+html body .auth-tela #signup-email-form:has(#signup-email:not(:placeholder-shown)):has(#signup-password:not(:placeholder-shown)) .auth-entrar:not(#love-h-a):not(#love-h-b) {
+  background: #183b54 !important; color: #FFFFFF !important; box-shadow: none !important;
+}
+html body .auth-tela #login-form:has(#login-email:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)):has(#login-password:is(:not(:placeholder-shown), :-webkit-autofill, :autofill)) .auth-entrar:hover:not(#love-h-a):not(#love-h-b),
+html body .auth-tela #signup-email-form:has(#signup-email:not(:placeholder-shown)):has(#signup-password:not(:placeholder-shown)) .auth-entrar:hover:not(#love-h-a):not(#love-h-b) {
+  background: #122c3f !important;
+}
+
+/* Desktop: foto numa caixa de cantos 10px com 16px de respiro; carrossel. */
+@media (min-width: 1024px) {
+  html body .auth-tela .login-imagem:not(#love-h-a) {
+    flex: 0 0 auto; width: calc(50% - 16px); margin: 16px 16px 16px 0; border-radius: 10px;
+    min-height: calc(100vh - 32px); align-self: stretch;
+  }
+}
+.auth-tela .login-carrossel { position: absolute; inset: 0; }
+.auth-tela .login-carrossel-foto {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  opacity: 0; transform: scale(1.04); transition: opacity 1.2s ease, transform 6s ease-out;
+}
+.auth-tela .login-carrossel-foto.is-ativa { opacity: 1; transform: scale(1); }
+#login-carrossel-frase { transition: opacity .45s ease, transform .45s ease; }
+#login-carrossel-frase.is-trocando { opacity: 0; transform: translateY(6px); }
+@media (prefers-reduced-motion: reduce) { .auth-tela .login-carrossel-foto, #login-carrossel-frase { transition: none; transform: none; } }
+
+/* Celular: prévia da barra de baixo do Hub (só enfeite). */
+.auth-tela .login-barra-previa { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .auth-tela:has(.login-barra-previa) :is(#auth-view-login, #auth-view-signup):not(#love-h-a):not(#love-h-b) { padding-bottom: 72px; }
+  .auth-tela .login-barra-previa {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex;
+    height: calc(64px + env(safe-area-inset-bottom, 0px)); padding: 6px 8px env(safe-area-inset-bottom, 0px);
+    background: #FFFFFF; border-top: 1px solid #E4E4E7; pointer-events: none; user-select: none;
+  }
+  .auth-tela .login-barra-item {
+    flex: 1 1 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    height: 52px; margin: 0 2px; border-radius: 999px; color: #52525B; font: 500 10.5px/1 Inter, sans-serif;
+  }
+  .auth-tela .login-barra-item small { font-size: 10.5px; }
+  .auth-tela .login-barra-item svg { width: 21px; height: 21px; }
+  .auth-tela .login-barra-item.is-ativo { background: #EAF0F5; color: #183b54; }
+}
+
+body[data-theme="dark"] .auth-tela .auth-ou::before, body[data-theme="dark"] .auth-tela .auth-ou::after { background: #404040; }
+
+/* Login do Hub: foto da direita com cantos mais arredondados (16px). */
+@media (min-width: 1024px) {
+  html body .auth-tela .login-imagem:not(#love-h-a):not(#love-h-b) { border-radius: 16px; }
+}
+
+/* Financeiro (desktop): as abas soltas da primeira caixa, com o mesmo respiro
+   de 16px de Clientes; a caixa volta a ter a borda de cima e os cantos
+   arredondados. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #payments-view-tabs:not(#love-h-a):not(#love-h-b) { margin-bottom: 16px !important; }
+  html body :is(.fin-resumo, .fin-contas):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    border-top: 1px solid var(--borda-suave) !important; border-top-left-radius: 10px !important; border-top-right-radius: 10px !important;
+  }
+  html body [data-view-panel="receber"]:not(#love-h-a):not(#love-h-b) { padding-top: 0; }
+}
+
+/* Agenda (desktop): o evento abre dentro da página, então o fundo escuro do
+   pop-up não aparece (ele cobria o formulário e fechava ao clicar). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body.ficha-na-pagina-aberta .agenda-evento-fundo:not(#love-h-a):not(#love-h-b) { display: none !important; }
+}
+
+/* Celular: Propostas enviadas sem produto com o aviso no meio da caixa, como
+   Oportunidades; e a animação de Clientes, Colaboradores e Contratos vazios
+   no tamanho do ícone dessas duas abas (64px). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body [data-leads-painel] > #op-propostas-sem-produtos:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: grid; grid-template-columns: fit-content(100%); justify-content: center; align-content: center; gap: 20px;
+  }
+  html body .vazio-celular .vazio-celular-lottie:not(#love-h-a):not(#love-h-b) { width: 64px; height: 64px; margin: 0 0 6px; }
+}
+/* Clientes vazio (celular): animação nova em formato largo (16:9); 88x50 deixa o
+   desenho com a mesma largura visível do ícone de Oportunidades (~42px). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #leads-table-card .vazio-celular .vazio-celular-lottie:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 88px; height: 50px; margin: 0 0 6px; }
+}
+
+/* Gestão: "Compartilhar" só com o ícone da pessoa com o "+", sem caixa. */
+html body #share-board-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; min-width: 0; padding: 0; gap: 0;
+  background: transparent !important; border: 0 !important; box-shadow: none !important; color: #3F3F46;
+}
+html body #share-board-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { color: #181D24; background: transparent !important; }
+html body #share-board-btn svg:not(#love-h-a):not(#love-h-b) { width: 20px; height: 20px; }
+body[data-theme="dark"] #share-board-btn { color: #D4D4D8 !important; }
+/* Celular: a caixa da agenda (horários) vem antes de Avisos. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .agenda-calendar-layout > .agenda-left-col:not(#love-h-a) { display: contents; }
+  html body .agenda-calendar-layout .agenda-mini-calendar:not(#love-h-a) { order: 1; }
+  html body .agenda-calendar-layout > .agenda-timeline-panel:not(#love-h-a) { order: 2; }
+  html body .agenda-calendar-layout .agenda-notifications-card:not(#love-h-a) { order: 3; }
+}
+
+/* Contratos: nome do cliente como o nome do convidado na lista do
+   love.com.br (negrito, sublinha ao passar o mouse) e, ao clicar, a ficha do
+   contrato só para leitura dentro da caixa. */
+html body .contrato-nome-btn:not(#love-h-a) { padding: 0; border: 0; background: transparent; font: inherit; font-weight: 600 !important; color: #18181B; text-align: left; cursor: pointer; }
+html body .contrato-nome-btn:not(#love-h-a):hover { text-decoration: underline; text-underline-offset: 2px; }
+body[data-theme="dark"] .contrato-nome-btn { color: #FFFFFF !important; }
+html body .contrato-ficha-topo:not(#love-h-a) { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+html body .contrato-ficha-titulo:not(#love-h-a) { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -0.025em; color: #18181B; }
+html body .contrato-ficha-sub:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+html body .contrato-ficha-fechar:not(#love-h-a) { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; padding: 0; border: 0; background: transparent; color: #71717A; cursor: pointer; }
+html body .contrato-ficha-fechar:not(#love-h-a):hover { color: #181D24; }
+html body .contrato-ficha-fechar svg:not(#love-h-a) { width: 18px; height: 18px; }
+html body .contrato-ficha-grade:not(#love-h-a) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+html body .contrato-ficha-rotulo:not(#love-h-a) { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: #3F3F46; }
+html body .contrato-ficha-valor:not(#love-h-a) {
+  display: flex; align-items: center; min-height: 44px; padding: 10px 14px; box-sizing: border-box;
+  border: 1px solid #E4E4E7; border-radius: 8px; background: #FAFAFA; font-size: 14px; color: #18181B; font-variant-numeric: tabular-nums;
+}
+html body .contrato-situacao:not(#love-h-a) { display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+html body .contrato-situacao.is-quitado:not(#love-h-a) { background: #ECFDF3; color: #15803D; }
+html body .contrato-situacao.is-em-dia:not(#love-h-a) { background: #EAF0F5; color: #183b54; }
+html body .contrato-situacao.is-atrasado:not(#love-h-a) { background: #FEF3F2; color: #B42318; }
+html body .contrato-ficha-acoes:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 28px; }
+html body .contrato-ficha-voltar:not(#love-h-a) { padding: 8px; border: 0; background: transparent; font-size: 14px; font-weight: 500; color: #3F3F46; cursor: pointer; }
+html body .contrato-ficha-voltar:not(#love-h-a):hover { color: #181D24; }
+html body .contrato-ficha-link:not(#love-h-a) { text-decoration: none; }
+body[data-theme="dark"] .contrato-ficha-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .contrato-ficha-valor { background: #333333 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .contrato-pagina:not(#love-h-a) { padding: 16px; }
+  html body .contrato-ficha-grade:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  html body .contrato-ficha-acoes:not(#love-h-a) { flex-direction: column-reverse; align-items: stretch; }
+  html body .contrato-ficha-link:not(#love-h-a) { justify-content: center; height: 48px; }
+}
+
+/* Home (celular): "Solicitar saque" como o "Sacar disponível" do
+   love.com.br: claro (#EAF0F5 / #183b54) sem saldo; azul da sidebar com saldo. */
+html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #EAF0F5; color: #183b54; }
+html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background: #E1E9F0; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 42px !important; min-height: 0 !important; }
+}
+
+/* Botões claros (#EAF0F5 / #183b54): sem contorno, anel ou outline no hover e
+   no foco; só o fundo escurece para #E1E9F0. Os azuis seguem com #122c3f. */
+html body :is(.auth-tela .auth-entrar, [data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo):not(#love-h-a):not(#love-h-b):not(#love-h-c):focus-visible { background: #E1E9F0 !important; outline: none !important; box-shadow: none !important; }
+html body[data-page="dashboard"] .dash-saldo-celular-botao.is-sem-saldo:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background: #E1E9F0; color: #183b54; box-shadow: none; outline: none; }
+html body[data-page="dashboard"] :is(.dash-home-caixa, .dashboard-quick-actions) .dashboard-quick-action-btn:not(#love-h-a):focus-visible { outline: none; }
+html body[data-page="dashboard"] :is(.dash-home-caixa, .dashboard-quick-actions) .dashboard-quick-action-btn:not(#love-h-a):focus-visible svg { background: #E1E9F0; box-shadow: none; }
+
+/* Listas vazias: ícones no cinza #D4D4D8 (o desenho de Clientes foi
+   recolorido) e o primeiro texto na primária, como "Adicione seu primeiro
+   cliente": vale para Contratos, Orçamentos e os demais no celular e para
+   "Cadastrar novo produto" em Oportunidades e Propostas enviadas. */
+html body .vazio-celular .vazio-celular-titulo:not(#love-h-a):not(#love-h-b) { color: #183b54; }
+html body :is(#op-sem-produtos, #op-propostas-sem-produtos) .produtos-vazio-criar strong:not(#love-h-a):not(#love-h-b) { color: #183b54; }
+
+/* Home (celular): Saldo disponível e Contratos ativos sempre inteiros, sem
+   reticências; o JS diminui a fonte dos dois juntos quando não cabe. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a):not(#love-h-b) { max-width: none; overflow: visible; text-overflow: clip; }
+}
+
+/* Gestão › Minha agenda (celular): data do dia menor e inteira, quebrando em
+   duas linhas quando não cabe (antes cortava com "…"). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .agenda-dia-nav h3#agenda-timeline-date-label:not(#love-h-a):not(#love-h-b) {
+    flex: 1 1 auto; min-width: 0; margin-left: 4px; font-size: 14px; line-height: 1.25; white-space: normal; overflow: visible; text-overflow: clip;
+  }
+}
+
+/* ==========================================================================
+   Ganhos: no modelo do perfil do Upwork, nas cores da Love. Caixa com borda
+   fina; empresa no topo, três números e "Ver perfil" com os dados de
+   Configurações (lápis em círculo contornado leva para lá).
+   ========================================================================== */
+html body .ganhos-caixa:not(#love-h-a) { max-width: 760px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; }
+html body .ganhos-empresa:not(#love-h-a) { display: flex; align-items: center; gap: 16px; padding: 24px; }
+html body .ganhos-avatar-wrap:not(#love-h-a) { position: relative; flex-shrink: 0; }
+html body .ganhos-avatar:not(#love-h-a) {
+  display: grid; place-items: center; width: 72px; height: 72px; border-radius: 50%;
+  background: #EAF0F5 center / cover no-repeat; color: #183b54; font-size: 24px; font-weight: 600; letter-spacing: -0.02em;
+}
+html body .ganhos-lapis:not(#love-h-a):not(#love-h-b) {
+  display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%;
+  background: #FFFFFF; border: 1.5px solid #183b54; color: #183b54; text-decoration: none; transition: background-color .15s ease;
+}
+html body .ganhos-lapis:not(#love-h-a):not(#love-h-b):hover { background: #EAF0F5; }
+html body .ganhos-lapis svg:not(#love-h-a) { width: 16px; height: 16px; }
+html body .ganhos-lapis--avatar:not(#love-h-a):not(#love-h-b) { position: absolute; right: -4px; bottom: -4px; width: 28px; height: 28px; }
+html body .ganhos-lapis--avatar svg:not(#love-h-a) { width: 13px; height: 13px; }
+html body .ganhos-empresa-textos:not(#love-h-a) { min-width: 0; }
+html body .ganhos-nome:not(#love-h-a) { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+html body .ganhos-verificado svg:not(#love-h-a) { display: block; width: 20px; height: 20px; color: #183b54; }
+html body .ganhos-local:not(#love-h-a) { display: flex; align-items: center; gap: 6px; margin: 4px 0 0; font-size: 14px; color: #52525B; }
+html body .ganhos-local[hidden]:not(#love-h-a) { display: none; }
+html body .ganhos-local svg:not(#love-h-a) { width: 16px; height: 16px; flex-shrink: 0; }
+html body .ganhos-plano:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+html body .ganhos-numeros:not(#love-h-a) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 24px; border-top: 1px solid #E4E4E7; border-bottom: 1px solid #E4E4E7; }
+html body .ganhos-valor:not(#love-h-a) { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; font-variant-numeric: tabular-nums; white-space: nowrap; }
+html body .ganhos-rotulo:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; color: #71717A; }
+html body .ganhos-perfil:not(#love-h-a) { padding: 24px; }
+html body .ganhos-perfil-topo:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+html body .ganhos-perfil-titulo:not(#love-h-a) { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+html body .ganhos-dados:not(#love-h-a) { margin: 0; }
+html body .ganhos-dado:not(#love-h-a) { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-top: 1px solid #F4F4F5; }
+html body .ganhos-dado:first-child:not(#love-h-a) { border-top: 0; padding-top: 0; }
+html body .ganhos-dado dt:not(#love-h-a) { font-size: 13px; color: #71717A; }
+html body .ganhos-dado dd:not(#love-h-a) { margin: 0; font-size: 14px; color: #18181B; white-space: pre-line; overflow-wrap: anywhere; }
+html body .ganhos-dado dd.is-vazio:not(#love-h-a) { color: #A1A1AA; }
+body[data-theme="dark"] .ganhos-caixa { background: #252525 !important; border-color: #404040 !important; }
+body[data-theme="dark"] :is(.ganhos-nome, .ganhos-valor, .ganhos-perfil-titulo, .ganhos-dado dd) { color: #FFFFFF !important; }
+body[data-theme="dark"] :is(.ganhos-numeros, .ganhos-dado) { border-color: #404040 !important; }
+body[data-theme="dark"] .ganhos-lapis { background: transparent !important; border-color: #EBF4FF !important; color: #EBF4FF !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .ganhos-caixa:not(#love-h-a) { margin: 0; }
+  html body .ganhos-empresa:not(#love-h-a) { padding: 20px 16px; }
+  html body .ganhos-avatar:not(#love-h-a) { width: 64px; height: 64px; font-size: 22px; }
+  html body .ganhos-numeros:not(#love-h-a) { gap: 8px; padding: 20px 16px; }
+  html body .ganhos-valor:not(#love-h-a) { font-size: 18px; }
+  html body .ganhos-rotulo:not(#love-h-a) { font-size: 12px; }
+  html body .ganhos-perfil:not(#love-h-a) { padding: 20px 16px; }
+  html body .ganhos-dado:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}
+
+/* Clientes › Propostas enviadas: "+" no cabeçalho (novo orçamento), só o
+   ícone, sem caixa, no mesmo desenho do "+" de Clientes no celular. */
+html body #op-propostas-novo:not(#love-h-a):not(#love-h-b) {
+  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; margin-left: auto;
+  padding: 0; background: transparent; border: 0; border-radius: 8px; color: #18181B; text-decoration: none; transition: color .15s ease;
+}
+html body #op-propostas-novo:not(#love-h-a):not(#love-h-b):hover { color: #183b54; }
+html body #op-propostas-novo svg:not(#love-h-a) { width: 22px; height: 22px; }
+html body #op-propostas-novo[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+body[data-theme="dark"] #op-propostas-novo { color: #FFFFFF !important; }
+/* Contratos: a aba Orçamentos saiu (orçamentos agora ficam em Propostas enviadas). */
+html body #sales-view-tabs > .category-tab[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+
+/* Configurações › Contas bancárias ocupa a largura toda, como no Financeiro. */
+html body .settings-shell [data-settings-panel="banco"]:not(#love-h-a):not(#love-h-b) { max-width: none; }
+html body [data-settings-panel="banco"] #carteira-raiz:not(#love-h-a):not(#love-h-b) { max-width: none; margin: 0; }
+/* Financeiro sem a aba Contas bancárias (agora em Configurações). */
+html body #payments-view-tabs > .category-tab[hidden]:not(#love-h-a) { display: none !important; }
+/* Celular: Financeiro (aberto por Ganhos) sem as abas; Cobranças fica só no
+   botão Cobrar da home. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #payments-view-tabs:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+  html body .b2b-content > .b2b-header-bar:has(+ #payments-view-tabs):not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-bottom: 16px !important; }
+  html body [data-view-panel="receber"]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-top: 0; }
+  /* Sem as abas em cima, a primeira caixa volta a ter a borda de cima e os cantos. */
+  html body :is(.fin-resumo, .fin-contas):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-top: 1px solid var(--borda-suave) !important; border-top-left-radius: 10px !important; border-top-right-radius: 10px !important; }
+}
+/* Meus ganhos sem o "Esconder valores": o respiro de cima fica igual ao de baixo (28px). */
+html body .fin-resumo > .cart-resumo-cols:first-child:not(#love-h-a) { margin-top: 12px; }
+
+/* Configurações no celular: só 3 abas (Informações, Preferências, Contas
+   bancárias); as seções juntadas ganham título e o mesmo respiro entre elas. */
+html body .settings-so-celular:not(#love-h-a):not(#love-h-b) { display: none; }
+html body .settings-contas-conectadas:not(#love-h-a) { display: contents; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .settings-so-celular:not(#love-h-a):not(#love-h-b) { display: block; }
+  html body [data-settings-panel]:not([style*="none"]) ~ [data-settings-panel]:not([style*="none"]):not(#love-h-a) { margin-top: 1.5rem; }
+}
+
+/* Configurações no celular, mais enxuta:
+   - Informações: só nome fantasia, nome, sobrenome e celular, numa caixa só
+     (sem as abas empresa/pessoal); os dados da conta digital (razão social,
+     CNPJ, tipo, faturamento, endereço, CPF e nascimento) vão para Contas bancárias.
+   - Dados da empresa: sem Forma e condições de pagamento (fica no produto).
+   - Privacidade: sem Autenticação de dois fatores e Verificação de conta. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body :is(.settings-conta-digital, .settings-so-desktop):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .settings-info-abas:not(#love-h-a):not(#love-h-b) { display: none; }
+  html body .settings-info-painel[hidden]:not(#love-h-a):not(#love-h-b) { display: flex; }
+  html body .settings-info-painel + .settings-info-painel:not(#love-h-a) { margin-top: 1.25rem; }
+  html body .settings-shell [data-settings-panel] > .settings-info-abas + .settings-info-caixa:not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
+}
+/* Contas bancárias: o bloco "Endereço e responsável" só aparece no celular
+   (no computador esses dados ficam em Configurações › Informações). */
+html body .cart-conta-digital:not(#love-h-a) { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .cart-conta-digital:not(#love-h-a):not(#love-h-b) { display: flex; flex-direction: column; gap: 12px; }
+  html body .cart-conta-digital .cart-form-grade:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+}
+/* Seta de voltar ao lado do título (Central de ajuda), só no celular. */
+html body .header-voltar-celular:not(#love-h-a) { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-header-bar:has(> .header-voltar-celular):not(#love-h-a) { display: flex; align-items: center; justify-content: flex-start; gap: 8px; }
+  html body .header-voltar-celular:not(#love-h-a):not(#love-h-b) { display: inline-flex !important; flex: 0 0 32px !important; align-items: center; justify-content: center; width: 32px !important; height: 32px; margin-left: -6px; color: #18181B; }
+  html body .header-voltar-celular svg:not(#love-h-a) { width: 22px; height: 22px; }
+  body[data-theme="dark"] .header-voltar-celular { color: #FFFFFF !important; }
+}
+/* Rótulo trocado só no celular (Nome fantasia → Nome da empresa). */
+html body .settings-so-celular-inline:not(#love-h-a) { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .settings-so-celular-inline:not(#love-h-a):not(#love-h-b) { display: inline; }
 }

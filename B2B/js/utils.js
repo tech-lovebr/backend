@@ -320,9 +320,9 @@ function initDatePicker(input, initialIso) {
   popover.style.display = 'none';
   popover.innerHTML = `
     <div class="mini-cal-header">
-      <button type="button" class="mini-cal-nav-btn" data-dp-prev aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
+      <button type="button" class="mini-cal-nav-btn" data-dp-prev aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
       <button type="button" class="mini-cal-month-label-btn" data-dp-label>—</button>
-      <button type="button" class="mini-cal-nav-btn" data-dp-next aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
+      <button type="button" class="mini-cal-nav-btn" data-dp-next aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
     </div>
     <div class="dp-body" data-dp-body>
       <div class="mini-cal-weekdays" data-dp-weekdays><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
@@ -840,10 +840,56 @@ function citiesForState(uf) {
   return state ? state.cities : [];
 }
 
+/* Foto escolhida (celular ou computador) → no máximo 1600px no lado maior,
+   JPEG 82% (PNG continua PNG por causa da transparência; SVG e GIF ficam como
+   estão). Uma foto de 5 MB vira ~300 KB e cabe no cache do navegador — igual
+   ao anfitrião (js/site-builder.js da raiz: reduzirImagem). */
 function readFileAsDataUrl(file, cb) {
+  if (file && /^image\//.test(file.type || '') && !/svg|gif/i.test(file.type)) { reduzirImagem(file, cb); return; }
   const reader = new FileReader();
   reader.onload = () => cb(reader.result);
   reader.readAsDataURL(file);
+}
+
+function reduzirImagem(file, cb) {
+  const original = () => {
+    const leitor = new FileReader();
+    leitor.onload = () => cb(String(leitor.result));
+    leitor.readAsDataURL(file);
+  };
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    URL.revokeObjectURL(url);
+    const LADO = 1600;
+    const escala = Math.min(1, LADO / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+    const w = Math.max(1, Math.round(img.naturalWidth * escala));
+    const h = Math.max(1, Math.round(img.naturalHeight * escala));
+    const tela = document.createElement('canvas');
+    tela.width = w;
+    tela.height = h;
+    const ctx = tela.getContext('2d');
+    if (!ctx) { original(); return; }
+    const png = /png/i.test(file.type);
+    if (!png) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, w, h); }
+    ctx.drawImage(img, 0, 0, w, h);
+    try { cb(png ? tela.toDataURL('image/png') : tela.toDataURL('image/jpeg', 0.82)); } catch (e) { original(); }
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); original(); };
+  img.src = url;
+}
+
+/* Guarda no cache do navegador sem nunca travar quem chama. Se não couber
+   (o celular aceita uns 5 MB), apaga a cópia antiga para ela não ficar no
+   lugar da nova; o banco continua sendo gravado. Devolve true se guardou. */
+function guardarNoCache(chave, valor) {
+  try {
+    localStorage.setItem(chave, typeof valor === 'string' ? valor : JSON.stringify(valor));
+    return true;
+  } catch (e) {
+    try { localStorage.removeItem(chave); } catch (e2) { /* sem armazenamento */ }
+    return false;
+  }
 }
 
 function wireImageDropZone(zoneEl, onFile) {
@@ -921,19 +967,42 @@ function computeAutoFillCrop(bbox, frameAspectRatio) {
 }
 
 let toastTimer = null;
-function showToast(message, isError = false) {
+function showToast(message, isError = false, tipo) {
   let toast = document.getElementById('b2b-toast');
   if (!toast) {
     toast = document.createElement('div');
     toast.id = 'b2b-toast';
     toast.className = 'toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
     document.body.appendChild(toast);
   }
+  // No celular o aviso fica no topo; "sucesso" (algo adicionado) fica verde lá.
+  toast.dataset.tipo = isError ? 'erro' : (tipo || 'neutro');
   toast.style.background = isError ? '#B91C1C' : '#18181B';
-  toast.textContent = message;
+  if (tipo === 'sucesso') {
+    toast.innerHTML = '<svg class="toast-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span></span>';
+    toast.querySelector('span').textContent = message;
+  } else {
+    toast.textContent = message;
+  }
   toast.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+/* Celular: aviso verde de "adicionado" com o nome ("Ana S. foi adicionado"),
+   como no anfitrião. No computador continua o aviso de antes (textoNoComputador). */
+function nomeCurtoDoAviso(nome) {
+  const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return '';
+  return partes.length > 1 ? `${partes[0]} ${(partes[partes.length - 1][0] || '').toUpperCase()}.` : partes[0];
+}
+function avisarAdicionado(nome, textoNoComputador) {
+  const celular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+  if (!celular) { showToast(textoNoComputador || 'Adicionado.'); return; }
+  const curto = nomeCurtoDoAviso(nome);
+  showToast(curto ? `${curto} foi adicionado` : 'Adicionado', false, 'sucesso');
 }
 
 /* ==========================================================================
@@ -947,7 +1016,7 @@ function showToast(message, isError = false) {
 const TABELA_ICONE_FUNIL = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7.5V19l-4 1.5v-8L4 5Z"/></svg>';
 const TABELA_ICONE_EXPORTAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 0-4.5 4.5M12 3l4.5 4.5"/><path d="M3 15v3.75A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V15"/></svg>';
 const TABELA_ICONE_IMPORTAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M3 15v3.75A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V15"/></svg>';
-const TABELA_ICONE_BUSCA = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>';
+const TABELA_ICONE_BUSCA = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>';
 const TABELA_ICONE_VER_MAIS = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
 const TABELA_ICONE_COPIAR = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
 
@@ -992,7 +1061,7 @@ function tabelaExportarCSV(nomeArquivo, colunas, linhas) {
 
 /* Monta a barra no topo da caixa (card) da tabela.
    opts: {
-     placeholder: 'Buscar ...',
+     placeholder: 'Pesquisar ...',
      filtros: [{ chave, rotulo, opcoes: () => [[valor, texto], ...] }],
      importar: () => {} (opcional),
      exportar: () => {},
@@ -1006,10 +1075,10 @@ function montarBarraTabela(card, opts) {
   barra.className = 'tabela-barra';
   const temFiltros = (opts.filtros || []).length > 0;
   barra.innerHTML = `
-    <label class="tabela-busca">${TABELA_ICONE_BUSCA}<input type="search" placeholder="${escapeHtml(opts.placeholder || 'Buscar...')}" autocomplete="off"></label>
+    <label class="tabela-busca">${TABELA_ICONE_BUSCA}<input type="search" placeholder="${escapeHtml(opts.placeholder || 'Pesquisar...')}" autocomplete="off"></label>
     <div class="tabela-barra-acoes">
       ${temFiltros ? `<div class="tabela-filtro-wrap">
-        <button type="button" class="tabela-barra-btn" data-tabela-filtrar>${TABELA_ICONE_FUNIL}<span>Filtrar por</span><span class="tabela-filtro-contador" hidden></span></button>
+        <button type="button" class="tabela-barra-btn" data-tabela-filtrar data-rotulo-celular="${escapeHtml((opts.celular && opts.celular.filtroRotulo) || opts.filtros[0].rotulo)}">${TABELA_ICONE_FUNIL}<span>Filtrar por</span><span class="tabela-filtro-contador" hidden></span></button>
         <div class="tabela-filtro-menu" hidden></div>
       </div>` : ''}
       ${opts.importar ? `<button type="button" class="tabela-barra-btn" data-tabela-importar>${TABELA_ICONE_IMPORTAR}<span>Importar</span></button>` : ''}
@@ -1019,6 +1088,12 @@ function montarBarraTabela(card, opts) {
   card.insertBefore(barra, card.firstChild);
 
   const avisar = () => { if (opts.aoMudar) opts.aoMudar(estado); };
+  if (opts.celular) {
+    opts.celular._estado = estado;
+    listaNoCelular(card, opts.celular);
+    // Girou o celular / mudou a largura: redesenha (com ou sem páginas).
+    window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', avisar);
+  }
   barra.querySelector('.tabela-busca input').addEventListener('input', (e) => {
     estado.busca = e.target.value.trim().toLowerCase();
     avisar();
@@ -1293,9 +1368,9 @@ function montarPaginacaoTabela(caixa, aoMudar) {
       <select data-pag-tamanho><option value="15">15</option><option value="25">25</option><option value="50">50</option></select>
     </div>
     <div class="guests-pagination-nav">
-      <button type="button" class="guests-pagination-btn" data-pag-passo="-1" aria-label="Página anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg></button>
+      <button type="button" class="guests-pagination-btn" data-pag-passo="-1" aria-label="Página anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7"/></svg></button>
       <span data-pag-texto>Página 1 de 1</span>
-      <button type="button" class="guests-pagination-btn" data-pag-passo="1" aria-label="Próxima página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg></button>
+      <button type="button" class="guests-pagination-btn" data-pag-passo="1" aria-label="Próxima página"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/></svg></button>
     </div>`;
   caixa.appendChild(rodape);
   caixa.classList.add('tem-paginacao');
@@ -1325,5 +1400,475 @@ function paginarLinhas(estado, lista, chave) {
     r.querySelector('[data-pag-passo="-1"]').disabled = estado.pagina <= 1;
     r.querySelector('[data-pag-passo="1"]').disabled = estado.pagina >= paginas;
   }
+  // Celular: lista contínua, sem páginas (o rodapé some pelo CSS).
+  if (hubNoCelular()) return lista;
   return lista.slice((estado.pagina - 1) * estado.porPagina, estado.pagina * estado.porPagina);
+}
+
+/* ==========================================================================
+   Celular: listas do Hub como Meus convidados do anfitrião
+   - "N clientes" acima da busca;
+   - linha só com as iniciais, o nome e uma informação curta à direita;
+   - o filtro vira "Rótulo ⌄" ao lado da busca (sem "Filtrar por");
+   - sem Importar/Exportar e sem páginas (uma rolagem só).
+   listaNoCelular(card, { nome: 2, info: 6, singular: 'cliente', plural: 'clientes' })
+   nome/info: número da coluna (1 = primeira). O desktop não muda: as marcas
+   (classes e iniciais) só aparecem no CSS do celular.
+   ========================================================================== */
+const MQ_CELULAR_HUB = '(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)';
+function hubNoCelular() {
+  return !!(window.matchMedia && window.matchMedia(MQ_CELULAR_HUB).matches);
+}
+
+function iniciaisDoNome(nome) {
+  const partes = String(nome || '').replace(/[^\p{L}\p{N}\s]/gu, ' ').trim().split(/\s+/).filter(Boolean);
+  if (!partes.length) return '?';
+  const a = partes[0][0] || '';
+  const b = partes.length > 1 ? (partes[partes.length - 1][0] || '') : '';
+  return (a + b).toUpperCase();
+}
+
+function listaNoCelular(card, cfg) {
+  if (!card || card.dataset.listaCelular) return;
+  const tbody = card.querySelector('tbody');
+  if (!tbody) return;
+  card.dataset.listaCelular = '1';
+  card.classList.add('lista-celular');
+
+  let total = card.querySelector(':scope > .tabela-total-celular');
+  if (!total) {
+    total = document.createElement('p');
+    total.className = 'tabela-total-celular';
+    card.insertBefore(total, card.firstChild);
+  }
+
+  const marcar = () => {
+    let n = 0;
+    tbody.querySelectorAll(':scope > tr').forEach(tr => {
+      const tds = tr.querySelectorAll(':scope > td');
+      if (tds.length < 2) { tr.classList.add('lc-vazia'); return; }
+      n++;
+      tr.classList.add('lc-linha');
+      const podeEditar = !!(cfg.editarSel && tr.querySelector(cfg.editarSel));
+      if ((podeEditar || cfg.remover) && !tr.querySelector(':scope > .lc-acoes')) {
+        const td = document.createElement('td');
+        td.className = 'lc-acoes';
+        td.innerHTML = acoesDoArrasteHtml(podeEditar, !!cfg.remover, cfg.rotuloEditar || 'Editar');
+        tr.appendChild(td);
+        td.querySelector('.lc-acao-editar')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaArrastada();
+          tr.querySelector(cfg.editarSel)?.click();
+        });
+        td.querySelector('.lc-acao-remover')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaArrastada();
+          cfg.remover(tr);
+        });
+        prepararArrasteDaLinha(tr, tr);
+      }
+      const tdNome = tds[(cfg.nome || 1) - 1];
+      const tdInfo = cfg.info ? tds[cfg.info - 1] : null;
+      if (tdNome && !tdNome.classList.contains('lc-nome')) {
+        tdNome.classList.add('lc-nome');
+        if (cfg.semIniciais) { if (tdInfo) tdInfo.classList.add('lc-info'); return; }
+        const fonte = (cfg.nomeSel && tdNome.querySelector(cfg.nomeSel)) || tdNome;
+        const nome = (fonte.textContent || '').trim();
+        const ini = document.createElement('span');
+        ini.className = 'lc-iniciais';
+        ini.setAttribute('aria-hidden', 'true');
+        ini.textContent = iniciaisDoNome(nome);
+        tdNome.insertBefore(ini, tdNome.firstChild);
+      }
+      if (tdInfo) tdInfo.classList.add('lc-info');
+    });
+    const texto = `${n} ${n === 1 ? cfg.singular : cfg.plural}`;
+    if (total.textContent !== texto) total.textContent = texto;
+    desenharVazioNoCelular(card, cfg, n);
+  };
+  marcar();
+  new MutationObserver(marcar).observe(tbody, { childList: true });
+}
+
+/* ==========================================================================
+   Celular: lista vazia como Meus convidados vazio do anfitrião — caixa
+   branca (mín. 420px, cantos 10px, borda preta a 6%) com a animação Lottie
+   de 140px, título curto clicável (#183b54, abre o Adicionar) e um texto de
+   13px #71717A. Com busca/filtro sem resultado: só "Nenhum ... encontrado".
+   cfg.vazio = { lottie, icone, titulo, texto, abrirSel, nenhum }
+   ========================================================================== */
+const ICONE_VAZIO_DOCUMENTO = '<svg class="vazio-celular-icone" viewBox="0 0 64 64" fill="none" stroke="#D4D4D8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8h20l10 10v36a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2Z"/><path d="M38 8v10h10M24 30h16M24 38h16M24 46h10"/></svg>';
+
+function carregarPlayerLottieHub() {
+  if (window.customElements?.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
+  const s = document.createElement('script');
+  s.type = 'module';
+  s.id = 'love-dotlottie-wc';
+  s.src = 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-wc@0.9.28/+esm';
+  document.head.appendChild(s);
+}
+
+function desenharVazioNoCelular(card, cfg, n) {
+  const v = cfg.vazio;
+  if (!v) return;
+  let caixa = card.querySelector(':scope > .vazio-celular');
+  const procurando = !!(cfg._estado && (cfg._estado.busca || Object.values(cfg._estado.filtros || {}).some(Boolean)));
+  const modo = n > 0 ? '' : (procurando ? 'busca' : 'vazio');
+  card.classList.toggle('tem-vazio-celular', !!modo);
+  if (!modo) { if (caixa) caixa.hidden = true; return; }
+  if (!caixa) {
+    caixa = document.createElement('div');
+    caixa.className = 'vazio-celular';
+    const barra = card.querySelector(':scope > .tabela-barra');
+    card.insertBefore(caixa, barra ? barra.nextSibling : card.firstChild);
+  }
+  caixa.hidden = false;
+  const chave = modo + '|' + (modo === 'busca' ? (v.nenhum || cfg.singular) : v.titulo);
+  if (caixa.dataset.modo === chave) return;
+  caixa.dataset.modo = chave;
+  if (modo === 'busca') {
+    caixa.innerHTML = `<p class="vazio-celular-nenhum">${escapeHtml(v.nenhum || `Nenhum ${cfg.singular} encontrado`)}</p>`;
+    return;
+  }
+  const arte = v.lottie
+    ? `<dotlottie-wc class="vazio-celular-lottie" src="assets/lottie/${escapeHtml(v.lottie)}.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>`
+    : (v.icone || ICONE_VAZIO_DOCUMENTO);
+  const podeAbrir = v.abrirSel && document.querySelector(v.abrirSel);
+  caixa.innerHTML = `${arte}
+    ${podeAbrir ? `<button type="button" class="vazio-celular-titulo is-link">${escapeHtml(v.titulo)}</button>` : `<p class="vazio-celular-titulo">${escapeHtml(v.titulo)}</p>`}
+    ${v.texto ? `<p class="vazio-celular-texto">${escapeHtml(v.texto)}</p>` : ''}`;
+  caixa.querySelector('button.vazio-celular-titulo')?.addEventListener('click', () => document.querySelector(v.abrirSel)?.click());
+  if (v.lottie && hubNoCelular()) carregarPlayerLottieHub();
+}
+
+/* ==========================================================================
+   Celular: arrastar a linha para a esquerda mostra Editar (#183b54) e
+   Remover (#c7305b), como Mensagens no anfitrião (moverLinhaDaConversa).
+   Botões retos da altura da linha, ícone no meio; passou da metade, fica
+   aberta, senão volta. Uma linha aberta por vez; tocar fora fecha. Fechada,
+   as ações ficam fora da caixa (não aparece nenhuma faixa).
+   prepararArrasteDaLinha(linha, card): "card" é o que anda; as ações ficam
+   em .lc-acoes / .conv-acoes dentro da linha.
+   ========================================================================== */
+const ICONE_ACAO_EDITAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.9 4.6a2 2 0 0 1 2.8 2.8L8.5 18.6 4 20l1.4-4.5L16.9 4.6Z"/></svg>';
+const ICONE_ACAO_ABRIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>';
+const ICONE_ACAO_REMOVER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+const LARGURA_ACAO_ARRASTE = 80;
+
+function acoesDoArrasteHtml(editar, remover, rotuloEditar = 'Editar') {
+  const icone = rotuloEditar === 'Abrir' ? ICONE_ACAO_ABRIR : ICONE_ACAO_EDITAR;
+  return (editar ? `<button type="button" class="lc-acao lc-acao-editar" aria-label="${escapeHtml(rotuloEditar)}" title="${escapeHtml(rotuloEditar)}">${icone}</button>` : '')
+    + (remover ? `<button type="button" class="lc-acao lc-acao-remover" aria-label="Remover" title="Remover">${ICONE_ACAO_REMOVER}</button>` : '');
+}
+
+let linhaArrastadaAberta = null;
+function larguraDasAcoes(linha) {
+  return (linha.querySelectorAll('.lc-acao').length || 1) * LARGURA_ACAO_ARRASTE;
+}
+function moverLinhaArrastada(linha, x, animar) {
+  const card = linha._cardDoArraste || linha;
+  // "translate" (e não "transform"): a camada do Hub zera o transform das linhas.
+  card.style.transition = animar ? 'translate .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+  card.style.translate = x ? `${x}px 0` : '';
+  linha.classList.toggle('is-aberta', x < 0);
+  if (x < 0) linha.classList.add('acoes-visiveis');
+  else if (!animar) linha.classList.remove('acoes-visiveis');
+  else setTimeout(() => { if (!linha.classList.contains('is-aberta')) linha.classList.remove('acoes-visiveis'); }, 420);
+}
+function fecharLinhaArrastada() {
+  if (linhaArrastadaAberta) moverLinhaArrastada(linhaArrastadaAberta, 0, true);
+  linhaArrastadaAberta = null;
+}
+function prepararArrasteDaLinha(linha, card) {
+  if (linha._cardDoArraste) return;
+  linha._cardDoArraste = card;
+  linha.classList.add('tem-arraste');
+  let x0 = 0, y0 = 0, inicio = 0, x = 0, direcao = null;
+  card.addEventListener('touchstart', (e) => {
+    if (!hubNoCelular() || e.touches.length !== 1) return;
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+    inicio = linha === linhaArrastadaAberta ? -larguraDasAcoes(linha) : 0;
+    x = inicio; direcao = null; linha.dataset.arrastou = '';
+  }, { passive: true });
+  card.addEventListener('touchmove', (e) => {
+    if (!hubNoCelular() || e.touches.length !== 1) return;
+    const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+    if (!direcao) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      direcao = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      if (direcao === 'h') {
+        linha.dataset.arrastou = '1';
+        if (linhaArrastadaAberta && linhaArrastadaAberta !== linha) fecharLinhaArrastada();
+      }
+    }
+    if (direcao !== 'h') return;
+    e.preventDefault();
+    const largura = larguraDasAcoes(linha);
+    x = Math.max(-largura, Math.min(0, inicio + dx));
+    moverLinhaArrastada(linha, x, false);
+  }, { passive: false });
+  const soltar = () => {
+    if (direcao !== 'h') return;
+    const largura = larguraDasAcoes(linha);
+    const abrir = x < -largura / 2;
+    moverLinhaArrastada(linha, abrir ? -largura : 0, true);
+    linhaArrastadaAberta = abrir ? linha : (linhaArrastadaAberta === linha ? null : linhaArrastadaAberta);
+    direcao = null;
+    // O "click" que vem logo depois do arraste não abre a linha.
+    setTimeout(() => { linha.dataset.arrastou = ''; }, 350);
+  };
+  card.addEventListener('touchend', soltar);
+  card.addEventListener('touchcancel', soltar);
+}
+// Tocar fora da linha aberta (ou rolar a página) fecha as ações.
+document.addEventListener('touchstart', (e) => {
+  if (linhaArrastadaAberta && !linhaArrastadaAberta.contains(e.target)) fecharLinhaArrastada();
+}, { passive: true, capture: true });
+document.addEventListener('scroll', () => { if (linhaArrastadaAberta) fecharLinhaArrastada(); }, { passive: true, capture: true });
+// Tocou numa linha aberta (fora dos botões): só fecha.
+document.addEventListener('click', (e) => {
+  const linha = e.target.closest && e.target.closest('.tem-arraste');
+  if (!linha) return;
+  if (linha.dataset.arrastou || (linha === linhaArrastadaAberta && !e.target.closest('.lc-acao, .conv-acao'))) {
+    e.preventDefault(); e.stopPropagation();
+    if (!linha.dataset.arrastou) fecharLinhaArrastada();
+  }
+}, true);
+
+/* Celular: tocar na linha abre o mesmo que o nome / o "ver mais" abriria. */
+document.addEventListener('click', (e) => {
+  if (!hubNoCelular()) return;
+  const tr = e.target.closest('.lista-celular tr.lc-linha');
+  if (!tr || e.target.closest('button, a, input, select, label, textarea')) return;
+  const alvo = tr.querySelector('.lc-nome button, .lc-nome a, .tabela-ver-mais');
+  if (alvo) alvo.click();
+});
+
+/* ==========================================================================
+   Celular: todo Adicionar/Editar (gavetas .form-drawer) abre em tela cheia,
+   como a ficha do convidado do anfitrião: cabeçalho branco com a seta de
+   voltar (botão de 44px a 10px da borda), o título e "Salvar" claro com o
+   texto na cor primária. O "Salvar" do cabeçalho aperta o botão de salvar
+   que já existe na gaveta (que some no celular, junto com o Cancelar).
+   O desktop não muda: os botões novos só aparecem no CSS do celular.
+   ========================================================================== */
+const ICONE_FICHA_VOLTAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+
+function visivelNaFicha(el) {
+  return !!el && !el.hidden && !el.closest('[hidden]') && getComputedStyle(el).display !== 'none';
+}
+function salvarDaFicha(drawer) {
+  const candidatos = drawer.querySelectorAll('.form-drawer-body button[type="submit"], .form-drawer-footer .btn-primary, .form-drawer-body form .btn-primary');
+  return Array.from(candidatos).find(b => !b.classList.contains('btn-comentar') && !b.hidden && !b.closest('[hidden]')) || null;
+}
+
+function prepararFichaDoCelular(drawer) {
+  if (!drawer || drawer.dataset.fichaCelular || drawer.id === 'product-drawer') return;
+  const header = drawer.querySelector(':scope > .form-drawer-header');
+  if (!header) return;
+  drawer.dataset.fichaCelular = '1';
+  drawer.classList.add('ficha-celular');
+
+  const voltar = document.createElement('button');
+  voltar.type = 'button';
+  voltar.className = 'ficha-voltar-celular';
+  voltar.setAttribute('aria-label', 'Voltar');
+  voltar.innerHTML = ICONE_FICHA_VOLTAR;
+  voltar.addEventListener('click', () => {
+    const fechar = header.querySelector('.form-drawer-close') || drawer.querySelector('[id$="-cancel"]');
+    if (fechar) fechar.click();
+  });
+  header.insertBefore(voltar, header.firstChild);
+
+  const salvar = document.createElement('button');
+  salvar.type = 'button';
+  salvar.className = 'ficha-salvar-celular';
+  salvar.textContent = 'Salvar';
+  salvar.hidden = true;
+  salvar.addEventListener('click', () => {
+    const alvo = salvarDaFicha(drawer);
+    if (alvo) alvo.click();
+  });
+  header.appendChild(salvar);
+
+  // Marca o salvar original (some no celular) e mostra/esconde o do cabeçalho.
+  let alvoAtual = null;
+  const atualizar = () => {
+    const alvo = salvarDaFicha(drawer);
+    if (alvo === alvoAtual) return; // sem isso o observador se chamaria sem parar
+    if (alvoAtual) alvoAtual.classList.remove('ficha-salvar-alvo');
+    alvoAtual = alvo;
+    if (alvo) {
+      alvo.classList.add('ficha-salvar-alvo');
+      const texto = (alvo.textContent || '').trim();
+      salvar.textContent = texto && texto.length <= 18 ? texto : 'Salvar';
+    }
+    salvar.hidden = !alvo;
+  };
+  atualizar();
+  new MutationObserver(atualizar).observe(drawer, { subtree: true, attributes: true, attributeFilter: ['hidden', 'class'], childList: true });
+}
+
+function prepararFichasDoCelular() {
+  document.querySelectorAll('.form-drawer').forEach(prepararFichaDoCelular);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', prepararFichasDoCelular);
+else prepararFichasDoCelular();
+
+/* ==========================================================================
+   Celular: gaveta de opções que sobe de baixo (no lugar dos menus e pop-ups
+   de escolha). Cantos de 10px em cima, alça cinza, itens de 48px; sombra só
+   na gaveta. abrirGavetaDeOpcoes({ titulo, opcoes: [{ rotulo, icone, aoTocar }] })
+   ========================================================================== */
+function fecharGavetaDeOpcoes() {
+  const g = document.querySelector('.gaveta-opcoes');
+  if (!g) return;
+  g.classList.remove('is-aberta');
+  setTimeout(() => g.remove(), 220);
+}
+function abrirGavetaDeOpcoes({ titulo = '', opcoes = [] } = {}) {
+  document.querySelector('.gaveta-opcoes')?.remove();
+  const g = document.createElement('div');
+  g.className = 'gaveta-opcoes';
+  g.innerHTML = `
+    <div class="gaveta-opcoes-fundo" data-gaveta-fechar></div>
+    <div class="gaveta-opcoes-folha" role="dialog" aria-modal="true"${titulo ? ` aria-label="${escapeHtml(titulo)}"` : ''}>
+      <span class="gaveta-opcoes-alca" aria-hidden="true"></span>
+      ${titulo ? `<p class="gaveta-opcoes-titulo">${escapeHtml(titulo)}</p>` : ''}
+      ${opcoes.map((o, i) => `<button type="button" class="gaveta-opcoes-item" data-gaveta-opcao="${i}">${o.icone || ''}<span>${escapeHtml(o.rotulo)}</span></button>`).join('')}
+    </div>`;
+  document.body.appendChild(g);
+  requestAnimationFrame(() => g.classList.add('is-aberta'));
+  g.addEventListener('click', (e) => {
+    if (e.target.closest('[data-gaveta-fechar]')) { fecharGavetaDeOpcoes(); return; }
+    const b = e.target.closest('[data-gaveta-opcao]');
+    if (!b) return;
+    fecharGavetaDeOpcoes();
+    opcoes[Number(b.dataset.gavetaOpcao)]?.aoTocar?.();
+  });
+  // Puxar a alça para baixo fecha.
+  const folha = g.querySelector('.gaveta-opcoes-folha');
+  let y0 = null;
+  folha.addEventListener('touchstart', (e) => { y0 = e.touches[0].clientY; }, { passive: true });
+  folha.addEventListener('touchend', (e) => {
+    if (y0 !== null && e.changedTouches[0].clientY - y0 > 60) fecharGavetaDeOpcoes();
+    y0 = null;
+  });
+}
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharGavetaDeOpcoes(); });
+
+const ICONE_GAVETA_MANUAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>';
+const ICONE_GAVETA_CONTATOS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>';
+
+/* Contatos de um arquivo .vcf → [{ nome, telefone, email }]. */
+function contatosDoVcf(texto) {
+  const cartoes = String(texto || '').replace(/\r\n[ \t]/g, '').split(/BEGIN:VCARD/i).slice(1);
+  return cartoes.map(c => {
+    const campo = (re) => { const m = c.match(re); return m ? m[1].trim() : ''; };
+    let nome = campo(/^FN[^:\n]*:(.+)$/im);
+    if (!nome) { const n = campo(/^N[^:\n]*:(.+)$/im).split(';'); nome = [n[1], n[0]].filter(Boolean).join(' '); }
+    return { nome: nome.replace(/\,/g, ','), telefone: campo(/^TEL[^:\n]*:(.+)$/im), email: campo(/^EMAIL[^:\n]*:(.+)$/im) };
+  }).filter(c => c.nome);
+}
+
+/* Celular: contatos do aparelho (Contact Picker, Android/Chrome); onde o
+   navegador não deixa (Safari do iPhone), escolhe um arquivo .vcf/.csv.
+   Devolve [{ nome, telefone, email }] ou null (cancelou / arquivo CSV → csv). */
+async function escolherContatosDoCelular() {
+  if (navigator.contacts && typeof navigator.contacts.select === 'function') {
+    try {
+      const lista = await navigator.contacts.select(['name', 'tel', 'email'], { multiple: true });
+      return (lista || []).map(c => ({ nome: (c.name || [])[0] || '', telefone: (c.tel || [])[0] || '', email: (c.email || [])[0] || '' })).filter(c => c.nome);
+    } catch (e) { return null; }
+  }
+  return new Promise((resolve) => {
+    const entrada = document.createElement('input');
+    entrada.type = 'file';
+    entrada.accept = '.vcf,.csv,text/vcard,text/x-vcard,text/csv';
+    entrada.hidden = true;
+    document.body.appendChild(entrada);
+    const fim = (v) => { entrada.remove(); resolve(v); };
+    entrada.addEventListener('change', async () => {
+      const f = entrada.files && entrada.files[0];
+      if (!f) return fim(null);
+      try {
+        const texto = await f.text();
+        if (/\.csv$/i.test(f.name) || /csv/i.test(f.type)) return fim({ csv: f });
+        fim(contatosDoVcf(texto));
+      } catch (e) { fim(null); }
+    });
+    entrada.addEventListener('cancel', () => fim(null));
+    entrada.click();
+  });
+}
+
+/* ==========================================================================
+   Desktop: ficha dentro da página (sem pop-up), como Criar presente no
+   anfitrião (abrirPresenteNaPagina). Quando a janela abre (.show), a ficha
+   entra na caixa da página, na largura toda e no lugar da lista; ao fechar,
+   volta para o lugar de origem.
+   opts (texto) = seletor do painel cujo resto some enquanto a ficha está aberta.
+   opts (objeto):
+     painel   — idem acima;
+     depoisDe — a ficha entra logo depois deste elemento, que some;
+     mover    — seletor, dentro da janela, da parte que vai para a página
+                (ex.: o .modal-card de um .modal-backdrop);
+     fechar   — botão que fecha (padrão: .form-drawer-close).
+   ========================================================================== */
+function fichaNaPaginaNoDesktop(janelaId, opts) {
+  const janela = document.getElementById(janelaId);
+  if (!janela) return;
+  if (typeof opts === 'string') opts = { painel: opts };
+  const ficha = (opts.mover && janela.querySelector(opts.mover)) || janela;
+  const casa = { pai: ficha.parentElement, depois: ficha.nextSibling };
+  let escondido = null;
+  let painelAtual = null;
+
+  const fechar = () => {
+    const botao = (opts.fechar && document.querySelector(opts.fechar)) || ficha.querySelector('.form-drawer-close');
+    botao?.click();
+  };
+  const devolver = () => {
+    if (!ficha.classList.contains('na-pagina')) return;
+    painelAtual?.classList.remove('com-ficha-na-pagina');
+    if (escondido) { escondido.classList.remove('escondido-pela-ficha'); escondido = null; }
+    document.body.classList.remove('ficha-na-pagina-aberta');
+    ficha.classList.remove('na-pagina');
+    janela.classList.remove('ficha-movida');
+    casa.pai.insertBefore(ficha, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+  };
+  const levar = () => {
+    if (ficha.classList.contains('na-pagina') || hubNoCelular()) return;
+    const ref = document.querySelector(opts.painel || opts.depoisDe);
+    if (!ref || !ref.checkVisibility?.()) return;
+    if (opts.painel) {
+      ref.appendChild(ficha);
+      ref.classList.add('com-ficha-na-pagina');
+      painelAtual = ref;
+    } else {
+      ref.after(ficha);
+      ref.classList.add('escondido-pela-ficha');
+      escondido = ref;
+      painelAtual = null;
+    }
+    ficha.classList.add('na-pagina');
+    if (ficha !== janela) janela.classList.add('ficha-movida');
+    document.body.classList.add('ficha-na-pagina-aberta');
+    document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
+    window.scrollTo({ top: 0 });
+    // Trocou de aba com a ficha aberta: fecha a ficha.
+    const aba = ficha.parentElement.closest('[data-view-panel], [data-leads-painel], [data-tab-panel]');
+    if (aba && !aba.__vigiaFicha) {
+      aba.__vigiaFicha = new MutationObserver(() => {
+        if (ficha.classList.contains('na-pagina') && ficha.parentElement.closest('[data-view-panel], [data-leads-painel], [data-tab-panel]') === aba && !aba.checkVisibility()) fechar();
+      });
+      aba.__vigiaFicha.observe(aba, { attributes: true, attributeFilter: ['hidden', 'style'] });
+    }
+  };
+  new MutationObserver(() => {
+    if (janela.classList.contains('show')) levar(); else devolver();
+  }).observe(janela, { attributes: true, attributeFilter: ['class'] });
+  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', () => {
+    if (hubNoCelular()) devolver(); else if (janela.classList.contains('show')) levar();
+  });
 }

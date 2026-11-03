@@ -75,6 +75,7 @@ async function loadContratosAbertos() {
     parcelasPagas: c.parcelas_pagas,
     parcelasTotal: c.parcelas_total,
     status: c.status,
+    proximaParcela: c.proxima_parcela || null,
     evento: c.evento || {},
     convidados: (c.contract_guests || []).map(g => ({
       id: g.id,
@@ -134,7 +135,7 @@ function renderContratosClientes() {
       const convidados = (c.convidados || []).length;
       return `
       <tr class="contratos-cliente-row${aberto ? ' is-selected' : ''}" data-contrato-row="${escapeHtml(c.id)}">
-        <td class="contratos-cliente-name-cell col-principal">${escapeHtml(c.client)}${c.exemplo ? ' <span class="contrato-exemplo">Exemplo</span>' : ''}</td>
+        <td class="contratos-cliente-name-cell col-principal"><button type="button" class="contrato-nome-btn" title="Ver contrato">${escapeHtml(c.client)}</button>${c.exemplo ? ' <span class="contrato-exemplo">Exemplo</span>' : ''}</td>
         <td>${escapeHtml(c.categoria || '—')}</td>
         <td>${escapeHtml(produtoDoContrato(c) || '—')}</td>
         <td>${dataCurtaDoEvento(c.evento && c.evento.data)}</td>
@@ -240,13 +241,72 @@ function renderContratoPagina() {
   card.classList.toggle('mostrando-contrato', !!c);
   pagina.hidden = !c;
   if (!c) return;
-  pagina.innerHTML = `
-    <nav class="b2b-breadcrumb contrato-pagina-caminho" aria-label="Caminho">
-      <button type="button" class="b2b-breadcrumb-link" data-contrato-voltar>Meus contratos</button>
-      <span class="b2b-breadcrumb-sep" aria-hidden="true">›</span>
-      <span class="b2b-breadcrumb-atual">${escapeHtml(c.client || 'Contrato')}</span>
-    </nav>
-    ${renderContratoDetalheRow(c).replace(/^\s*<tr class="contratos-detalhe-row">\s*<td colspan="6">/, '').replace(/<\/td>\s*<\/tr>\s*$/, '')}`;
+  pagina.innerHTML = contratoFichaHtml(c);
+}
+
+/* Ficha do contrato (só leitura), no mesmo lugar e formato da ficha de
+   convidado do love.com.br: valor, acerto, pagamentos, próxima parcela,
+   situação e o atalho para gerar o link de pagamento da próxima parcela. */
+function contratoBRL(v) {
+  return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function contratoResumoPagamentos(c) {
+  const total = Number(c.valorTotal || 0);
+  const pago = Math.min(Number(c.valorPago || 0), total);
+  const parcelasTotal = Math.max(1, Number(c.parcelasTotal || 1));
+  const parcelasPagas = Math.min(Number(c.parcelasPagas || 0), parcelasTotal);
+  const restantes = parcelasTotal - parcelasPagas;
+  const falta = Math.max(0, total - pago);
+  const quitado = c.status === 'quitado' || falta <= 0 || restantes <= 0;
+  const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  const vence = c.proximaParcela ? new Date(c.proximaParcela + 'T00:00:00') : null;
+  const atrasado = !quitado && (c.status === 'atrasado' || (vence && !isNaN(vence) && vence < hoje));
+  const valorParcela = quitado ? 0 : Math.round((falta / restantes) * 100) / 100;
+  return { total, pago, parcelasTotal, parcelasPagas, restantes, falta, quitado, atrasado, vence, valorParcela };
+}
+
+function contratoFichaHtml(c) {
+  const ev = c.evento || {};
+  const r = contratoResumoPagamentos(c);
+  const acerto = ev.acerto || ev.forma_pagamento || ev.condicoes_pagamento ||
+    (r.parcelasTotal === 1 ? `À vista, ${contratoBRL(r.total)}` : `${r.parcelasTotal}x de ${contratoBRL(r.total / r.parcelasTotal)}`);
+  const situacao = r.quitado
+    ? '<span class="contrato-situacao is-quitado">Quitado</span>'
+    : r.atrasado
+      ? '<span class="contrato-situacao is-atrasado">Atrasado</span>'
+      : '<span class="contrato-situacao is-em-dia">Em dia</span>';
+  const proxima = r.quitado
+    ? 'Nenhuma, contrato quitado'
+    : `${contratoBRL(r.valorParcela)}${r.vence && !isNaN(r.vence) ? ` · vence em ${r.vence.toLocaleDateString('pt-BR')}` : ''}`;
+  const sub = [ev.nome, dataCurtaDoEvento(ev.data) !== '—' ? dataCurtaDoEvento(ev.data) : '', produtoDoContrato(c)].filter(Boolean).map(escapeHtml).join(' · ');
+  const campo = (rotulo, valor) => `
+      <div class="contrato-ficha-campo">
+        <p class="contrato-ficha-rotulo">${rotulo}</p>
+        <div class="contrato-ficha-valor">${valor}</div>
+      </div>`;
+  return `
+    <div class="contrato-ficha">
+      <div class="contrato-ficha-topo">
+        <div class="contrato-ficha-titulos">
+          <h3 class="contrato-ficha-titulo">${escapeHtml(c.client || 'Contrato')}</h3>
+          ${sub ? `<p class="contrato-ficha-sub">${sub}</p>` : ''}
+        </div>
+        <button type="button" class="contrato-ficha-fechar" data-contrato-voltar aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="contrato-ficha-grade">
+        ${campo('Valor do contrato', contratoBRL(r.total))}
+        ${campo('Acerto', escapeHtml(acerto))}
+        ${campo('Pagamentos', `${r.parcelasPagas} de ${r.parcelasTotal} pagos · ${contratoBRL(r.pago)} recebido`)}
+        ${campo('Faltam', r.quitado ? 'Nada, tudo pago' : `${r.restantes} ${r.restantes === 1 ? 'pagamento' : 'pagamentos'} · ${contratoBRL(r.falta)}`)}
+        ${campo('Próxima parcela', proxima)}
+        ${campo('Situação', situacao)}
+      </div>
+      <div class="contrato-ficha-acoes">
+        <button type="button" class="contrato-ficha-voltar" data-contrato-voltar>Voltar</button>
+        ${r.quitado ? '' : `<a class="btn-primary contrato-ficha-link" href="pagamentos?cobrar=${r.valorParcela}">Gerar link de pagamento</a>`}
+      </div>
+    </div>`;
 }
 
 let contratosPaginacao = null;
@@ -348,7 +408,7 @@ function renderConvidadoActivityEntry(entry) {
         <p class="task-activity-line">
           <strong>${escapeHtml(entry.user)}</strong> adicionou um comentário
           <button type="button" class="task-activity-comment-delete" data-comment-id="${entry.id}" title="Apagar comentário" aria-label="Apagar comentário">
-            <svg stroke-linejoin="round" stroke-linecap="round" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+            <svg stroke-linejoin="round" stroke-linecap="round" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
           </button>
         </p>
         <p class="task-activity-comment-text">${escapeHtml(entry.text || '')}</p>
@@ -367,8 +427,10 @@ async function submitConvidadoComment() {
   if (!found) return;
   if (!found.guest.comentarios) found.guest.comentarios = [];
   found.guest.comentarios.push({ id: 'com-' + Date.now(), user: currentVendorName(), text, at: new Date().toISOString() });
+  const { error } = await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  if (error) { found.guest.comentarios.pop(); showToast('Não foi possível salvar o comentário.', true); return; }
   input.value = '';
-  await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  showToast('Comentário salvo.');
   renderConvidadoDrawer();
 }
 
@@ -377,7 +439,9 @@ async function deleteConvidadoComment(commentId) {
   const found = findConvidadoGlobal(activeConvidadoId);
   if (!found) return;
   found.guest.comentarios = (found.guest.comentarios || []).filter(entry => entry.id !== commentId);
-  await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  const { error } = await supabaseClient.from('contract_guests').update({ comentarios: found.guest.comentarios }).eq('id', found.guest.id);
+  if (error) { showToast('Não foi possível remover o comentário.', true); return; }
+  showToast('Comentário removido.');
   renderConvidadoDrawer();
 }
 
@@ -427,7 +491,8 @@ async function initContratosTab() {
   contratosPaginacao = montarPaginacaoTabela(document.getElementById('contratos-clientes-card'), () => renderContratosClientes());
   // Barra da tabela: busca, Filtrar por (status e categoria) e Exportar.
   contratosTabelaEstado = montarBarraTabela(document.getElementById('contratos-clientes-card'), {
-    placeholder: 'Buscar cliente...',
+    placeholder: 'Pesquisar cliente...',
+    celular: { nome: 1, singular: 'cliente', plural: 'clientes', vazio: { lottie: 'clientes-vazio', titulo: 'Nenhum contrato ainda', texto: 'Os clientes com contrato fechado aparecem aqui.' }, editarSel: '.tabela-ver-mais', rotuloEditar: 'Abrir' },
     filtros: [
       { chave: 'status', rotulo: 'Status', opcoes: () => Object.entries(CONTRATO_STATUS_LABELS).map(([k, v]) => [k, v.label]) },
       { chave: 'categoria', rotulo: 'Categoria', opcoes: () => [...new Set((bContratosAbertos || []).map(c => c.categoria).filter(Boolean))].sort().map(v => [v, v]) }

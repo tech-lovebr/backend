@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encontrar um evento | Love</title>
+  <meta name="description" content="Pesquise pelo nome dos anfitriões ou do evento e abra o convite digital e a lista de presentes.">
+  <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
+  <link rel="apple-touch-icon" href="assets/love-logo-google-120.png?v=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-init.js?v=20261022_aparelho"></script>
+  <style>
+    html, body { margin: 0; background: #FFFFFF; }
+    #view-public-site { display: flex; }
+    #view-public-site .ee { flex: 1; padding: 72px 0 96px; }
+    #view-public-site .ee-faixa { max-width: 720px; margin: 0 auto; padding: 0 32px; }
+    #view-public-site .ee-titulo { margin: 0; text-align: center; font-size: 40px; font-weight: 700; line-height: 1.12; letter-spacing: -0.035em; color: var(--lp-tinta); }
+    #view-public-site .ee-sub { margin: 14px auto 0; max-width: 520px; text-align: center; font-size: 16px; line-height: 1.6; color: var(--lp-texto); }
+    #view-public-site .ee-form { display: flex; gap: 8px; margin: 36px auto 0; max-width: 560px; }
+    #view-public-site .ee-campo { position: relative; flex: 1; }
+    #view-public-site .ee-campo svg { position: absolute; left: 16px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: #A1A1AA; pointer-events: none; }
+    #view-public-site .ee-campo input {
+      width: 100%; height: 52px; padding: 0 16px 0 44px; border: 0; border-radius: var(--lp-raio); background: #F4F6F7;
+      font-size: 15px; color: var(--lp-tinta); outline: none; -webkit-appearance: none; appearance: none;
+    }
+    #view-public-site .ee-campo input::placeholder { color: #A1A1AA; }
+    #view-public-site .ee-campo input:focus { background: #EDF0F2; }
+    #view-public-site .ee-botao {
+      height: 52px; padding: 0 24px; border: 0; border-radius: var(--lp-raio); background: #EAF0F5; color: #183b54;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+    }
+    #view-public-site .ee-botao:hover { box-shadow: inset 0 0 0 1px #183b54; }
+    #view-public-site .ee-botao:focus-visible { outline: 2px solid #181D24; outline-offset: 2px; }
+    #view-public-site .ee-aviso { margin: 14px 0 0; text-align: center; font-size: 13px; color: var(--lp-suave); }
+    #view-public-site .ee-resultados { margin-top: 48px; }
+    #view-public-site .ee-total { margin: 0 0 12px; text-align: center; font-size: 15px; color: var(--lp-texto); }
+    #view-public-site .ee-lista { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--lp-borda); }
+    #view-public-site .ee-lista li { border-bottom: 1px solid var(--lp-borda); }
+    #view-public-site .ee-item { display: flex; align-items: center; gap: 16px; padding: 20px 4px; text-decoration: none; color: inherit; }
+    #view-public-site .ee-item-textos { flex: 1; min-width: 0; }
+    #view-public-site .ee-item b { display: block; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--lp-tinta); }
+    #view-public-site .ee-item small { display: block; margin-top: 4px; font-size: 14px; color: var(--lp-suave); }
+    #view-public-site .ee-item svg { width: 18px; height: 18px; flex-shrink: 0; color: #A1A1AA; transition: color .15s; }
+    #view-public-site .ee-item:hover b { color: var(--lp-azul); }
+    #view-public-site .ee-item:hover svg { color: var(--lp-azul); }
+    #view-public-site .ee-vazio { padding: 40px 0 8px; text-align: center; }
+    #view-public-site .ee-vazio b { display: block; font-size: 16px; font-weight: 600; color: var(--lp-tinta); }
+    #view-public-site .ee-vazio p { margin: 8px auto 0; max-width: 420px; font-size: 14px; line-height: 1.6; color: var(--lp-suave); }
+    #view-public-site .ee-criar { margin-top: 56px; padding: 28px; border: 1px solid var(--lp-borda); border-radius: var(--lp-raio-card); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    #view-public-site .ee-criar b { display: block; font-size: 16px; font-weight: 600; color: var(--lp-tinta); }
+    #view-public-site .ee-criar span { display: block; margin-top: 4px; font-size: 14px; color: var(--lp-suave); }
+    #view-public-site .ee-criar a { flex-shrink: 0; text-decoration: none; }
+    #view-public-site .ee-rodape { padding: 24px 0; border-top: 1px solid var(--lp-borda); font-size: 13px; color: var(--lp-suave); }
+    #view-public-site .ee-rodape .lp-faixa { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    #view-public-site .ee-rodape p { margin: 0; }
+    #view-public-site .ee-rodape nav { display: flex; gap: 20px; }
+    #view-public-site .ee-rodape a { color: var(--lp-texto); text-decoration: none; }
+    #view-public-site .ee-rodape a:hover { color: var(--lp-tinta); text-decoration: underline; }
+    #view-public-site .lp-topo-acoes a { text-decoration: none; }
+    [hidden] { display: none !important; }
+    @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+      #view-public-site .ee { padding: 40px 0 64px; }
+      #view-public-site .ee-faixa { padding: 0 16px; }
+      #view-public-site .ee-titulo { font-size: 30px; text-align: left; }
+      #view-public-site .ee-sub { margin-left: 0; text-align: left; font-size: 15px; }
+      #view-public-site .ee-form { flex-direction: column; margin-top: 28px; }
+      #view-public-site .ee-aviso { text-align: left; }
+      #view-public-site .ee-resultados { margin-top: 32px; }
+      #view-public-site .ee-total { text-align: left; }
+      #view-public-site .ee-item { padding: 16px 0; }
+      #view-public-site .ee-criar { flex-direction: column; align-items: stretch; padding: 20px; }
+      #view-public-site .ee-criar .lp-btn { width: 100%; }
+      #view-public-site .ee-rodape .lp-faixa { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="view-public-site">
+    <header class="lp-topo">
+      <div class="lp-faixa lp-topo-linha">
+        <a href="/" class="lp-logo" aria-label="Início da Love"><img src="assets/logo.png?v=2" alt="Love"></a>
+        <div class="lp-topo-acoes">
+          <a href="/login" class="lp-link-entrar">Entrar</a>
+          <a href="/cadastro" class="lp-btn lp-btn-primario">Criar evento grátis</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="ee">
+      <div class="ee-faixa">
+        <h1 class="ee-titulo">Encontre um evento</h1>
+        <p class="ee-sub">Pesquise pelo nome dos anfitriões ou do evento para abrir o convite e a lista de presentes.</p>
+
+        <form class="ee-form" id="ee-form" role="search">
+          <label class="ee-campo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="ee-texto" name="q" autocomplete="off" placeholder="Pesquisar pelo nome" aria-label="Pesquisar pelo nome dos anfitriões ou do evento">
+          </label>
+          <button type="submit" class="ee-botao">Pesquisar</button>
+        </form>
+        <p class="ee-aviso" id="ee-aviso" hidden></p>
+
+        <section class="ee-resultados" id="ee-resultados" aria-live="polite" hidden>
+          <p class="ee-total" id="ee-total"></p>
+          <ul class="ee-lista" id="ee-lista"></ul>
+          <div class="ee-vazio" id="ee-vazio" hidden>
+            <b>Nenhum evento encontrado</b>
+            <p>Confira a grafia ou pesquise pelo sobrenome de um dos anfitriões. O evento só aparece depois que o convite é publicado.</p>
+          </div>
+        </section>
+
+        <div class="ee-criar">
+          <div>
+            <b>Vai organizar um evento?</b>
+            <span>Crie o seu convite digital e a lista de presentes grátis.</span>
+          </div>
+          <a href="/cadastro" class="lp-btn lp-btn-claro">Criar meu evento</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="ee-rodape">
+      <div class="lp-faixa">
+        <p>© 2026 Love Hub Ltda. Todos os direitos reservados.</p>
+        <nav aria-label="Links legais">
+          <a href="/privacidade">Privacidade</a>
+          <a href="/termos">Termos e condições</a>
+        </nav>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Pesquisa de eventos publicados (função buscar_eventos — migration 121).
+    (function () {
+      var form = document.getElementById('ee-form');
+      var campo = document.getElementById('ee-texto');
+      var aviso = document.getElementById('ee-aviso');
+      var caixa = document.getElementById('ee-resultados');
+      var total = document.getElementById('ee-total');
+      var lista = document.getElementById('ee-lista');
+      var vazio = document.getElementById('ee-vazio');
+      var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+      var pedido = 0;
+
+      function escapar(t) {
+        return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+      function dataPorExtenso(v) {
+        var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v || '');
+        return m ? Number(m[3]) + ' de ' + MESES[Number(m[2]) - 1] + ' de ' + m[1] : '';
+      }
+      function mostrarAviso(texto) { aviso.textContent = texto; aviso.hidden = !texto; }
+
+      async function pesquisar(texto) {
+        texto = (texto || '').trim();
+        var url = new URL(location.href);
+        if (texto) url.searchParams.set('q', texto); else url.searchParams.delete('q');
+        history.replaceState(null, '', url.pathname + url.search);
+        if (texto.length < 3) {
+          caixa.hidden = true;
+          mostrarAviso(texto ? 'Digite pelo menos 3 letras.' : '');
+          return;
+        }
+        mostrarAviso('');
+        var meu = ++pedido;
+        total.textContent = 'Pesquisando...';
+        lista.innerHTML = '';
+        vazio.hidden = true;
+        caixa.hidden = false;
+        var resposta = await supabaseClient.rpc('buscar_eventos', { p_texto: texto });
+        if (meu !== pedido) return;
+        if (resposta.error) {
+          console.error('Erro ao pesquisar eventos:', resposta.error);
+          total.textContent = '';
+          mostrarAviso('Não foi possível pesquisar agora. Tente de novo em instantes.');
+          caixa.hidden = true;
+          return;
+        }
+        var eventos = resposta.data || [];
+        total.textContent = eventos.length
+          ? 'Encontramos ' + eventos.length + (eventos.length === 1 ? ' evento' : ' eventos') + (eventos.length === 50 ? ' (mostrando os 50 primeiros)' : '')
+          : '';
+        vazio.hidden = eventos.length > 0;
+        lista.innerHTML = eventos.map(function (e) {
+          var nome = e.titulo || e.anfitrioes || e.slug;
+          var detalhes = [dataPorExtenso(e.data), [e.cidade, e.uf].filter(Boolean).join(' / ')].filter(Boolean).join(' · ');
+          if (e.anfitrioes && e.anfitrioes !== nome) detalhes = [e.anfitrioes, detalhes].filter(Boolean).join(' · ');
+          return '<li><a class="ee-item" href="/' + encodeURIComponent(e.slug) + '">' +
+            '<span class="ee-item-textos"><b>' + escapar(nome) + '</b>' + (detalhes ? '<small>' + escapar(detalhes) + '</small>' : '') + '</span>' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>' +
+            '</a></li>';
+        }).join('');
+      }
+
+      form.addEventListener('submit', function (ev) { ev.preventDefault(); pesquisar(campo.value); });
+      var inicial = new URLSearchParams(location.search).get('q');
+      if (inicial) { campo.value = inicial; pesquisar(inicial); } else if (!matchMedia("(hover: none)").matches) { campo.focus(); }
+    })();
+  </script>
+</body>
+</html>

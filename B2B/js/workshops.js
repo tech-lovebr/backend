@@ -95,7 +95,7 @@ function renderAulas() {
             <li>
               <a href="?aula=${encodeURIComponent(a.id)}" class="aulas-item ${a.id === aula.id ? 'is-ativa' : ''} ${vistas.has(a.id) ? 'is-vista' : ''}">
                 <span class="aulas-item-num">${vistas.has(a.id)
-                  ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10" /></svg>'
+                  ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5l10 -10" /></svg>'
                   : i + 1}</span>
                 <span class="aulas-item-texto">
                   <span class="aulas-item-titulo">${escAula(a.titulo)}</span>

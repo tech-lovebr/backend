@@ -36,22 +36,17 @@ function initMobileGreetingHeader() {
   const servicesLink = iconGroup.querySelector('a[href="produtos"]');
   if (!avatarWrap || !notifWrap || !servicesLink) return;
 
-  const mq = window.matchMedia('(max-width: 768px)');
+  // Celular: o sino e o ☰ agora ficam no topo (como no anfitrião) e o perfil
+  // abre pelo ☰, então nada mais é movido para dentro do "Olá" — os ícones
+  // ficam sempre no topbar, na ordem de sempre.
+  iconGroup.appendChild(servicesLink);
+  iconGroup.appendChild(notifWrap);
+  iconGroup.appendChild(avatarWrap);
   const apply = () => {
-    if (mq.matches) {
-      avatarSlot.appendChild(avatarWrap);
-      iconsSlot.appendChild(servicesLink);
-      iconsSlot.appendChild(notifWrap);
-    } else {
-      iconGroup.appendChild(servicesLink);
-      iconGroup.appendChild(notifWrap);
-      iconGroup.appendChild(avatarWrap);
-    }
     fitGreetingTitleToOneLine();
     sizeMobileAvatarToGreetingText();
   };
   apply();
-  mq.addEventListener ? mq.addEventListener('change', apply) : mq.addListener(apply);
   window.addEventListener('resize', () => {
     fitGreetingTitleToOneLine();
     sizeMobileAvatarToGreetingText();
@@ -126,6 +121,10 @@ async function initFirstProductModal() {
     .eq('fornecedor_id', empresaId(session));
 
   if (count) return;
+
+  // Aparece só uma vez por empresa (neste navegador).
+  const chaveVisto = `b2b-primeiro-produto-visto-${empresaId(session)}`;
+  try { if (localStorage.getItem(chaveVisto)) return; localStorage.setItem(chaveVisto, '1'); } catch (e) { /* sem armazenamento: mostra */ }
 
   modal.classList.add('show');
   const close = () => modal.classList.remove('show');
@@ -245,7 +244,7 @@ function initDashboardPaymentLinkModal() {
       <div class="payment-link-result-box">
         <span class="payment-link-result-url">${escapeHtml(url)}</span>
         <button type="button" class="payment-link-result-send" id="payment-link-result-send" title="Copiar link" aria-label="Copiar link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" width="17" height="17"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
         </button>
       </div>
     `;
@@ -361,6 +360,63 @@ async function initAdsCarousel() {
   if (nextBtn) nextBtn.addEventListener('click', (e) => { e.preventDefault(); goTo(current + 1); startAutoplay(); });
   dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); startAutoplay(); }));
 
+  // Celular: arrastar a imagem para o lado passa para o próximo (ou o
+  // anterior) banner, com a imagem acompanhando o dedo.
+  let toque = null;
+  let arrastouAgora = 0;
+  const vizinho = dx => (current + (dx < 0 ? 1 : -1) + slides.length) % slides.length;
+  const limpar = slide => {
+    slide.style.transition = 'none'; slide.style.transform = ''; slide.style.opacity = ''; slide.style.visibility = '';
+    requestAnimationFrame(() => requestAnimationFrame(() => { slide.style.transition = ''; }));
+  };
+  const posicionar = (dx, w, animar, lado) => {
+    const atual = slides[current];
+    const viz = slides[vizinho(lado)];
+    slides.forEach(sl => { if (sl !== atual && sl !== viz && sl.style.transform) limpar(sl); });
+    [atual, viz].forEach(sl => { sl.style.transition = animar ? 'transform .25s ease' : 'none'; sl.style.opacity = '1'; sl.style.visibility = 'visible'; });
+    atual.style.transform = `translateX(${dx}px)`;
+    viz.style.transform = `translateX(${dx + (lado < 0 ? w : -w)}px)`;
+  };
+  root.addEventListener('touchstart', e => {
+    if (slides.length < 2 || e.touches.length !== 1) return;
+    toque = { x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, lateral: null, w: root.clientWidth };
+  }, { passive: true });
+  root.addEventListener('touchmove', e => {
+    if (!toque) return;
+    const dx = e.touches[0].clientX - toque.x;
+    const dy = e.touches[0].clientY - toque.y;
+    if (toque.lateral === null) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      toque.lateral = Math.abs(dx) > Math.abs(dy);
+      if (!toque.lateral) { toque = null; return; }
+      clearInterval(timer);
+    }
+    e.preventDefault();
+    toque.dx = dx;
+    posicionar(dx, toque.w, false, dx || -1);
+  }, { passive: false });
+  const soltar = () => {
+    if (!toque) return;
+    const { dx, w, lateral } = toque;
+    toque = null;
+    if (!lateral) return;
+    arrastouAgora = Date.now();
+    const lado = dx || -1;
+    const passou = Math.abs(dx) > Math.min(60, w * 0.2);
+    posicionar(passou ? (lado < 0 ? -w : w) : 0, w, true, lado);
+    setTimeout(() => {
+      const atual = slides[current];
+      const viz = slides[vizinho(lado)];
+      if (passou) goTo(vizinho(lado));
+      limpar(atual); limpar(viz);
+      startAutoplay();
+    }, 260);
+  };
+  root.addEventListener('touchend', soltar);
+  root.addEventListener('touchcancel', soltar);
+  // Depois de arrastar, o toque não abre o link do banner.
+  root.addEventListener('click', e => { if (Date.now() - arrastouAgora < 500) e.preventDefault(); }, true);
+
   goTo(0);
   startAutoplay();
 }
@@ -403,8 +459,13 @@ async function renderAnalyticsCard() {
     : { data: [] };
   const allLeads = leads || [];
 
-  const leadsAtivos = allLeads.filter(l => l.status !== 'fechado').length;
-  setText('analytics-leads', leadsAtivos.toLocaleString('pt-BR'));
+  // Leads ativos: todo anfitrião para quem a empresa mandou proposta em
+  // Oportunidades (propostas_pedido, migration 074), contado uma vez só.
+  const { data: propostas, error: erroPropostas } = session
+    ? await supabaseClient.from('propostas_pedido').select('pedido_id, pedido:pedidos_orcamento(cliente_id)').eq('fornecedor_id', empresaId(session))
+    : { data: [] };
+  const pessoas = new Set((erroPropostas ? [] : (propostas || [])).map(p => (p.pedido && p.pedido.cliente_id) || p.pedido_id));
+  setText('analytics-leads', pessoas.size.toLocaleString('pt-BR'));
 
   const totalLeads = allLeads.length;
   const closedLeads = allLeads.filter(l => l.status === 'fechado').length;
@@ -467,9 +528,9 @@ function initAnalyticsPeriodPopover() {
     const dica = !rangeStart ? 'Escolha o primeiro dia' : !rangeEnd ? 'Agora o último dia' : `${curto(rangeStart)} a ${curto(rangeEnd)}`;
     cal.innerHTML = `
       <div class="mini-cal-header">
-        <button type="button" class="mini-cal-nav-btn" data-range-prev aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
+        <button type="button" class="mini-cal-nav-btn" data-range-prev aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m15 19-7-7 7-7" /></svg></button>
         <span class="mini-cal-month-label">${mes} de ${year}</span>
-        <button type="button" class="mini-cal-nav-btn" data-range-next aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
+        <button type="button" class="mini-cal-nav-btn" data-range-next aria-label="Próximo mês"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7" /></svg></button>
       </div>
       <div class="mini-cal-weekdays"><span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span></div>
       <div class="mini-cal-grid">${dias}</div>
@@ -587,7 +648,18 @@ async function renderAvisoServicosSuspensos() {
   aviso.hidden = false;
 }
 
+/* Fundo do topo da Home: a imagem de capa da empresa (Configurações ›
+   Imagem de capa, fornecedores.logo_url). Sem capa, fica o azul em degradê. */
+function aplicarCapaDaEmpresa() {
+  const capa = String((B2B_DATA.professional && B2B_DATA.professional.logo) || '').trim();
+  const ok = /^(https?:|data:image\/|blob:)/.test(capa);
+  document.body.classList.toggle('tem-capa-empresa', ok);
+  if (ok) document.body.style.setProperty('--capa-empresa', `url("${capa.replace(/["\\]/g, encodeURIComponent)}")`);
+  else document.body.style.removeProperty('--capa-empresa');
+}
+
 function renderGreeting() {
+  aplicarCapaDaEmpresa();
   const now = new Date();
   const dateStr = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }).format(now);
   setText('greeting-date', capitalize(dateStr));
@@ -606,6 +678,71 @@ function renderGreeting() {
   }
 }
 
+/* -------------------- Caixa do saldo (Home) --------------------
+   Abas Saldo / Faturamento em 30 dias no topo e o olho que esconde os
+   valores (a mesma escolha de "Esconder valores" do Financeiro). */
+const saldoCelular = { saldo: null, faturamento: null, contratos: null };
+const ICONE_OLHO_ABERTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICONE_OLHO_FECHADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.6 6.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
+function saldoEscondido() {
+  try { return localStorage.getItem('b2b-fin-esconder') === '1'; } catch (e) { return false; }
+}
+function desenharSaldoCelular() {
+  const esconder = saldoEscondido();
+  const valor = v => (v == null ? '—' : esconder ? 'R$ ••••' : formatCurrency(v));
+  const reais = v => (v == null ? '—' : esconder ? 'R$ ••••' : Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  setText('dash-saldo-celular-saldo', reais(saldoCelular.saldo));
+  setText('dash-saldo-celular-faturamento', valor(saldoCelular.faturamento));
+  setText('dash-saldo-celular-contratos', saldoCelular.contratos == null ? '—' : String(saldoCelular.contratos));
+  document.getElementById('dash-saldo-celular-sacar')?.classList.toggle('is-sem-saldo', !(saldoCelular.saldo > 0));
+  ajustarFonteSaldoCelular();
+  const olho = document.getElementById('dash-saldo-celular-olho');
+  if (olho) {
+    olho.innerHTML = esconder ? ICONE_OLHO_FECHADO : ICONE_OLHO_ABERTO;
+    const dica = esconder ? 'Mostrar valores' : 'Esconder valores';
+    olho.setAttribute('aria-label', dica);
+    olho.dataset.dica = dica;
+  }
+}
+/* Saldo disponível e Contratos ativos sempre inteiros: começam em 28px e, se
+   um deles não couber na coluna, os dois diminuem juntos até caber. */
+function ajustarFonteSaldoCelular() {
+  const els = ['dash-saldo-celular-saldo', 'dash-saldo-celular-contratos'].map(id => document.getElementById(id)).filter(Boolean);
+  if (!els.length) return;
+  const MAX = 28, MIN = 12;
+  els.forEach(el => { el.style.fontSize = MAX + 'px'; });
+  let escala = 1;
+  els.forEach(el => {
+    const col = el.parentElement;
+    if (!col || !col.clientWidth) return;
+    const cs = getComputedStyle(col);
+    const livre = col.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (el.scrollWidth > livre) escala = Math.min(escala, livre / el.scrollWidth);
+  });
+  const tam = Math.max(MIN, Math.floor(MAX * escala * 10) / 10);
+  els.forEach(el => { el.style.fontSize = tam + 'px'; });
+}
+window.addEventListener('resize', () => ajustarFonteSaldoCelular());
+
+function ligarSaldoCelular() {
+  const caixa = document.querySelector('.dash-saldo-celular');
+  if (!caixa || caixa.dataset.ligada) return;
+  caixa.dataset.ligada = '1';
+  caixa.querySelectorAll('[data-saldo-aba]').forEach(aba => aba.addEventListener('click', () => {
+    caixa.querySelectorAll('[data-saldo-aba]').forEach(a => {
+      const ativa = a === aba;
+      a.classList.toggle('active', ativa);
+      a.setAttribute('aria-selected', ativa ? 'true' : 'false');
+    });
+    caixa.querySelectorAll('[data-saldo-painel]').forEach(p => { p.hidden = p.dataset.saldoPainel !== aba.dataset.saldoAba; });
+  }));
+  document.getElementById('dash-saldo-celular-olho')?.addEventListener('click', () => {
+    try { localStorage.setItem('b2b-fin-esconder', saldoEscondido() ? '0' : '1'); } catch (e) { /* sem armazenamento */ }
+    desenharSaldoCelular();
+  });
+  desenharSaldoCelular();
+}
+
 /* -------------------- Saldo total --------------------
    Valor grande do saldo (créditos − débitos da carteira) e, embaixo, o
    gráfico do faturamento de cada dia nos últimos 30 dias. Passando o mouse
@@ -615,6 +752,7 @@ function renderGreeting() {
 async function renderSaldoTotal() {
   const valorEl = document.getElementById('dash-saldo-total-valor');
   const grafico = document.getElementById('dash-saldo-total-grafico');
+  ligarSaldoCelular();
   if (!valorEl || !grafico) return;
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   let transacoes = [];
@@ -624,6 +762,12 @@ async function renderSaldoTotal() {
   }
   const sinal = t => (t.type === 'credit' ? 1 : -1) * Number(t.amount || 0);
   valorEl.textContent = formatCurrency(transacoes.reduce((soma, t) => soma + sinal(t), 0));
+  saldoCelular.saldo = transacoes.reduce((soma, t) => soma + sinal(t), 0);
+  // Contratos ativos: os que ainda não foram quitados.
+  if (session) {
+    const { count } = await supabaseClient.from('contracts').select('id', { count: 'exact', head: true }).eq('fornecedor_id', empresaId(session)).neq('status', 'quitado');
+    saldoCelular.contratos = count || 0;
+  } else saldoCelular.contratos = 0;
 
   // Faturamento (créditos) de cada um dos últimos 30 dias.
   const DIA = 24 * 60 * 60 * 1000;
@@ -639,6 +783,8 @@ async function renderSaldoTotal() {
     dias.push({ data: inicio, valor });
   }
   const temFaturamento = dias.some(d => d.valor > 0);
+  saldoCelular.faturamento = dias.reduce((soma, d) => soma + d.valor, 0);
+  desenharSaldoCelular();
 
   let pontos;
   if (!temFaturamento) {
@@ -654,7 +800,7 @@ async function renderSaldoTotal() {
     <svg viewBox="0 0 ${L} ${A}" preserveAspectRatio="none">
       <defs><linearGradient id="dash-saldo-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EBEBEC"/><stop offset="1" stop-color="#FAFAFA"/></linearGradient></defs>
       <path d="${linha} L${L},${A} L0,${A} Z" fill="url(#dash-saldo-grad)"/>
-      <path d="${linha}" fill="none" stroke="#D4D4D8" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+      <path d="${linha}" fill="none" stroke="#D4D4D8" stroke-width="1.75" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
       <line x1="0" y1="${A - 0.5}" x2="${L}" y2="${A - 0.5}" stroke="#D4D4D8" stroke-width="1" stroke-dasharray="2 4" vector-effect="non-scaling-stroke"/>
     </svg>
     <span class="dash-saldo-ponto" hidden></span>
@@ -807,7 +953,10 @@ function alinharCarrosselComSaldo() {
   const saldo = document.querySelector('.dash-saldo-total');
   const atalhos = document.querySelector('.dashboard-quick-actions');
   if (!card || !saldo || !atalhos) return;
-  const ladoALado = window.matchMedia('(min-width: 1024px)').matches;
+  const ladoALado = window.matchMedia('(min-width: 1024px)').matches
+    // Na Home do desktop os atalhos sobem para a caixa do "Olá": o saldo
+    // fica baixo e o banner achataria. Aí ele fica no tamanho próprio (16:9).
+    && !atalhos.closest('.dash-home-caixa');
   if (!ladoALado) { card.style.height = ''; card.classList.remove('altura-alinhada'); return; }
   // Altura = do topo do carrossel até onde começa "Sua agenda", menos o
   // espaço entre os blocos: assim "Analytics" começa na mesma linha.
@@ -829,3 +978,70 @@ document.addEventListener('DOMContentLoaded', () => {
   const saldo = document.querySelector('.dash-saldo-total');
   if (saldo && 'ResizeObserver' in window) new ResizeObserver(alinharCarrosselComSaldo).observe(saldo);
 });
+
+/* Celular: no Dashboard o cabeçalho rola junto com a página (sem ficar
+   preso no topo). Ele entra no começo da área que rola e volta para o
+   lugar no computador. */
+(function cabecalhoRolaNoCelular() {
+  const topo = document.getElementById('shell-topbar');
+  const conteudo = document.querySelector('.b2b-content');
+  if (!topo || !conteudo || typeof MQ_CELULAR_HUB === 'undefined') return;
+  const casa = { pai: topo.parentElement, depois: topo.nextSibling };
+  const ajustar = () => {
+    if (hubNoCelular()) {
+      if (topo.parentElement !== conteudo) conteudo.insertBefore(topo, conteudo.firstChild);
+      topo.classList.add('topo-rola-junto');
+    } else if (topo.parentElement === conteudo) {
+      topo.classList.remove('topo-rola-junto');
+      casa.pai.insertBefore(topo, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+    }
+  };
+  ajustar();
+  document.addEventListener('DOMContentLoaded', ajustar);
+  window.addEventListener('load', ajustar);
+  window.addEventListener('resize', ajustar);
+  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', ajustar);
+})();
+
+/* Desktop: Home como a do anfitrião (b5e1d5f0). Faixa azul (o azul do
+   sidebar em degradê, como no Admin) no lugar da foto e, por cima dela, a
+   caixa com "Olá, empresa!" + data à esquerda e os atalhos redondos à
+   direita. No celular tudo volta para o lugar (lá a caixa é montada por CSS). */
+(function homeDoDesktop() {
+  const ola = document.querySelector('.dashboard-greeting');
+  const texto = ola && ola.querySelector('.dashboard-greeting-text');
+  const atalhos = document.querySelector('.dashboard-quick-actions');
+  if (!ola || !texto || !atalhos || typeof MQ_CELULAR_HUB === 'undefined') return;
+  const casaTexto = { pai: texto.parentElement, depois: texto.nextSibling };
+  const casaAtalhos = { pai: atalhos.parentElement, depois: atalhos.nextSibling };
+  const faixa = document.createElement('div');
+  faixa.className = 'dash-home-faixa';
+  faixa.setAttribute('aria-hidden', 'true');
+  const caixa = document.createElement('div');
+  caixa.className = 'dash-home-caixa';
+  const devolver = (el, casa) => casa.pai.insertBefore(el, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+  const ajustar = () => {
+    if (!hubNoCelular()) {
+      if (caixa.parentElement === ola) return;
+      ola.prepend(faixa);
+      faixa.after(caixa);
+      caixa.append(texto, atalhos);
+      ola.classList.add('home-desktop');
+    } else {
+      if (caixa.parentElement === ola) {
+        ola.classList.remove('home-desktop');
+        devolver(texto, casaTexto);
+        devolver(atalhos, casaAtalhos);
+        caixa.remove();
+      }
+      // Celular: a faixa fica no topo da área que rola, atrás do cabeçalho e do Olá.
+      const conteudo = document.querySelector('.b2b-content');
+      if (conteudo && faixa.parentElement !== conteudo) conteudo.prepend(faixa);
+    }
+  };
+  ajustar();
+  document.addEventListener('DOMContentLoaded', ajustar);
+  window.addEventListener('load', ajustar);
+  window.addEventListener('resize', ajustar);
+  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', ajustar);
+})();

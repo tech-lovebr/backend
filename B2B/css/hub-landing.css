@@ -1,0 +1,493 @@
+/* ==========================================================================
+   LANDING DO HUB (B2B/index.html)
+   Mesmo desenho e mesma geometria da landing de anfitriões da love.com.br
+   (css/landing.css, blocos v4 a v6). A única diferença: o fundo da página é
+   o azul primário (#183b54), para diferenciar fornecedores de anfitriões.
+   Quem troca de um site para o outro vê só a cor mudar, nada pula de lugar.
+   ========================================================================== */
+.hl {
+  --azul: #183b54;
+  --azul-hover: #122c3f;
+  --escuro: #181D24;
+  --caixa: rgba(255, 255, 255, 0.07);
+  --caixa-borda: rgba(255, 255, 255, 0.12);
+  --divisor: rgba(255, 255, 255, 0.12);
+  --texto: #FFFFFF;
+  --texto-suave: rgba(255, 255, 255, 0.82);
+  --r-card: 10px;
+  --r: 8px;
+  margin: 0;
+  background: var(--azul);
+  color: var(--texto);
+  font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+html { scroll-behavior: smooth; overflow-x: clip; }
+/* Mesma barra de rolagem fina da love.com.br (6px), para a página ter a
+   mesma largura útil nos dois sites. */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #122c3f; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.28); border-radius: 9999px; }
+.hl *, .hl *::before, .hl *::after { box-sizing: border-box; }
+.hl img { max-width: 100%; }
+:where(.hl) a { color: inherit; }
+:where(.hl) :where(h1, h2, h3, h4, p, figure, ul, dl, dd) { margin: 0; }
+.hl-faixa { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+/* ---------- Botões ---------- */
+.hl-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; padding: 0 16px; border-radius: var(--r); border: 1px solid transparent;
+  font: 600 14px/1 'Plus Jakarta Sans', Inter, sans-serif; letter-spacing: -0.01em; white-space: nowrap;
+  text-decoration: none; cursor: pointer; transition: background-color .15s ease, color .15s ease;
+}
+.hl-btn-grande { height: 48px; padding: 0 22px; font-size: 15px; }
+.hl-btn-branco { background: #FFFFFF; color: var(--azul); }
+.hl-btn-branco:hover { background: #EAF0F5; }
+.hl a:focus-visible, .hl button:focus-visible, .hl summary:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 2px; }
+
+/* ---------- Cabeçalho (68px + 1px de linha, como na Love) ---------- */
+.hl-topo {
+  position: sticky; top: 0; z-index: 40; background: rgba(24, 59, 84, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(12px); backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--divisor);
+}
+.hl-topo-linha { display: flex; align-items: center; gap: 40px; height: 68px; width: calc(100% - 64px); max-width: 1280px; margin: 0 auto; }
+.hl-logo img { display: block; height: 34px; width: auto; }
+.hl-topo-acoes { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+.hl-entrar { font: 600 14px 'Plus Jakarta Sans', Inter, sans-serif; letter-spacing: -0.01em; color: #FFFFFF; text-decoration: none; }
+.hl-entrar:hover { opacity: .8; }
+
+/* ---------- Faixa de apresentação e abertura (desktop) ---------- */
+.hl-faixa-intro {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  width: calc(100% - 64px); max-width: 1280px; margin: 32px auto 24px; padding: 22px 32px; border-radius: var(--r-card);
+  background: linear-gradient(90deg, #1F4A69 0%, #24557A 50%, #1F4A69 100%);
+}
+.hl-faixa-intro p { font-size: 22px; line-height: 1.6; font-weight: 700; letter-spacing: -0.025em; color: #FFFFFF; }
+.hl-faixa-intro-link { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; line-height: 1.5; font-weight: 600; color: #FFFFFF; text-decoration: none; }
+.hl-faixa-intro-link svg { width: 16px; height: 16px; transition: transform .15s ease; }
+.hl-faixa-intro-link:hover svg { transform: translateX(3px); }
+
+.hl-hero {
+  position: relative; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden;
+  width: calc(100% - 64px); max-width: 1280px; min-height: 628px; margin: 0 auto; border-radius: var(--r-card);
+  background: #0F1A23; color: #FFFFFF;
+}
+.hl-hero-foto { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 55%; }
+.hl-hero-veu {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(12,22,32,0.78) 0%, rgba(12,22,32,0.5) 45%, rgba(12,22,32,0.1) 80%),
+    linear-gradient(0deg, rgba(12,22,32,0.5) 0%, transparent 50%);
+}
+.hl-hero-conteudo { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 0 64px 64px; }
+.hl-hero-intro { display: none; }
+.hl-publico {
+  display: inline-flex; gap: 2px; margin-bottom: 28px; padding: 3px; border: 1px solid rgba(255, 255, 255, 0.28); border-radius: var(--r);
+  background: rgba(12, 22, 32, 0.25); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.hl-publico a { padding: 6px 14px; border-radius: 6px; font-size: 14px; line-height: 1.5; font-weight: 500; color: rgba(255, 255, 255, 0.75); text-decoration: none; transition: color .15s; }
+.hl-publico a:hover { color: #FFFFFF; }
+.hl-publico a[aria-current="page"] { background: #FFFFFF; color: var(--azul); }
+.hl-hero-titulo { max-width: 640px; font-size: 64px; line-height: 1.04; font-weight: 700; letter-spacing: -0.035em; color: #FFFFFF; }
+.hl-hero-sub { max-width: 560px; margin-top: 20px; font-size: 19px; line-height: 1.55; font-weight: 400; letter-spacing: -0.005em; color: #FFFFFF; }
+.hl-hero-ctas { display: flex; align-items: center; gap: 12px; margin-top: 36px; }
+.hl-hero-segundo {
+  display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 22px; border-radius: var(--r);
+  background: var(--escuro); color: #FFFFFF; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none;
+  transition: background-color .15s ease;
+}
+.hl-hero-segundo:hover { background: #0F1318; }
+
+/* ---------- Títulos de seção ---------- */
+.hl-titulo-centro { text-align: center; font-size: 40px; line-height: 1.12; font-weight: 700; letter-spacing: -0.035em; }
+.hl-sub-centro { max-width: 560px; margin: 16px auto 0; text-align: center; font-size: 17px; line-height: 1.6; letter-spacing: -0.005em; color: var(--texto-suave); }
+.hl-titulo { font-size: 38px; line-height: 1.12; font-weight: 700; letter-spacing: -0.035em; }
+.hl-texto { margin-top: 16px; font-size: 17px; line-height: 1.6; letter-spacing: -0.005em; color: var(--texto-suave); }
+.hl-texto a { font-weight: 600; color: #FFFFFF; }
+.hl-sobretitulo { display: block; margin-bottom: 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #9CC3E4; }
+
+/* ---------- Tudo o que você precisa ---------- */
+.hl-tudo { padding: 112px 0 96px; }
+.hl-mosaico { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-top: 56px; }
+.hl-ladrilho { display: block; text-decoration: none; }
+.hl-ladrilho img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--r-card); outline: 1px solid var(--caixa-borda); outline-offset: -1px; transition: filter .2s; }
+.hl-ladrilho span { display: block; margin-top: 14px; font-size: 15px; line-height: 1.3; font-weight: 600; letter-spacing: -0.01em; }
+.hl-ladrilho:hover img { filter: brightness(0.9); }
+
+/* ---------- Painéis ---------- */
+.hl-paineis { padding: 0 0 112px; }
+.hl-paineis-linha { display: grid; grid-template-columns: 200px 1fr; gap: 48px; align-items: start; }
+.hl-paineis-menu { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 4px; padding-top: 8px; }
+.hl-paineis-menu a { padding: 10px 0 10px 16px; border-left: 2px solid var(--divisor); font-size: 14px; font-weight: 500; letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.7); text-decoration: none; transition: color .15s, border-color .15s; }
+.hl-paineis-menu a:hover { color: #FFFFFF; }
+.hl-paineis-menu a.ativo { border-left-color: #FFFFFF; color: #FFFFFF; font-weight: 600; }
+.hl-paineis-lista { display: grid; gap: 24px; }
+.hl-painel {
+  scroll-margin-top: 92px; display: grid; grid-template-columns: 1fr 400px; gap: 48px; align-items: center;
+  min-height: 600px; padding: 56px; border-radius: var(--r-card); background: var(--fundo); border: 1px solid var(--caixa-borda);
+}
+.hl-painel h2 { font-size: 44px; line-height: 1.08; font-weight: 700; letter-spacing: -0.035em; color: var(--tom); }
+.hl-painel p { max-width: 440px; margin-top: 24px; font-size: 17px; line-height: 1.65; letter-spacing: -0.005em; color: #FFFFFF; }
+.hl-painel-ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
+.hl-btn-tom {
+  display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border-radius: var(--r);
+  background: var(--tom); color: var(--fundo); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none; transition: background-color .15s;
+}
+.hl-btn-tom:hover { background: #FFFFFF; }
+.hl-painel-foto { position: relative; }
+.hl-painel-foto img { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--r-card); }
+/* Aviso flutuando sobre a foto: o único lugar com sombra. */
+.hl-chip {
+  position: absolute; left: -32px; bottom: 32px; display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px;
+  background: #FFFFFF; border-radius: var(--r-card); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); color: #18181B;
+}
+.hl-chip b { display: block; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.hl-chip small { display: block; font-size: 11px; color: #71717A; white-space: nowrap; }
+.hl-chip-icone { display: grid; place-items: center; width: 32px; height: 32px; flex-shrink: 0; border-radius: var(--r); background: #EBF4FF; color: var(--azul); }
+.hl-chip-icone svg { width: 16px; height: 16px; }
+.hl-chip-verde { background: #ECFDF3; color: #15803D; }
+
+/* ---------- Detalhes ---------- */
+.hl-detalhes { scroll-margin-top: 68px; padding: 112px 0; background: #143249; }
+.hl-detalhes-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+.hl-abas { display: flex; flex-direction: column; margin-top: 40px; border-top: 1px solid var(--divisor); }
+.hl-aba {
+  display: block; width: 100%; padding: 20px 0 20px 20px; text-align: left; background: none; border: 0;
+  border-bottom: 1px solid var(--divisor); border-left: 2px solid transparent; cursor: pointer; font-family: inherit; transition: border-color .15s;
+}
+.hl-aba b { display: block; font-size: 17px; line-height: 1.35; font-weight: 600; letter-spacing: -0.01em; color: rgba(255, 255, 255, 0.7); transition: color .15s; }
+.hl-aba span { display: none; max-width: 460px; margin-top: 8px; font-size: 15px; line-height: 1.6; color: var(--texto-suave); }
+.hl-aba:hover b, .hl-aba.ativo b { color: #FFFFFF; }
+.hl-aba.ativo { border-left-color: #FFFFFF; }
+.hl-aba.ativo span { display: block; }
+.hl-detalhes-foto img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: var(--r-card); outline: 1px solid var(--caixa-borda); outline-offset: -1px; transition: opacity .25s; }
+.hl-detalhes-foto img.trocando { opacity: 0; }
+
+/* ---------- Segurança ---------- */
+.hl-seguranca { scroll-margin-top: 68px; padding: 112px 0 136px; }
+.hl-seguranca-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 96px; align-items: center; }
+.hl-seguranca-foto { position: relative; }
+.hl-seguranca-foto > img { display: block; width: 100%; aspect-ratio: 4 / 3.4; object-fit: cover; border-radius: var(--r-card); }
+.hl-recibo {
+  position: absolute; right: -40px; bottom: -40px; width: 300px; padding: 22px; color: #18181B;
+  background: #FFFFFF; border-radius: var(--r-card); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.hl-recibo-topo { display: flex; align-items: center; gap: 12px; }
+.hl-recibo-ok { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #ECFDF3; color: #15803D; }
+.hl-recibo-ok svg { width: 20px; height: 20px; }
+.hl-recibo-topo b { display: block; font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+.hl-recibo-topo small { display: block; font-size: 12px; color: #71717A; }
+.hl-recibo-valor { margin: 18px 0 14px; font-size: 32px; line-height: 1; font-weight: 700; letter-spacing: -0.035em; font-variant-numeric: tabular-nums; }
+.hl-recibo-dados { border-top: 1px dashed #E4E4E7; }
+.hl-recibo-dados > div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid #F4F4F5; font-size: 13px; }
+.hl-recibo-dados dt { color: #71717A; }
+.hl-recibo-dados dd { font-weight: 600; text-align: right; }
+.hl-mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; letter-spacing: 0.02em; }
+.hl-garantias { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px; margin-top: 40px; padding: 28px 0 0; list-style: none; border-top: 1px solid var(--divisor); }
+.hl-garantias b { display: block; font-size: 15px; line-height: 1.4; font-weight: 600; }
+.hl-garantias span { display: block; margin-top: 6px; font-size: 14px; line-height: 1.55; color: var(--texto-suave); }
+
+/* ---------- Para quem ---------- */
+.hl-momentos { padding: 112px 0; background: #143249; }
+.hl-momentos-lista { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; margin-top: 56px; }
+.hl-momento { display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+.hl-momento img { width: 100%; max-width: 160px; aspect-ratio: 1; object-fit: cover; border-radius: 50%; transition: filter .2s; }
+.hl-momento span { margin-top: 16px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.hl-momento:hover img { filter: brightness(0.9); }
+
+/* ---------- Dúvidas ---------- */
+.hl-duvidas { scroll-margin-top: 68px; padding: 112px 0; }
+.hl-duvidas-linha { display: grid; grid-template-columns: 1fr 1.5fr; gap: 72px; align-items: start; }
+.hl-faq { border-top: 1px solid var(--divisor); }
+.hl-faq details { border-bottom: 1px solid var(--divisor); }
+.hl-faq summary {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 0;
+  font-size: 16px; line-height: 1.4; font-weight: 600; letter-spacing: -0.01em; cursor: pointer; list-style: none;
+}
+.hl-faq summary::-webkit-details-marker { display: none; }
+.hl-faq summary::after {
+  content: ''; width: 10px; height: 10px; flex-shrink: 0; margin-right: 4px;
+  border-right: 1.75px solid #FFFFFF; border-bottom: 1.75px solid #FFFFFF; transform: rotate(45deg) translateY(-3px); transition: transform .2s;
+}
+.hl-faq details[open] summary::after { transform: rotate(-135deg) translateY(-3px); }
+.hl-faq details p { margin-top: -6px; padding: 0 40px 22px 0; font-size: 15px; line-height: 1.65; color: var(--texto-suave); }
+
+/* ---------- Chamada final ---------- */
+.hl-final { position: relative; overflow: hidden; display: flex; align-items: center; min-height: 560px; background: #0F1A23; text-align: center; }
+.hl-final-foto { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 40%; }
+.hl-final-veu { position: absolute; inset: 0; background: rgba(12, 22, 32, 0.5); }
+.hl-final-conteudo { position: relative; display: flex; flex-direction: column; align-items: center; }
+.hl-final h2 { font-size: 52px; line-height: 1.08; font-weight: 700; letter-spacing: -0.035em; }
+.hl-final p { margin: 20px 0 36px; font-size: 18px; line-height: 1.6; color: #FFFFFF; }
+
+/* ---------- Rodapé ---------- */
+.hl-rodape { padding: 72px 0 32px; border-top: 1px solid var(--divisor); }
+.hl-rodape-grade { display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr; gap: 48px; }
+.hl-rodape-logo { display: block; height: 32px; width: auto; }
+.hl-rodape-marca p { max-width: 340px; margin-top: 16px; font-size: 14px; line-height: 1.6; color: var(--texto-suave); }
+.hl-redes { display: flex; gap: 8px; margin-top: 24px; }
+.hl-redes a { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--r); border: 1px solid var(--caixa-borda); background: var(--caixa); color: #FFFFFF; transition: border-color .15s; }
+.hl-redes a:hover { border-color: rgba(255, 255, 255, 0.5); }
+.hl-redes svg { width: 16px; height: 16px; }
+.hl-rodape-coluna h4 { font-size: 13px; font-weight: 600; }
+.hl-rodape-coluna ul { display: grid; gap: 12px; margin-top: 16px; padding: 0; list-style: none; }
+.hl-rodape-coluna a { font-size: 14px; color: var(--texto-suave); text-decoration: none; }
+.hl-rodape-coluna a:hover { color: #FFFFFF; }
+.hl-rodape-selos li { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--texto-suave); }
+.hl-rodape-selos img { width: 16px; height: 16px; object-fit: contain; filter: brightness(0) invert(1); opacity: .85; }
+.hl-rodape-base { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--divisor); font-size: 13px; color: var(--texto-suave); }
+.hl-rodape-base nav { display: flex; gap: 20px; }
+.hl-rodape-base a { color: var(--texto-suave); text-decoration: none; }
+.hl-rodape-base a:hover { color: #FFFFFF; text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hl *, .hl *::before, .hl *::after { transition: none !important; }
+}
+
+/* ---------- Telas médias ---------- */
+@media (max-width: 1100px) {
+  .hl-mosaico, .hl-momentos-lista { grid-template-columns: repeat(3, 1fr); }
+  .hl-paineis-linha { grid-template-columns: 1fr; }
+  .hl-paineis-menu { display: none; }
+  .hl-painel { grid-template-columns: 1fr 340px; }
+  .hl-painel h2 { font-size: 38px; }
+}
+@media (max-width: 960px) {
+  .hl-painel { grid-template-columns: 1fr; min-height: 0; padding: 40px; }
+  .hl-painel-foto { max-width: 420px; }
+  .hl-chip { left: 16px; bottom: 16px; }
+  .hl-detalhes-linha, .hl-seguranca-linha, .hl-duvidas-linha { grid-template-columns: 1fr; gap: 48px; }
+  .hl-recibo { right: 16px; bottom: -32px; }
+  .hl-seguranca-texto { margin-top: 24px; }
+  .hl-rodape-grade { grid-template-columns: 1fr 1fr; }
+  .hl-rodape-marca { grid-column: span 2; }
+}
+
+/* ---------- Celular (mesmo corte da plataforma) ---------- */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .hl-faixa { padding: 0 16px; }
+  /* Cabeçalho igual ao da Love: 72px, logo de 36px à esquerda e "Entrar"
+     (16px) à direita, os dois a 16px da borda; sem menu hambúrguer. */
+  .hl-topo-linha { width: auto; height: 72px; gap: 12px; padding: 0 16px; }
+  .hl-logo img { height: 36px; width: auto; display: block; }
+  .hl-topo-acoes .hl-btn { display: none; }
+  .hl-topo-acoes { margin-left: auto; }
+  .hl-entrar { font-size: 16px !important; }
+
+  /* Abertura: foto numa caixa no topo e o texto embaixo, centralizado. */
+  .hl-faixa-intro, .hl-publico { display: none; }
+  .hl-hero { display: block; width: auto; min-height: 0; margin: 0; border-radius: 0; overflow: visible; background: none; }
+  .hl-hero-foto { position: relative; inset: auto; display: block; width: calc(100% - 32px); height: 248px; margin: 16px 16px 0; border-radius: var(--r-card); object-position: 50% 60%; }
+  .hl-hero-veu { display: none; }
+  .hl-hero-conteudo { align-items: stretch; padding: 28px 16px 40px; text-align: center; }
+  .hl-hero-intro { display: block; margin-bottom: 12px; font-size: 15px; line-height: 1.6; font-weight: 600; letter-spacing: -0.01em; color: #9CC3E4; }
+  /* Título sempre em duas linhas (uma frase por linha), no maior tamanho que
+     cabe: a frase mais longa ocupa ~11,15x o tamanho da fonte. */
+  .hl-hero-titulo { max-width: none; font-size: min(40px, calc((100vw - 42px) * 0.087)); line-height: 1.1; letter-spacing: -0.035em; }
+  .hl-hero-linha { display: block; white-space: nowrap; }
+  .hl-hero-sub { max-width: none; margin-top: 14px; font-size: 15px; line-height: 1.6; color: var(--texto-suave); }
+  .hl-hero-ctas { flex-direction: column; align-items: stretch; gap: 8px; margin-top: 24px; }
+  .hl-hero-ctas .hl-btn { width: 100%; }
+  .hl-hero-segundo { align-self: center; height: auto; padding: 10px 0; background: none; }
+  .hl-hero-segundo:hover { background: none; opacity: .8; }
+
+  .hl-titulo-centro { text-align: left; font-size: 28px; }
+  .hl-sub-centro { margin-left: 0; text-align: left; font-size: 16px; }
+  .hl-titulo { font-size: 28px; }
+  .hl-texto { font-size: 16px; }
+
+  .hl-tudo { padding: 56px 0 48px; }
+  .hl-mosaico { grid-template-columns: repeat(2, 1fr); gap: 24px 12px; margin-top: 28px; }
+  .hl-ladrilho { display: flex; flex-direction: column; }
+  .hl-ladrilho span { order: -1; margin: 0 0 10px; font-size: 14px; }
+  .hl-ladrilho img { aspect-ratio: 1 / 1; }
+
+  /* Painéis de ponta a ponta, um embaixo do outro, sem cantos. */
+  .hl-paineis { padding-bottom: 0; }
+  .hl-paineis-lista { gap: 0; margin: 0 -16px; }
+  .hl-painel { gap: 28px; padding: 48px 16px 40px; border-radius: 0; border-width: 1px 0 0; }
+  .hl-painel h2 { font-size: 30px; line-height: 1.1; }
+  .hl-painel p { margin-top: 16px; font-size: 16px; }
+  .hl-painel-ctas { margin-top: 24px; }
+  .hl-btn-tom { width: 100%; justify-content: center; }
+  .hl-painel-foto { max-width: none; }
+  .hl-chip { left: 12px; bottom: 12px; }
+
+  .hl-detalhes, .hl-momentos, .hl-duvidas { padding: 72px 0; }
+  .hl-detalhes-linha { gap: 24px; }
+  .hl-abas { margin-top: 28px; }
+  .hl-aba { padding: 16px 0 16px 16px; }
+  .hl-aba b { font-size: 16px; }
+
+  .hl-seguranca { padding: 72px 0 96px; }
+  .hl-recibo { right: 12px; bottom: -28px; width: 250px; padding: 18px; }
+  .hl-recibo-valor { font-size: 28px; }
+  .hl-seguranca-texto { margin-top: 40px; }
+  .hl-garantias { grid-template-columns: 1fr; gap: 20px; margin-top: 32px; }
+
+  .hl-momentos .hl-titulo-centro { text-align: center; }
+  .hl-momentos-lista { grid-template-columns: repeat(3, 1fr); gap: 24px 12px; margin-top: 36px; }
+  .hl-momento span { margin-top: 10px; font-size: 13px; }
+
+  .hl-faq summary { padding: 18px 0; font-size: 15px; }
+  .hl-faq details p { padding-right: 0; }
+
+  .hl-final { min-height: 480px; }
+  .hl-final h2 { font-size: 32px; }
+  .hl-final p { font-size: 16px; }
+  .hl-final .hl-btn { width: 100%; }
+
+  .hl-rodape { padding: 48px 0 24px; }
+  .hl-rodape-grade { gap: 32px; }
+  .hl-rodape-base { flex-direction: column; align-items: center; text-align: center; margin-top: 40px; }
+}
+
+/* Desktop: os dois botões da abertura com a mesma largura dos da love.com.br
+   ("Criar meu evento grátis" e "Encontrar um evento"), para a troca entre os
+   sites não mexer em nada além da cor. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  .hl-hero-ctas .hl-btn { min-width: 209.1px; }
+  .hl-hero-segundo { min-width: 193.8px; }
+}
+
+/* ==========================================================================
+   Fundo claro: o azul fica só na abertura (cabeçalho, faixa e foto). O resto
+   da página volta ao branco, com as faixas alternadas e os painéis no cinza
+   do fundo da plataforma logada (#F4F6F7), textos escuros como na Love.
+   ========================================================================== */
+.hl {
+  --cinza: #F4F6F7;
+  --tinta: #18181B;
+  --caixa: #FFFFFF;
+  --caixa-borda: #E4E4E7;
+  --divisor: #E4E4E7;
+  --texto: #18181B;
+  --texto-suave: #52525B;
+  background: var(--cinza);
+}
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; }
+
+/* Abertura azul */
+.hl-topo { border-bottom-color: rgba(255, 255, 255, 0.12); }
+.hl-abertura { display: flow-root; background: var(--azul); padding-bottom: 32px; color: #FFFFFF; }
+
+/* Seções brancas e cinzas (as que eram azul-escuras ficam cinza) */
+.hl-tudo, .hl-paineis, .hl-seguranca, .hl-duvidas, .hl-rodape { background: #FFFFFF; }
+.hl-detalhes, .hl-momentos { background: var(--cinza); }
+
+.hl-sub-centro, .hl-texto { color: var(--texto-suave); }
+.hl-texto a { color: var(--azul); }
+.hl-sobretitulo { color: var(--azul); }
+.hl-ladrilho img { outline-color: rgba(0, 0, 0, 0.06); }
+.hl-ladrilho:hover span, .hl-momento:hover span { color: var(--azul); }
+
+/* Painéis no cinza da plataforma, com título azul e botão azul */
+.hl-painel { background: var(--cinza); border-color: var(--caixa-borda); }
+.hl-painel h2 { color: var(--tinta); }
+.hl-painel p { color: var(--texto-suave); }
+.hl-btn-tom { background: var(--azul); color: #FFFFFF; }
+.hl-btn-tom:hover { background: var(--azul-hover); }
+.hl-paineis-menu a { border-left-color: var(--divisor); color: #71717A; }
+.hl-paineis-menu a:hover { color: var(--tinta); }
+.hl-paineis-menu a.ativo { border-left-color: var(--azul); color: var(--tinta); }
+.hl-chip { border: 1px solid var(--caixa-borda); }
+
+/* Abas, dúvidas e rodapé em texto escuro */
+.hl-aba b { color: #71717A; }
+.hl-aba:hover b, .hl-aba.ativo b { color: var(--tinta); }
+.hl-aba.ativo { border-left-color: var(--azul); }
+.hl-detalhes-foto img { outline-color: rgba(0, 0, 0, 0.06); }
+.hl-recibo { border: 1px solid var(--caixa-borda); }
+.hl-faq summary::after { border-color: #71717A; }
+.hl-redes a { color: var(--texto-suave); }
+.hl-redes a:hover { border-color: #181D24; color: #181D24; }
+.hl-rodape-coluna a:hover, .hl-rodape-base a:hover { color: var(--tinta); }
+.hl-rodape-selos img { filter: none; opacity: 1; }
+.hl :focus-visible { outline-color: #181D24; }
+.hl-abertura :focus-visible, .hl-topo :focus-visible, .hl-final :focus-visible { outline-color: #FFFFFF; }
+
+/* Chamada final continua com a foto e o texto branco */
+.hl-final { color: #FFFFFF; }
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .hl-abertura { padding-bottom: 0; }
+  .hl-hero-sub { color: rgba(255, 255, 255, 0.86); }
+  .hl-painel { border-width: 1px 0 0; }
+}
+
+/* Abertura e cabeçalho no cinza do fundo da plataforma (#F4F6F7), o mesmo de
+   "A diferença está nos detalhes": logo azul, Entrar escuro e o botão azul. */
+.hl-topo { background: rgba(244, 246, 247, 0.92); border-bottom-color: #E4E4E7; }
+.hl-entrar { color: var(--tinta); }
+.hl-entrar:hover { opacity: 1; color: var(--azul); }
+.hl-btn-azul { background: var(--azul); color: #FFFFFF; }
+.hl-btn-azul:hover { background: var(--azul-hover); }
+.hl-abertura { background: var(--cinza); color: var(--tinta); }
+.hl-topo :focus-visible { outline-color: #181D24; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* Celular: o texto da abertura fica sobre o cinza, então em tons escuros. */
+  .hl-abertura :focus-visible { outline-color: #181D24; }
+  .hl-hero-intro { color: var(--azul); }
+  .hl-hero-titulo { color: var(--tinta); }
+  .hl-hero-sub { color: var(--texto-suave); }
+  .hl-hero-ctas .hl-btn-branco { background: var(--azul); color: #FFFFFF; }
+  .hl-hero-segundo { color: var(--azul); }
+}
+
+/* Faixa de apresentação igual à da love.com.br ("Crie o convite digital do
+   seu evento"): degradê azul-claro e texto na cor primária. */
+.hl-faixa-intro { background: linear-gradient(90deg, #E3EDF5 0%, #D3E3F0 50%, #E6EEF6 100%); }
+.hl-faixa-intro p, .hl-faixa-intro-link { color: #183b54; }
+
+/* Foto da abertura com cantos mais arredondados (16px). */
+.hl-hero { border-radius: 16px; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .hl-hero { border-radius: 0; }
+  .hl-hero-foto { border-radius: 16px; }
+}
+/* Faixa de apresentação com os mesmos cantos de 16px da foto. */
+.hl-faixa-intro { border-radius: 16px; }
+
+/* ==========================================================================
+   Cantos e estados iguais aos da love.com.br (bloco "LANDING v7" do
+   css/landing.css): faixa e foto com 24px; botões em pílula; seletor de
+   público em trilho translúcido com o ativo escuro (#181D24).
+   ========================================================================== */
+html body.hl :is(.hl-btn, .hl-btn-tom, .hl-hero-segundo):not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-radius: 999px !important; }
+/* Cabeçalho: "Entrar" só texto; "Cadastre-se grátis" em pílula de 40px. */
+.hl-topo-acoes .hl-btn { height: 40px; padding: 0 24px; font-size: 14px; }
+
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  .hl-entrar { font-size: 14px; }
+  .hl-hero-ctas .hl-btn { min-width: 232px; }
+  .hl-hero-segundo { min-width: 215.8px; }
+  :is(.hl-faixa-intro, .hl-hero) { border-radius: 24px; }
+  /* Título da abertura em no máximo 2 linhas, como na Love. */
+  .hl-hero-titulo { max-width: 860px; font-size: clamp(36px, 4.4vw, 64px); text-wrap: balance; }
+  /* Botões da foto: pílulas de 60px. */
+  .hl-hero-ctas .hl-btn, .hl-hero-segundo { height: 60px; padding: 0 28px; font-size: 16px; }
+  .hl-hero-ctas .hl-btn-branco { background: #FFFFFF; color: #183b54; }
+  .hl-hero-segundo { background: rgba(255, 255, 255, 0.3); color: #FFFFFF; border: 0; }
+  .hl-hero-segundo:hover { background: rgba(255, 255, 255, 0.4); }
+
+  /* Seletor de público: trilho branco a 30%, 4px de folga, abas de 32px. */
+  .hl-publico {
+    gap: 0; margin-bottom: 28px; padding: 4px; border: 0; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.3); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+  .hl-publico a {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 120px; height: 32px; padding: 0 24px;
+    border-radius: 999px; font-size: 14px; font-weight: 400; line-height: 1; color: #FFFFFF;
+  }
+  .hl-publico a:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.12); }
+  .hl-publico a[aria-current="page"] { background: #181D24; color: #FFFFFF; font-weight: 600; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .hl-hero-foto { border-radius: 16px; }
+}

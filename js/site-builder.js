@@ -707,10 +707,33 @@ function applyGlobalStyleVars() {
   node.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
 }
 
+/**
+ * Guarda a página no cache do navegador. Se não couber (o celular aceita uns
+ * 5 MB), apaga a cópia antiga para ela não ficar no lugar da nova — o banco
+ * continua sendo gravado e a última versão fica em memória (Home usa).
+ * @param {string} pageKey @param {any} state @returns {boolean}
+ */
+function guardarPaginaNoCache(pageKey, state) {
+  if (pageKey === 'convite') window.__loveConviteAtual = { evento: getActiveEventUuid(), state };
+  try {
+    localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(state));
+    return true;
+  } catch (e) {
+    try { localStorage.removeItem(pageStorageKey(pageKey)); } catch (e2) { /* sem armazenamento */ }
+    return false;
+  }
+}
+
 function persistBuilderState(silent) {
-  localStorage.setItem(pageStorageKey(currentPageKey), JSON.stringify(builderState));
+  guardarPaginaNoCache(currentPageKey, builderState);
   hasUnsavedChanges = false;
-  persistBuilderStateRemote(currentPageKey, builderState);
+  persistBuilderStateRemote(currentPageKey, builderState).then((ok) => {
+    if (ok === false) {
+      hasUnsavedChanges = true;
+      showToast('Não foi possível salvar. Confira a internet e tente de novo.');
+    }
+  });
+  if (typeof window.loveAtualizarCapaDaHome === 'function') { try { window.loveAtualizarCapaDaHome(); } catch (e) { /* Home fora da tela */ } }
   if (!silent) showToast('Alterações salvas!');
   // Guia de primeiros passos: salvar o Save the Date risca "Escolher Save the Date".
   if (!silent && currentPageKey === 'savethedate' && typeof window.markPlatformTaskAchieved === 'function') {
@@ -733,6 +756,7 @@ async function persistBuilderStateRemote(pageKey, state) {
     .from('convite_digital_pages')
     .upsert({ evento_id: eventId, page_key: pageKey, state, updated_at: agora, ...dadosExtras }, { onConflict: 'evento_id,page_key' });
   if (error) console.error('Erro ao salvar Convite Digital no Supabase:', error);
+  return !error;
 }
 
 // "Publicar": grava a cópia publicada (published_state) que a página pública
@@ -769,9 +793,15 @@ async function publicarConviteNoAr(btn) {
     resultado = 'Erro ao publicar';
   }
   btn.textContent = resultado;
+  btn.dataset.resultado = resultado;
+  // Celular: o botão é só o ícone, então o resultado aparece num aviso.
+  if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
+    showToast(resultado === 'Publicado' ? 'Convite publicado! As alterações já estão no ar.' : resultado === 'Link já em uso' ? 'Esse link já está em uso. Troque o link do evento e publique de novo.' : 'Não foi possível publicar. Tente de novo.');
+  }
   setTimeout(() => {
     btn.textContent = textoOriginal;
     btn.disabled = false;
+    delete btn.dataset.resultado;
   }, 2200);
   return resultado === 'Publicado';
 }
@@ -942,7 +972,7 @@ async function syncBuilderStateFromSupabase(pageKey) {
   if (pageKey === currentPageKey) atualizarBotoesDaPagina();
 
   if (row && row.state && Object.keys(row.state).length) {
-    localStorage.setItem(pageStorageKey(pageKey), JSON.stringify(row.state));
+    guardarPaginaNoCache(pageKey, row.state);
     if (pageKey === currentPageKey) {
       builderState = row.state;
       if (pageKey === 'savethedate') normalizarSaveTheDate(builderState);
@@ -968,6 +998,29 @@ async function syncBuilderStateFromSupabase(pageKey) {
   } else {
     persistBuilderStateRemote(pageKey, loadPageState(pageKey));
   }
+  // A Home (celular) mostra a capa do convite: atualiza com a que chegou.
+  if (pageKey === 'convite' && typeof window.loveAtualizarCapaDaHome === 'function') window.loveAtualizarCapaDaHome();
+  prepararConviteNoCelular(pageKey);
+}
+
+/** O convite ainda não tem nenhum elemento (só capa e botões)? @param {any} state */
+function conviteSemElementos(state) {
+  return !!state && Array.isArray(state.sections) && !state.sections.some(s => !s.isQuickNav && !s.isGiftsBlock
+    && (s.columns || []).some(c => (c.elements || []).length));
+}
+
+/**
+ * Celular: as seções do Convite digital já vêm prontas e fixas (sem
+ * adicionar, mover ou apagar). Convite inicial abre a escolha de modelos
+ * do tipo de evento (cartões que passam de lado). Desktop não muda.
+ * @param {string} pageKey
+ */
+async function prepararConviteNoCelular(pageKey) {
+  if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
+  if (pageKey !== 'convite' || currentPageKey !== 'convite') return;
+  // Convite inicial (nunca publicado e sem modelo escolhido): antes de editar,
+  // a pessoa escolhe um dos modelos do tipo do evento.
+  if (!paginasJaPublicadas.convite && !(builderState && builderState.modeloEscolhido)) abrirModelosNoCelular();
 }
 
 // Chamado por app.js assim que o anfitrião troca de evento no dropdown —
@@ -1024,7 +1077,8 @@ function atualizarBotoesDaPagina() {
   const ehSaveTheDate = currentPageKey === 'savethedate';
   const raiz = document.getElementById('site-builder-root');
   if (raiz) raiz.dataset.pagina = currentPageKey;
-  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || !!paginasJaPublicadas[currentPageKey]);
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || (!noCelular && !!paginasJaPublicadas[currentPageKey]));
   document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate);
   document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate);
   document.getElementById('builder-share-menu')?.classList.add('hidden');
@@ -1149,6 +1203,13 @@ function wireUnsavedChangesGuard() {
 
 function snapshotState() { return JSON.stringify(builderState); }
 
+let salvamentoAutomaticoTimer = 0;
+function agendarSalvamentoAutomatico() {
+  if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
+  clearTimeout(salvamentoAutomaticoTimer);
+  salvamentoAutomaticoTimer = window.setTimeout(() => { if (hasUnsavedChanges) persistBuilderState(true); }, 800);
+}
+
 function pushHistory() {
   if (suppressHistory) return;
   // Sem mudança desde o último passo (ex.: só saiu de um campo): não grava,
@@ -1160,6 +1221,7 @@ function pushHistory() {
   if (historyStack.length > 60) historyStack.shift();
   historyIndex = historyStack.length - 1;
   hasUnsavedChanges = true;
+  agendarSalvamentoAutomatico();
   updateHistoryButtons();
   // Guia de primeiros passos (plataforma): a primeira edição em Aparência
   // risca "Personalizar site do evento".
@@ -1171,6 +1233,7 @@ function undo() {
   historyIndex -= 1;
   builderState = JSON.parse(historyStack[historyIndex]);
   hasUnsavedChanges = true;
+  agendarSalvamentoAutomatico();
   selectedId = null;
   renderCanvas();
   renderLeftPanel();
@@ -1182,6 +1245,7 @@ function redo() {
   historyIndex += 1;
   builderState = JSON.parse(historyStack[historyIndex]);
   hasUnsavedChanges = true;
+  agendarSalvamentoAutomatico();
   selectedId = null;
   renderCanvas();
   renderLeftPanel();
@@ -1701,7 +1765,131 @@ function renderElementosTab(body) {
   `).join('');
 }
 
+/**
+ * Celular: tocar na imagem abre na hora o seletor do aparelho (Fototeca,
+ * Tirar foto ou Escolher arquivo), igual à foto da capa.
+ * @param {any} el
+ */
+function trocarFotoNoCelular(el) {
+  let input = /** @type {HTMLInputElement|null} */ (document.getElementById('builder-foto-celular'));
+  if (!input) {
+    input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.id = 'builder-foto-celular';
+    input.hidden = true;
+    document.body.appendChild(input);
+  }
+  input.value = '';
+  input.onchange = () => {
+    const file = input && input.files && input.files[0];
+    if (!file) return;
+    readFileAsDataUrl(file, (/** @type {string} */ dataUrl) => { el.src = dataUrl; pushHistory(); renderCanvasOnly(); });
+  };
+  input.click();
+}
+
+/** Celular, Convite digital: editor só com o essencial (textos padronizados). */
+function construtorNoCelularAtivo() {
+  return currentPageKey === 'convite' && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+}
+const TAMANHOS_NO_CELULAR = { titulo: [20, 24, 28, 32, 40, 48, 56], texto: [13, 14, 15, 16, 18, 20, 24] };
+
+/**
+ * Celular: a gaveta pequena de cada elemento. Título/Texto: negrito, itálico,
+ * tamanho (lista) e a caixinha do texto. Data e Contagem: só data e horário.
+ * Botão: texto, cor do botão, cor do texto e link. Botões de navegação: cor
+ * do botão, cor do texto e quais botões aparecem (com o nome de cada um).
+ * Fonte, alinhamento e nível do título ficam sempre os do modelo.
+ * @param {any} sel
+ * @param {HTMLElement} body
+ */
+function renderInspectorCelular(sel, body) {
+  if (sel.kind === 'quicknav') {
+    const qn = sel.obj;
+    body.innerHTML = `
+      <div class="inspector-field inspector-field-row">
+        <span class="inspector-field-label">Cor do botão</span>
+        ${colorSwatchPopoverHtml(qn.buttonBgColor || '#F4F4F5', 'data-quicknav-color="buttonBgColor"')}
+      </div>
+      <div class="inspector-field inspector-field-row">
+        <span class="inspector-field-label">Cor do texto</span>
+        ${colorSwatchPopoverHtml(qn.textColor || '#18181B', 'data-quicknav-color="textColor"')}
+      </div>
+      <span class="inspector-field-label cel-edit-rotulo">Botões</span>
+      <div class="menu-order-list cel-edit-botoes" id="quicknav-order-list">
+        ${qn.buttons.map((/** @type {any} */ btn) => `
+          <div class="menu-order-row" data-quicknav-row="${btn.id}">
+            <input type="text" class="inspector-input" data-quicknav-name="${btn.id}" value="${escapeHtml(btn.label || '')}" placeholder="Nome do botão" aria-label="Nome do botão">
+            <label class="settings-switch" title="Mostrar ou esconder o botão">
+              <input type="checkbox" data-quicknav-visible-toggle="${btn.id}" ${btn.visible !== false ? 'checked' : ''}>
+              <span class="settings-switch-track"></span>
+            </label>
+          </div>`).join('')}
+      </div>`;
+    wireQuickNavInspector(qn, body);
+    return;
+  }
+  const el = sel.obj;
+  const dataEHora = (/** @type {string} */ rotulo) => `
+    ${fieldRow(rotulo, `<input type="date" class="inspector-input" data-bind="prop:targetDate" value="${escapeHtml(el.targetDate || '')}">`)}
+    ${fieldRow('Horário', seletorDeHorarioHtml(el.targetTime, 'Sem horário'))}`;
+  if (el.type === 'titulo' || el.type === 'texto') {
+    const lista = TAMANHOS_NO_CELULAR[/** @type {'titulo'|'texto'} */ (el.type)].slice();
+    const atual = parseInt(cascadedStyleValue(el, 'fontSize'), 10) || (el.type === 'titulo' ? 32 : 16);
+    if (!lista.includes(atual)) { lista.push(atual); lista.sort((a, b) => a - b); }
+    body.innerHTML = `
+      <div class="cel-edit-barra">
+        ${botoesDeEstiloHtml(el, 'inspector-estilo-texto')}
+        <select class="inspector-select cel-edit-tamanho" data-bind="style:fontSize" aria-label="Tamanho da fonte">
+          ${lista.map(n => `<option value="${n}px" ${n === atual ? 'selected' : ''}>${n} px</option>`).join('')}
+        </select>
+      </div>
+      <div class="inspector-rich" data-placeholder="${el.type === 'titulo' ? 'Insira um título' : 'Insira um texto'}" contenteditable="true" role="textbox" aria-multiline="${el.type === 'texto'}" data-rich-content data-tipo="${el.type}">${el.content || ''}</div>`;
+    wireContentTab(el, body);
+    wireTypographyToggles(body, el);
+    return;
+  }
+  if (el.type === 'data') body.innerHTML = dataEHora('Data');
+  else if (el.type === 'contagem') body.innerHTML = dataEHora('Data do evento');
+  else if (el.type === 'botao') {
+    body.innerHTML = `
+      ${fieldRow('Texto do botão', `<input type="text" class="inspector-input" data-bind="prop:content" value="${escapeHtml(el.content || '')}">`)}
+      <div class="inspector-field inspector-field-row">
+        <span class="inspector-field-label">Cor do botão</span>
+        ${colorSwatchPopoverHtml(currentDeviceStyleOrProp(el, 'backgroundColor') || builderState.globalStyle.primaryColor || '#537bae', 'data-bind="style:backgroundColor"')}
+      </div>
+      ${colorFieldHtml(el, 'Cor do texto')}
+      ${fieldRow('Link (URL)', `<input type="text" class="inspector-input" data-bind="prop:href" value="${escapeHtml(el.href || '')}" placeholder="https://">`)}`;
+  } else body.innerHTML = renderContentTab(el);
+  wireContentTab(el, body);
+}
+
 function renderElementEditorPanel(panel, sel) {
+  if (construtorNoCelularAtivo() && sel.kind === 'element' && (sel.obj.type === 'titulo' || sel.obj.type === 'texto')) {
+    // Escreve direto na caixinha do próprio convite (sem gaveta).
+    panel.innerHTML = '';
+    return;
+  }
+  if (construtorNoCelularAtivo() && sel.kind === 'element' && sel.obj.type === 'imagem') {
+    panel.innerHTML = '';
+    trocarFotoNoCelular(sel.obj);
+    return;
+  }
+  if (construtorNoCelularAtivo() && (sel.kind === 'element' || sel.kind === 'quicknav')) {
+    const nome = sel.kind === 'quicknav' ? 'Botões' : ((ELEMENT_META[sel.obj.type] || {}).label || 'Elemento');
+    panel.innerHTML = `
+      <div class="inspector-header">
+        <button type="button" class="builder-breadcrumb-back" data-editor-back>${BI.chevronLeft} Voltar</button>
+        <span class="inspector-editing-label" data-cel-titulo="Editar ${escapeHtml(String(nome).toLowerCase())}">${escapeHtml(nome)}</span>
+      </div>
+      <div class="inspector-body cel-edit" id="inspector-body"></div>`;
+    panel.querySelector('[data-editor-back]').addEventListener('click', deselect);
+    const corpoCel = /** @type {HTMLElement} */ (document.getElementById('inspector-body'));
+    renderInspectorCelular(sel, corpoCel);
+    wireColorSwatchPopovers(corpoCel);
+    return;
+  }
   const titleMap = { section: 'Página', column: 'Coluna', quicknav: 'Botões de navegação', giftsblock: 'Meus Presentes', element: (ELEMENT_META[sel.obj.type] || {}).label || 'Elemento' };
   const isTextLike = sel.kind === 'element' && (sel.obj.type === 'titulo' || sel.obj.type === 'texto');
   const textoDoSaveTheDate = isTextLike && currentPageKey === 'savethedate';
@@ -2069,14 +2257,12 @@ function wireCanvasEvents(canvas) {
       fileInput.onchange = (ev) => {
         const file = ev.target.files && ev.target.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (ev2) => {
-          section.bgImage = ev2.target.result;
+        readFileAsDataUrl(file, (dataUrl) => {
+          section.bgImage = dataUrl;
           pushHistory();
           renderCanvas();
           renderLeftPanel();
-        };
-        reader.readAsDataURL(file);
+        });
         fileInput.value = '';
       };
       fileInput.click();
@@ -2445,7 +2631,7 @@ function formatEventDate(dateStr, timeStr) {
 function renderElementContent(el, device, mode) {
   const edit = mode === 'edit';
   const style = styleAttr(el, device);
-  const editable = edit ? 'contenteditable="true" data-editable="content"' : '';
+  const editable = edit && !(construtorNoCelularAtivo() && el.type === 'botao') ? 'contenteditable="true" data-editable="content"' : '';
   const linkGuard = edit ? 'onclick="return false;"' : '';
 
   switch (el.type) {
@@ -3133,9 +3319,44 @@ function wireGiftsBlockInspector(section, body) {
 /* -------------------- Inspector: Elemento -------------------- */
 
 function readFileAsDataUrl(file, cb) {
+  if (file && /^image\//.test(file.type || '') && !/svg/.test(file.type)) { reduzirImagem(file, cb); return; }
   const reader = new FileReader();
   reader.onload = () => cb(reader.result);
   reader.readAsDataURL(file);
+}
+
+/**
+ * Foto escolhida no celular/computador → no máximo 1600px no lado maior
+ * (JPEG 82%; PNG continua PNG por causa da transparência). Uma foto de 4 MB
+ * vira ~300 KB: cabe no cache do navegador e o convite salva de verdade.
+ * @param {File} file @param {(dataUrl: string) => void} cb
+ */
+function reduzirImagem(file, cb) {
+  const original = () => {
+    const leitor = new FileReader();
+    leitor.onload = () => cb(String(leitor.result));
+    leitor.readAsDataURL(file);
+  };
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    URL.revokeObjectURL(url);
+    const LADO = 1600;
+    const escala = Math.min(1, LADO / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+    const w = Math.max(1, Math.round(img.naturalWidth * escala));
+    const h = Math.max(1, Math.round(img.naturalHeight * escala));
+    const tela = document.createElement('canvas');
+    tela.width = w;
+    tela.height = h;
+    const ctx = tela.getContext('2d');
+    if (!ctx) { original(); return; }
+    const png = /png/i.test(file.type);
+    if (!png) { ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, w, h); }
+    ctx.drawImage(img, 0, 0, w, h);
+    try { cb(png ? tela.toDataURL('image/png') : tela.toDataURL('image/jpeg', 0.82)); } catch (e) { original(); }
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); original(); };
+  img.src = url;
 }
 
 function imageUploadZoneHtml(src, inputAttrs) {
@@ -3931,8 +4152,7 @@ function initSiteBuilder() {
   if (publishBtn) publishBtn.addEventListener('click', async () => {
     persistBuilderState(true);
     const keys = pagePublishedKeys(currentPageKey);
-    localStorage.setItem(keys.flag, '1');
-    localStorage.setItem(keys.state, JSON.stringify(builderState));
+    try { localStorage.setItem(keys.flag, '1'); localStorage.setItem(keys.state, JSON.stringify(builderState)); } catch (e) { /* sem espaço no navegador: o banco vale */ }
     const paginaDoClique = currentPageKey;
     const sucesso = await publicarConviteNoAr(publishBtn);
     // Primeira publicação com sucesso: some o "Publicar" dessa página —
@@ -4349,33 +4569,74 @@ function telaPublicaHtml(titulo, conteudo, { comCapa = false, fundoBranco = fals
         </button>
         <h1 class="convite-tela-titulo">${escaparPublico(titulo)}</h1>
       </div>
-      ${comCapa ? capaDoConviteHtml() : ''}
+      ${comCapa ? capaDasInformacoesHtml() : ''}
       ${conteudo}
     </div>
   ` + renderFixedFooterHtml();
 }
 
-// Mesma foto de capa do convite (primeira seção de conteúdo), para as telas
-// internas que mostram a imagem logo abaixo do título.
-function capaDoConviteHtml() {
+// Foto da tela Informações: própria dela (conv.informacoesImagem), escolhida
+// em Informações com "Alterar imagem". Não tem relação com a capa do convite.
+function capaDasInformacoesHtml() {
   const conv = estadoDoConvite();
-  const secao = (conv && conv.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock && !s.hidden);
-  const imagem = secao && secao.bgImage;
+  const imagem = conv && conv.informacoesImagem;
   if (!imagem) return '';
-  // Mesmas camadas da capa em Aparência: cor por cima da foto e transição
-  // (degradê) em cima ou embaixo — assim a capa fica igual em todas as telas.
-  const camadas = [];
-  if (secao.overlayColor) {
-    const opacidade = secao.overlayOpacity !== undefined ? secao.overlayOpacity : 1;
-    camadas.push(`<div class="convite-tela-capa-camada" style="inset:0;background-color:${escaparPublico(secao.overlayColor)};opacity:${Number(opacidade) || 0};"></div>`);
+  return `<div class="convite-tela-capa"><img src="${escaparPublico(imagem)}" alt=""></div>`;
+}
+
+// Prévia de Informações (computador e celular): "Alterar imagem" sobre a foto,
+// igual ao da capa em Convite digital. Sem foto, uma caixa com "Adicionar imagem".
+function ligarImagemDasInformacoes(container) {
+  const tela = container.querySelector('.convite-tela');
+  if (!tela) return;
+  let capa = tela.querySelector(':scope > .convite-tela-capa');
+  if (!capa) {
+    capa = document.createElement('div');
+    capa.className = 'convite-tela-capa is-vazia';
+    tela.insertBefore(capa, tela.firstChild);
   }
-  const corTransicao = secao.fadeColor === '' ? '' : (secao.fadeColor || '#ffffff');
-  if (corTransicao && (secao.fadePosition === 'top' || secao.fadePosition === 'bottom')) {
-    const emCima = secao.fadePosition === 'top';
-    const c = escaparPublico(corTransicao);
-    camadas.push(`<div class="convite-tela-capa-camada" style="left:0;right:0;height:45%;${emCima ? 'top:0' : 'bottom:0'};background:linear-gradient(to ${emCima ? 'bottom' : 'top'}, ${c} 0%, ${c} 35%, ${c}00 100%);"></div>`);
+  capa.classList.add('tem-alterar-imagem');
+  const temImagem = !capa.classList.contains('is-vazia');
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.className = 'builder-first-section-cover-btn informacoes-imagem-btn';
+  botao.title = temImagem ? 'Alterar imagem' : 'Adicionar imagem';
+  botao.innerHTML = `${BI.image}<span>${temImagem ? 'Alterar imagem' : 'Adicionar imagem'}</span>`;
+  capa.appendChild(botao);
+
+  let entrada = /** @type {HTMLInputElement|null} */ (document.getElementById('informacoes-imagem-input'));
+  if (!entrada) {
+    entrada = document.createElement('input');
+    entrada.type = 'file';
+    entrada.accept = 'image/*';
+    entrada.id = 'informacoes-imagem-input';
+    entrada.className = 'hidden';
+    document.body.appendChild(entrada);
   }
-  return `<div class="convite-tela-capa"><img src="${escaparPublico(imagem)}" alt="">${camadas.join('')}</div>`;
+  const input = entrada;
+  botao.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    input.onchange = () => {
+      const arquivo = input.files && input.files[0];
+      if (!arquivo) return;
+      readFileAsDataUrl(arquivo, (dataUrl) => {
+        const conv = estadoDoConvite();
+        if (!conv) return;
+        conv.informacoesImagem = dataUrl;
+        // Grava junto com o convite (mesmo caminho da capa), sem mexer nela.
+        if (conv === builderState) {
+          persistBuilderState(false);
+        } else {
+          guardarPaginaNoCache('convite', conv);
+          persistBuilderStateRemote('convite', conv);
+        }
+        renderInformacoesPreview();
+      });
+      input.value = '';
+    };
+    input.click();
+  });
 }
 
 function semDadosPublicos(root, titulo) {
@@ -5319,8 +5580,9 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
       renderCanvas();
       persistBuilderState(false);
     } else {
-      try { localStorage.setItem(pageStorageKey('convite'), JSON.stringify(conv)); } catch (err) { /* sem armazenamento */ }
+      guardarPaginaNoCache('convite', conv);
       persistBuilderStateRemote('convite', conv);
+      if (typeof window.loveAtualizarCapaDaHome === 'function') { try { window.loveAtualizarCapaDaHome(); } catch (e) { /* Home fora da tela */ } }
     }
   };
 
@@ -5372,16 +5634,14 @@ function wireClassicPreviewCoverEdit(container, rerenderFn) {
   fileInput.onchange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
+    readFileAsDataUrl(file, (dataUrl) => {
       const target = targetSection;
       if (target) {
-        target.bgImage = ev.target.result;
+        target.bgImage = dataUrl;
         salvarCapa();
         rerenderFn();
       }
-    };
-    reader.readAsDataURL(file);
+    });
     fileInput.value = '';
   };
 }
@@ -5483,6 +5743,7 @@ function renderInformacoesPreview() {
   container.innerHTML = telaInformacoesHtml(ev);
   // Prévia: sem o título "Informações" e a setinha de voltar (só no convite publicado).
   container.querySelector('.convite-tela-topo')?.remove();
+  ligarImagemDasInformacoes(container);
 }
 
 // "Av. Duquesa de Goiás, 825" + "São Paulo" + "SP" → "Av. Duquesa de Goiás, 825, São Paulo - SP"
@@ -5730,14 +5991,21 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
       if (!noCelular.matches) return;
       const agora = editando();
       const titulo = gaveta.querySelector('.builder-gaveta-titulo');
-      const texto = agora ? 'Editar elemento' : 'Adicionar elementos';
+      const rotulo = /** @type {HTMLElement|null} */ (painel.querySelector('[data-cel-titulo]'));
+      const texto = (rotulo && rotulo.dataset.celTitulo) || 'Editar elemento';
       if (titulo && titulo.textContent !== texto) titulo.textContent = texto;
       if (agora && !estavaEditando) abrir();
+      // Sem elemento escolhido não há o que mostrar (a lista de adicionar saiu).
+      if (!agora && estavaEditando && gaveta.classList.contains('is-aberta')) {
+        gaveta.classList.remove('is-aberta');
+        fundo.classList.remove('is-aberta');
+        gaveta.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('builder-gaveta-aberta');
+      }
       estavaEditando = agora;
+      // Seções e elementos fixos: nada se arrasta no celular.
       (typeof sortableInstances !== 'undefined' ? sortableInstances : []).forEach((/** @type {any} */ s) => {
-        if (!s || !s.el || !s.option) return;
-        if (painel.contains(s.el)) s.option('disabled', true);
-        else { s.option('delay', 350); s.option('delayOnTouchOnly', true); }
+        if (s && s.el && s.option) s.option('disabled', true);
       });
     };
     const observador = new MutationObserver(() => { if (!agendado) { agendado = true; queueMicrotask(ajustar); } });
@@ -5748,3 +6016,214 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
 })();
+
+
+/* -------------------- Celular: modelos prontos do Convite digital -------------------- */
+
+// Textos de cada tipo de evento (o resto vem do MODELOS_DE_CONVITE).
+const TEXTOS_DOS_MODELOS = {
+  wedding: { abertura: 'É com imensa alegria,', convite: 'que convidamos você para celebrar o casamento de', sobre: 'Sobre a Cerimônia' },
+  birthday: { abertura: 'Vamos celebrar juntos!', convite: 'Você está convidado(a) para o aniversário de', sobre: 'Sobre a festa' }
+};
+// Três modelos por tipo: paleta, fonte e fotos. No casamento, o primeiro é o
+// modelo padrão salvo no banco (o mesmo do desktop).
+const VARIACOES_DOS_MODELOS = {
+  wedding: [
+    { id: 'classico', nome: 'Clássico', doBanco: true, adicionado: '2026-08-04', fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'jardim', nome: 'Jardim', adicionado: '2026-09-15', fundo: '#f1f4ee', destaque: '#4f6b4a', caixa: '#dde6d6', fonte: "'Cormorant Garamond', Georgia, serif", capa: 'assets/presentes/ensaio-casal.jpg', imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'azul', nome: 'Azul noite', adicionado: '2026-10-02', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Cinzel', Georgia, serif", capa: 'assets/criar-casamento.jpg', imagem: 'assets/presentes/buque-rosas.jpg' }
+  ],
+  birthday: [
+    { id: 'festa', nome: 'Festa', adicionado: '2026-08-20', fundo: '#fdf3e7', destaque: '#b45309', caixa: '#f8dfbf', fonte: "'Playfair Display', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' },
+    { id: 'elegante', nome: 'Elegante', adicionado: '2026-09-28', fundo: '#f4f1ee', destaque: '#3f3f46', caixa: '#e4ded8', fonte: "'Marcellus', Georgia, serif", capa: 'assets/birthday_hero_banner.jpg', imagem: 'assets/presentes/champanhe.jpg' },
+    { id: 'leve', nome: 'Leve', adicionado: '2026-10-10', fundo: '#eef4f8', destaque: '#2f6f86', caixa: '#d5e7ef', fonte: "'Lora', Georgia, serif", capa: 'assets/criar-aniversario.jpg?v=20261021', imagem: 'assets/presentes/bolo-docinhos.jpg' }
+  ]
+};
+
+/** Os três modelos de um tipo de evento (tipos sem lista própria ganham três paletas). @param {string} tipo */
+function variacoesDoTipo(tipo) {
+  if (VARIACOES_DOS_MODELOS[tipo]) return VARIACOES_DOS_MODELOS[tipo];
+  const base = MODELOS_DE_CONVITE[tipo] || { fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4' };
+  const capa = (EVENT_TYPE_BUILDER_TEMPLATES[tipo] || EVENT_TYPE_BUILDER_TEMPLATES.wedding).coverImage;
+  return [
+    { id: 'suave', nome: 'Suave', adicionado: '2026-08-12', fundo: base.fundo, destaque: base.destaque, caixa: base.caixa, fonte: "'Lora', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' },
+    { id: 'classico', nome: 'Clássico', adicionado: '2026-09-05', fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Marcellus', Georgia, serif", capa, imagem: 'assets/presentes/champanhe.jpg' },
+    { id: 'azul', nome: 'Azul', adicionado: '2026-10-02', fundo: '#eef2f6', destaque: '#183b54', caixa: '#d6e0ea', fonte: "'Playfair Display', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' }
+  ];
+}
+
+/**
+ * Monta o convite de um modelo: capa com foto; abertura, convite, nome,
+ * "A realizar-se", data, imagem, "Sobre…", contagem; botões; "Com carinho,".
+ * @param {string} tipo @param {any} v
+ */
+function conviteDoModelo(tipo, v) {
+  const t = TEXTOS_DOS_MODELOS[tipo] || MODELOS_DE_CONVITE[tipo] || TEXTOS_DOS_MODELOS.wedding;
+  const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[tipo] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
+  /** @param {string} tipoEl @param {object} props @param {object} [mobile] */
+  const el = (tipoEl, props, mobile) => {
+    const novo = Object.assign(createElement(tipoEl), props || {});
+    if (mobile) novo.styles.mobile = Object.assign({}, novo.styles.mobile || {}, mobile);
+    if (novo.styles && novo.styles.desktop) {
+      novo.styles.desktop.textAlign = 'center';
+      if (mobile && /** @type {any} */ (mobile).fontFamily) novo.styles.desktop.fontFamily = /** @type {any} */ (mobile).fontFamily;
+    }
+    return novo;
+  };
+  const tituloDeSecao = (/** @type {string} */ texto) => el('titulo', { content: texto }, { fontSize: '20px', fontFamily: v.fonte, fontWeight: '400', lineHeight: '1', color: v.destaque });
+  const capa = createSection();
+  capa.bgImage = v.capa;
+  const principal = createSection();
+  principal.bg = v.fundo;
+  principal.columns[0].elements = [
+    el('texto', { content: t.abertura }, { fontSize: '15px', fontStyle: 'italic', fontFamily: v.fonte }),
+    el('texto', { content: t.convite }, { fontSize: '15px', fontStyle: 'italic', fontFamily: v.fonte }),
+    el('titulo', { content: '' }, { fontFamily: v.fonte, color: v.destaque }),
+    el('texto', { content: 'A realizar-se' }, { color: v.destaque, fontSize: '17px', fontFamily: v.fonte }),
+    el('data', { showLines: true, textColor: v.destaque, fontFamily: v.fonte }),
+    el('imagem', { src: v.imagem }),
+    tituloDeSecao(t.sobre),
+    el('texto', { content: '' }),
+    tituloDeSecao('Contagem Regressiva'),
+    el('contagem', { label: '', showBox: true, textColor: v.destaque, boxBgColor: v.caixa, fontFamily: v.fonte })
+  ];
+  const botoes = defaultQuickNavSection();
+  botoes.buttonBgColor = v.caixa;
+  botoes.iconStyle = 'moderno';
+  botoes.textColor = '#18181B';
+  botoes.iconColor = '#18181B';
+  const fim = createSection();
+  fim.bg = v.fundo;
+  fim.columns[0].elements = [
+    el('titulo', { content: 'Com carinho,' }, { fontFamily: v.fonte, color: v.destaque }),
+    el('texto', { content: '' })
+  ];
+  const state = defaultPageState();
+  state.globalStyle.primaryColor = v.destaque || tmpl.primaryColor;
+  state.sections = [capa, principal, botoes, fim];
+  return state;
+}
+
+/** Nome do evento para pôr no título e nas miniaturas. */
+function nomeParaOModelo() {
+  const ev = getActiveEventForBuilder();
+  const nome = String((ev && (ev.hostName || ev.title)) || '').trim();
+  return nome || 'Seu nome';
+}
+
+let modelosDoCelularCache = /** @type {{ tipo: string, lista: any[] } | null} */ (null);
+/** @param {string} tipo */
+async function modelosDoCelular(tipo) {
+  if (modelosDoCelularCache && modelosDoCelularCache.tipo === tipo) return modelosDoCelularCache.lista;
+  const doBanco = await templatePadraoDoTipo(tipo);
+  const lista = variacoesDoTipo(tipo).map((v, i) => {
+    const state = v.doBanco && doBanco ? JSON.parse(JSON.stringify(doBanco)) : conviteDoModelo(tipo, v);
+    // Miniatura com a capa de verdade do modelo do banco.
+    const capaDoBanco = v.doBanco && doBanco ? (doBanco.sections.find((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock && s.bgImage) || {}).bgImage : '';
+    return Object.assign({}, v, { state, capaMiniatura: capaDoBanco || v.capa, ordem: i });
+  });
+  modelosDoCelularCache = { tipo, lista };
+  return lista;
+}
+
+/** Aplica um modelo no convite (o nome do evento já vai no título). @param {any} modelo */
+function aplicarModeloNoCelular(modelo) {
+  const novo = JSON.parse(JSON.stringify(modelo.state));
+  const ev = getActiveEventForBuilder();
+  const det = (ev && ev.eventDetails) || {};
+  ajustarDatasDoTemplate(novo, { data: det.date || (ev && ev.date) || '', hora: det.time || '' });
+  const nome = nomeParaOModelo();
+  for (const s of novo.sections) {
+    const titulo = (s.columns || []).flatMap((/** @type {any} */ c) => c.elements || []).find((/** @type {any} */ e) => e.type === 'titulo' && !String(e.content || '').trim());
+    if (titulo) { titulo.content = escapeHtml(nome); break; }
+  }
+  builderState.sections = novo.sections;
+  if (novo.globalStyle) builderState.globalStyle = Object.assign({}, builderState.globalStyle || {}, novo.globalStyle);
+  builderState.modeloEscolhido = modelo.id;
+  migrateQuickNavSection(builderState);
+  tirarElementosDaCapa(builderState);
+  migrateElementDefaults(builderState);
+  historyStack = [snapshotState()];
+  historyIndex = 0;
+  selectedId = null;
+  hasUnsavedChanges = true;
+  if (document.getElementById('builder-canvas')) { renderLeftPanel(); renderCanvas(); applyGlobalStyleVars(); }
+  // Convite ainda não publicado: já fica salvo. Publicado: só ao tocar em Salvar.
+  if (!paginasJaPublicadas.convite) persistBuilderState(true);
+}
+
+/** Tela "Escolher novo modelo" (celular): modelos em grade de duas colunas. */
+async function abrirModelosNoCelular() {
+  if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches || currentPageKey !== 'convite') return;
+  let tela = document.getElementById('modelos-celular');
+  if (!tela) {
+    tela = document.createElement('section');
+    tela.id = 'modelos-celular';
+    tela.className = 'modelos-celular';
+    tela.setAttribute('role', 'dialog');
+    tela.setAttribute('aria-modal', 'true');
+    tela.setAttribute('aria-labelledby', 'modelos-celular-titulo');
+    document.body.appendChild(tela);
+  }
+  const ev = getActiveEventForBuilder();
+  const tipo = (ev && ev.type) || 'wedding';
+  tela.hidden = false;
+  document.body.classList.add('modelos-celular-aberto');
+  tela.innerHTML = '<p class="modelos-celular-carregando">Carregando modelos…</p>';
+  const lista = await modelosDoCelular(tipo);
+  if (tela.hidden) return;
+  const nome = escapeHtml(nomeParaOModelo());
+  const det = (ev && ev.eventDetails) || {};
+  const quando = formatEventDate(det.date || (ev && ev.date) || '', '').date || 'DD . MÊS . AAAA';
+  const temConteudo = !conviteSemElementos(builderState);
+  tela.innerHTML = `
+    <div class="modelos-celular-topo">
+      <button type="button" class="modelos-celular-voltar" data-modelos-voltar aria-label="Voltar">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+      </button>
+      <h2 id="modelos-celular-titulo">Escolher novo modelo</h2>
+      <span class="modelos-celular-espaco" aria-hidden="true"></span>
+    </div>
+    <p class="modelos-celular-descricao">Toque no modelo para começar. Depois é só trocar os textos e as fotos.</p>
+    <div class="modelos-celular-trilho" tabindex="0">
+      ${lista.map((/** @type {any} */ m) => `
+        <button type="button" class="modelos-celular-cartao" data-modelo="${m.id}">
+          <span class="modelos-celular-folha" style="background:${m.fundo}">
+            <span class="modelos-celular-foto" style="background-image:url('${String(m.capaMiniatura).replace(/'/g, '%27')}')"></span>
+            <span class="modelos-celular-texto" style="font-family:${m.fonte};color:${m.destaque}">
+              <span class="modelos-celular-nome">${nome}</span>
+              <span class="modelos-celular-data">${escapeHtml(quando)}</span>
+            </span>
+          </span>
+          <span class="modelos-celular-rotulo">${escapeHtml(m.nome)}</span>
+        </button>`).join('')}
+    </div>
+    <div class="modelos-celular-pontos" aria-hidden="true">${lista.map((/** @type {any} */ _m, i) => `<span class="${i === 0 ? 'is-ativo' : ''}"></span>`).join('')}</div>`;
+  const trilho = /** @type {HTMLElement} */ (tela.querySelector('.modelos-celular-trilho'));
+  const pontos = Array.from(tela.querySelectorAll('.modelos-celular-pontos span'));
+  trilho.addEventListener('scroll', () => {
+    const cartao = /** @type {HTMLElement|null} */ (trilho.querySelector('.modelos-celular-cartao'));
+    const passo = cartao ? cartao.offsetWidth + 12 : 1;
+    const i = Math.round(trilho.scrollLeft / passo);
+    pontos.forEach((p, j) => p.classList.toggle('is-ativo', j === i));
+  }, { passive: true });
+  const fechar = () => {
+    if (!tela) return;
+    tela.hidden = true;
+    document.body.classList.remove('modelos-celular-aberto');
+  };
+  tela.querySelectorAll('[data-modelo]').forEach(b => b.addEventListener('click', () => {
+    const m = lista.find((/** @type {any} */ x) => x.id === /** @type {HTMLElement} */ (b).dataset.modelo);
+    if (m) aplicarModeloNoCelular(m);
+    fechar();
+  }));
+  // Voltar: com convite já montado, segue com ele (a tela não abre sozinha de novo).
+  tela.querySelector('[data-modelos-voltar]')?.addEventListener('click', () => {
+    if (temConteudo && !builderState.modeloEscolhido) {
+      builderState.modeloEscolhido = 'proprio';
+      if (!paginasJaPublicadas.convite) persistBuilderState(true);
+    }
+    fechar();
+  });
+}
+window.abrirModelosNoCelular = abrirModelosNoCelular;

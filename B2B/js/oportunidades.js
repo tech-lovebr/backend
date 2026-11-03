@@ -57,6 +57,7 @@ let opEmpresaId = null;
 let opMinhasCategorias = [];
 let opPedidos = [];
 let opPropostas = [];
+let opSemProdutos = false;
 let opFiltroCat = 'minha';
 let opPedidoAberto = null;
 let opMeusProdutos = [];
@@ -152,6 +153,9 @@ async function opCarregarPropostas() {
     .eq('fornecedor_id', opEmpresaId)
     .order('created_at', { ascending: false });
   opPropostas = error ? [] : (data || []);
+  // Orçamentos criados pelo "+" (tabela orcamentos) entram na mesma lista.
+  const orc = await supabaseClient.from('orcamentos').select('id, numero, cliente_nome, valor_total, status, data_evento, endereco_evento, created_at').eq('fornecedor_id', opEmpresaId).order('created_at', { ascending: false });
+  opOrcamentos = orc.error ? [] : (orc.data || []);
   await opCarregarNomes(opPropostas.map(pr => pr.pedido && pr.pedido.cliente_id));
   opAtualizarCota();
   return !error;
@@ -299,6 +303,8 @@ function opRenderPedidos() {
   grade.innerHTML = lista.slice((opPagina - 1) * OP_POR_PAGINA, opPagina * OP_POR_PAGINA).map(opCardHtml).join('');
   const texto = document.getElementById('op-pagina-texto');
   if (texto) texto.textContent = `Página ${opPagina} de ${paginas}`;
+  const total = document.getElementById('op-total-celular');
+  if (total) total.textContent = `${lista.length} ${lista.length === 1 ? 'oportunidade' : 'oportunidades'}`;
   document.querySelector('[data-op-pagina="-1"]')?.toggleAttribute('disabled', opPagina <= 1);
   document.querySelector('[data-op-pagina="1"]')?.toggleAttribute('disabled', opPagina >= paginas);
   opRenderChips();
@@ -657,16 +663,48 @@ async function opEnviarProposta(e) {
 /* -------------------- Minhas propostas -------------------- */
 
 let opPropostasPaginacao = null;
+let opOrcamentos = [];
+
+// Linha de um orçamento (criado pelo "+") na lista de Propostas enviadas.
+function opLinhaOrcamento(o) {
+  const aceito = o.status === 'aceito' || o.status === 'pago';
+  const st = aceito ? OP_STATUS.aceita : OP_STATUS.enviada;
+  const dataEv = o.data_evento ? new Date(o.data_evento + 'T00:00:00').toLocaleDateString('pt-BR') : '—';
+  const titulo = `Orçamento${o.numero ? ' nº ' + o.numero : ''}${o.cliente_nome ? ' · ' + o.cliente_nome : ''}`;
+  return `
+      <tr class="op-linha-orcamento">
+        <td class="col-principal">${escapeHtml(titulo)}</td>
+        <td>${escapeHtml(dataEv)}</td>
+        <td>${escapeHtml(o.endereco_evento || '—')}</td>
+        <td class="finance-valor">${escapeHtml(opBRL(o.valor_total))}</td>
+        <td><span class="op-status ${st.classe}">${st.label}</span></td>
+        <td>${new Date(o.created_at).toLocaleDateString('pt-BR')}</td>
+        <td class="tabela-col-acoes"></td>
+      </tr>`;
+}
+
 function opRenderPropostas() {
   const body = document.getElementById('op-propostas-body');
   if (!body) return;
   if (!opPropostasPaginacao) opPropostasPaginacao = montarPaginacaoTabela(document.getElementById('op-propostas-card'), () => opRenderPropostas());
-  const daPagina = paginarLinhas(opPropostasPaginacao, opPropostas);
-  if (!opPropostas.length) {
+  // Propostas das Oportunidades e orçamentos do "+", do mais novo ao mais antigo.
+  const todas = [...opPropostas, ...opOrcamentos.map(o => ({ ...o, _orcamento: true }))]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const daPagina = paginarLinhas(opPropostasPaginacao, todas);
+  // Sem produto e sem propostas: o aviso para cadastrar um produto no lugar da tabela.
+  const semProduto = opSemProdutos && !todas.length;
+  const avisoSemProduto = document.getElementById('op-propostas-sem-produtos');
+  if (avisoSemProduto) {
+    avisoSemProduto.hidden = !semProduto;
+    document.getElementById('op-propostas-card').hidden = semProduto;
+    if (semProduto && typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
+  }
+  if (!todas.length) {
     body.innerHTML = '<tr><td colspan="7" class="tabela-vazia-cheia">Você ainda não enviou propostas.</td></tr>';
     return;
   }
   body.innerHTML = daPagina.map(pr => {
+    if (pr._orcamento) return opLinhaOrcamento(pr);
     const p = pr.pedido || {};
     const st = OP_STATUS[pr.status] || OP_STATUS.enviada;
     const podeRetirar = pr.status === 'enviada' || pr.status === 'vista';
@@ -695,7 +733,9 @@ function opRenderPropostas() {
 
 async function opRetirar(id) {
   const { error } = await supabaseClient.from('propostas_pedido').update({ status: 'retirada' }).eq('id', id);
-  if (!error) { await opCarregarPropostas(); opRenderPropostas(); opRenderPedidos(); }
+  if (error) { showToast('Não foi possível retirar a proposta.', true); return; }
+  await opCarregarPropostas(); opRenderPropostas(); opRenderPedidos();
+  showToast('Proposta retirada.');
 }
 
 /* -------------------- Abas, filtros e eventos -------------------- */
@@ -705,7 +745,104 @@ function opMostrarAba(aba) {
   document.querySelectorAll('[data-op-painel]').forEach(s => { s.hidden = s.dataset.opPainel !== aba; });
 }
 
+/* Celular: arrastar a oportunidade da direita para a esquerda abre a proposta
+   em tela cheia, com a análise do pedido por baixo (já respondida: só a análise). */
+let opArrasteAcabou = 0;
+function opLigarArrasteParaProposta(grade) {
+  const LIMITE = 0.35;
+  let t = null;
+  const voltar = (linha, animar) => {
+    linha.style.transition = animar ? 'transform .2s ease' : 'none';
+    linha.style.transform = '';
+    linha.classList.remove('op-arrastando', 'op-arraste-pronto');
+  };
+  grade.addEventListener('touchstart', e => {
+    if (typeof hubNoCelular === 'function' && !hubNoCelular()) return;
+    if (e.touches.length !== 1 || e.target.closest('[data-op-salvar-linha]')) return;
+    const linha = e.target.closest('.op-post');
+    if (!linha) return;
+    t = { linha, x: e.touches[0].clientX, y: e.touches[0].clientY, dx: 0, lateral: null, w: linha.offsetWidth };
+  }, { passive: true });
+  grade.addEventListener('touchmove', e => {
+    if (!t) return;
+    const dx = e.touches[0].clientX - t.x;
+    const dy = e.touches[0].clientY - t.y;
+    if (t.lateral === null) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      t.lateral = dx < 0 && Math.abs(dx) > Math.abs(dy);
+      if (!t.lateral) { t = null; return; }
+      t.linha.classList.add('op-arrastando');
+      t.linha.style.transition = 'none';
+    }
+    e.preventDefault();
+    t.dx = Math.min(0, dx);
+    t.linha.style.transform = `translateX(${t.dx}px)`;
+    t.linha.classList.toggle('op-arraste-pronto', -t.dx > t.w * LIMITE);
+  }, { passive: false });
+  const fim = () => {
+    if (!t) return;
+    const { linha, dx, w, lateral } = t;
+    t = null;
+    if (!lateral) return;
+    opArrasteAcabou = Date.now();
+    if (-dx <= w * LIMITE) { voltar(linha, true); return; }
+    linha.style.transition = 'transform .2s ease';
+    linha.style.transform = `translateX(${-w}px)`;
+    setTimeout(() => {
+      const id = linha.dataset.opPedido;
+      voltar(linha, false);
+      opAbrirDetalhe(id);
+      if (!opMinhaProposta(id)) opAbrirProposta();
+    }, 200);
+  };
+  grade.addEventListener('touchend', fim);
+  grade.addEventListener('touchcancel', fim);
+}
+
+/* Celular: a busca sai do cabeçalho e vai para o topo da caixa da lista,
+   como em Clientes (contagem em cima; busca e "Filtrar por" lado a lado).
+   No desktop volta para o cabeçalho. */
+const OP_MQ_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+function opPosicionarBusca() {
+  const busca = document.querySelector('#op-header-acoes .op-busca, #op-barra-celular .op-busca');
+  const filtrar = document.getElementById('op-filtrar');
+  const filtrarBtn = document.getElementById('op-filtrar-btn');
+  const acoes = document.getElementById('op-header-acoes');
+  const caixa = document.getElementById('op-caixa');
+  if (!busca || !filtrar || !filtrarBtn || !acoes || !caixa) return;
+  let barra = document.getElementById('op-barra-celular');
+  if (OP_MQ_CELULAR.matches) {
+    if (!barra) {
+      const total = document.createElement('p');
+      total.className = 'tabela-total-celular';
+      total.id = 'op-total-celular';
+      barra = document.createElement('div');
+      barra.className = 'tabela-barra op-barra-celular';
+      barra.id = 'op-barra-celular';
+      barra.innerHTML = '<div class="tabela-barra-acoes"></div>';
+      caixa.prepend(total, barra);
+    }
+    barra.prepend(busca);
+    barra.querySelector('.tabela-barra-acoes')?.append(filtrar);
+    // Filtros rápidos (Apenas não respondidas, Salvas) dentro da caixa, abaixo da busca.
+    const chips = document.getElementById('op-filtros');
+    if (chips && chips.previousElementSibling !== barra) barra.after(chips);
+    caixa.classList.add('lista-celular');
+    // Mesmo botão de Clientes: "Filtrar ⌄" com borda (o rótulo vem do atributo).
+    filtrarBtn.setAttribute('data-tabela-filtrar', '');
+    filtrarBtn.setAttribute('data-rotulo-celular', 'Filtrar');
+  } else {
+    acoes.append(busca, filtrar);
+    const chips = document.getElementById('op-filtros');
+    if (chips && chips.parentElement === caixa) caixa.parentElement.insertBefore(chips, document.getElementById('op-aviso') || caixa);
+    caixa.classList.remove('lista-celular');
+    filtrarBtn.removeAttribute('data-tabela-filtrar');
+  }
+}
+OP_MQ_CELULAR.addEventListener?.('change', opPosicionarBusca);
+
 function opLigarEventos() {
+  opPosicionarBusca();
   document.querySelectorAll('[data-op-aba]').forEach(b => b.addEventListener('click', () => opMostrarAba(b.dataset.opAba)));
   document.querySelectorAll('[data-op-cat]').forEach(b => b.addEventListener('click', () => {
     opFiltroCat = b.dataset.opCat;
@@ -734,7 +871,9 @@ function opLigarEventos() {
 
   document.getElementById('op-busca')?.addEventListener('input', opRenderPedidos);
   const grade = document.getElementById('op-grade');
+  opLigarArrasteParaProposta(grade);
   grade.addEventListener('click', e => {
+    if (Date.now() - opArrasteAcabou < 500) return;
     const salvar = e.target.closest('[data-op-salvar-linha]');
     if (salvar) { e.stopPropagation(); opAlternarSalva(salvar.dataset.opSalvarLinha); return; }
     const c = e.target.closest('[data-op-pedido]');
@@ -813,6 +952,13 @@ function leadsMostrarAba(aba) {
   if (titulo) titulo.textContent = aba === 'eventos' ? 'Oportunidades' : (aba === 'propostas' ? 'Propostas enviadas' : 'Meus clientes');
   const acoes = document.getElementById('leads-acoes-topo');
   if (acoes) acoes.hidden = aba !== 'leads';
+  const novoOrcamento = document.getElementById('op-propostas-novo');
+  if (novoOrcamento) novoOrcamento.hidden = aba !== 'propostas';
+  // Ícone animado carregado com a aba escondida nasce com tamanho zero (pequeno
+  // e borrado): ao mostrar a aba, redesenha no tamanho certo.
+  requestAnimationFrame(() => document.querySelectorAll(`[data-leads-painel="${aba}"] dotlottie-wc`).forEach(l => {
+    try { l.dotLottie?.resize?.(); } catch (_) {}
+  }));
 }
 
 async function opTemProdutos() {
@@ -834,8 +980,10 @@ async function initOportunidades() {
   // Sem produto cadastrado: só a mensagem para cadastrar um.
   // Sem produto cadastrado: Buscar eventos mostra só a mensagem para
   // cadastrar um (Minhas propostas continua funcionando).
-  if (!(await opTemProdutos())) {
+  opSemProdutos = !(await opTemProdutos());
+  if (opSemProdutos) {
     document.getElementById('op-sem-produtos').hidden = false;
+    if (typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
     document.getElementById('op-conteudo').hidden = true;
   }
   opLigarEventos();

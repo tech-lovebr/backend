@@ -102,6 +102,23 @@ function dash(value) {
 
 const COMISSAO_PADRAO = { presentes: 0.0389, contratos: 0.0389 };
 const NOME_GATEWAY = { asaas: 'Asaas' };
+
+/**
+ * Período anterior padrão do Admin: os mesmos dias no mês anterior.
+ * 25/10 a 28/10 → 25/09 a 28/09. Dia que não existe no mês anterior
+ * (31/10 → setembro) cai no último dia dele. Mantém o horário de cada ponta.
+ */
+function mesmoPeriodoNoMesAnterior(de, ate) {
+  const voltarUmMes = (d) => {
+    const ultimo = new Date(d.getFullYear(), d.getMonth(), 0).getDate();
+    return new Date(d.getFullYear(), d.getMonth() - 1, Math.min(d.getDate(), ultimo),
+      d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds());
+  };
+  const dia = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+  const r = { de: voltarUmMes(de), ate: voltarUmMes(ate) };
+  r.nome = dia(r.de) === dia(r.ate) ? dia(r.de) : `${dia(r.de)} a ${dia(r.ate)}`;
+  return r;
+}
 const NOME_METODO = { pix: 'Pix', cartao: 'Cartão', apple_pay: 'Apple Pay', boleto: 'Boleto', credit_card: 'Cartão' };
 
 function pagamentosProcessados(contribuicoes, links) {

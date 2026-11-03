@@ -20,13 +20,13 @@
    * @property {string|null} responsavel   '' | 'voce' | 'fornecedor:<id>'
    * @property {string|null} notas
    * @property {number|null} orcamento
-   * @property {string|null} busca_fornecedor  categoria do Explorar (atalho "Buscar fornecedores")
+   * @property {string|null} busca_fornecedor  categoria do Explorar (atalho "Pesquisar fornecedores")
    * @property {number} ordem
    */
 
   const CATEGORIAS = ['Espaço', 'Gastronomia', 'Bebidas', 'Doces', 'Decoração', 'Música', 'Mídia', 'Assessoria', 'Equipe', 'Trajes e beleza', 'Convidados', 'Presentes', 'Financeiro', 'Logística', 'Fornecedores', 'Geral'];
 
-  // Categoria da tarefa → categoria do Explorar (para "Buscar fornecedores").
+  // Categoria da tarefa → categoria do Explorar (para "Pesquisar fornecedores").
   /** @type {Record<string, string>} */
   const NO_EXPLORAR = {
     'Espaço': 'Espaços para Locação', 'Gastronomia': 'Buffet e Gastronomia', 'Doces': 'Buffet e Gastronomia',
@@ -547,7 +547,7 @@
           ${t.notas ? `<p class="chk-notas">${esc(t.notas)}</p>` : ''}
         </div>
         <div class="chk-acoes">
-          ${busca ? `<button type="button" class="chk-buscar" data-chk-buscar="${esc(t.busca_fornecedor)}">Buscar fornecedores</button>` : ''}
+          ${busca ? `<button type="button" class="chk-buscar" data-chk-buscar="${esc(t.busca_fornecedor)}">Pesquisar fornecedores</button>` : ''}
           <div class="chk-resp-wrap">
             <button type="button" class="chk-resp" data-chk-resp-abrir aria-haspopup="menu" aria-label="${esc(nome ? `Responsável: ${nome}` : 'Atribuir responsável')}" data-dica="${esc(nome ? `Responsável: ${nome}` : 'Atribuir responsável')}">
               <span class="chk-avatar${nome ? '' : ' is-vazio'}">${nome ? esc(iniciais(nome)) : ICONE_PESSOA}</span>

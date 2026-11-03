@@ -15,7 +15,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Crie sua conta — Portal do Fornecedor Love</title>
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
-  <meta name="theme-color" content="#537bae">
+  <meta name="description" content="Acesso de assessores e fornecedores parceiros da Love para gestão de leads, contratos e vitrine de serviços.">
+  <meta name="theme-color" content="#183b54">
   <meta name="robots" content="noindex, nofollow">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,78 +34,77 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=784">
+  <link rel="stylesheet" href="css/styles.css?v=872">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
 </head>
 <body class="font-sans bg-white" data-auth-view="signup">
 
-  <div class="min-h-screen w-full flex">
+  <div class="auth-tela min-h-screen w-full flex">
+
+    <!-- Celular: prévia da barra de baixo do Hub (só enfeite, sem clique) -->
+    <nav class="login-barra-previa" aria-hidden="true">
+      <span class="login-barra-item is-ativo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M14 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /></svg><small>Dashboard</small></span>
+      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16l-6.2 7.3v5.4l-3.6 1.8v-7.2L4 5.5Z" /></svg><small>Clientes</small></span>
+      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg><small>Mensagens</small></span>
+      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9" /><path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2" /><path d="M12 12l0 .01" /><path d="M3 13a20 20 0 0 0 18 0" /></svg><small>Gestão</small></span>
+      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 13h6" /><path d="M9 17h4" /></svg><small>Contratos</small></span>
+    </nav>
 
     <!-- Esquerda: formulário -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
       <div class="w-full max-w-md">
 
-        <!-- VIEW: LOGIN -->
+        <!-- VIEW: LOGIN (logo no meio, Google em cima, "ou" e depois e-mail/senha) -->
         <div id="auth-view-login" class="hidden">
-          <div class="mb-6">
-            <img src="assets/logo.png" alt="Love" class="h-9 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900">Acesse sua conta</h3>
+          <div class="auth-logo">
+            <img src="assets/logo.png" alt="Love Hub" class="h-12 w-auto object-contain">
+            <h1 class="sr-only">Acesse sua conta</h1>
           </div>
 
-          <form id="login-form" class="space-y-3.5 text-left">
+          <button type="button" id="google-login-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all cursor-pointer">
+            <svg class="w-5 h-5" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Continuar com o Google</span>
+          </button>
+
+          <div class="auth-ou"><span>ou</span></div>
+
+          <form id="login-form" class="space-y-3.5 text-left" method="post" autocomplete="on">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
-              <input type="email" id="login-email" required placeholder="seu.email@exemplo.com" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+              <label for="login-email" class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
+              <input type="email" id="login-email" name="email" autocomplete="username email" required placeholder="seu.email@exemplo.com" class="w-full text-xs sm:text-sm p-3 rounded-xl text-slate-800">
             </div>
 
             <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="block text-xs font-bold text-slate-700">Senha</label>
-                <a href="esqueci-senha" class="text-[11px] font-semibold text-zinc-900 hover:text-black hover:underline transition-colors">Esqueceu a senha?</a>
+              <label for="login-password" class="block text-xs font-bold text-slate-700 mb-1">Senha</label>
+              <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder="Sua senha secreta" class="w-full text-xs sm:text-sm p-3 rounded-xl text-slate-800">
+              <!-- Esqueceu a senha: embaixo da senha, à direita, em cinza -->
+              <div class="flex justify-end mt-1.5">
+                <a href="esqueci-senha" class="auth-esqueceu-senha">Esqueceu a senha?</a>
               </div>
-              <input type="password" id="login-password" required placeholder="Sua senha secreta" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
             </div>
-
-            <button type="submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-              <span>Continuar</span>
-            </button>
 
             <p id="login-error" class="text-xs text-red-600 hidden"></p>
             <p id="login-info" class="text-xs text-zinc-500 hidden"></p>
+
+            <button type="submit" id="login-submit" class="auth-entrar w-full py-3.5 rounded-xl text-sm font-bold cursor-pointer mt-2">
+              <span>Entrar</span>
+            </button>
           </form>
 
-          <div class="flex items-center gap-3 my-4">
-            <div class="h-px bg-slate-200 flex-1"></div>
-            <span class="text-[11px] text-slate-400 uppercase font-semibold">ou continue com</span>
-            <div class="h-px bg-slate-200 flex-1"></div>
+          <div class="auth-trocar">
+            <span>Ainda não tem uma conta?</span>
+            <a href="signup" id="go-to-signup">Cadastre-se</a>
           </div>
 
-          <div class="space-y-2.5">
-            <button type="button" id="google-login-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer">
-              <svg class="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-              </svg>
-              <span>Continuar com o Google</span>
-            </button>
-          </div>
-
-          <p class="text-[11px] text-slate-400 mt-4 leading-relaxed">
-            Ao continuar, você concorda com os
-            <a href="termos" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Termos de Uso</a>
-            e a
-            <a href="privacidade" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline transition-colors cursor-pointer">Política de Privacidade</a>.
+          <p class="auth-termos">
+            Ao continuar, você concorda com os <a href="termos">Termos de Uso</a> e a <a href="privacidade">Política de Privacidade</a>.
           </p>
-
-          <div class="pt-4 text-sm text-slate-500 flex items-center gap-1">
-            <span class="text-sm text-slate-500">Ainda não tem uma conta?</span>
-            <a href="signup" id="go-to-signup" class="text-sm text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer">
-              Criar uma conta
-            </a>
-          </div>
         </div>
 
         <!-- VIEW: CADASTRO -->
@@ -149,20 +149,16 @@
               <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" placeholder="Crie uma senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
             </div>
 
-            <button type="submit" id="signup-email-btn" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
+            <p id="signup-error" class="text-xs text-red-600 hidden"></p>
+
+            <button type="submit" id="signup-email-btn" class="auth-entrar w-full py-3.5 rounded-xl text-sm font-bold cursor-pointer mt-2">
               <span>Criar conta</span>
             </button>
-
-            <p id="signup-error" class="text-xs text-red-600 hidden"></p>
           </form>
 
-          <div class="flex items-center gap-3 my-4">
-            <div class="h-px bg-slate-200 flex-1"></div>
-            <span class="text-[11px] text-slate-400 uppercase font-semibold">ou</span>
-            <div class="h-px bg-slate-200 flex-1"></div>
-          </div>
+          <div class="auth-ou"><span>ou</span></div>
 
-          <button type="button" id="google-signup-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer">
+          <button type="button" id="google-signup-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all cursor-pointer">
             <svg class="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -172,27 +168,33 @@
             <span>Continuar com o Google</span>
           </button>
 
-          <p class="text-[11px] text-slate-400 mt-4 leading-relaxed">Ao continuar, você reconhece a <a href="privacidade" class="font-semibold text-slate-500 hover:text-[#537bae] hover:underline">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
-
-          <div class="pt-4 text-xs text-slate-500 flex items-center gap-1">
-            <span class="text-xs text-slate-500">Já tem uma conta?</span>
-            <a href="login" id="go-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer">
-              Entrar
-            </a>
+          <div class="auth-trocar">
+            <span>Já tem uma conta?</span>
+            <a href="login" id="go-to-login">Entrar</a>
           </div>
+
+          <p class="auth-termos">Ao continuar, você reconhece a <a href="privacidade">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
         </div>
 
       </div>
     </div>
 
-    <!-- Direita: imagem -->
-    <div class="hidden lg:flex w-1/2 relative overflow-hidden">
-      <img src="assets/wedding_hero_banner.jpg" alt="" class="absolute inset-0 w-full h-full object-cover">
+    <!-- Direita: carrossel automático (sem setas; troca a cada 5s) com uma
+         frase para cada foto -->
+    <div class="login-imagem hidden lg:flex w-1/2 relative overflow-hidden">
+      <div class="login-carrossel" aria-hidden="true">
+        <img src="assets/login/confeiteira.jpg" alt="" data-frase="Mais eventos|na sua agenda" style="object-position:48% 50%" class="login-carrossel-foto is-ativa">
+        <img src="assets/login/cerimonial.jpg" alt="" data-frase="Clientes que já estão|organizando o evento" style="object-position:62% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
+        <img src="assets/login/dj.jpg" alt="" data-frase="Do pedido de orçamento|ao dinheiro na conta" style="object-position:50% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
+        <img src="assets/login/bufe.jpg" alt="" data-frase="Cobre por link,|Pix ou cartão" style="object-position:58% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
+        <img src="assets/login/decoracao.jpg" alt="" data-frase="Propostas e contratos|em um só lugar" style="object-position:50% 40%" loading="lazy" decoding="async" class="login-carrossel-foto">
+        <img src="assets/login/banda.jpg" alt="" data-frase="Tem uma festa acontecendo.|Faça parte dela." style="object-position:50% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
+      </div>
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
       <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
         <div></div>
         <div>
-          <h2 class="text-white text-4xl font-normal leading-tight mb-10">Gerencie seus leads, contratos e vitrine de serviços em um só lugar.</h2>
+          <h2 id="login-carrossel-frase" class="text-white text-4xl font-normal leading-tight mb-10">Mais eventos<br>na sua agenda</h2>
           <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
         </div>
       </div>
@@ -201,6 +203,33 @@
   </div>
 
   <script>
+    // Carrossel da foto (só no desktop, com a caixa visível): troca a cada 5s
+    // e a frase acompanha a foto, esmaecendo e voltando.
+    (function () {
+      var fotos = document.querySelectorAll('.login-carrossel-foto');
+      if (fotos.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var atual = 0;
+      setInterval(function () {
+        var caixa = document.querySelector('.login-imagem');
+        if (document.hidden || !caixa || !caixa.offsetWidth) return;
+        fotos[atual].classList.remove('is-ativa');
+        atual = (atual + 1) % fotos.length;
+        fotos[atual].classList.add('is-ativa');
+        var frase = document.getElementById('login-carrossel-frase');
+        var texto = fotos[atual].getAttribute('data-frase');
+        if (!frase || !texto) return;
+        frase.classList.add('is-trocando');
+        setTimeout(function () {
+          frase.textContent = '';
+          texto.split('|').forEach(function (linha, i) {
+            if (i) frase.appendChild(document.createElement('br'));
+            frase.appendChild(document.createTextNode(linha));
+          });
+          frase.classList.remove('is-trocando');
+        }, 450);
+      }, 5000);
+    })();
+
     function showAuthView(view) {
       document.body.dataset.authView = view;
       const loginView = document.getElementById('auth-view-login');
@@ -271,6 +300,14 @@
       entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)$/, 'dashboard'));
     });
 
+    // Voltou do Google com a conta desconectada do Google (Contas conectadas).
+    if (new URLSearchParams(location.search).get('erro') === 'google-desconectado') {
+      const avisoGoogle = document.getElementById('login-error');
+      avisoGoogle.textContent = 'Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueci minha senha" para criar uma senha.';
+      avisoGoogle.classList.remove('hidden');
+      history.replaceState(null, '', location.pathname);
+    }
+
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
@@ -287,16 +324,33 @@
       }
 
       submitBtn.disabled = true;
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      submitBtn.disabled = false;
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
       if (error) {
+        submitBtn.disabled = false;
         if (/not confirmed/i.test(error.message || '') || error.code === 'email_not_confirmed') {
           return avisoConfirmeEmailHub(errorEl, email, 'Confirme seu e-mail para entrar. Enviamos um link para');
         }
         errorEl.classList.remove('text-zinc-600');
         errorEl.classList.add('text-red-600');
-        errorEl.textContent = 'E-mail ou senha incorretos.';
+        errorEl.textContent = /banned/i.test(error.message || '') ? 'Este usuário está bloqueado.' : 'Usuário ou senha inválidos.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      // Esse login é só pra quem tem cadastro de fornecedor — uma conta só de
+      // anfitrião (plataforma principal) não entra aqui.
+      const { data: cliente } = await supabaseClient
+        .from('clientes')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      submitBtn.disabled = false;
+
+      if (cliente) {
+        await supabaseClient.auth.signOut();
+        errorEl.textContent = 'Esse e-mail não está cadastrado como fornecedor.';
         errorEl.classList.remove('hidden');
         return;
       }

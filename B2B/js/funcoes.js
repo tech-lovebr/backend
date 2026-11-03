@@ -14,10 +14,12 @@ function equipeFiltrada() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   // A equipe (o responsável principal) vem do cadastro: espera o login.
+  fichaNaPaginaNoDesktop('member-drawer', { depoisDe: '#team-table-card' });
   await window.b2bAuthReady;
   // Barra da tabela: busca, Filtrar por (função e status) e Exportar.
   equipeTabelaEstado = montarBarraTabela(document.getElementById('team-table-card'), {
-    placeholder: 'Buscar colaborador ou e-mail...',
+    placeholder: 'Pesquisar colaborador ou e-mail...',
+    celular: { nome: 1, info: 3, singular: 'colaborador', plural: 'colaboradores', vazio: { lottie: 'clientes-vazio', titulo: 'Convide seu primeiro colaborador', texto: 'A sua equipe acessa o Hub com o próprio e-mail.', abrirSel: '#member-add-btn' }, editarSel: '[data-edit-member]' },
     filtros: [
       { chave: 'funcao', rotulo: 'Função', opcoes: () => [...new Set(B2B_DATA.team.map(m => m.role).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'status', rotulo: 'Status', opcoes: () => [...new Set(B2B_DATA.team.map(m => m.status).filter(Boolean))].map(v => [v, statusLabel(v)]) }

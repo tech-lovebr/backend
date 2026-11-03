@@ -125,6 +125,11 @@
       "permanent": true
     },
     {
+      "source": "/ganhos.html",
+      "destination": "/ganhos",
+      "permanent": true
+    },
+    {
       "source": "/vendas.html",
       "destination": "/vendas",
       "permanent": true
@@ -235,6 +240,10 @@
     {
       "source": "/termos",
       "destination": "/termos.html"
+    },
+    {
+      "source": "/ganhos",
+      "destination": "/ganhos.html"
     },
     {
       "source": "/vendas",

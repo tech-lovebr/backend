@@ -93,12 +93,10 @@ function intervalo() {
   return { de: primeiro, ate };
 }
 
-/** O período imediatamente anterior, do mesmo tamanho, para a comparação. */
+/** Período anterior: os mesmos dias no mês anterior (25/10–28/10 → 25/09–28/09). */
 function intervaloAnterior() {
   const { de, ate } = intervalo();
-  const dias = Math.max(1, Math.round((ate - de) / 86400000) + 1);
-  const fim = new Date(de.getTime() - 1);
-  return { de: new Date(fim.getTime() - dias * 86400000 + 1), ate: fim };
+  return mesmoPeriodoNoMesAnterior(de, ate);
 }
 
 const formatarDiaCurto = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
@@ -214,16 +212,38 @@ function valorManualNoMes(c, mes) {
 const NOME_DA_FONTE = { vercel: 'Vercel', supabase: 'Supabase', aws: 'Amazon' };
 const CATEGORIA_DA_FONTE = { vercel: 'Servidor', supabase: 'Banco de dados', aws: 'E-mail' };
 
+/* Fonte mesmo quando a API não manda: cada integração tem campos que só ela
+   usa (Vercel: ciclo e serviços por dia; Supabase: plano; AWS: lista de
+   serviços da Amazon). Sem pista nenhuma, vale a ordem fixa da API (Vercel,
+   Supabase, AWS). Assim nenhuma integração aparece sem nome no Custos. */
+const ORDEM_DAS_FONTES = ['vercel', 'supabase', 'aws'];
+
+function fonteDaIntegracao(i, posicao) {
+  if (NOME_DA_FONTE[i.fonte]) return i.fonte;
+  const texto = [i.nome, i.detalhe, i.erro].join(' ').toLowerCase();
+  const pelaPalavra = ORDEM_DAS_FONTES.find(f => texto.includes(f)) || (/amazon/.test(texto) ? 'aws' : '');
+  if (pelaPalavra) return pelaPalavra;
+  if (i.ciclo || i.meses_servicos || i.dias_servicos || i.assinatura_mensal) return 'vercel';
+  if (/plano (free|pro|team)/i.test(i.detalhe || '')) return 'supabase';
+  if (Array.isArray(i.servicos)) return 'aws';
+  return i.fonte || ORDEM_DAS_FONTES[posicao] || '';
+}
+
 /** As integrações com os campos que faltaram preenchidos pela fonte. */
 function integracoesNormalizadas() {
-  return INTEGRACOES.map(i => ({
-    ...i,
-    manual: false,
-    nome: i.nome || NOME_DA_FONTE[i.fonte] || i.fonte || '',
-    categoria: i.categoria || CATEGORIA_DA_FONTE[i.fonte] || '',
-    tipo: i.tipo || 'recorrente',
-    status: i.status || 'ativo'
-  }));
+  return INTEGRACOES.map((i, posicao) => {
+    const fonte = fonteDaIntegracao(i, posicao);
+    return {
+      ...i,
+      fonte,
+      manual: false,
+      nome: i.nome || NOME_DA_FONTE[fonte] || fonte || '',
+      categoria: i.categoria || CATEGORIA_DA_FONTE[fonte] || '',
+      // "ciclo"/"mes" (base de comparação) não é tipo de custo.
+      tipo: TIPO[i.tipo] ? i.tipo : 'recorrente',
+      status: i.status || 'ativo'
+    };
+  });
 }
 
 function linhasDeCusto() {
@@ -509,29 +529,48 @@ function cartaoDoPeriodo(l, { titulo = nomeDoCusto(l) } = {}) {
   const { servicos, exato } = servicosNoPeriodo(l, de, ate);
   const periodo = noPeriodoTexto();
 
-  const linhasTabela = servicos.map(sv => `
+  /* O descritivo é do valor clicado: as linhas somam exatamente o "Custo no
+     período". O que o serviço cobrou além do crédito entra pelo valor
+     cobrado; a assinatura do plano é o restante (rateada pelos dias). O que
+     coube no crédito aparece com o uso, valendo R$ 0. */
+  const emBrl = v => emReais(v, l.moeda);
+  const cobradoTotal = servicos.reduce((s, sv) => s + emBrl(sv.cobrado || 0), 0);
+  const assinatura = l.assinatura_mensal ? Math.max(0, total - cobradoTotal) : 0;
+
+  const linhaValor = (nome, sub, uso, valorBrl, nota = '') => `
     <tr class="no-hover">
-      <td><span class="cell-strong">${escapeHtml(sv.servico)}</span><span class="cell-sub">${escapeHtml(NOME_SERVICO_VERCEL[sv.servico] || '')}</span></td>
-      <td>${escapeHtml(usoDoServico(sv))}</td>
-      <td class="valor-dinheiro">${formatarMoeda(sv.consumo, l.moeda)}</td>
-      <td class="valor-dinheiro">${sv.cobrado ? formatarMoeda(sv.cobrado, l.moeda) : '<span class="cell-muted">no plano</span>'}</td>
+      <td><span class="cell-strong">${escapeHtml(nome)}</span>${sub ? `<span class="cell-sub">${escapeHtml(sub)}</span>` : ''}</td>
+      <td>${uso}</td>
+      <td class="valor-dinheiro">${valorBrl > 0.005 ? formatCurrency(valorBrl) : formatCurrency(0)}${nota ? `<span class="cell-sub">${nota}</span>` : ''}</td>
+    </tr>`;
+
+  const linhasTabela = [
+    ...(assinatura > 0.005 ? [linhaValor('Assinatura do plano', 'Proporcional aos dias do período', '—', assinatura,
+      `${formatarMoeda(l.assinatura_mensal, l.moeda)} por mês`)] : []),
+    ...servicos.map(sv => linhaValor(sv.servico, NOME_SERVICO_VERCEL[sv.servico] || '', escapeHtml(usoDoServico(sv)),
+      emBrl(sv.cobrado || 0),
+      sv.cobrado > 0.0005 ? formatarMoeda(sv.cobrado, l.moeda) : (sv.consumo > 0.0005 ? `coberto pelo plano (${formatarMoeda(sv.consumo, l.moeda)})` : '')))
+  ];
+  if (linhasTabela.length) {
+    linhasTabela.push(`
+    <tr class="no-hover custo-total-linha">
+      <td><span class="cell-strong">Total ${escapeHtml(periodo)}</span></td><td></td>
+      <td class="valor-dinheiro"><strong>${formatCurrency(total)}</strong></td>
     </tr>`);
+  }
 
   const resumo = `
     <div class="lista-dados">
-      ${linhaDado(`Custo ${periodo}`, formatCurrency(total))}
-      ${l.assinatura_mensal ? linhaDado('Assinatura do plano', `${formatarMoeda(l.assinatura_mensal, l.moeda)} <span class="cell-muted">≈ ${formatCurrency(emReais(l.assinatura_mensal, l.moeda))}</span> por mês`) : ''}
-      ${linhaDado('Potencial de redução', dinheiroOuTraco(pot))}
+      ${linhaDado(`Custo ${periodo}`, `<strong>${formatCurrency(total)}</strong>`)}
+      ${pot > 0.005 ? linhaDado('Potencial de redução', dinheiroOuTraco(pot)) : ''}
     </div>`;
 
-  const sub = servicos.length
-    ? (exato ? `Onde foi gasto ${periodo}` : `Onde foi gasto ${periodo} · estimado a partir do total do mês`)
-    : escapeHtml(l.detalhe || '');
+  const sub = exato ? `Do que é feito o valor ${periodo}` : `Do que é feito o valor ${periodo} · estimado a partir do total do mês`;
 
   return cardDetalhe(titulo, sub, `${resumo}
-    ${servicos.length
-      ? tabelaDetalhe(['Serviço', 'Uso', 'Consumo', 'Cobrado'], linhasTabela)
-      : '<p class="custo-resumo">Nada consumido neste período, ou esta fonte não detalha o gasto por serviço.</p>'}`);
+    ${linhasTabela.length
+      ? tabelaDetalhe(['Item', 'Uso', 'Valor'], linhasTabela)
+      : `<p class="custo-resumo">${total > 0.005 ? escapeHtml(l.detalhe || 'Esta fonte não detalha o gasto por serviço.') : 'Nada gasto neste período.'}</p>`}`);
 }
 
 function abrirCategoria(categoria, linhas) {
@@ -866,12 +905,14 @@ function abrirDetalhe(l) {
   // abrir uma tela em branco.
   const montar = { vercel: detalheVercel, supabase: detalheSupabase, aws: detalheAws }[l.fonte] || detalheGenerico;
   DIAGNOSTICO = null;
-  // O período manda: o primeiro cartão responde "onde foi gasto no recorte
-  // que está escolhido lá em cima". O resto do detalhe (fatura, ciclo,
-  // mês a mês) vem depois, porque fala de outra janela de tempo.
+  // Pedido: o detalhe mostra só do que é feito o valor clicado, no período
+  // escolhido lá em cima. Ciclo, previsão e mês a mês ficam de fora — para
+  // ver mais, troca-se o período. O montador da fonte ainda roda, só para
+  // preparar o Diagnóstico do botão no topo.
+  const detalheDaFonte = montar(l);
   visao.innerHTML = l.status !== 'ativo' && !l.manual
     ? `<div class="card"><div class="card-body"><div class="empty-state"><strong>${l.status === 'erro' ? 'Não foi possível ler os custos' : 'Não conectado'}</strong><p>${escapeHtml(l.erro || 'Configure as chaves na Vercel (projeto love-platform).')}</p></div></div></div>`
-    : cartaoDoPeriodo(l, { titulo: 'Onde foi gasto' }) + montar(l);
+    : cartaoDoPeriodo(l, { titulo: 'Onde foi gasto' }) + (l.manual ? detalheDaFonte : '');
   visao.hidden = false;
 
   document.getElementById('acoes-detalhe')?.remove();

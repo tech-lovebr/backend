@@ -22,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=784">
+  <link rel="stylesheet" href="css/styles.css?v=872">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -47,7 +47,7 @@
           <button type="button" class="category-tab" data-settings-tab="empresa" data-titulo="Dados da empresa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4"/><path d="M5 21V10.85M19 21V10.85"/><path d="M9 21v-4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/></svg><span>Sua empresa</span></button>
           <button type="button" class="category-tab" data-settings-tab="preferencias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h8m4 0h4M4 12h2m4 0h10M4 18h11m4 0h1"/><path d="M14 4v4M8 10v4M17 16v4"/></svg><span>Preferências</span></button>
           <button type="button" class="category-tab" data-settings-tab="seguranca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span>Privacidade</span></button>
-          <button type="button" class="category-tab" data-settings-tab="banco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/></svg><span>Dados bancários</span></button>
+          <button type="button" class="category-tab" data-settings-tab="banco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h3"/></svg><span>Contas bancárias</span></button>
           <div class="settings-nav-divisor" role="separator"></div>
           <p class="settings-nav-titulo">Suas configurações</p>
           <button type="button" class="category-tab" data-settings-tab="urls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 15l6 -6"/><path d="M11 6l.46 -.54a5 5 0 0 1 7.07 7.07l-.53 .47"/><path d="M13 18l-.4 .53a5.07 5.07 0 0 1 -7.12 0a4.97 4.97 0 0 1 0 -7.07l.52 -.46"/></svg><span>URLs</span></button>
@@ -82,11 +82,13 @@
             <form id="profile-form" class="settings-zola-form">
               <!-- Empresa -->
               <div class="settings-info-painel" data-info-painel="empresa">
-                <p class="settings-info-dica">Estes dados abrem a conta digital da sua empresa na Love, para receber os contratos e sacar.</p>
-                <!-- Razão social e CNPJ, depois de preenchidos, ficam travados;
-                     o "Alterar" ao lado destrava a cada 7 dias (migration 121).
-                     O nome fantasia (o que os clientes veem) muda à vontade. -->
-                <div>
+                <p class="settings-info-dica"><span style="color:#DC2626;">*</span> indica campo obrigatório</p>
+                <!-- Razão social e CNPJ, depois de preenchidos, ficam travados; o
+                     "Alterar" ao lado destrava a cada 7 dias (migration 121).
+                     O nome fantasia (o que os clientes veem) muda à vontade.
+                     Celular: os dados da conta digital (settings-conta-digital)
+                     saem daqui e são pedidos em Contas bancárias. -->
+                <div class="settings-conta-digital">
                   <label for="profile-razao-social" class="field-label">Razão social <span style="color:#DC2626;">*</span></label>
                   <div class="field-with-inline-link">
                     <input id="profile-razao-social" type="text" class="field-input" autocomplete="organization">
@@ -94,12 +96,12 @@
                   </div>
                 </div>
                 <div>
-                  <label for="profile-company" class="field-label">Nome fantasia <span style="color:#DC2626;">*</span></label>
+                  <label for="profile-company" class="field-label"><span class="settings-so-desktop">Nome fantasia</span><span class="settings-so-celular-inline">Nome da empresa</span> <span style="color:#DC2626;">*</span></label>
                   <div class="field-with-inline-link">
                     <input id="profile-company" type="text" class="field-input">
                   </div>
                 </div>
-                <div class="settings-doc-linha">
+                <div class="settings-doc-linha settings-conta-digital">
                   <div>
                     <label class="field-label">Tipo de documento</label>
                     <div class="plan-billing-toggle" id="profile-doc-type-toggle" style="margin-bottom:0; width:fit-content;">
@@ -119,7 +121,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div data-so-cnpj>
                     <label for="profile-tipo-empresa" class="field-label">Tipo de empresa <span style="color:#DC2626;">*</span></label>
                     <select id="profile-tipo-empresa" class="field-select">
@@ -143,7 +145,7 @@
                     </select>
                   </div>
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div>
                     <label for="profile-cep" class="field-label">CEP <span style="color:#DC2626;">*</span></label>
                     <input id="profile-cep" type="text" inputmode="numeric" maxlength="9" class="field-input" placeholder="00000-000" autocomplete="postal-code">
@@ -153,7 +155,7 @@
                     <input id="profile-bairro" type="text" class="field-input">
                   </div>
                 </div>
-                <div class="settings-endereco-trio">
+                <div class="settings-endereco-trio settings-conta-digital">
                   <div>
                     <label for="profile-address" class="field-label">Endereço <span style="color:#DC2626;">*</span></label>
                     <input id="profile-address" type="text" class="field-input" placeholder="Rua, avenida…" autocomplete="address-line1">
@@ -167,7 +169,7 @@
                     <input id="profile-complemento" type="text" class="field-input" placeholder="Opcional">
                   </div>
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div>
                     <label for="profile-state" class="field-label">Estado</label>
                     <select id="profile-state" class="field-select"></select>
@@ -182,16 +184,21 @@
 
               <!-- Pessoal (responsável pela conta) -->
               <div class="settings-info-painel" data-info-painel="pessoal" hidden>
-                <p class="settings-info-dica">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
-                <div>
+                <p class="settings-info-dica settings-conta-digital">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
+                <!-- Celular: nome do responsável num campo só (no computador, primeiro nome e sobrenome). -->
+                <div class="settings-so-celular">
+                  <label for="profile-responsavel" class="field-label">Nome do responsável <span style="color:#DC2626;">*</span></label>
+                  <input id="profile-responsavel" type="text" class="field-input" autocomplete="name">
+                </div>
+                <div class="settings-so-desktop">
                   <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
                 </div>
-                <div>
+                <div class="settings-so-desktop">
                   <label for="profile-last-name" class="field-label">Sobrenome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-last-name" type="text" class="field-input" autocomplete="family-name">
                 </div>
-                <div class="settings-endereco-linha settings-endereco-linha--metade">
+                <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div data-so-cnpj>
                     <label for="profile-resp-cpf" class="field-label">CPF</label>
                     <input id="profile-resp-cpf" type="text" inputmode="numeric" maxlength="14" class="field-input" placeholder="000.000.000-00">
@@ -221,7 +228,9 @@
             </form>
           </div>
 
-          <!-- Contas conectadas: o login com o Google (antes em Preferências). -->
+          <!-- Contas conectadas: o login com o Google. No celular o invólucro vai
+               para Preferências (js/configuracoes.js, arrumarAbasNoCelular). -->
+          <div id="settings-contas-conectadas" class="settings-contas-conectadas">
           <div class="settings-zola-bloco">
             <h3 class="settings-secao-titulo settings-secao-titulo--painel">Contas conectadas</h3>
             <p class="settings-zola-sub">Conecte suas contas para entrar mais rápido.</p>
@@ -250,30 +259,13 @@
             </button>
             <p class="settings-google-msg" id="settings-google-msg" aria-live="polite" hidden></p>
           </div>
-        </div>
-
-        <!-- URLs: o endereço do site publicado (o mesmo de Construtor › Ajustes). -->
-        <div data-settings-panel="urls" style="display:none;">
-          <div class="dash-card settings-zola-card">
-            <p class="settings-url-texto">O link principal do seu site.</p>
-            <p class="settings-url-base" id="settings-url-base">—</p>
-            <div class="settings-url-linha">
-              <div class="settings-url-caixa">
-                <span class="settings-url-slug" id="settings-url-slug">—</span>
-                <a href="paginas-site?tab=estilo" class="settings-url-editar">Editar</a>
-              </div>
-              <button type="button" class="btn-primary settings-url-copiar" id="settings-url-copiar">Copiar link</button>
-            </div>
-            <p class="settings-url-aviso" id="settings-url-aviso" aria-live="polite"></p>
-          </div>
-          <!-- Faixa cinza embaixo da caixa (modelo Zola): editar a página. -->
-          <div class="settings-url-pro settings-url-editar-site">
-            <p>Crie e edite uma página para a sua empresa. <a href="guias" class="settings-url-saiba">Saiba mais</a></p>
-            <a href="paginas-site?tab=editar" class="settings-url-editar-btn">Editar meu site</a>
           </div>
         </div>
 
         <div data-settings-panel="empresa" style="display:none;">
+          <div class="settings-zola-bloco settings-so-celular">
+            <h3 class="settings-secao-titulo settings-secao-titulo--painel">Dados da empresa</h3>
+          </div>
           <!-- Dados da empresa em caixas separadas (como Suas informações):
                1) endereço, descrição e raio; 2) forma e condições de pagamento. -->
           <form id="company-form" class="settings-zola-forms">
@@ -398,10 +390,15 @@
               </div>
             </div>
 
-            <div class="settings-zola-bloco">
+            <!-- Celular: sem Forma e condições de pagamento (fica no produto);
+                 o Salvar vem logo depois de Redes sociais. -->
+            <div class="settings-so-celular">
+              <button type="submit" class="informacoes-salvar-rodape settings-zola-salvar">Salvar alterações</button>
+            </div>
+            <div class="settings-zola-bloco settings-so-desktop">
               <h3 class="settings-secao-titulo settings-secao-titulo--painel">Forma e condições de pagamento</h3>
             </div>
-            <div class="dash-card settings-zola-card">
+            <div class="dash-card settings-zola-card settings-so-desktop">
               <div class="settings-zola-form">
                 <!-- Parcelamento em duas etapas (revelação progressiva): 1) quem paga
                      os juros; 2) só se o fornecedor assumir, até quantas vezes sem
@@ -413,7 +410,7 @@
                       <span class="parcelas-card-textos">
                         <span class="parcelas-card-titulo">Repassar juros ao cliente</span>
                       </span>
-                      <span class="parcelas-card-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+                      <span class="parcelas-card-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
                     </label>
                     <label class="parcelas-card">
                       <input type="radio" name="interest-bearer" value="SUPPLIER" class="parcelas-card-input">
@@ -421,7 +418,7 @@
                         <span class="parcelas-card-titulo">Assumir os custos</span>
                         <span class="parcelas-card-sub">Oferecer sem juros</span>
                       </span>
-                      <span class="parcelas-card-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
+                      <span class="parcelas-card-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></span>
                     </label>
                   </div>
 
@@ -514,7 +511,7 @@
 
           <div class="dash-card settings-zola-card">
             <div class="settings-seguranca-linhas">
-              <div class="settings-switch-row">
+              <div class="settings-switch-row settings-so-desktop">
                 <div>
                   <p class="settings-switch-label">Autenticação de dois fatores</p>
                   <p class="settings-switch-desc" id="profile-2fa-desc">Peça um código do Google Authenticator ao entrar.</p>
@@ -522,7 +519,7 @@
                 <button type="button" class="btn-secondary profile-security-action-btn" id="profile-2fa-btn">Permitir</button>
               </div>
 
-              <div class="settings-switch-row">
+              <div class="settings-switch-row settings-so-desktop">
                 <div>
                   <p class="settings-switch-label">Verificação de conta</p>
                   <p class="settings-switch-desc" id="profile-selfie-desc"></p>
@@ -584,7 +581,31 @@
           </div>
 
           <!-- Mais informações sobre privacidade na Central de ajuda. -->
-          <p class="settings-privacidade-ajuda">Para mais informações sobre privacidade, acesse a <a href="central-de-ajuda?categoria=privacidade">Central de ajuda</a>.</p>
+          <p class="settings-privacidade-ajuda settings-so-desktop">Para mais informações sobre privacidade, acesse a <a href="central-de-ajuda?categoria=privacidade">Central de ajuda</a>.</p>
+        </div>
+
+        <!-- URLs: o endereço do site publicado (o mesmo de Construtor › Ajustes). -->
+        <div data-settings-panel="urls" style="display:none;">
+          <div class="settings-zola-bloco settings-so-celular">
+            <h3 class="settings-secao-titulo settings-secao-titulo--painel">URL do site</h3>
+          </div>
+          <div class="dash-card settings-zola-card">
+            <p class="settings-url-texto">O link principal do seu site.</p>
+            <p class="settings-url-base" id="settings-url-base">—</p>
+            <div class="settings-url-linha">
+              <div class="settings-url-caixa">
+                <span class="settings-url-slug" id="settings-url-slug">—</span>
+                <a href="paginas-site?tab=estilo" class="settings-url-editar">Editar</a>
+              </div>
+              <button type="button" class="btn-primary settings-url-copiar" id="settings-url-copiar">Copiar link</button>
+            </div>
+            <p class="settings-url-aviso" id="settings-url-aviso" aria-live="polite"></p>
+          </div>
+          <!-- Faixa cinza embaixo da caixa (modelo Zola): editar a página. -->
+          <div class="settings-url-pro settings-url-editar-site">
+            <p>Crie e edite uma página para a sua empresa. <a href="guias" class="settings-url-saiba">Saiba mais</a></p>
+            <a href="paginas-site?tab=editar" class="settings-url-editar-btn">Editar meu site</a>
+          </div>
         </div>
 
         <!-- Dados bancários: a chave Pix que recebe os saques (modelo Bank
@@ -603,7 +624,7 @@
   <div class="modal-backdrop" id="profile-avatar-adjust-modal">
     <div class="modal-card logo-adjust-modal-card">
       <button type="button" class="logo-adjust-modal-close" data-profile-avatar-adjust-close aria-label="Fechar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
       <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar foto de perfil</h2>
       <p class="text-sm text-zinc-500 mb-4">Ajuste o enquadramento da sua foto de perfil.</p>
@@ -624,7 +645,7 @@
   <div class="modal-backdrop" id="profile-logo-adjust-modal">
     <div class="modal-card logo-adjust-modal-card">
       <button type="button" class="logo-adjust-modal-close" data-profile-logo-adjust-close aria-label="Fechar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
       <h2 class="text-lg font-bold text-zinc-900 mb-1">Ajustar imagem de capa</h2>
       <p class="text-sm text-zinc-500 mb-4">Arraste e use o zoom: a capa fica exatamente como aparece aqui.</p>
@@ -647,7 +668,7 @@
       <div class="flex items-center justify-between mb-5">
         <h3 class="text-base font-bold text-zinc-900">Assinatura</h3>
         <button type="button" id="subscription-close-btn" class="text-zinc-400 hover:text-zinc-700" aria-label="Fechar">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
         </button>
       </div>
       <div id="subscription-modal-body"></div>
@@ -658,7 +679,7 @@
   <div class="modal-backdrop" id="mfa-modal" aria-hidden="true">
     <div class="modal-card mfa-modal-card" role="dialog" aria-modal="true" aria-labelledby="mfa-modal-titulo">
       <button type="button" class="mfa-modal-fechar" id="mfa-modal-fechar" aria-label="Fechar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
       </button>
       <h2 class="mfa-modal-titulo" id="mfa-modal-titulo">Autenticação de dois fatores</h2>
       <p class="mfa-modal-texto">Abra o Google Authenticator, toque em <b>+</b> e escaneie o QR code.</p>
@@ -673,12 +694,12 @@
   </div>
 
   <script src="js/data.js?v=19"></script>
-  <script src="js/utils.js?v=33"></script>
+  <script src="js/utils.js?v=48"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
-  <script src="js/shell.js?v=64"></script>
-  <script src="js/configuracoes.js?v=72"></script>
-  <script src="js/contas-bancarias.js?v=3"></script>
+  <script src="js/shell.js?v=76"></script>
+  <script src="js/configuracoes.js?v=78"></script>
+  <script src="js/contas-bancarias.js?v=5"></script>
   <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

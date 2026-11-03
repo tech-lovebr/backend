@@ -112,9 +112,17 @@ async function copiarTexto(texto) {
   try {
     await navigator.clipboard.writeText(texto);
   } catch (e) {
-    // Sem permissão de área de transferência: mostra o texto para copiar à mão.
-    window.prompt('Copie a mensagem:', texto);
-    return;
+    // Sem permissão de área de transferência: tenta o jeito antigo, sem janela do navegador.
+    const campo = document.createElement('textarea');
+    campo.value = texto;
+    campo.setAttribute('readonly', '');
+    campo.style.cssText = 'position:fixed;opacity:0;left:-9999px';
+    document.body.appendChild(campo);
+    campo.select();
+    let copiou = false;
+    try { copiou = document.execCommand('copy'); } catch (_) { copiou = false; }
+    campo.remove();
+    if (!copiou) { showToast('Não foi possível copiar a mensagem.', true); return; }
   }
   showToast('Mensagem copiada.');
 }

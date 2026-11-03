@@ -2,11 +2,11 @@
    LOVE B2B — Editar perfil (Perfil da empresa + Preferências da conta)
    ========================================================================== */
 
-const PROFILE_LOGO_PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>';
+const PROFILE_LOGO_PLUS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>';
 const PROFILE_LOGO_IMAGE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>';
 // Lápis no canto da imagem já enviada: clicar troca a imagem (sem excluir).
-const PROFILE_IMAGEM_LAPIS = '<span class="profile-imagem-editar" title="Alterar imagem" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4 20l1.21-4.5L16.86 4.49Z"/><path d="M14.5 6.85l2.65 2.65"/></svg></span>';
-const PROFILE_LOGO_CLOSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+const PROFILE_IMAGEM_LAPIS = '<span class="profile-imagem-editar" title="Alterar imagem" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16.86 4.49a2.1 2.1 0 0 1 2.97 2.97L8.5 18.79 4 20l1.21-4.5L16.86 4.49Z"/><path d="M14.5 6.85l2.65 2.65"/></svg></span>';
+const PROFILE_LOGO_CLOSE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
 // Mesmo formato da caixa "Imagem de Capa" (320 × 130px): o que se ajusta
 // na janela de enquadramento é exatamente o que aparece na caixa.
 const PROFILE_LOGO_ASPECT_RATIO = 320 / 130;
@@ -93,6 +93,31 @@ function initAccordionCards() {
 // sozinhas, sem esse botão.
 const SETTINGS_TABS_COM_SALVAR_TOPO = { perfil: 'profile-form', empresa: 'company-form' };
 
+// Celular: só 3 abas. Informações junta Dados da empresa; Preferências junta
+// Contas conectadas, Privacidade e URLs; Contas bancárias fica sozinha.
+const SETTINGS_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+const SETTINGS_GRUPOS_CELULAR = { perfil: ['perfil', 'empresa'], preferencias: ['preferencias', 'seguranca', 'urls'], banco: ['banco'] };
+const SETTINGS_ABA_NO_CELULAR = { empresa: 'perfil', seguranca: 'preferencias', urls: 'preferencias' };
+
+function arrumarAbasNoCelular() {
+  const wrap = document.getElementById('settings-tabs');
+  if (!wrap) return;
+  const celular = SETTINGS_CELULAR.matches;
+  Object.keys(SETTINGS_ABA_NO_CELULAR).forEach(tab => {
+    const b = wrap.querySelector(`[data-settings-tab="${tab}"]`);
+    if (b) b.hidden = celular;
+  });
+  // Contas conectadas: em Preferências no celular, em Informações no computador.
+  const contas = document.getElementById('settings-contas-conectadas');
+  const destino = document.querySelector(celular ? '[data-settings-panel="preferencias"]' : '[data-settings-panel="perfil"]');
+  if (contas && destino && contas.parentElement !== destino) destino.appendChild(contas);
+  // Reabre a aba ativa (no celular, a aba que a junta).
+  const ativa = wrap.querySelector('[data-settings-tab].active');
+  const tab = ativa ? ativa.dataset.settingsTab : 'perfil';
+  const alvo = celular ? (SETTINGS_ABA_NO_CELULAR[tab] || tab) : tab;
+  wrap.querySelector(`[data-settings-tab="${alvo}"]`)?.click();
+}
+
 function resetSalvarTopoLabel() {
   const salvarTopo = document.getElementById('settings-salvar-topo');
   if (salvarTopo) salvarTopo.textContent = 'Salvar';
@@ -106,8 +131,9 @@ function initSettingsTabs() {
       wrap.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.toggle('active', b === btn));
       // O título da página é o nome da aba escolhida no menu lateral.
       setText('settings-titulo-pagina', btn.dataset.titulo || btn.textContent.trim());
+      const mostrar = SETTINGS_CELULAR.matches ? (SETTINGS_GRUPOS_CELULAR[btn.dataset.settingsTab] || [btn.dataset.settingsTab]) : [btn.dataset.settingsTab];
       document.querySelectorAll('[data-settings-panel]').forEach(panel => {
-        panel.style.display = panel.dataset.settingsPanel === btn.dataset.settingsTab ? '' : 'none';
+        panel.style.display = mostrar.includes(panel.dataset.settingsPanel) ? '' : 'none';
       });
       // Mesmo botão no cabeçalho pra Suas informações e Dados da empresa —
       // só muda qual formulário ele envia. Volta a dizer "Salvar" (em vez
@@ -117,12 +143,18 @@ function initSettingsTabs() {
       if (salvarTopo) {
         const tab = btn.dataset.settingsTab;
         const formDaAba = SETTINGS_TABS_COM_SALVAR_TOPO[tab];
-        salvarTopo.hidden = !formDaAba;
+        // No celular cada formulário salva pelo botão do rodapé (Informações tem dois).
+        salvarTopo.hidden = !formDaAba || SETTINGS_CELULAR.matches;
         if (formDaAba) salvarTopo.setAttribute('form', formDaAba);
         resetSalvarTopoLabel();
       }
     });
   });
+  // configuracoes?tab=banco (link do Financeiro) abre direto na aba pedida.
+  const pedida = new URLSearchParams(location.search).get('tab');
+  if (pedida) wrap.querySelector(`[data-settings-tab="${pedida}"]`)?.click();
+  arrumarAbasNoCelular();
+  SETTINGS_CELULAR.addEventListener?.('change', arrumarAbasNoCelular);
 }
 
 // Enquanto a pessoa mexe no formulário da aba ativa, o botão do cabeçalho
@@ -161,6 +193,18 @@ function initProfileForm() {
       if (typeof wireNameCaseInput === 'function') wireNameCaseInput(i);
       i.addEventListener('input', juntar);
     });
+    // Celular: o nome do responsável num campo só; reparte em primeiro nome e sobrenome.
+    const responsavelInput = document.getElementById('profile-responsavel');
+    if (responsavelInput) {
+      responsavelInput.value = String(p.name || '').trim();
+      if (typeof wireNameCaseInput === 'function') wireNameCaseInput(responsavelInput);
+      responsavelInput.addEventListener('input', () => {
+        const ps = responsavelInput.value.trim().split(/\s+/).filter(Boolean);
+        primeiroInput.value = ps.shift() || '';
+        sobrenomeInput.value = ps.join(' ');
+        nomeInput.value = responsavelInput.value.trim().replace(/\s+/g, ' ');
+      });
+    }
   }
   const birthdatePicker = initDatePicker(document.getElementById('profile-birthdate'), p.birthDate || '');
   document.getElementById('profile-phone').value = p.phone || '';
@@ -202,8 +246,10 @@ function initProfileForm() {
     const documentNumber = document.getElementById('profile-document').value.trim();
     const docLabel = p.documentType === 'cpf' ? 'CPF' : 'CNPJ';
 
-    if (!company || !name || !documentNumber) {
-      showToast(`Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.`, true);
+    // No celular o CNPJ é pedido em Contas bancárias, não aqui.
+    const pedeDocumento = !SETTINGS_CELULAR.matches;
+    if (!company || !name || (pedeDocumento && !documentNumber)) {
+      showToast(pedeDocumento ? `Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.` : 'Preencha o nome da empresa e o nome do responsável para continuar.', true);
       return;
     }
 
@@ -237,7 +283,7 @@ function initProfileForm() {
       if (p.razaoSocial !== antes.razaoSocial) p.companyAlteradoEm = agora;
       if (p.documentNumber !== antes.documentNumber || p.documentType !== antes.documentType) p.documentoAlteradoEm = agora;
     }
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     if (antes.company && antes.company !== p.company) {
       // A URL do site acompanha o nome da empresa.
       if (typeof atualizarUrlDoSitePeloNome === 'function') {
@@ -592,7 +638,7 @@ function initCompanyForm() {
       const descricaoPerfil = document.getElementById('profile-description');
       if (descricaoPerfil) descricaoPerfil.value = p.description;
     }
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     salvarEmpresaNoBanco(p);
     resetSalvarTopoLabel();
     showToast('Informações da empresa atualizadas.');
@@ -1019,7 +1065,7 @@ function renderProfileAvatarPicker() {
     p.profilePhotoScale = 1;
     p.profilePhotoOffsetX = 0;
     p.profilePhotoOffsetY = 0;
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     syncFornecedorAvatar(p);
     renderProfileAvatarPicker();
     if (typeof initUserCard === 'function') initUserCard();
@@ -1045,11 +1091,11 @@ function closeProfileAvatarAdjustModal() {
   if (typeof initUserCard === 'function') initUserCard();
   // A foto (com o enquadramento) vira o avatar_url que o anfitrião vê.
   const p = B2B_DATA.professional;
-  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+  guardarNoCache(PROFILE_STORAGE_KEY, p);
   syncFornecedorAvatar(p).then(url => {
     if (!url) return;
     Object.assign(p, { profilePhoto: url, profilePhotoScale: 1, profilePhotoOffsetX: 0, profilePhotoOffsetY: 0 });
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     renderProfileAvatarPicker();
     if (typeof initUserCard === 'function') initUserCard();
   });
@@ -1178,7 +1224,7 @@ function renderProfileLogoPicker() {
     p.logoScale = 1;
     p.logoOffsetX = 0;
     p.logoOffsetY = 0;
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     syncFornecedorCapa(p);
     renderProfileLogoPicker();
   });
@@ -1203,11 +1249,11 @@ function closeProfileLogoAdjustModal() {
   // A capa (com o enquadramento) vira o logo_url: a capa da página da
   // empresa no love.com.br.
   const p = B2B_DATA.professional;
-  localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+  guardarNoCache(PROFILE_STORAGE_KEY, p);
   syncFornecedorCapa(p).then(url => {
     if (!url) return;
     Object.assign(p, { logo: url, logoScale: 1, logoOffsetX: 0, logoOffsetY: 0 });
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     renderProfileLogoPicker();
   });
 }
@@ -1783,7 +1829,7 @@ function initBankDetailsForm() {
     if (aceite && !aceite.checked) return mostrarMsgForm('bank-details-msg', 'Marque a confirmação para salvar.', true);
     p.pixKeyType = typeSelect.value;
     p.pixKey = key;
-    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(p));
+    guardarNoCache(PROFILE_STORAGE_KEY, p);
     // Grava no banco (pix_key / pix_key_type), que é de onde o Hub lê.
     const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
     const { error } = session

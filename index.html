@@ -69,57 +69,30 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261027_paddingigual">
+  <link rel="stylesheet" href="css/styles.css?v=20261102_semabascart">
+  <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
   <!-- =======================================================================
        VIEW 1: SITE PÚBLICO & LANDING PAGE (Com Primeiro Scroll Fiel à Referência)
        ======================================================================= -->
-  <div id="view-public-site" class="w-full flex flex-col min-h-screen">
+  <div id="view-public-site">
     
-    <!-- Header Global Público (Cor Principal Azul) -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 transition-all">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        
-        <!-- Logo Love -->
-        <div class="flex items-center gap-8">
-          <a href="#" class="flex items-center gap-2">
-            <img src="assets/logo.png?v=2" alt="Love" class="h-9 sm:h-10 w-auto object-contain">
-          </a>
-
-          <!-- Menu de Navegação Superior com Dropdowns -->
-          <nav class="hidden lg:flex items-center gap-6 text-xs sm:text-sm font-semibold text-slate-700">
-            <div class="relative group cursor-pointer flex items-center gap-1 hover:text-[#537bae] transition-colors">
-              <span>produtos</span>
-              <span class="text-[10px] text-slate-400">▼</span>
-            </div>
-
-            <div class="relative group cursor-pointer flex items-center gap-1 hover:text-[#537bae] transition-colors">
-              <span>recursos</span>
-              <span class="text-[10px] text-slate-400">▼</span>
-            </div>
-
-            <div class="relative group cursor-pointer flex items-center gap-1 hover:text-[#537bae] transition-colors">
-              <span>modelos</span>
-              <span class="text-[10px] text-slate-400">▼</span>
-            </div>
-
-            <a href="#solucoes" class="hover:text-[#537bae] transition-colors">preços</a>
-          </nav>
-        </div>
-
-        <!-- Botões de Ação na Direita -->
-        <div class="flex items-center gap-4">
-          <!-- Botão Entrar -->
-          <button class="btn-trigger-login text-xs sm:text-sm font-bold text-slate-700 hover:text-[#537bae] transition-colors cursor-pointer">
-            entrar
-          </button>
-          
-          <!-- Botão Criar Grátis (Azul Oficial da Marca) -->
-          <button class="btn-trigger-register text-xs sm:text-sm py-2.5 px-6 rounded-full font-bold shadow-md bg-[#537bae] hover:bg-[#416799] text-white transition-all hover:scale-105 active:scale-95 cursor-pointer">
-            <span>criar grátis</span>
-          </button>
+    <!-- Cabeçalho público: logo, anfitriões | fornecedores (desktop) e Entrar / Criar evento grátis -->
+    <header class="lp-topo">
+      <div class="lp-faixa lp-topo-linha">
+        <a href="/" class="lp-logo" aria-label="Início da Love">
+          <img src="assets/logo.png?v=2" alt="Love">
+        </a>
+        <!-- Desktop: escolha do público, como no Hub (anfitriões | fornecedores) -->
+        <nav class="lp-publico" aria-label="Escolha o público">
+          <a href="/" aria-current="page">Para anfitriões</a>
+          <a href="https://hub.love.com.br" rel="noopener">Para fornecedores</a>
+        </nav>
+        <div class="lp-topo-acoes">
+          <button type="button" class="btn-trigger-login lp-link-entrar">Entrar</button>
+          <button type="button" class="btn-trigger-register lp-btn lp-btn-primario">Criar evento grátis</button>
         </div>
       </div>
     </header>
@@ -127,263 +100,286 @@
     <!-- Conteúdo de marketing da home — escondido como bloco único quando uma
          página legal (Termos/Privacidade) está sendo exibida no lugar dele,
          mantendo o mesmo header/footer da home (ver openLegalDocPage). -->
-    <div id="public-landing-sections">
+    <div id="public-landing-sections" class="lp">
 
     <!-- =======================================================================
-         O PRIMEIRO SCROLL (HERO CENTRALIZADO COM HEADLINE FORTE & GALERIA PASTEL)
+         ABERTURA — foto real em tela cheia, título com serifa
          ======================================================================= -->
-    <section class="relative bg-gradient-to-b from-sky-50/50 via-white to-slate-50/40 pt-10 pb-16 sm:pt-14 sm:pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden text-center">
-      
-      <!-- Efeitos de iluminação sutil de fundo (Glow decorativo) -->
-      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[350px] bg-[#537bae]/15 rounded-full blur-3xl pointer-events-none"></div>
-
-      <div class="max-w-7xl mx-auto relative z-10 space-y-6">
-        
-        <!-- 1. TAGS DE DESTAQUE SUPERIOR (acessível & 100% confiável) -->
-        <div class="inline-flex items-center justify-center gap-2 mb-2">
-          <span class="text-amber-400 text-lg select-none">✦</span>
-          <span class="bg-amber-100/90 text-amber-950 font-black px-4 py-1.5 rounded-full text-xs sm:text-sm shadow-xs transform -rotate-1">
-            acessível
-          </span>
-          <span class="text-slate-400 font-bold text-xs sm:text-sm">&</span>
-          <span class="bg-[#537bae]/15 text-[#537bae] font-black px-4 py-1.5 rounded-full text-xs sm:text-sm shadow-xs transform rotate-1">
-            100% confiável
-          </span>
-          <span class="text-cyan-400 text-lg select-none">✦</span>
+    <!-- Desktop: faixa de apresentação acima da foto da abertura -->
+    <div class="lp2-faixa-intro">
+      <p>Crie o convite digital do seu evento</p>
+      <button type="button" class="btn-trigger-register lp2-faixa-intro-link">Começar agora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+    <section class="lp2-hero">
+      <img class="lp2-hero-foto" src="assets/landing/heroi.jpg" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas">
+      <div class="lp2-hero-veu" aria-hidden="true"></div>
+      <div class="lp-faixa lp2-hero-conteudo">
+        <p class="lp2-hero-intro">Crie o convite digital do seu evento</p>
+        <!-- Desktop: escolha do público dentro da foto, acima do título -->
+        <nav class="lp-publico lp-publico-foto" aria-label="Escolha o público">
+          <a href="/" aria-current="page">Para anfitriões</a>
+          <a href="https://hub.love.com.br" rel="noopener">Para fornecedores</a>
+        </nav>
+        <h1 class="lp2-hero-titulo">A plataforma definitiva para suas celebrações.</h1>
+        <p class="lp2-hero-sub">Crie seu site, gerencie convites, receba presentes em dinheiro e contrate fornecedores sem complicação.</p>
+        <div class="lp2-hero-ctas">
+          <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
+          <a href="/encontrar-evento" class="lp2-hero-encontrar">Encontrar um evento</a>
         </div>
-
-        <!-- 2. TÍTULO PRINCIPAL IMPACTANTE COM SUBLINHADO CURVADO (LETRAS MINÚSCULAS) -->
-        <h1 class="text-3xl sm:text-5xl lg:text-[60px] font-black text-slate-900 tracking-tight leading-[1.12] max-w-4xl mx-auto">
-          a plataforma de eventos<br class="hidden sm:block">
-          que <span class="relative inline-block text-[#537bae]">simplesmente funciona
-            <svg class="absolute -bottom-2 sm:-bottom-3.5 left-0 w-full h-3 sm:h-4 text-[#537bae]" viewBox="0 0 260 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 12C60 3 170 2 256 10M16 14C80 6 185 5 245 13" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
-            </svg>
-          </span>
-        </h1>
-
-        <!-- 3. SUBTÍTULO DESCRITIVO (LETRAS MINÚSCULAS) -->
-        <p class="text-sm sm:text-base lg:text-lg text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed pt-2">
-          do convite ao resgate em dinheiro via pix, gerencie todas as operações do seu evento em um único software simples.
-        </p>
-
-        <!-- 4. BOX DE MÉTRICAS DIVIDIDO EM 3 COMPARTIMENTOS -->
-        <div class="mt-6 mx-auto max-w-2xl bg-white rounded-3xl sm:rounded-full border border-slate-200 shadow-md p-3 sm:p-2.5 grid grid-cols-1 sm:grid-cols-3 items-center divide-y sm:divide-y-0 sm:divide-x divide-slate-100 gap-2 sm:gap-0">
-          
-          <!-- Compartimento 1: Customer Rating -->
-          <div class="px-4 py-2 flex flex-col items-center justify-center">
-            <span class="text-[11px] font-semibold text-slate-400 block mb-1">avaliação dos anfitriões</span>
-            <div class="flex items-center gap-2">
-              <div class="flex -space-x-1.5 overflow-hidden">
-                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src="assets/advisor_sophia.jpg" alt="Host">
-                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src="assets/advisor_marcos.jpg" alt="Host">
-                <img class="inline-block h-6 w-6 rounded-full ring-2 ring-white object-cover" src="assets/advisor_claudia.jpg" alt="Host">
-              </div>
-              <span class="text-xs font-black text-slate-800 flex items-center gap-0.5">
-                <span class="text-amber-400">★</span> 4.9
-              </span>
-            </div>
-          </div>
-
-          <!-- Compartimento 2: Cost Compared -->
-          <div class="px-4 py-2 flex flex-col items-center justify-center">
-            <span class="text-[11px] font-semibold text-slate-400 block mb-1">custo-benefício</span>
-            <span class="text-xs font-black text-slate-800 flex items-center gap-1.5">
-
-              mais acessível • sem mensalidade
-            </span>
-          </div>
-
-          <!-- Compartimento 3: Customer Support -->
-          <div class="px-4 py-2 flex flex-col items-center justify-center">
-            <span class="text-[11px] font-semibold text-slate-400 block mb-1">suporte ao cliente</span>
-            <span class="text-xs font-black text-amber-400 flex items-center justify-center gap-1 tracking-wider">
-              ★★★★★ <span class="text-slate-700 font-bold text-[11px] ml-1">24/7 whatsapp</span>
-            </span>
-          </div>
-        </div>
-
-        <!-- 5. BOTÃO PRINCIPAL DE CTA (Azul da Marca) -->
-        <div class="pt-4">
-          <button class="btn-trigger-register px-10 py-4.5 rounded-full bg-[#537bae] hover:bg-[#416799] text-white font-extrabold text-base sm:text-lg shadow-xl shadow-[#537bae]/25 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer inline-flex items-center gap-2">
-            <span>criar meu evento grátis</span>
-          </button>
-        </div>
-
-        <!-- 6. GALERIA INFERIOR COM 5 CARDS COLORIDOS EM TONS PASTÉIS -->
-        <div class="mt-12 pt-4 max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 px-2">
-          
-          <!-- Card 1: Fundo Pastel Ciano/Turquesa -->
-          <div class="group relative rounded-3xl overflow-hidden aspect-[4/5] bg-cyan-100/70 border border-cyan-200/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex items-end">
-            <img src="assets/wedding_hero_banner.jpg" alt="Casamento e Noivos" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-cyan-950/70 via-transparent to-transparent flex items-end p-3.5">
-              <span class="text-xs font-bold text-white leading-tight">casamentos & bodas</span>
-            </div>
-          </div>
-
-          <!-- Card 2: Fundo Pastel Amarelo/Âmbar -->
-          <div class="group relative rounded-3xl overflow-hidden aspect-[4/5] bg-amber-100/80 border border-amber-200/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex items-end">
-            <img src="assets/advisor_claudia.jpg" alt="Chá de Panela" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-amber-950/70 via-transparent to-transparent flex items-end p-3.5">
-              <span class="text-xs font-bold text-white leading-tight">chá de panela & cozinha</span>
-            </div>
-          </div>
-
-          <!-- Card 3: Fundo Pastel Rosa/Pêssego -->
-          <div class="group relative rounded-3xl overflow-hidden aspect-[4/5] bg-rose-100/80 border border-rose-200/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex items-end">
-            <img src="assets/advisor_sophia.jpg" alt="Chá de Bebê & Revelação" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-rose-950/70 via-transparent to-transparent flex items-end p-3.5">
-              <span class="text-xs font-bold text-white leading-tight">chá de bebê & revelação</span>
-            </div>
-          </div>
-
-          <!-- Card 4: Fundo Pastel Lavanda/Roxo -->
-          <div class="group relative rounded-3xl overflow-hidden aspect-[4/5] bg-indigo-100/80 border border-indigo-200/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex items-end">
-            <img src="assets/advisor_marcos.jpg" alt="Aniversários & Festas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-indigo-950/70 via-transparent to-transparent flex items-end p-3.5">
-              <span class="text-xs font-bold text-white leading-tight">aniversários & festas</span>
-            </div>
-          </div>
-
-          <!-- Card 5: Fundo Pastel Menta/Esmeralda -->
-          <div class="col-span-2 sm:col-span-1 group relative rounded-3xl overflow-hidden aspect-[4/5] bg-emerald-100/80 border border-emerald-200/50 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex items-end">
-            <img src="assets/hero_gift.jpg" alt="Lista de Presentes PIX" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-emerald-950/70 via-transparent to-transparent flex items-end p-3.5">
-              <span class="text-xs font-bold text-white leading-tight">lista de presentes pix</span>
-            </div>
-          </div>
-
-        </div>
-
       </div>
-
     </section>
 
     <!-- =======================================================================
-         SECTION 2: OVERWHELMED BY WEDDING PLANNING? (Ticket & Landscape Design)
+         TUDO O QUE VOCÊ PRECISA — 6 fotos que levam aos painéis
          ======================================================================= -->
-    <section id="solucoes" class="relative w-full overflow-hidden bg-[#FAF6F3] py-20 lg:py-28 min-h-[750px] flex flex-col justify-between">
-      
-      <!-- Fundo Panorâmico do Casal no Rodapé da Seção com Gradiente Suave -->
-      <div class="absolute inset-0 z-0 pointer-events-none">
-        <img src="assets/wedding_sunset_couple.jpg" alt="Wedding Couple Landscape" class="w-full h-full object-cover object-bottom">
-        <div class="absolute inset-0 bg-gradient-to-b from-[#FAF6F3] via-[#FAF6F3]/50 to-transparent"></div>
-      </div>
-
-      <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        
-        <!-- Header da Seção: Título à Esquerda | Descrição à Direita -->
-        <div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6 mb-12 sm:mb-16">
-          <h2 class="text-4xl sm:text-5xl lg:text-[56px] font-medium text-zinc-900 tracking-tight leading-[1.08] max-w-xl">
-            Overwhelmed by<br>Wedding Planning ?
-          </h2>
-          <p class="text-zinc-600 text-sm sm:text-base font-normal max-w-md lg:pt-3 leading-relaxed">
-            Our customizable templates simplify the proccess, so you can focus on enjoying your big day !
-          </p>
+    <section class="lp2-tudo">
+      <div class="lp-faixa">
+        <h2 class="lp2-titulo-centro">Tudo o que o seu evento precisa, num só lugar</h2>
+        <p class="lp2-sub-centro">Para todos os dias até o grande dia, e para o dia seguinte também.</p>
+        <div class="lp2-mosaico">
+          <a href="#painel-convite" class="lp2-ladrilho"><img src="assets/landing/tconvite.jpg" alt="" loading="lazy"><span>Convite digital</span></a>
+          <a href="#painel-convidados" class="lp2-ladrilho"><img src="assets/landing/tconvidados.jpg" alt="" loading="lazy"><span>Confirmação de presença</span></a>
+          <a href="#painel-presentes" class="lp2-ladrilho"><img src="assets/landing/tpresentes.jpg" alt="" loading="lazy"><span>Lista de presentes</span></a>
+          <a href="#painel-mesas" class="lp2-ladrilho"><img src="assets/landing/tmesas.jpg" alt="" loading="lazy"><span>Mapa do evento</span></a>
+          <a href="#painel-carteira" class="lp2-ladrilho"><img src="assets/landing/tcarteira.jpg" alt="" loading="lazy"><span>Carteira e Pix</span></a>
+          <a href="#detalhes" class="lp2-ladrilho"><img src="assets/landing/trecados.jpg" alt="" loading="lazy"><span>Recados com carinho</span></a>
         </div>
-
-        <!-- Grid de 3 Cards de Cupom / Ticket -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-start">
-          
-          <!-- CARD 1: Wedding Planners -->
-          <div class="ticket-card p-6 sm:p-7 flex flex-col justify-between min-h-[220px] transition-all hover:-translate-y-1 duration-300">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-transparent select-none">.</span>
-                <!-- Blush Pink Heart Icon -->
-                <svg class="w-8 h-8 text-[#F4E3E5]" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-              </div>
-              <h3 class="text-lg sm:text-xl font-bold text-zinc-900 tracking-tight">Wedding Planners</h3>
-              <p class="text-xs sm:text-sm text-zinc-500 font-normal leading-relaxed mt-2.5">
-                Our customizable templates simplify the proccess, so you can focus on enjoying your big day !
-              </p>
-            </div>
-
-            <!-- Bottom Notches -->
-            <div class="ticket-notch -bottom-3 -left-3"></div>
-            <div class="ticket-notch -bottom-3 -right-3"></div>
-          </div>
-
-          <!-- CARD 2: Invitations Templates -->
-          <div class="ticket-card p-6 sm:p-7 flex flex-col justify-between min-h-[220px] transition-all hover:-translate-y-1 duration-300">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-transparent select-none">.</span>
-                <!-- Blush Pink Flower Icon -->
-                <svg class="w-8 h-8 text-[#F4E3E5]" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C10.5 2 9.5 3.5 9.5 5c0 .6.2 1.2.5 1.7C8.6 6.3 7 7.2 6.5 8.7 6.1 10 7 11.4 8.3 12c-1.3.6-2.2 2-1.8 3.3.5 1.5 2.1 2.4 3.5 2 .3.5.5 1.1.5 1.7 0 1.5 1 3 2.5 3s2.5-1.5 2.5-3c0-.6.2-1.2.5-1.7 1.4.4 3-.5 3.5-2 .4-1.3-.5-2.7-1.8-3.3 1.3-.6 2.2-2 1.8-3.3-.5-1.5-2.1-2.4-3.5-2-.3-.5-.5-1.1-.5-1.7 0-1.5-1-3-2.5-3z"/>
-                </svg>
-              </div>
-              <h3 class="text-lg sm:text-xl font-bold text-zinc-900 tracking-tight">Invitations Templates</h3>
-              <p class="text-xs sm:text-sm text-zinc-500 font-normal leading-relaxed mt-2.5">
-                Our customizable templates simplify the proccess, so you can focus on enjoying your big day !
-              </p>
-            </div>
-
-            <!-- Bottom Notches -->
-            <div class="ticket-notch -bottom-3 -left-3"></div>
-            <div class="ticket-notch -bottom-3 -right-3"></div>
-          </div>
-
-          <!-- CARD 3: More Than You Think ... (Com Notches Centrais e Foto da Mesa) -->
-          <div class="ticket-card p-6 sm:p-7 flex flex-col justify-between transition-all hover:-translate-y-1 duration-300 overflow-hidden">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-xs text-transparent select-none">.</span>
-                <!-- Blush Pink Sunburst / Asterisk Icon -->
-                <svg class="w-8 h-8 text-[#F4E3E5]" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 4.5V2m0 20v-2.5M4.5 12H2m20 0h-2.5M6.7 6.7L4.9 4.9m14.2 14.2l-1.8-1.8M6.7 17.3l-1.8 1.8m14.2-14.2l-1.8 1.8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <h3 class="text-lg sm:text-xl font-bold text-zinc-900 tracking-tight">More Than You Think ...</h3>
-              <p class="text-xs sm:text-sm text-zinc-500 font-normal leading-relaxed mt-2.5">
-                Our customizable templates simplify the proccess, so you can focus on enjoying your big day !
-              </p>
-            </div>
-
-            <!-- Linha Tracejada Divisória com Notches Laterais -->
-            <div class="relative my-5">
-              <div class="ticket-notch -left-9 top-1/2 -translate-y-1/2"></div>
-              <div class="w-full border-t border-dashed border-zinc-200"></div>
-              <div class="ticket-notch -right-9 top-1/2 -translate-y-1/2"></div>
-            </div>
-
-            <!-- Imagem Decorativa de Mesa de Casamento -->
-            <div class="rounded-xl overflow-hidden shadow-xs border border-zinc-100/80">
-              <img src="assets/wedding_table_dinner.jpg" alt="Wedding Dinner Table" class="w-full h-36 sm:h-44 object-cover hover:scale-105 transition-transform duration-500">
-            </div>
-
-          </div>
-
-        </div>
-
       </div>
-
     </section>
 
-    <!-- Galeria de Temas -->
-    <section id="temas" class="py-16 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto mb-10">
-          <span class="text-xs font-bold text-[#537bae] uppercase tracking-widest block mb-2 font-sans">Modelos Responsivos</span>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-sans">Diversas opções de temas modernos</h2>
+    <!-- =======================================================================
+         PAINÉIS — menu fixo à esquerda, um painel colorido por recurso
+         ======================================================================= -->
+    <section id="como-funciona" class="lp2-paineis">
+      <div class="lp-faixa lp2-paineis-linha">
+        <nav class="lp2-paineis-menu" aria-label="Recursos">
+          <a href="#painel-convite" class="ativo">Convite digital</a>
+          <a href="#painel-convidados">Confirmação de presença</a>
+          <a href="#painel-presentes">Lista de presentes</a>
+          <a href="#painel-mesas">Mapa do evento</a>
+          <a href="#painel-carteira">Carteira e Pix</a>
+        </nav>
+        <div class="lp2-paineis-lista">
+
+          <article id="painel-convite" class="lp2-painel" style="--fundo:#183b54;--tom:#CFE3F2">
+            <div class="lp2-painel-texto">
+              <h2>Um convite digital <em>à sua altura</em></h2>
+              <p>Modelos elegantes para personalizar com as suas fotos, a sua história, o local com mapa e a contagem regressiva. Compartilhe com um link só seu.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Criar meu convite</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pconvite.jpg" alt="Casal de noivos sorrindo" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+                <div><b>Convite publicado</b><small>love.com.br/marina-e-pedro</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-convidados" class="lp2-painel" style="--fundo:#0E4A57;--tom:#CDEDEA">
+            <div class="lp2-painel-texto">
+              <h2>Sua lista de convidados, <em>sempre em dia</em></h2>
+              <p>Cada convidado confirma a presença em poucos toques, com acompanhantes e restrições alimentares. Você vê tudo em tempo real, sem planilha.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Montar minha lista</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pconvidados.jpg" alt="Convidados celebrando à mesa" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+                <div><b>Ana confirmou presença</b><small>128 de 150 convidados</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-presentes" class="lp2-painel" style="--fundo:#27394f;--tom:#DCE4F5">
+            <div class="lp2-painel-texto">
+              <h2>Presentes que <em>viram dinheiro</em></h2>
+              <p>Monte a lista do seu jeito ou comece por uma lista pronta. Os convidados presenteiam com Pix ou cartão, e os presentes maiores ganham vaquinha.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Criar minha lista</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/ppresentes.jpg" alt="Caixa de presente azul com laço" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span>
+                <div><b>Novo presente recebido</b><small>R$ 250,00 via Pix · agora</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-mesas" class="lp2-painel" style="--fundo:#1D4466;--tom:#D6E8FA">
+            <div class="lp2-painel-texto">
+              <h2>Cada convidado <em>no lugar certo</em></h2>
+              <p>Monte o mapa do evento arrastando os convidados para as mesas. Redondas, retangulares, pista de dança, do jeito que o salão é.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Montar meu mapa</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pmesas.jpg" alt="Mesa redonda decorada em azul" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="4" rx="1"/><path d="M6 13v6M18 13v6"/></svg></span>
+                <div><b>Mesa 7 completa</b><small>8 de 8 lugares</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article id="painel-carteira" class="lp2-painel" style="--fundo:#122B3D;--tom:#D3EFE0">
+            <div class="lp2-painel-texto">
+              <h2>O seu dinheiro, <em>com transparência</em></h2>
+              <p>Cada presente entra no saldo da sua Carteira com o recado de quem enviou. Acompanhe o extrato e saque para a sua conta via Pix quando quiser.</p>
+              <div class="lp2-painel-ctas">
+                <button type="button" class="btn-trigger-register lp2-btn-tom">Começar agora</button>
+              </div>
+            </div>
+            <figure class="lp2-painel-foto">
+              <img src="assets/landing/pcarteira.jpg" alt="Casal sorrindo em frente ao notebook" loading="lazy">
+              <figcaption class="lp-aviso lp2-chip">
+                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg></span>
+                <div><b>Saldo disponível</b><small>R$ 12.480,00</small></div>
+              </figcaption>
+            </figure>
+          </article>
+
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="theme-card">
-            <div class="theme-image-wrap"><img src="assets/theme_garden.jpg" alt="Garden"></div>
-            <div class="p-5 space-y-3"><h4 class="font-bold text-slate-900 font-sans">Garden & Botanical</h4><p class="text-xs text-slate-500 font-sans">Aquarelas botânicas suaves e tons pastéis para casamentos no campo.</p><button class="w-full py-2.5 text-xs font-bold rounded-xl bg-[#537bae] hover:bg-[#416799] text-white shadow-xs transition-all btn-trigger-register cursor-pointer font-sans">Usar este modelo grátis</button></div>
-          </div>
-          <div class="theme-card">
-            <div class="theme-image-wrap"><img src="assets/theme_blacktie.jpg" alt="Black Tie"></div>
-            <div class="p-5 space-y-3"><h4 class="font-bold text-slate-900 font-sans">Black Tie & Chic</h4><p class="text-xs text-slate-500 font-sans">Tipografia clássica e estética minimalista preto e branco.</p><button class="w-full py-2.5 text-xs font-bold rounded-xl bg-[#537bae] hover:bg-[#416799] text-white shadow-xs transition-all btn-trigger-register cursor-pointer font-sans">Usar este modelo grátis</button></div>
-          </div>
-          <div class="theme-card">
-            <div class="theme-image-wrap"><img src="assets/theme_coastal.jpg" alt="Coastal"></div>
-            <div class="p-5 space-y-3"><h4 class="font-bold text-slate-900 font-sans">Coastal & Destination</h4><p class="text-xs text-slate-500 font-sans">Layout para casamentos na praia com cotas de lua de mel.</p><button class="w-full py-2.5 text-xs font-bold rounded-xl bg-[#537bae] hover:bg-[#416799] text-white shadow-xs transition-all btn-trigger-register cursor-pointer font-sans">Usar este modelo grátis</button></div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         A DIFERENÇA ESTÁ NOS DETALHES — abas à esquerda, foto à direita
+         ======================================================================= -->
+    <section id="detalhes" class="lp2-detalhes">
+      <div class="lp-faixa lp2-detalhes-linha">
+        <div class="lp2-detalhes-texto">
+          <h2 class="lp2-titulo">A diferença está nos detalhes</h2>
+          <div class="lp2-abas" role="tablist">
+            <button type="button" class="lp2-aba ativo" role="tab" aria-selected="true" data-foto="assets/landing/dvaquinha.jpg">
+              <b>Vaquinha nos presentes maiores</b>
+              <span>Vários convidados se juntam para dar aquele presente especial, como a viagem, o sofá ou a lua de mel.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/drecados.jpg">
+              <b>Recados guardados para sempre</b>
+              <span>Junto com cada presente chega uma mensagem de quem você ama, reunida num só lugar.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dmapa.jpg">
+              <b>Mapa de mesas inteligente</b>
+              <span>Arraste, troque e veja na hora quantos lugares ainda estão livres em cada mesa.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dsaque.jpg">
+              <b>Saque via Pix</b>
+              <span>O dinheiro dos presentes vai para a sua conta quando você quiser, sem complicação.</span>
+            </button>
+            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dlista.jpg">
+              <b>Lista de convidados completa</b>
+              <span>Grupos, acompanhantes, restrições e contatos, importe direto da agenda do celular.</span>
+            </button>
           </div>
         </div>
+        <figure class="lp2-detalhes-foto">
+          <img src="assets/landing/dvaquinha.jpg" alt="" loading="lazy">
+        </figure>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         SEGURANÇA — foto real + comprovante + garantias
+         ======================================================================= -->
+    <section id="seguranca" class="lp2-seguranca">
+      <div class="lp-faixa lp2-seguranca-linha">
+        <figure class="lp2-seguranca-foto">
+          <img src="assets/landing/seguranca.jpg" alt="Casal planejando o evento no notebook" loading="lazy">
+          <div class="lp-recibo lp2-recibo" aria-hidden="true">
+            <div class="lp-recibo-topo">
+              <span class="lp-recibo-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
+              <div><b>Presente confirmado</b><small>Pagamento aprovado · Pix</small></div>
+            </div>
+            <div class="lp-recibo-valor">R$ 350,00</div>
+            <dl class="lp-recibo-dados">
+              <div><dt>De</dt><dd>Beatriz Lima</dd></div>
+              <div><dt>Identificador</dt><dd class="lp-mono">E2E·7F3A·91C0</dd></div>
+            </dl>
+          </div>
+        </figure>
+        <div class="lp2-seguranca-texto">
+          <span class="lp-sobretitulo">Segurança</span>
+          <h2 class="lp2-titulo">Tecnologia que cuida do seu dinheiro e dos seus dados</h2>
+          <p class="lp2-texto">Por trás de um convite bonito existe uma operação financeira séria. Cada presente é registrado, rastreável e chega ao seu saldo com transparência total.</p>
+          <ul class="lp2-garantias">
+            <li><b>Criptografia em todas as conexões</b><span>Os dados trafegam protegidos por HTTPS, do convite ao pagamento.</span></li>
+            <li><b>Privacidade de acordo com a LGPD</b><span>As informações dos seus convidados são usadas só para o seu evento.</span></li>
+            <li><b>Histórico de cada centavo</b><span>Extrato com quem enviou, quanto, quando e como foi pago.</span></li>
+            <li><b>Pagamentos com parceiro regulado</b><span>Pix e cartão processados por instituição de pagamento parceira.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         PARA TODOS OS MOMENTOS
+         ======================================================================= -->
+    <section class="lp2-momentos">
+      <div class="lp-faixa">
+        <h2 class="lp2-titulo-centro">Para todos os momentos</h2>
+        <div class="lp2-momentos-lista">
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-casamento.jpg" alt="" loading="lazy"><span>Casamento</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy"><span>Chá de bebê</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-aniversario.jpg" alt="" loading="lazy"><span>Aniversário</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-bodas.jpg" alt="" loading="lazy"><span>Bodas</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy"><span>Chá de panela</span></button>
+          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-revelacao.jpg" alt="" loading="lazy"><span>Chá revelação</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         DÚVIDAS
+         ======================================================================= -->
+    <section id="duvidas" class="lp-secao lp-secao-branca lp2-duvidas">
+      <div class="lp-faixa lp-duvidas-linha">
+        <div class="lp-cab-secao">
+          <h2 class="lp2-titulo">Perguntas frequentes</h2>
+          <p class="lp2-texto">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p>
+        </div>
+        <div class="lp-faq">
+          <details open>
+            <summary>Quanto custa criar o meu evento?</summary>
+            <p>Criar o evento, o convite digital e a lista de presentes é grátis. Você começa agora mesmo e só publica quando estiver do seu jeito.</p>
+          </details>
+          <details>
+            <summary>Como recebo os presentes em dinheiro?</summary>
+            <p>Quando um convidado presenteia, o valor cai no saldo da sua Carteira na Love, com o recado de quem enviou. Depois é só sacar para a sua conta via Pix, direto pela plataforma.</p>
+          </details>
+          <details>
+            <summary>Meus convidados precisam criar conta?</summary>
+            <p>Não. Eles abrem o link do convite, confirmam a presença e escolhem o presente em poucos toques, pelo celular ou pelo computador.</p>
+          </details>
+          <details>
+            <summary>É seguro pagar e receber pela Love?</summary>
+            <p>Sim. As conexões são criptografadas, os pagamentos são processados por instituição de pagamento parceira e cada presente fica registrado no seu extrato, com data, valor e forma de pagamento.</p>
+          </details>
+          <details>
+            <summary>Serve para outros eventos além de casamento?</summary>
+            <p>Serve. Há modelos para chá de bebê, chá revelação, chá de panela, aniversário, bodas e outras comemorações.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         CHAMADA FINAL — foto em tela cheia
+         ======================================================================= -->
+    <section class="lp2-final">
+      <img class="lp2-final-foto" src="assets/landing/final.jpg" alt="" loading="lazy">
+      <div class="lp2-final-veu" aria-hidden="true"></div>
+      <div class="lp-faixa lp2-final-conteudo">
+        <h2>Comece hoje.<br>O resto a gente organiza.</h2>
+        <p>Crie o seu evento grátis e compartilhe com quem você ama.</p>
+        <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande">Criar meu evento grátis</button>
       </div>
     </section>
 
@@ -394,139 +390,77 @@
          header/footer da home, texto lido de documentos_legais (ver
          openLegalDocPage em app.js). Fica escondida até ser aberta.
          ======================================================================= -->
-    <section id="legal-doc-page" class="hidden w-full px-6 py-12 sm:py-16">
-      <div class="max-w-[760px] mx-auto">
-        <div id="legal-doc-loading" class="text-sm text-zinc-400 hidden">Carregando...</div>
-        <h1 id="legal-doc-title" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
-        <p id="legal-doc-date" class="text-sm text-zinc-400 mt-2 mb-10"></p>
+    <section id="legal-doc-page" class="lp-legal hidden">
+      <div class="lp-legal-faixa">
+        <div id="legal-doc-loading" class="lp-legal-carregando hidden">Carregando...</div>
+        <h1 id="legal-doc-title" class="lp-legal-titulo"></h1>
+        <p id="legal-doc-date" class="lp-legal-data"></p>
         <div id="legal-doc-body" class="legal-doc-body"></div>
       </div>
     </section>
 
-    <!-- Rodapé Completo (#333333) -->
-    <footer id="public-landing-footer" class="site-platform-footer text-xs pt-14 pb-10 mt-auto border-t">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
-        <!-- Grid Principal do Rodapé -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-10">
-          
-          <!-- Coluna 1: Logo, Descrição & Redes Sociais (2 colunas em telas grandes) -->
-          <div class="sm:col-span-2 space-y-5">
-            <img src="assets/logo.png" alt="Love" class="footer-logo-light h-9 w-auto object-contain">
-            <img src="assets/logo-white.png" alt="Love" class="footer-logo-dark hidden h-9 w-auto object-contain">
-            <p class="footer-text-desc text-xs sm:text-sm leading-relaxed max-w-sm">
-              Os dias mais felizes da sua vida, organizados sem esforço.
-            </p>
-
-            <!-- Política de Privacidade & Termos de Uso -->
-            <div class="flex items-center gap-4">
-              <a href="/privacidade" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                Privacidade
+    <!-- Rodapé da landing (mesmos ids usados em app.js) -->
+    <footer id="public-landing-footer" class="lp-rodape">
+      <div class="lp-faixa">
+        <div class="lp-rodape-grade">
+          <div class="lp-rodape-marca">
+            <img src="assets/logo.png" alt="Love" class="lp-rodape-logo">
+            <p>Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
+            <div class="lp-redes">
+              <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
               </a>
-              <a href="/termos" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                Termos e condições
+              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.02 2.98.02 5.96-.02 8.94-.03 1.53-.45 3.08-1.28 4.38-1.12 1.77-2.97 3.04-5.04 3.49-1.71.38-3.55.19-5.14-.54-1.68-.78-3.05-2.14-3.86-3.8-1.07-2.18-.94-4.88.35-6.94 1.05-1.67 2.75-2.86 4.67-3.29.93-.21 1.9-.22 2.85-.04v4.18c-.7-.22-1.49-.24-2.19-.04-.84.23-1.57.81-1.95 1.59-.51 1.03-.38 2.3.33 3.2.66.84 1.72 1.34 2.8 1.34 1.14 0 2.21-.56 2.85-1.51.37-.55.57-1.22.57-1.89V.02z"/></svg>
               </a>
-            </div>
-
-            <!-- Ícones de Rede Social -->
-            <div class="flex items-center gap-3 pt-1">
-              <!-- Instagram -->
-              <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" class="footer-social-icon-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm" title="Instagram">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              <a href="https://x.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="X">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               </a>
-
-              <!-- TikTok -->
-              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="footer-social-icon-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm" title="TikTok">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.02 2.98.02 5.96-.02 8.94-.03 1.53-.45 3.08-1.28 4.38-1.12 1.77-2.97 3.04-5.04 3.49-1.71.38-3.55.19-5.14-.54-1.68-.78-3.05-2.14-3.86-3.8-1.07-2.18-.94-4.88.35-6.94 1.05-1.67 2.75-2.86 4.67-3.29.93-.21 1.9-.22 2.85-.04v4.18c-.7-.22-1.49-.24-2.19-.04-.84.23-1.57.81-1.95 1.59-.51 1.03-.38 2.3.33 3.2.66.84 1.72 1.34 2.8 1.34 1.14 0 2.21-.56 2.85-1.51.37-.55.57-1.22.57-1.89V.02z"/></svg>
+              <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
               </a>
-
-              <!-- X (Twitter) -->
-              <a href="https://x.com/loveplataforma" target="_blank" rel="noopener noreferrer" class="footer-social-icon-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm" title="X (Twitter)">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </a>
-
-              <!-- LinkedIn -->
-              <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" class="footer-social-icon-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm" title="LinkedIn">
-                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-              </a>
-
-              <!-- YouTube -->
-              <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" class="footer-social-icon-btn w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm" title="YouTube">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
               </a>
             </div>
           </div>
 
-          <!-- Coluna 2: Plataforma & Eventos -->
-          <div class="space-y-3">
-            <h4 class="font-bold text-xs uppercase tracking-wider">Plataforma</h4>
-            <ul class="space-y-2.5">
-              <li>
-                <button id="btn-footer-create-event" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                  Criar novo evento
-                </button>
-              </li>
-              <li>
-                <button id="btn-footer-find-event" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                  Encontre um evento
-                </button>
-              </li>
-              <li>
-                <button id="btn-footer-b2b-advisors" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                  Painel de assessores
-                </button>
-              </li>
-              <li>
-                <button id="btn-footer-blog" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                  Blog
-                </button>
-              </li>
+          <div class="lp-rodape-coluna">
+            <h4>Plataforma</h4>
+            <ul>
+              <li><button type="button" id="btn-footer-create-event">Criar novo evento</button></li>
+              <li><button type="button" id="btn-footer-find-event">Encontre um evento</button></li>
+              <li><button type="button" id="btn-footer-b2b-advisors">Painel de assessores</button></li>
+              <li><button type="button" id="btn-footer-blog">Blog</button></li>
             </ul>
           </div>
 
-          <!-- Coluna 3: Suporte & Contato -->
-          <div class="space-y-3">
-            <h4 class="font-bold text-xs uppercase tracking-wider">Suporte</h4>
-            <ul class="space-y-2.5">
-              <li>
-                <button id="btn-footer-help-center" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                  Central de ajuda
-                </button>
-              </li>
-              <li>
-                <button id="btn-footer-contact" class="hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                  Fale conosco
-                </button>
-              </li>
-              <li>
-                <button class="btn-trigger-login hover:opacity-80 transition-opacity cursor-pointer font-normal">
-                  Área do Anfitrião
-                </button>
-              </li>
+          <div class="lp-rodape-coluna">
+            <h4>Suporte</h4>
+            <ul>
+              <li><button type="button" id="btn-footer-help-center">Central de ajuda</button></li>
+              <li><button type="button" id="btn-footer-contact">Fale conosco</button></li>
+              <li><button type="button" class="btn-trigger-login">Área do anfitrião</button></li>
             </ul>
           </div>
 
-          <!-- Coluna 4: Segurança -->
-          <div class="space-y-3">
-            <h4 class="font-bold text-xs uppercase tracking-wider">Segurança</h4>
-            <ul class="space-y-2.5">
-              <li class="footer-security-badge text-[11px] flex items-center gap-1.5">
-                <img src="assets/pix-icone.png" alt="PIX" class="w-3.5 h-3.5 flex-shrink-0 object-contain">
-                <span>PIX 100% Seguro & Regulamentado</span>
-              </li>
+          <div class="lp-rodape-coluna">
+            <h4>Segurança</h4>
+            <ul class="lp-rodape-selos">
+              <li><img src="assets/pix-icone.png" alt="" aria-hidden="true">Presentes via Pix</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Conexão criptografada</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/></svg>Dados protegidos (LGPD)</li>
             </ul>
           </div>
-
         </div>
 
-        <!-- Barra Inferior de Copyright -->
-        <div class="footer-bottom-bar pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px]">
+        <div class="lp-rodape-base">
           <p>© 2026 Love Hub Ltda. Todos os direitos reservados.</p>
-          <div class="flex items-center gap-4">
-            <span>Feito com amor para momentos inesquecíveis.</span>
-          </div>
+          <nav aria-label="Links legais">
+            <a href="/privacidade">Privacidade</a>
+            <a href="/termos">Termos e condições</a>
+          </nav>
         </div>
-
       </div>
     </footer>
 
@@ -544,6 +478,15 @@
       telaLoginInicial.style.setProperty('display', 'flex', 'important');
     }
   </script>
+
+    <!-- Celular: prévia da barra de baixo da plataforma (enfeite; só o Início clica e volta para a landing) -->
+    <nav class="login-barra-previa">
+      <a href="/" class="login-barra-item is-ativo login-barra-inicio" aria-label="Voltar para o início"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path> </svg><small>Início</small></a>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path> </svg><small>Convidados</small></span>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path> </svg><small>Presentes</small></span>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/> </svg><small>Convite</small></span>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/> </svg><small>Mensagens</small></span>
+    </nav>
 
     <!-- Esquerda: formulário -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
@@ -667,13 +610,50 @@
     </div>
 
     <!-- Direita: imagem -->
-    <div class="hidden lg:flex w-1/2 relative overflow-hidden">
-      <img src="assets/login-banner.jpg?v=20261022" alt="" class="absolute inset-0 w-full h-full object-cover">
+    <div class="login-imagem hidden lg:flex w-1/2 relative overflow-hidden">
+      <!-- Carrossel automático de tipos de evento (sem setas; troca a cada 5s) -->
+      <div class="login-carrossel" aria-hidden="true">
+        <img src="assets/login-banner.jpg?v=20261022" alt="" data-frase="Para o dia em|que tudo começa" class="login-carrossel-foto is-ativa" data-tipo="Casamento">
+        <img src="assets/criar-aniversario.jpg" alt="" data-frase="Para celebrar mais|um ano de vida" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Aniversário">
+        <img src="assets/criar-cha-de-bebe.jpg" alt="" data-frase="Para esperar quem|já é tanto amor" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá de bebê">
+        <img src="assets/criar-bodas.jpg" alt="" data-frase="Para celebrar cada|ano lado a lado" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Bodas">
+        <img src="assets/criar-revelacao.jpg" alt="" data-frase="Para descobrir juntos|a maior surpresa" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá revelação">
+        <img src="assets/criar-cha-de-panela.jpg" alt="" data-frase="Para montar a casa|onde a história mora" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá de panela">
+        <img src="assets/criar-casamento.jpg" alt="" data-frase="Para dizer sim|a quem você ama" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Casamento">
+      </div>
+      <script>
+        (function () {
+          var fotos = document.querySelectorAll('.login-carrossel-foto');
+          if (fotos.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          var atual = 0;
+          setInterval(function () {
+            var caixa = document.querySelector('.login-imagem');
+            if (document.hidden || !caixa || !caixa.offsetWidth) return; // só troca com o login aberto no desktop
+            fotos[atual].classList.remove('is-ativa');
+            atual = (atual + 1) % fotos.length;
+            fotos[atual].classList.add('is-ativa');
+            // A frase acompanha a foto (cada tipo de evento tem a sua).
+            var frase = document.getElementById('login-carrossel-frase');
+            var texto = fotos[atual].getAttribute('data-frase');
+            if (frase && texto) {
+              frase.classList.add('is-trocando');
+              setTimeout(function () {
+                frase.textContent = '';
+                texto.split('|').forEach(function (linha, i) {
+                  if (i) frase.appendChild(document.createElement('br'));
+                  frase.appendChild(document.createTextNode(linha));
+                });
+                frase.classList.remove('is-trocando');
+              }, 450);
+            }
+          }, 5000);
+        })();
+      </script>
       <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
       <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
         <div></div>
         <div>
-          <h2 class="text-white text-4xl font-normal leading-tight mb-10">Para o dia em<br>que tudo começa</h2>
+          <h2 id="login-carrossel-frase" class="text-white text-4xl font-normal leading-tight mb-10">Para o dia em<br>que tudo começa</h2>
           <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
         </div>
       </div>
@@ -729,9 +709,9 @@
           </div>
         </div>
 
-        <!-- Faltam 112 Dias: Tipografia limpa, discreta e elegante -->
+        <!-- "Faltam 112 dias para o seu evento": Tipografia limpa, discreta e elegante -->
         <span id="dash-event-countdown-badge" class="hidden lg:inline-block text-xs sm:text-sm font-medium text-zinc-500 tracking-tight ml-1 font-sans">
-          Faltam 112 dias
+          Faltam 112 dias para o seu evento
         </span>
       </div>
 
@@ -843,7 +823,7 @@
           <img class="logo-celular-nome logo-claro" src="assets/love-dark-03.png?v=6" alt="Love">
           <img class="logo-celular-nome logo-escuro" src="assets/Love-white-03.png?v=6" alt="Love">
         </span>
-        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0-7-7m7 7-7 7"/></svg></button>
+        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <nav class="menu-celular-nav" aria-label="Seções"></nav>
       <button type="button" class="menu-celular-conta" aria-haspopup="dialog">
@@ -1366,7 +1346,7 @@
                   <div class="space-y-3">
                     <div class="relative">
                       <label class="block text-xs font-bold text-slate-700 mb-1.5">Nome do Espaço / Local</label>
-                      <input type="text" id="editor-data-location" autocomplete="off" placeholder="Buscar espaço" class="w-full text-sm p-3.5 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 font-bold">
+                      <input type="text" id="editor-data-location" autocomplete="off" placeholder="Pesquisar espaço" class="w-full text-sm p-3.5 rounded-xl border border-slate-200 bg-white focus:outline-none text-slate-800 font-bold">
 
                       <!-- Dropdown de Sugestões de Espaços Salvos -->
                       <div id="editor-data-location-dropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 space-y-1"><!-- Montado pelo app.js: só espaços da categoria "Espaços para Locação" cadastrados no Hub -->
@@ -1646,7 +1626,7 @@
                       <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                       </div>
-                      <input type="text" placeholder="Buscar produtos, estilos, convites..." class="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 bg-slate-50 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 shadow-sm">
+                      <input type="text" placeholder="Pesquisar produtos, estilos, convites..." class="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 bg-slate-50 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 shadow-sm">
                     </div>
                   </div>
 
@@ -1988,6 +1968,11 @@
               </div>
             </div>
 
+            <!-- Celular: aviso de que no computador há mais opções -->
+            <p class="builder-aviso-celular" role="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+              <span>Para usar todos os recursos de edição, acesse o convite digital pelo computador. <button type="button" class="builder-aviso-celular-modelos" onclick="window.abrirModelosNoCelular && window.abrirModelosNoCelular()">Escolher novo modelo</button></span>
+            </p>
             <div class="builder-body">
               <aside class="builder-elements-panel" id="builder-elements-panel"></aside>
               <div class="builder-canvas-viewport" id="builder-canvas-viewport">
@@ -2018,6 +2003,10 @@
               <button type="button" id="btn-recado-voltar" class="rfp-voltar-seta" aria-label="Voltar para os recados" hidden>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
+              <!-- Celular: seta de voltar em Configurações da lista (volta para Meus presentes) -->
+              <button type="button" id="btn-gifts-config-voltar" class="rfp-voltar-seta gifts-config-voltar" aria-label="Voltar para Meus presentes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+              </button>
               <h2 id="gifts-header-title" class="floorplan-page-name" style="margin:0;">Meus presentes</h2>
             </div>
 
@@ -2027,6 +2016,11 @@
               <button type="button" id="btn-gifts-delete-selected" title="Excluir presentes selecionados" class="hidden btn-white text-xs py-2 px-3 font-semibold items-center justify-center gap-1.5 rounded-xl border border-zinc-200 text-zinc-700 cursor-pointer flex-shrink-0">
                 <svg stroke-linejoin="round" stroke-linecap="round" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
                 <span id="gifts-selected-count">0</span>
+              </button>
+
+              <!-- Celular: Configurações da lista (sai das abas e vira ícone ao lado do +) -->
+              <button type="button" id="btn-gifts-config-celular" class="gifts-config-celular" aria-label="Configurações da lista" title="Configurações da lista">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
               </button>
 
               <!-- Botão Adicionar Presente (Abre o Drawer) -->
@@ -2054,7 +2048,7 @@
                     </div>
                   </div>
                   <div class="love-tabela-barra-dir">
-                    <p id="gifts-total-linha" class="gifts-total-linha">Total da lista: <span id="gifts-total-value">R$ 0,00</span></p>
+                    <p id="gifts-total-linha" class="gifts-total-linha"><span id="gifts-total-value">0 itens</span></p>
                   </div>
                 </div>
               </div>
@@ -2142,8 +2136,8 @@
                 </div>
                 <input type="text" id="rsvp-search-input" class="w-full pl-9 pr-3 py-2 rounded-xl border border-zinc-200 bg-white focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans" placeholder="Pesquisar convidado...">
               </div>
-              <button type="button" id="btn-host-add-guest" class="btn-primary flex-shrink-0 whitespace-nowrap">
-                <span>Adicionar novo</span>
+              <button type="button" id="btn-host-add-guest" class="btn-primary flex-shrink-0 whitespace-nowrap" aria-label="Adicionar convidado" title="Adicionar convidado">
+                <span>Adicionar convidado</span>
               </button>
             </div>
           </div>
@@ -2180,7 +2174,7 @@
 
               <!-- Estado Vazio (quando não há resultados na busca/filtro) -->
               <div id="rsvp-empty-state" class="hidden py-14 px-4 text-center space-y-2">
-                <svg class="rsvp-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.25"/><path d="M3 19.5v-.75A4.75 4.75 0 0 1 7.75 14h2.5A4.75 4.75 0 0 1 15 18.75v.75"/><path d="M15.5 4.9a3.25 3.25 0 0 1 0 6.2M18 14.3a4.75 4.75 0 0 1 3 4.45v.75"/></svg>
+                <dotlottie-wc class="rsvp-vazio-icone rsvp-vazio-animado" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <p id="rsvp-vazio-titulo" class="rsvp-vazio-titulo">Adicione os seus primeiros convidados</p>
                 <p id="rsvp-vazio-texto">Cadastre a sua lista de convidados para enviar convites e acompanhar as confirmações de presença em tempo real.</p>
               </div>
@@ -2321,11 +2315,16 @@
                 </div>
               </div>
             </div>
+            <!-- Celular: aviso de que no computador há mais opções (igual ao do Convite digital) -->
+            <p class="aviso-computador-celular" role="note">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
+              <span>Atenção, para usar todos os recursos de mapeamento, acesse o mapa do evento pelo computador (desktop).</span>
+            </p>
             <div class="floorplan-body">
               <aside id="floorplan-guests-panel" class="floorplan-sidebar">
                 <div class="builder-panel-tab-body">
                   <div class="floorplan-convidados-topo">
-                    <div class="builder-el-group-title">Convidados</div>
+                    <div id="floorplan-convidados-titulo" class="builder-el-group-title">Convidados</div>
                     <!-- Mesmo drawer do "Adicionar convidado" de Meus convidados -->
                     <button type="button" id="btn-floorplan-add-guest" class="floorplan-add-convidado">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
@@ -2344,8 +2343,7 @@
               </aside>
               <div id="floorplan-canvas" class="floorplan-canvas">
                 <p id="floorplan-empty-hint" class="floorplan-empty-hint">
-                  <!-- Moldura com + (inserir) -->
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6.5A2.5 2.5 0 0 1 6.5 4H8M16 4h1.5A2.5 2.5 0 0 1 20 6.5V8M20 16v1.5a2.5 2.5 0 0 1-2.5 2.5H16M8 20H6.5A2.5 2.5 0 0 1 4 17.5V16M12 8.5v7M8.5 12h7"/></svg>
+                  <dotlottie-wc class="floorplan-vazio-animado" src="/assets/lottie/mapa-vazio.lottie?v=4" autoplay loop aria-hidden="true"></dotlottie-wc>
                   <span>Clique em "Adicionar item" para começar a montar o mapa do evento.</span>
                 </p>
               </div>
@@ -2413,7 +2411,7 @@
             <p id="wallet-header-desc" class="hidden text-sm text-zinc-500 -mt-2"></p>
 
           <!-- SUB-PAINEL 1: CARTEIRA DIGITAL -->
-          <!-- Carteira digital: abas Saque e Contas bancárias (js/carteira.js) -->
+          <!-- Carteira digital: Saque (Contas bancárias ficam em Configurações; js/carteira.js) -->
           <div id="wallet-sub-digital" class="wallet-sub-panel">
             <div id="carteira-raiz"></div>
           </div>
@@ -2496,6 +2494,41 @@
              PAGE 0: HOME / VISÃO GERAL (Estilo Fiel 100% à Referência)
              ================================================================= -->
         <section id="tab-overview" class="dashboard-tab-content active max-w-[1360px] w-full mx-auto pb-12">
+          <!-- Celular: foto do convite colada no topo e a caixa "Olá, nome" + dias que faltam -->
+          <div id="home-capa-celular" class="home-capa-celular">
+            <div id="home-capa-celular-foto" class="home-capa-celular-foto" role="img" aria-label="Foto do evento"></div>
+            <div class="home-capa-celular-caixa">
+              <p id="home-capa-celular-ola" class="home-capa-celular-ola">Olá!</p>
+              <p id="home-capa-celular-dias" class="home-capa-celular-dias"></p>
+              <!-- Atalhos (antes "Organização"), dentro da caixa do Olá -->
+              <div class="home-capa-celular-atalhos">
+                <button type="button" class="home-atalho" onclick="navigateToChecklist()">
+                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+                      <span class="home-atalho-nome">Checklist</span>
+                    </button>
+                <button type="button" class="home-atalho" onclick="window.loveIrPara && window.loveIrPara('b2b', 'pedidos')">
+                  <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z"/></svg></span>
+                  <span class="home-atalho-nome">Pedir orçamento</span>
+                </button>
+                <button type="button" class="home-atalho" onclick="navigateToBudget()">
+                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5.75 3.75h12.5v16.5l-2.5-1.5-2.5 1.5-2.5-1.5-2.5 1.5-2.5-1.5V3.75Z"/><path d="M9 8.25h6M9 11.75h6M9 15.25h3.5"/></svg></span>
+                      <span class="home-atalho-nome">Despesas</span>
+                    </button>
+                <button type="button" class="home-atalho" onclick="navigateToConviteDigital()">
+                  <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg></span>
+                  <span class="home-atalho-nome">Meu site</span>
+                </button>
+                <button type="button" class="home-atalho" onclick="navigateToTables()">
+                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 5.25h20"/><path d="M4 5.25 3.4 17.1a1.1 1.1 0 0 0 2.15.35L7.5 10A1.6 1.6 0 0 1 9.05 8.75h5.9A1.6 1.6 0 0 1 16.5 10l1.95 7.45a1.1 1.1 0 0 0 2.15-.35L20 5.25"/></svg></span>
+                      <span class="home-atalho-nome">Mapear mesas</span>
+                    </button>
+                <button type="button" class="home-atalho" onclick="navigateToSaveTheDate()">
+                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14.2 10.7 13a1.9 1.9 0 0 0-2.7 0 1.9 1.9 0 0 0 0 2.7l4 4 4-4a1.9 1.9 0 0 0 0-2.7 1.9 1.9 0 0 0-2.7 0z"/></svg></span>
+                      <span class="home-atalho-nome">Save the date</span>
+                    </button>
+              </div>
+            </div>
+          </div>
           
           <!-- Layout Principal em 2 Colunas (Banner da coluna direita no topo; Personalizar site à esquerda do banner) -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
@@ -2532,6 +2565,8 @@
               <!-- 2 Cards de Métricas / KPIs (Presentes | Convidados & Confirmados Unificado) -->
               <div class="home-kpis grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 items-stretch">
                 
+                <!-- Celular: título da seção, como em Benefícios -->
+                <div class="home-kpi-titulo home-atalhos-titulo"><h3>Presentes</h3><span aria-hidden="true"></span></div>
                 <!-- Card 1: Presentes (Arrecadação / Saldo) -->
                 <div class="bg-white rounded-2xl border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
                   <div class="p-4 sm:p-5 space-y-3">
@@ -2543,12 +2578,19 @@
                       <span id="kpi-total-arrecadado" class="text-2xl sm:text-[25px] font-bold text-zinc-900 tracking-tight font-sans">R$ 14.850,00</span>
                     </div>
                   </div>
-                  <div onclick="document.querySelector('[data-rail-tab=\'wallet\']')?.click()" class="px-4 sm:px-5 py-2.5 bg-[#FAFAFA] hover:bg-[#F4F4F5] border-t border-[#EAEAEA] flex items-center justify-between text-xs font-semibold text-zinc-800 hover:text-zinc-950 transition-all cursor-pointer font-sans group/btn">
+                  <!-- Celular: número em cima e nome embaixo, em duas colunas -->
+                  <div class="home-presentes-celular">
+                    <div><span id="kpi-arrecadado-celular" class="home-presentes-valor">R$ 14.850,00</span><span class="home-presentes-nome">Saldo arrecadado</span></div>
+                    <div><span id="kpi-presentes-recebidos" class="home-presentes-valor">0</span><span class="home-presentes-nome">Presentes recebidos</span></div>
+                  </div>
+                  <div id="home-btn-sacar" onclick="document.querySelector('[data-rail-tab=\'wallet\']')?.click()" class="px-4 sm:px-5 py-2.5 bg-[#FAFAFA] hover:bg-[#F4F4F5] border-t border-[#EAEAEA] flex items-center justify-between text-xs font-semibold text-zinc-800 hover:text-zinc-950 transition-all cursor-pointer font-sans group/btn">
                     <span class="font-medium text-zinc-800 group-hover/btn:text-zinc-950">Sacar disponível</span>
                     <svg class="w-3.5 h-3.5 text-zinc-600 group-hover/btn:text-zinc-950 group-hover/btn:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
                   </div>
                 </div>
 
+                <!-- Celular: título da seção, como em Benefícios -->
+                <div class="home-kpi-titulo home-atalhos-titulo"><h3>Lista de convidados</h3><span aria-hidden="true"></span></div>
                 <!-- Card 2: Convidados & Confirmados Unificado (1 Único Botão) -->
                 <div class="bg-white rounded-2xl border border-zinc-200/80 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between overflow-hidden group">
                   <div class="grid grid-cols-2 divide-x divide-zinc-100 p-4 sm:p-5">
@@ -2699,15 +2741,15 @@
                     <span class="text-xs sm:text-sm font-bold text-[#183b54] leading-tight font-sans truncate">Checklist</span>
                   </div>
 
-                  <!-- 2. Orçamento -->
-                  <div onclick="navigateToBudget()" class="mais-recursos-btn transition-all py-4 px-3.5 rounded-xl flex items-center gap-2.5 cursor-pointer shadow-2xs min-w-0 border-0" title="Gerenciar orçamento">
-                    <svg class="w-4 h-4 text-[#183b54] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v8m-3-5h6a1.5 1.5 0 0 0 0-3H9a1.5 1.5 0 0 0 0 3h6a1.5 1.5 0 0 1 0 3H9"/></svg>
-                    <span class="text-xs sm:text-sm font-bold text-[#183b54] leading-tight font-sans truncate">Orçamento</span>
+                  <!-- 2. Despesas -->
+                  <div onclick="navigateToBudget()" class="mais-recursos-btn transition-all py-4 px-3.5 rounded-xl flex items-center gap-2.5 cursor-pointer shadow-2xs min-w-0 border-0" title="Gerenciar despesas">
+                    <svg class="w-4 h-4 text-[#183b54] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.75 3.75h12.5v16.5l-2.5-1.5-2.5 1.5-2.5-1.5-2.5 1.5-2.5-1.5V3.75Z"/><path d="M9 8.25h6M9 11.75h6M9 15.25h3.5"/></svg>
+                    <span class="text-xs sm:text-sm font-bold text-[#183b54] leading-tight font-sans truncate">Despesas</span>
                   </div>
 
                   <!-- 3. Mapear Mesas -->
                   <div onclick="navigateToTables()" class="mais-recursos-btn transition-all py-4 px-3.5 rounded-xl flex items-center gap-2.5 cursor-pointer shadow-2xs min-w-0 border-0" title="Mapear mesas dos convidados">
-                    <svg class="w-4 h-4 text-[#183b54] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="12" x="3" y="4" rx="2"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12"/></svg>
+                    <svg class="w-4 h-4 text-[#183b54] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 5.25h20"/><path d="M4 5.25 3.4 17.1a1.1 1.1 0 0 0 2.15.35L7.5 10A1.6 1.6 0 0 1 9.05 8.75h5.9A1.6 1.6 0 0 1 16.5 10l1.95 7.45a1.1 1.1 0 0 0 2.15-.35L20 5.25"/></svg>
                     <span class="text-xs sm:text-sm font-bold text-[#183b54] leading-tight font-sans truncate">Mapear Mesas</span>
                   </div>
 
@@ -2746,27 +2788,15 @@
               <!-- Celular: atalhos em bolinhas coloridas (4 por seção), no lugar de
                    "Mais Recursos" e "Benefícios & Serviços". No desktop fica escondido. -->
               <div id="home-atalhos-celular" class="home-atalhos-celular">
-                <section class="home-atalhos-secao is-organizacao" aria-label="Organização">
-                  <div class="home-atalhos-titulo"><h3>Organização</h3><span aria-hidden="true"></span></div>
-                  <div class="home-atalhos-grade">
-                    <button type="button" class="home-atalho" onclick="navigateToChecklist()">
-                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m9 11 3 3L22 4"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
-                      <span class="home-atalho-nome">Checklist</span>
-                    </button>
-                    <button type="button" class="home-atalho" onclick="navigateToBudget()">
-                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V13.5Zm0 2.25h.008v.008H8.25v-.008Zm0 2.25h.008v.008H8.25V18Zm2.498-6.75h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V13.5Zm0 2.25h.007v.008h-.007v-.008Zm0 2.25h.007v.008h-.007V18Zm2.504-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5Zm0 2.25h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V18Zm2.498-6.75h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V13.5ZM8.25 6h7.5v2.25h-7.5V6ZM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.65 4.5 4.757V19.5a2.25 2.25 0 0 0 2.25 2.25h10.5a2.25 2.25 0 0 0 2.25-2.25V4.757c0-1.108-.806-2.057-1.907-2.185A48.507 48.507 0 0 0 12 2.25Z"/></svg></span>
-                      <span class="home-atalho-nome">Orçamento</span>
-                    </button>
-                    <button type="button" class="home-atalho" onclick="navigateToTables()">
-                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="3.75" r="1.6"/><circle cx="12" cy="20.25" r="1.6"/><circle cx="3.75" cy="12" r="1.6"/><circle cx="20.25" cy="12" r="1.6"/></svg></span>
-                      <span class="home-atalho-nome">Mapear mesas</span>
-                    </button>
-                    <button type="button" class="home-atalho" onclick="navigateToSaveTheDate()">
-                      <span class="home-atalho-bola"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 2v4M8 2v4M3 10h18"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14.2 10.7 13a1.9 1.9 0 0 0-2.7 0 1.9 1.9 0 0 0 0 2.7l4 4 4-4a1.9 1.9 0 0 0 0-2.7 1.9 1.9 0 0 0-2.7 0z"/></svg></span>
-                      <span class="home-atalho-nome">Save the date</span>
-                    </button>
-                  </div>
-                </section>
+                <!-- Mensagens não lidas de fornecedores: aviso que leva ao Chat -->
+                <button type="button" id="home-aviso-mensagens" class="home-aviso-mensagens" hidden onclick="window.loveIrPara && window.loveIrPara('b2b', 'messages')">
+                  <svg class="home-aviso-mensagens-mao" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.05 4.575a1.575 1.575 0 1 0-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 0 1 3.15 0v1.5m-3.15 0 .075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 0 1 3.15 0V15M6.9 7.575a1.575 1.575 0 1 0-3.15 0v8.175a6.75 6.75 0 0 0 6.75 6.75h2.018a5.25 5.25 0 0 0 3.712-1.538l1.732-1.732a5.25 5.25 0 0 0 1.538-3.712l.003-2.024a.668.668 0 0 1 .198-.471 1.575 1.575 0 1 0-2.228-2.228 3.818 3.818 0 0 0-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0 1 16.35 15m.002 0h-.002"/></svg>
+                  <span class="home-aviso-mensagens-texto">
+                    <span id="home-aviso-mensagens-titulo" class="home-aviso-mensagens-titulo"></span>
+                    <span class="home-aviso-mensagens-link">Ver as mensagens <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></span>
+                  </span>
+                  <span class="home-aviso-mensagens-ponto" aria-hidden="true"></span>
+                </button>
                 <section class="home-atalhos-secao is-beneficios" aria-label="Benefícios">
                   <div class="home-atalhos-titulo"><h3>Benefícios</h3><span aria-hidden="true"></span></div>
                   <div class="home-atalhos-grade">
@@ -2787,6 +2817,24 @@
                       <span class="home-atalho-nome">Fornecedores</span>
                     </button>
                   </div>
+                </section>
+
+                <!-- Lista de convidados a partir dos contatos do celular -->
+                <section class="home-contatos" aria-labelledby="home-contatos-titulo">
+                  <h3 id="home-contatos-titulo">Importe ou adicione contatos diretamente à sua lista de convidados.</h3>
+                  <div class="home-contatos-ilustra" aria-hidden="true">
+                    <div class="hc-celular">
+                      <span class="hc-avatar hc-a1"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.25a7.5 7.5 0 0 1 15 0Z"/></svg></span>
+                      <span class="hc-avatar hc-a2"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.25a7.5 7.5 0 0 1 15 0Z"/></svg></span>
+                      <span class="hc-avatar hc-a3"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.25a7.5 7.5 0 0 1 15 0Z"/></svg></span>
+                    </div>
+                    <div class="hc-lista">
+                      <div class="hc-linha"><span class="hc-avatar hc-a1"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.25a7.5 7.5 0 0 1 15 0Z"/></svg></span><span class="hc-barra" style="width:80%"></span></div>
+                      <div class="hc-linha"><span class="hc-avatar hc-a2"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.25a7.5 7.5 0 0 1 15 0Z"/></svg></span><span class="hc-barra" style="width:50%"></span></div>
+                      <div class="hc-linha"><span class="hc-avatar hc-vazio"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.25a7.5 7.5 0 0 1 15 0Z"/></svg></span><span class="hc-barra" style="width:95%"></span><span class="hc-avatar hc-a3 hc-chegando"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.25a7.5 7.5 0 0 1 15 0Z"/></svg></span></div>
+                    </div>
+                  </div>
+                  <button type="button" id="home-contatos-continuar" class="home-contatos-continuar">Continuar</button>
                 </section>
               </div>
 
@@ -3008,7 +3056,7 @@
                   </label>
 
                   <div class="relative">
-                    <input type="text" id="page-new-event-location-name" placeholder="Buscar espaço ou digite o nome do local" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 font-medium">
+                    <input type="text" id="page-new-event-location-name" placeholder="Pesquisar espaço ou digite o nome do local" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 font-medium">
 
                     <!-- Dropdown de Sugestões de Espaços Salvos -->
                     <div id="dropdown-partner-venues" class="hidden absolute top-full left-0 right-0 mt-1 bg-white rounded-2xl shadow-xl border border-zinc-200 p-2 z-50 space-y-1"><!-- Montado pelo app.js: só espaços da categoria "Espaços para Locação" cadastrados no Hub -->
@@ -3131,6 +3179,7 @@
               <button type="button" class="love-tab-item" data-config-aba="privacidade">Privacidade</button>
               <button type="button" class="love-tab-item" data-config-aba="preferencias">Preferências</button>
               <button type="button" class="love-tab-item" data-config-aba="eventos">Meu evento</button>
+              <button type="button" class="love-tab-item" data-config-aba="contas">Contas bancárias</button>
             </div>
           </div>
 
@@ -3331,6 +3380,9 @@
               </div>
             </div>
 
+            <!-- Contas bancárias: a raiz da Carteira (#carteira-raiz) vem para cá (js/carteira.js). -->
+            <div class="hidden w-full" id="config-painel-contas"><div id="config-contas-lugar"></div></div>
+
             <div class="max-w-3xl mx-auto hidden space-y-6" id="config-painel-eventos">
               <div class="dash-card">
                 <h3 class="text-base font-bold text-zinc-900 mb-4">Meu evento</h3>
@@ -3360,8 +3412,25 @@
               <button type="button" id="btn-rfp-voltar" class="rfp-voltar-seta" aria-label="Voltar para as solicitações" hidden>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
+              <!-- Celular, em Criar solicitação: setinha volta para Encontrar fornecedor -->
+              <button type="button" id="btn-rfp-voltar-explorar-celular" class="rfp-voltar-seta rfp-voltar-explorar-celular" aria-label="Voltar para Encontrar fornecedor">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
+              </button>
               <h2 id="b2b-toolbar-title" class="floorplan-page-name" style="margin:0;">Explorar</h2>
             </div>
+            <!-- Celular, em Encontrar fornecedor: cidade que filtra (toque para trocar) -->
+            <button type="button" id="btn-b2b-cidade-celular" class="b2b-cidade-celular" aria-haspopup="dialog" aria-expanded="false" title="Trocar a cidade">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg><span id="b2b-cidade-celular-nome">São Paulo, SP</span>
+            </button>
+            <!-- Celular, em Mensagens: bússola leva para Explorar fornecedores -->
+            <button type="button" id="btn-b2b-explorar-celular" class="b2b-explorar-celular" aria-label="Explorar fornecedores" title="Explorar fornecedores">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6l4 6l5-4-2 10H5L3 8l5 4 4-6z"/></svg>
+            </button>
+            <!-- Celular, em Criar solicitação: lista = Minhas solicitações; + = volta a criar -->
+            <button type="button" id="btn-rfp-lista-celular" class="rfp-lista-celular" aria-label="Minhas solicitações" title="Minhas solicitações">
+              <svg class="rfp-icone-lista" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+              <svg class="rfp-icone-mais" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            </button>
             <!-- Solicitações de orçamento: botão do cabeçalho (só nessa tela) -->
             <button type="button" id="btn-rfp-novo" class="btn-primary flex-shrink-0 hidden">
               <span>Criar solicitação</span>
@@ -3381,7 +3450,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
-                <input type="text" id="b2b-search-input" placeholder="Buscar por nome ou categoria" autocomplete="off" class="w-full pl-9 pr-3 py-2 rounded-xl border border-zinc-200 bg-white focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
+                <input type="text" id="b2b-search-input" placeholder="Pesquisar por nome ou categoria" autocomplete="off" class="w-full pl-9 pr-3 py-2 rounded-xl border border-zinc-200 bg-white focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
 
                 <!-- Drawer de Categorias (aparece ao clicar na busca) — mesma
                      árvore de categorias/subcategorias do cadastro de produto
@@ -3432,11 +3501,11 @@
           <div id="b2b-vendor-profile-view" class="hidden px-6 sm:px-8 py-6 w-full max-w-none">
 
             <!-- Topo: voltar + ações -->
-            <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
+            <div class="b2b-perfil-topo flex items-center justify-between gap-3 mb-5 flex-wrap">
               <!-- Caminho percorrido: Explorar › Serviço › Empresa (cada parte
                    anterior é clicável e volta para ela). -->
               <nav id="b2b-profile-breadcrumb" class="b2b-breadcrumb" aria-label="Caminho"></nav>
-              <div class="flex items-center gap-2 flex-shrink-0">
+              <div class="b2b-perfil-acoes flex items-center gap-2 flex-shrink-0">
                 <button type="button" id="btn-b2b-profile-share" data-dica="Compartilhar" aria-label="Compartilhar" class="w-10 h-10 rounded-full border border-zinc-200 hover:bg-zinc-50 text-zinc-500 hover:text-zinc-800 flex items-center justify-center transition-colors cursor-pointer">
                   <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.5V9c-5.5 0-9 2.5-10 10.5 2-3.7 5-5.5 10-5.5v4.5L21 11.5Z"/></svg>
                 </button>
@@ -3453,13 +3522,13 @@
             </div>
 
             <!-- Capa -->
-            <div class="relative w-full h-52 sm:h-72 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50">
+            <div class="b2b-perfil-capa relative w-full h-52 sm:h-72 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50">
               <img id="b2b-profile-cover-img" src="" alt="" class="w-full h-full object-cover">
             </div>
 
             <!-- Foto de perfil abaixo da capa, alinhada à esquerda; ao lado,
                  nome em negrito, função e endereço completo. -->
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mt-5">
+            <div class="b2b-perfil-cabeca flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mt-5">
               <div class="flex items-start gap-4 min-w-0">
                 <img id="b2b-profile-avatar-img" src="" alt="" class="w-20 h-20 rounded-2xl border border-zinc-200 object-cover bg-white flex-shrink-0">
                 <div class="min-w-0 pt-1">
@@ -3484,6 +3553,8 @@
             <div class="mt-6 pt-6 border-t border-zinc-100">
               <h3 class="text-xs font-bold text-zinc-900 uppercase tracking-wider mb-2">Sobre</h3>
               <p id="b2b-profile-about" class="text-sm text-zinc-600 leading-relaxed max-w-3xl"></p>
+              <!-- Celular: o endereço fica aqui (sai de baixo do nome) -->
+              <p id="b2b-profile-sobre-endereco" class="b2b-perfil-sobre-endereco hidden"></p>
               <p id="b2b-profile-specialties" class="text-sm text-zinc-500 mt-3 max-w-3xl"></p>
             </div>
 
@@ -3532,13 +3603,15 @@
               <!-- COLUNA ESQUERDA: LISTA DE CONVERSAS / CONTATOS (W-80 / 340px) -->
               <div class="b2b-chat-contacts-column w-full md:w-80 lg:w-[340px] md:min-w-[320px] border-r border-zinc-200 flex flex-col h-full min-h-0 flex-shrink-0">
 
+                <!-- Celular: "N conversas" acima da pesquisa (como no Hub) -->
+                <p id="b2b-chat-total-celular" class="chat-total-celular" aria-live="polite"></p>
                 <!-- Buscar nas conversas: pelo nome da empresa ou pelo texto das mensagens (como no Hub) -->
                 <div class="px-3 h-[64px] flex items-center border-b border-zinc-200 flex-shrink-0">
                   <div class="relative w-full">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
                       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <input type="search" id="b2b-chat-search" placeholder="Buscar nas conversas..." autocomplete="off" aria-label="Buscar nas conversas" class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-zinc-200 bg-white text-xs focus:outline-none text-zinc-800 placeholder:text-zinc-400">
+                    <input type="search" id="b2b-chat-search" placeholder="Pesquisar nas conversas..." autocomplete="off" aria-label="Pesquisar nas conversas" class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-zinc-200 bg-white text-xs focus:outline-none text-zinc-800 placeholder:text-zinc-400">
                   </div>
                 </div>
 
@@ -3932,7 +4005,7 @@
            ===================================================================== -->
       <footer id="dashboard-footer" class="site-platform-footer rodape-logado hidden md:block w-full">
         <div class="rodape-logado-linha">
-          <p class="rodape-logado-texto">© <span id="rodape-ano">2026</span> Love Hub Ltda. Feito com amor para momentos inesquecíveis.</p>
+          <p class="rodape-logado-texto">© <span id="rodape-ano">2026</span> Love Hub Ltda.</p>
           <nav class="rodape-logado-links" aria-label="Links legais">
             <a href="/privacidade">Privacidade</a>
             <a href="/termos">Termos e condições</a>
@@ -4325,6 +4398,11 @@
               <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
               <span class="text-xs font-bold font-sans">Clique para trocar a imagem</span>
             </div>
+            <!-- Celular: "Alterar imagem" igual ao da capa do Convite digital -->
+            <span class="gift-alterar-imagem-celular" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>
+              <span>Alterar imagem</span>
+            </span>
             <input type="file" id="gift-file-input" accept="image/*" class="hidden">
           </div>
 
@@ -4351,14 +4429,15 @@
         <!-- 4.0 Valor extra: o convidado pode dar mais que o valor do presente -->
         <label class="gift-valor-extra" for="gift-valor-extra-toggle">
           <input type="checkbox" id="gift-valor-extra-toggle" class="gifts-select-all-check">
-          <span>Permitir que os convidados adicionem um valor extra ao presente</span>
+          <span class="gift-texto-computador">Permitir que os convidados adicionem um valor extra ao presente</span>
+          <span class="gift-texto-celular">Permitir valor extra no presente</span>
         </label>
 
         <!-- 4.1 Contribuição coletiva (vaquinha): mesma caixinha de check do valor extra -->
         <label class="gift-valor-extra gift-contribuicao-coletiva" for="gift-crowdfunding-toggle">
           <input type="checkbox" id="gift-crowdfunding-toggle" class="gifts-select-all-check">
           <span class="gift-contribuicao-texto">
-            <span>Habilitar vaquinha (crowdfunding)</span>
+            <span>Habilitar crowdfunding (vaquinha)</span>
             <span class="gift-contribuicao-descricao">Vários convidados podem contribuir com qualquer valor para completar este presente.</span>
           </span>
         </label>
@@ -4897,6 +4976,8 @@
        ======================================================================= -->
   <div id="modal-setup-budget" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
     <div class="modal-container-custom bg-white w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden relative p-6 sm:p-9 flex flex-col space-y-6">
+      <!-- Celular (tela cheia): fechar volta para onde a pessoa estava -->
+      <button type="button" id="btn-fechar-setup-orcamento" class="orc-setup-fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg></button>
       
       <!-- Topo: Título e Subtítulo Centralizados -->
       <div class="text-center space-y-1.5 pt-1">
@@ -5224,7 +5305,7 @@
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </span>
-        <input type="text" id="assign-guest-filter-input" placeholder="Buscar convidado..." class="w-full pl-9 pr-3 py-2.5 rounded-[var(--radius-control,12px)] border border-zinc-200 bg-zinc-50/70 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
+        <input type="text" id="assign-guest-filter-input" placeholder="Pesquisar convidado..." class="w-full pl-9 pr-3 py-2.5 rounded-[var(--radius-control,12px)] border border-zinc-200 bg-zinc-50/70 focus:bg-white text-xs focus:outline-none focus:ring-2 focus:ring-[#537bae] text-zinc-800 transition-colors font-sans">
       </div>
 
       <div id="assign-guest-list-container" class="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
@@ -5674,13 +5755,14 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261027_infopagina"></script>
-  <script src="js/carteira.js?v=20261024_gateways"></script>
-  <script src="js/checklist.js?v=20261026_telacheia"></script>
-  <script src="js/pedidos-orcamento.js?v=20261027_etapaporcategoria"></script>
+  <script src="js/app.js?v=20261102_contasconfig"></script>
+  <script src="js/landing.js?v=20261031_landing4"></script>
+  <script src="js/carteira.js?v=20261102_contasconfig"></script>
+  <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
+  <script src="js/pedidos-orcamento.js?v=20261030_textosdesk"></script>
   <script src="js/contratos.js?v=20261025_coanf3"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261026_publicarumavez"></script>
+  <script src="js/site-builder.js?v=20261030_semdatamodelo"></script>
 </body>
 </html>

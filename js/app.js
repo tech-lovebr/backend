@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const listaEventos = /** @type {HTMLElement} */ (conta.querySelector('.menu-celular-eventos-lista'));
     const eventoAtual = /** @type {HTMLElement} */ (conta.querySelector('.menu-celular-evento-atual'));
     const itensConta = /** @type {HTMLElement} */ (conta.querySelector('.menu-conta-itens'));
-    const ICONES = /** @type {Record<string, string>} */ ({"inicio":"<path d=\"m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25\"/>","all":"<path d=\"M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z\"/>","tables":"<path d=\"M3.75 3.75h16.5v16.5H3.75zM3.75 12h5.25M12.75 3.75V7.5M12.75 12v8.25M12.75 15.75h7.5M12.75 7.5a3.75 3.75 0 0 0-3.75 4.5\"/>","checklist":"<path d=\"M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75\"/>","my-gifts":"<path d=\"M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z\"/>","gift-messages":"<path d=\"M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75\"/>","gift-settings":"<path d=\"M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75\"/>","home":"<path d=\"M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.44-3.42\"/>","data":"<path d=\"m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z\"/>","about":"<path d=\"M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z\"/>","pedidos":"<path d=\"M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z\"/>","explore":"<path d=\"m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z\"/>","messages":"<path d=\"M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155\"/>","contracted":"<path d=\"M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12\"/>","favorites":"<path d=\"M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z\"/>"});
+    const ICONES = /** @type {Record<string, string>} */ ({"inicio":"<path d=\"m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25\"/>","all":"<path d=\"M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z\"/>","tables":"<path d=\"M3.75 3.75h16.5v16.5H3.75zM3.75 12h5.25M12.75 3.75V7.5M12.75 12v8.25M12.75 15.75h7.5M12.75 7.5a3.75 3.75 0 0 0-3.75 4.5\"/>","checklist":"<path d=\"M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75\"/>","my-gifts":"<path d=\"M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z\"/>","gift-messages":"<path d=\"M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75\"/>","gift-settings":"<path d=\"M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75\"/>","home":"<path d=\"M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.44-3.42\"/>","data":"<path d=\"m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z\"/>","about":"<path d=\"M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z\"/>","pedidos":"<path d=\"M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z\"/>","explore":"<path d=\"M12 6l4 6l5-4-2 10H5L3 8l5 4 4-6z\"/>","messages":"<path d=\"M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155\"/>","contracted":"<path d=\"M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12\"/>","favorites":"<path d=\"M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z\"/>"});
     const icone = (/** @type {string} */ id) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[id] || ''}</svg>`;
     // Ordem das seções na gaveta (os itens vêm do railTabsConfig).
     const SECOES = [['rsvp', 'Lista de convidados'], ['gifts', 'Presentes'], ['edit-site', 'Personalizar evento'], ['b2b', 'Fornecedores']];
@@ -482,7 +482,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const desenhar = () => {
       agendado = false;
       const itens = Array.from(lista.querySelectorAll('.sub-drawer-item'))
-        .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none');
+        .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none')
+        // Lista de presentes: Configurações sai das abas (ícone ao lado do +).
+        .filter(i => /** @type {HTMLElement} */ (i).dataset.routeSub !== 'gift-settings')
+        // Fornecedores: Explorar (coroinha em Mensagens / ☰), Mensagens (barra de baixo) e Favoritos (☰) saem das abas; Convidados: Checklist (já está na Home).
+        .filter(i => !['explore', 'messages', 'favorites', 'checklist'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''));
       // Só redesenha quando os itens mudam (redesenhar sempre engolia os
       // toques) — mas "mudam" tem que levar em conta os ELEMENTOS em si, não
       // só o texto: trocar de aba e voltar recria os .sub-drawer-item do
@@ -503,6 +507,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ativo) botao.setAttribute('aria-current', 'page');
         const rotulo = document.createElement('span');
         rotulo.textContent = (orig.querySelector('span') || orig).textContent.trim();
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && /^(Meus convidados|Minha lista)$/.test(rotulo.textContent)) rotulo.textContent = 'Meus convidados';
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'contracted' && rotulo.textContent === 'Contratos') rotulo.textContent = 'Meus contratos';
         botao.appendChild(rotulo);
         const contador = orig.querySelector('.badge-recados-count');
         if (contador && contador.textContent.trim()) {
@@ -1161,6 +1167,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 150);
   };
 
+  // Saque sem conta → Configurações › Contas bancárias.
+  window.loveAbrirContasBancarias = () => openAccountSettingsPage({ aba: 'contas' });
+
   function openAccountSettingsPage(opts = {}) {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
     const abaInicial = opts.aba || 'conta';
@@ -1168,7 +1177,8 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'conta', rotulo: 'Informações' },
       { id: 'privacidade', rotulo: 'Privacidade' },
       { id: 'preferencias', rotulo: 'Preferências' },
-      { id: 'eventos', rotulo: 'Meu evento' }
+      { id: 'eventos', rotulo: 'Meu evento' },
+      { id: 'contas', rotulo: 'Contas bancárias' }
     ], abaInicial, mostrarAbaDeConfiguracoes);
     mostrarAbaDeConfiguracoes(abaInicial);
     preencherConfiguracoesDaConta();
@@ -1415,7 +1425,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { categoria: 'Meu Evento', pergunta: 'Como adiciono uma tarefa?', resposta: 'Clique em Adicionar tarefa, no topo do Checklist. Escreva o que precisa ser feito, escolha a categoria e, se quiser, informe o prazo, o orçamento e notas.' },
     { categoria: 'Meu Evento', pergunta: 'Como marco uma tarefa como concluída?', resposta: 'Clique no círculo ao lado da tarefa. Ela fica riscada e passa a contar no progresso do evento. Para desmarcar, clique de novo.' },
     { categoria: 'Meu Evento', pergunta: 'Posso definir um responsável para cada tarefa?', resposta: 'Sim. Clique no quadradinho de responsável da tarefa e escolha você ou um dos fornecedores contratados.' },
-    { categoria: 'Meu Evento', pergunta: 'O que é o botão Buscar fornecedores?', resposta: 'Ele aparece nas tarefas de contratação, como Contratar o buffet. Ao clicar, você vai para Fornecedores › Explorar já filtrado pela categoria da tarefa.' },
+    { categoria: 'Meu Evento', pergunta: 'O que é o botão Pesquisar fornecedores?', resposta: 'Ele aparece nas tarefas de contratação, como Contratar o buffet. Ao clicar, você vai para Fornecedores › Explorar já filtrado pela categoria da tarefa.' },
     { categoria: 'Meu Evento', pergunta: 'Quem vê o meu Checklist?', resposta: 'Você e os co-anfitriões do evento. As alterações ficam salvas e aparecem para todos que organizam o evento com você.' },
     { categoria: 'Meu Evento', pergunta: 'Posso ver as tarefas por categoria?', resposta: 'Sim. No topo da lista, troque Cronograma por Por categoria. Você também pode filtrar por Todas, Pendentes ou Concluídas.' },
     { categoria: 'Fornecedores', pergunta: 'Como contratar um fornecedor pela Love?', resposta: 'Em Fornecedores, encontre quem você procura, abra o perfil e use "Contratar" ou peça um orçamento. Os contratados ficam reunidos em Contratados.' },
@@ -1799,7 +1809,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'wallet-digital', label: 'Carteira Digital' },
-        { id: 'wallet-budget', label: 'Orçamento' }
+        { id: 'wallet-budget', label: 'Gerenciar despesas' }
         // Extrato saiu do menu: ele fica no fim da Carteira Digital.
       ]
     },
@@ -1984,6 +1994,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function abrirSubItem(tab, subId) {
+    ajustarAnimacoesVisiveisLogo();
     if (!subId) return;
     if (!areaPermitida(tab, subId)) return;
     fecharTodosOsDrawers();
@@ -2055,6 +2066,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function switchRailTab(tabKey) {
+    ajustarAnimacoesVisiveisLogo();
     // Se o usuário ainda não criou seu primeiro evento, bloqueia o acesso aos outros menus
     if (!state.hasEventCreated) {
       showToast('Crie seu primeiro evento para desbloquear os menus do painel.', '🔒');
@@ -2268,6 +2280,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Se clicar mais 1 vez no ícone da aba ativa (exceto 'overview' que não possui submenu):
         // Faz o reverso: se o submenu estiver aberto, fecha; se estiver fechado, reabre!
+        if (state.currentTab === tab && tab !== 'overview' && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
+          const primeira = /** @type {HTMLElement|null} */ (Array.from(elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item') || [])
+            .find(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none') || null);
+          if (primeira && !primeira.classList.contains('active')) primeira.click();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
         if (state.currentTab === tab && tab !== 'overview') {
           const isDrawerOpen = elements.subDrawer && !elements.subDrawer.classList.contains('hidden-drawer');
           if (isDrawerOpen) {
@@ -2518,6 +2537,76 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Formata uma data ISO ("2025-10-18") como "18 de Outubro de 2025"
+  // Celular, Home: a foto do convite (capa) colada no topo, com a caixa
+  // "Olá, nome!" e quantos dias faltam para o evento.
+  // Texto da contagem (capa da Home no celular e cabeçalho no computador).
+  // Leva em conta o horário de início: no último dia mostra as horas que
+  // faltam ("Faltam 5 horas"), e na última hora, os minutos.
+  function textoDaContagem(ev) {
+    const iso = ev ? ((ev.eventDetails && ev.eventDetails.date) || ev.date || '') : '';
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+    if (!m) return '';
+    const hm = /^(\d{1,2}):(\d{2})/.exec(String((ev.eventDetails && ev.eventDetails.time) || ''));
+    const agora = new Date();
+    const inicio = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), hm ? Number(hm[1]) : 0, hm ? Number(hm[2]) : 0);
+    const hoje = new Date(agora); hoje.setHours(0, 0, 0, 0);
+    const dia = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    const dias = Math.round((dia.getTime() - hoje.getTime()) / 86400000);
+    const falta = inicio.getTime() - agora.getTime();
+    if (falta <= 0) return dias === 0 ? 'O seu evento é hoje!' : 'O seu evento já aconteceu';
+    if (hm && falta < 86400000) {
+      const horas = Math.floor(falta / 3600000);
+      if (horas >= 1) return horas === 1 ? 'Falta 1 hora para o seu evento' : `Faltam ${horas} horas para o seu evento`;
+      const minutos = Math.max(1, Math.ceil(falta / 60000));
+      return minutos === 1 ? 'Falta 1 minuto para o seu evento' : `Faltam ${minutos} minutos para o seu evento`;
+    }
+    return dias > 1 ? `Faltam ${dias} dias para o seu evento` : dias === 1 ? 'Falta 1 dia para o seu evento' : 'O seu evento é hoje!';
+  }
+  // Atualiza a contagem a cada minuto (horas e minutos mudam com a página aberta).
+  setInterval(() => {
+    try {
+      const t = textoDaContagem(getActiveEvent());
+      if (!t) return;
+      const cel = document.getElementById('home-capa-celular-dias');
+      if (cel) cel.textContent = t;
+      if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = t;
+    } catch (e) { /* sem evento */ }
+  }, 60000);
+
+  function atualizarCapaDaHomeCelular() {
+    const caixa = document.getElementById('home-capa-celular');
+    if (!caixa) return;
+    const ev = getActiveEvent();
+    const ola = document.getElementById('home-capa-celular-ola');
+    const titulo = document.getElementById('dash-hub-title');
+    if (ola) ola.textContent = (titulo && titulo.textContent.replace(/\s+/g, ' ').trim()) || 'Olá!';
+    // Foto: a capa do Convite digital; sem ela, a imagem do evento.
+    let foto = '';
+    try {
+      const w = /** @type {any} */ (window);
+      const chave = typeof w.pageStorageKey === 'function' ? w.pageStorageKey('convite') : '';
+      // A versão mais nova do convite fica em memória (o cache pode não caber no celular).
+      const emMemoria = w.__loveConviteAtual && typeof w.getLoveActiveEventId === 'function' && w.__loveConviteAtual.evento === (/^[0-9a-f-]{36}$/i.test(String(w.getLoveActiveEventId() || '')) ? w.getLoveActiveEventId() : null) ? w.__loveConviteAtual.state : null;
+      const convite = emMemoria || (chave ? JSON.parse(localStorage.getItem(chave) || 'null') : null);
+      const capa = convite && Array.isArray(convite.sections) ? convite.sections.find((/** @type {any} */ s) => !s.isQuickNav && !s.isGiftsBlock && s.bgImage) : null;
+      if (capa) foto = capa.bgImage;
+    } catch (e) { /* sem convite salvo */ }
+    if (!foto && ev && ev.coverImage) foto = ev.coverImage;
+    const fotoEl = document.getElementById('home-capa-celular-foto');
+    if (fotoEl) fotoEl.style.backgroundImage = foto ? `url("${String(foto).replace(/"/g, '%22')}")` : '';
+    const dias = document.getElementById('home-capa-celular-dias');
+    if (dias) {
+      dias.textContent = textoDaContagem(ev) || 'Defina a data do seu evento';
+    }
+  }
+  window.loveAtualizarCapaDaHome = atualizarCapaDaHomeCelular;
+  // Topo da Home (celular) por cima da foto: transparente até rolar a página.
+  (function topoDaHomeSobreAFoto() {
+    const conferir = () => { document.body.classList.toggle('home-rolou', window.scrollY > 150); };
+    window.addEventListener('scroll', conferir, { passive: true });
+    conferir();
+  })();
+
   function formatEventDateLong(isoDate) {
     if (!isoDate) return '';
     const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -2532,25 +2621,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 4. ATUALIZAÇÃO COMPLETA DOS DADOS DA COMEMORAÇÃO ATIVA
   // ==========================================
-  // Calcula sempre a partir da data real do evento — nunca um número
-  // guardado (que fica desatualizado a cada dia que passa).
-  function calcularDiasRestantes(dataEvento) {
-    if (!dataEvento) return null;
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const data = new Date(`${String(dataEvento).slice(0, 10)}T00:00:00`);
-    if (isNaN(data.getTime())) return null;
-    return Math.round((data - hoje) / 86400000);
-  }
-
   function updateAllCelebrationData() {
     const activeEvent = getActiveEvent();
 
     // 1. Header Superior
     if (elements.dashHeader.eventTitle) elements.dashHeader.eventTitle.textContent = activeEvent.title;
     if (elements.dashHeader.countdownBadge) {
-      const dias = calcularDiasRestantes(activeEvent.date);
-      elements.dashHeader.countdownBadge.textContent = dias === null ? '' : dias < 0 ? 'Evento realizado' : `Faltam ${dias} dias`;
+      // Mesmo texto da capa da Home no celular (dias, ou horas no último dia).
+      elements.dashHeader.countdownBadge.textContent = textoDaContagem(activeEvent);
     }
     if (elements.dashHeader.slugBadge) elements.dashHeader.slugBadge.textContent = `love.com.br/${activeEvent.slug}`;
     if (elements.dashHeader.shareUrlInput) {
@@ -2581,6 +2659,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ? `Olá, <span id="dash-hub-user-first-name">${escaparHtml(firstName)}</span>!`
         : 'Olá!';
     }
+    atualizarCapaDaHomeCelular();
     const hubCoupleName = document.getElementById('dash-hub-couple-name');
     if (hubCoupleName) {
       hubCoupleName.textContent = activeEvent.hostName ? activeEvent.hostName.toLowerCase() : 'gabriel & joana';
@@ -2621,6 +2700,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const carteira = activeEvent.wallet || {};
       const arrecadado = pagos || ((Number(carteira.saldoDisponivel) || 0) + (Number(carteira.totalSacado) || 0));
       kpiArrecadado.textContent = `R$ ${arrecadado.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      // "Sacar disponível" só fica azul com saldo arrecadado; sem saldo, claro.
+      document.getElementById('home-btn-sacar')?.classList.toggle('is-sem-saldo', !(arrecadado > 0));
+      // Celular: a mesma caixa em duas colunas (saldo | presentes recebidos).
+      const arrecadadoCel = document.getElementById('kpi-arrecadado-celular');
+      if (arrecadadoCel) arrecadadoCel.textContent = kpiArrecadado.textContent;
+      const recebidosCel = document.getElementById('kpi-presentes-recebidos');
+      if (recebidosCel) {
+        const recebidos = Array.isArray(activeEvent.receivedGifts) && activeEvent.receivedGifts.length
+          ? activeEvent.receivedGifts.length : (Number(activeEvent.presentesRecebidos) || 0);
+        recebidosCel.textContent = String(recebidos);
+      }
     }
     if (kpiRsvp) kpiRsvp.textContent = `${activeEvent.convidadosConfirmados}`;
     if (kpiRsvpBreakdown) kpiRsvpBreakdown.textContent = `${activeEvent.adultosConfirmados ?? 0} adultos • ${activeEvent.criancasConfirmadas ?? 0} crianças confirmadas`;
@@ -2653,8 +2743,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletTitle = document.getElementById('wallet-header-title');
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
-    if (giftsTitle) giftsTitle.textContent = 'Meus presentes';
-    if (rsvpTitle) rsvpTitle.textContent = 'Meus convidados';
+    if (giftsTitle) giftsTitle.textContent = tituloDosPresentes();
+    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de convidados' : 'Meus convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();
@@ -3394,7 +3484,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
     // um evento não pode ter o mesmo nome de uma página da plataforma.
     const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
-      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'central-de-ajuda', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib'];
+      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'central-de-ajuda', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib', 'encontrar-evento'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -4905,6 +4995,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     showToast('Alterações salvas com sucesso no convite!', '✨');
   }
+
+  // Evento costuma começar e terminar no mesmo dia: mudar a data do evento
+  // leva a data de término para o mesmo dia (desktop e celular).
+  (function dataDeTerminoAcompanha() {
+    const inicio = /** @type {HTMLInputElement|null} */ (document.getElementById('editor-data-date'));
+    const fim = /** @type {HTMLInputElement|null} */ (document.getElementById('editor-data-end-date'));
+    if (!inicio || !fim) return;
+    const acompanhar = () => {
+      if (!inicio.value || fim.value === inicio.value) return;
+      fim.value = inicio.value;
+      fim.dispatchEvent(new Event('input', { bubbles: true }));
+      fim.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    inicio.addEventListener('input', acompanhar);
+    inicio.addEventListener('change', acompanhar);
+  })();
 
   // Live Listeners para inputs de texto e dados em tempo real
   ['editor-event-title', 'editor-data-event-name', 'editor-hero-headline', 'editor-data-date', 'editor-data-time', 'editor-data-end-date', 'editor-data-end-time', 'editor-data-location', 'editor-data-address', 'editor-data-reference', 'editor-data-dresscode'].forEach(id => {
@@ -7020,7 +7126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       const wrap = document.createElement('div');
       wrap.className = 'love-tabela-busca';
-      wrap.innerHTML = `${ICONE_BUSCA}<input type="search" placeholder="${escaparHtml(cfg.placeholder || 'Buscar...')}" aria-label="Buscar">`;
+      wrap.innerHTML = `${ICONE_BUSCA}<input type="search" placeholder="${escaparHtml(cfg.placeholder || 'Pesquisar...')}" aria-label="Pesquisar">`;
       wrap.querySelector('input').addEventListener('input', (e) => {
         tabela.dataset.busca = e.target.value;
         aplicarFiltroDaTabela(tabela);
@@ -7235,7 +7341,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       if (buscaConvidados) {
         const input = buscaConvidados.querySelector('input');
-        if (input && !input.placeholder) input.placeholder = 'Buscar convidado...';
+        if (input && !input.placeholder) input.placeholder = 'Pesquisar convidado...';
       }
     }
 
@@ -7243,7 +7349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaExtrato = document.getElementById('wallet-transactions-list')?.closest('table');
     if (tabelaExtrato) {
       montarBarraDaTabela(tabelaExtrato, {
-        placeholder: 'Buscar no extrato...',
+        placeholder: 'Pesquisar no extrato...',
         filtro: { coluna: 2 },
         exportar: document.getElementById('btn-wallet-export')
       });
@@ -7254,7 +7360,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabelaOrcamento) {
       montarBarraDaTabela(tabelaOrcamento, {
         caixa: tabelaOrcamento.closest('.budget-table-full-bleed') || tabelaOrcamento.parentElement,
-        placeholder: 'Buscar item ou fornecedor...',
+        placeholder: 'Pesquisar item ou fornecedor...',
         filtro: { coluna: 1, rotuloTodos: 'Todos os fornecedores' },
         nome: 'orcamento'
       });
@@ -7265,7 +7371,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tabelaConvites) {
       montarBarraDaTabela(tabelaConvites, {
         caixa: tabelaConvites.parentElement,
-        placeholder: 'Buscar convidado...',
+        placeholder: 'Pesquisar convidado...',
         filtro: { coluna: 2 },
         nome: 'convites-online'
       });
@@ -7808,6 +7914,30 @@ document.addEventListener('DOMContentLoaded', () => {
       <p class="gift-vaquinha-info">Total arrecadado: <strong>${brl(arrecadado)}</strong></p>`;
   }
 
+  // Desktop: sem pop-up. A ficha de criar/editar presente abre dentro da própria
+  // caixa de Meus presentes, ocupando o espaço da lista; ao fechar, a lista volta.
+  const MQ_DESKTOP_PRESENTE = '(min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px)';
+  /** @param {HTMLElement|null} drawer @returns {boolean} true quando abriu dentro da página */
+  function abrirPresenteNaPagina(drawer) {
+    const painel = document.getElementById('gifts-panel-products');
+    if (!drawer || !painel || !window.matchMedia(MQ_DESKTOP_PRESENTE).matches) return false;
+    const d = /** @type {any} */ (drawer);
+    if (!d.__casaOriginal) d.__casaOriginal = { pai: drawer.parentElement, depois: drawer.nextSibling };
+    painel.appendChild(drawer);
+    drawer.classList.add('na-pagina');
+    document.getElementById('tab-gifts')?.classList.add('presente-na-pagina');
+    window.scrollTo({ top: 0 });
+    return true;
+  }
+  /** @param {HTMLElement|null} drawer */
+  function devolverPresenteDaPagina(drawer) {
+    document.getElementById('tab-gifts')?.classList.remove('presente-na-pagina');
+    if (!drawer || !drawer.classList.contains('na-pagina')) return;
+    drawer.classList.remove('na-pagina');
+    const casa = /** @type {any} */ (drawer).__casaOriginal;
+    if (casa && casa.pai) casa.pai.insertBefore(drawer, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
+  }
+
   function openGiftDrawer() {
     editingGiftId = null;
     const formAddGift = document.getElementById('form-add-gift');
@@ -7832,7 +7962,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
-    if (backdrop) {
+    if (backdrop && !abrirPresenteNaPagina(drawer)) {
       backdrop.classList.remove('hidden');
       backdrop.style.setProperty('display', 'block', 'important');
       backdrop.classList.add('open');
@@ -7874,7 +8004,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
-    if (backdrop) {
+    if (backdrop && !abrirPresenteNaPagina(drawer)) {
       backdrop.classList.remove('hidden');
       backdrop.style.setProperty('display', 'block', 'important');
       backdrop.classList.add('open');
@@ -7888,6 +8018,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeGiftDrawer() {
     editingGiftId = null;
+    devolverPresenteDaPagina(document.getElementById('drawer-add-gift'));
     const drawer = document.getElementById('drawer-add-gift');
     const backdrop = document.getElementById('gift-drawer-backdrop');
     if (drawer) {
@@ -8728,10 +8859,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('gifts-top-search-bar')?.classList.toggle('gifts-acoes-escondidas', mostrar);
     if (!mostrar) return;
     const cardCriarDoZero = `<button type="button" class="lista-pronta-card lista-pronta-criar" data-criar-presente>
-        <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+        <dotlottie-wc class="lista-pronta-lottie presente-lottie" src="/assets/lottie/adicionar-presente.lottie?v=5" autoplay loop aria-hidden="true"></dotlottie-wc>
         <strong>Adicionar presente</strong>
         <span class="lista-pronta-qtd">Crie um presente do zero</span>
       </button>`;
+    carregarPlayerLottie();
     // Uma grade só, sem títulos de seção: só "Escolha entre uma das listas".
     painel.innerHTML = `
       <section class="listas-prontas-secao">
@@ -9166,7 +9298,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalCountEl = document.getElementById('gifts-total-count');
     const totalValueEl = document.getElementById('gifts-total-value');
 
-    if (headerTitle) headerTitle.textContent = 'Meus presentes';
+    if (headerTitle) headerTitle.textContent = tituloDosPresentes();
     if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
     if (summaryStats) summaryStats.classList.remove('hidden');
 
@@ -9180,7 +9312,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalValue = giftList.reduce((acc, g) => acc + (parseFloat(g.price) || 0), 0);
 
     if (totalCountEl) totalCountEl.textContent = `${totalCount}`;
-    if (totalValueEl) totalValueEl.textContent = `R$ ${totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    // Quantidade de itens da lista (no lugar do total em reais).
+    if (totalValueEl) totalValueEl.textContent = `${totalCount} ${totalCount === 1 ? 'item' : 'itens'}`;
+    // Celular: "13 itens" acima da busca, igual "28 convidados" em Convidados.
+    const barraDosPresentes = document.getElementById('gifts-barra');
+    if (barraDosPresentes) {
+      let totalCelular = document.getElementById('gifts-total-celular');
+      if (!totalCelular) {
+        totalCelular = document.createElement('p');
+        totalCelular.id = 'gifts-total-celular';
+        totalCelular.className = 'rsvp-total-celular';
+      }
+      if (totalCelular.nextElementSibling !== barraDosPresentes) barraDosPresentes.parentElement?.insertBefore(totalCelular, barraDosPresentes);
+      totalCelular.textContent = `${totalCount} ${totalCount === 1 ? 'item' : 'itens'}`;
+    }
+    void totalValue;
 
     // Seleção só de presentes que ainda existem neste evento.
     const idsDaLista = new Set(giftList.map(g => g.id));
@@ -9207,18 +9353,19 @@ document.addEventListener('DOMContentLoaded', () => {
             <p class="presentes-vazio-texto">Sua lista está vazia. <b>Que tal adicionar presentes?</b></p>
             <div class="presentes-vazio-cards">
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="presente">
-                <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+                <dotlottie-wc class="lista-pronta-lottie presente-lottie" src="/assets/lottie/adicionar-presente.lottie?v=5" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <strong>Adicionar presente</strong>
                 <span class="lista-pronta-qtd">Crie um presente do zero</span>
               </button>
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="lista">
-                <span class="lista-pronta-criar-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg></span>
+                <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/lista-pronta.lottie?v=4" autoplay loop aria-hidden="true"></dotlottie-wc>
                 <strong>Adicionar lista pronta</strong>
                 <span class="lista-pronta-qtd">Escolha uma das nossas listas</span>
               </button>
             </div>
           </div>
         `;
+        carregarPlayerLottie();
         container.querySelector('[data-vazio="presente"]')?.addEventListener('click', () => openGiftDrawer());
         container.querySelector('[data-vazio="lista"]')?.addEventListener('click', () => irParaListasProntas(true));
       }
@@ -9248,6 +9395,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? `<img src="${gift.image}" alt="${gift.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full flex items-center justify-center bg-zinc-100 text-zinc-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></div>'}
           
+          ${isPurchased ? '<span class="gift-selo-comprado">Comprado</span>' : ''}
           ${isPurchased ? `
             <!-- Nome do Convidado no canto inferior esquerdo, sem fundo, com sombra para legibilidade -->
             <div class="gift-received-buyer absolute bottom-2 left-3 z-10 text-white text-xs font-bold font-sans max-w-[85%] truncate pointer-events-none" style="text-shadow: 0 1px 3px rgba(0,0,0,0.85), 0 1px 6px rgba(0,0,0,0.6);">
@@ -9775,7 +9923,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Alternar sub-seção da Lista de Presentes (Meus presentes vs Configurações)
+  // No celular o cabeçalho de Meus presentes se chama "Lista de presentes".
+  function tituloDosPresentes() { return window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de presentes' : 'Meus presentes'; }
+  (function tituloDosPresentesAoGirar() {
+    const mq = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+    const trocar = () => {
+      const t = document.getElementById('gifts-header-title');
+      if (t && /^(Meus presentes|Lista de presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
+      // Meus convidados: no celular o cabeçalho é "Lista de convidados".
+      const c = document.getElementById('rsvp-header-title');
+      if (c && /^(Meus convidados|Minha lista|Convidados|Lista de convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de convidados' : 'Meus convidados';
+    };
+    mq.addEventListener?.('change', trocar);
+    trocar();
+  })();
+  document.getElementById('btn-gifts-config-celular')?.addEventListener('click', () => {
+    const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="gift-settings"]'));
+    if (item) item.click(); else switchGiftsSubSection('gift-settings');
+  });
+  // Seta de voltar em Configurações (celular): volta para Meus presentes.
+  document.getElementById('btn-gifts-config-voltar')?.addEventListener('click', () => {
+    const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="my-gifts"]'));
+    if (item) item.click(); else switchGiftsSubSection('my-gifts');
+  });
+
   function switchGiftsSubSection(subId) {
+    // Celular: em Configurações somem as abas e aparece a seta de voltar.
+    document.getElementById('tab-gifts')?.classList.toggle('is-configuracoes', subId === 'gift-settings');
     const topSearchBar = document.getElementById('gifts-top-search-bar');
     const panelProducts = document.getElementById('gifts-panel-products');
     const panelSettings = document.getElementById('gifts-panel-settings');
@@ -9811,13 +9985,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (panelProducts) panelProducts.classList.remove('hidden');
       if (panelSettings) panelSettings.classList.add('hidden');
       if (summaryStats) summaryStats.classList.remove('hidden');
-      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : 'Meus presentes';
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : tituloDosPresentes();
       if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
       const searchInput = document.getElementById('gifts-search-input');
       renderHostGifts(searchInput ? searchInput.value : '');
       // Listas prontas ficam no lugar dos presentes (o item do menu continua "Meus presentes").
       mostrarListasProntas(subId === 'gift-lists');
-      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : 'Meus presentes';
+      if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : tituloDosPresentes();
       if (subId === 'gift-lists') {
         elements.drawerSubItemsList?.querySelectorAll('.sub-drawer-item').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.routeSub === 'my-gifts'));
       }
@@ -9839,8 +10013,54 @@ document.addEventListener('DOMContentLoaded', () => {
   var recadoAberto = null;
   /** Recados = presentes com mensagem escrita ou vídeo. @param {any} ev */
   const recadosDoEvento = (ev) => ((ev && ev.receivedGifts) || []).filter(/** @param {any} g */ g => String(g.message || '').trim() || g.videoUrl);
-  // Envelope com coração (mesmo traço dos ícones da plataforma), acima do aviso de "sem recados".
-  const ICONE_RECADO_VAZIO = '<svg class="recados-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.6 4.5 12 2.3l3.4 2.2"/><path d="M6 13V5.6a1.1 1.1 0 0 1 1.1-1.1h9.8A1.1 1.1 0 0 1 18 5.6V13"/><path d="M6 8.3 3.6 10a1.5 1.5 0 0 0-.6 1.2V19a1.6 1.6 0 0 0 1.6 1.6h14.8A1.6 1.6 0 0 0 21 19v-7.8a1.5 1.5 0 0 0-.6-1.2L18 8.3"/><path d="M3.4 11l5.7 4.4M20.6 11l-5.7 4.4M3.7 20.1l6.5-5.4a2.8 2.8 0 0 1 3.6 0l6.5 5.4"/><path d="M12 11.2c-1.6-1-2.6-2-2.6-3.1 0-.8.6-1.4 1.3-1.4.6 0 1 .3 1.3.8.3-.5.7-.8 1.3-.8.7 0 1.3.6 1.3 1.4 0 1.1-1 2.1-2.6 3.1Z"/></svg>';
+  // Recados vazios: animação Lottie salva na Love (assets/lottie). O player
+  // (dotlottie-wc) só é baixado quando essa tela aparece.
+  const ICONE_RECADO_VAZIO = '<dotlottie-wc class="recados-vazio-icone recados-vazio-lottie" src="/assets/lottie/recados-vazio.lottie?v=6" autoplay loop aria-hidden="true"></dotlottie-wc>';
+  function carregarPlayerLottie() {
+    if (customElements.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
+    const s = document.createElement('script');
+    s.type = 'module';
+    s.id = 'love-dotlottie-wc';
+    s.src = 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-wc@0.9.28/+esm';
+    document.head.appendChild(s);
+  }
+  // Animação que carregou com a página escondida fica com o desenho no tamanho
+  // padrão (300x150) e aparece achatada ao voltar. Sempre que uma delas
+  // ganha tamanho na tela, ela refaz o desenho no tamanho certo.
+  /** Refaz o desenho das animações que estão visíveis (logo depois de trocar de página/aba). */
+  function ajustarAnimacoesVisiveisLogo() {
+    const ajustar = () => document.querySelectorAll('dotlottie-wc').forEach(el => {
+      const player = /** @type {any} */ (el).dotLottie;
+      if (!player || typeof player.resize !== 'function' || !el.getClientRects().length) return;
+      const tela = el.shadowRoot && el.shadowRoot.querySelector('canvas');
+      const r = el.getBoundingClientRect();
+      if (tela && r.width && Math.abs(tela.width / tela.height - r.width / r.height) > 0.01) player.resize();
+    });
+    setTimeout(ajustar, 0);
+    setTimeout(ajustar, 350);
+  }
+  (function vigiarTamanhoDasAnimacoes() {
+    if (typeof ResizeObserver === 'undefined' || typeof MutationObserver === 'undefined') return;
+    const vigia = new ResizeObserver(itens => itens.forEach(item => {
+      if (!item.contentRect.width || !item.contentRect.height) return;
+      const player = /** @type {any} */ (item.target).dotLottie;
+      if (player && typeof player.resize === 'function') player.resize();
+    }));
+    const vistos = new WeakSet();
+    const observar = (/** @type {ParentNode} */ raiz) => raiz.querySelectorAll('dotlottie-wc').forEach(el => {
+      if (vistos.has(el)) return;
+      vistos.add(el);
+      vigia.observe(el);
+    });
+    observar(document);
+    new MutationObserver(mudancas => {
+      for (const m of mudancas) m.addedNodes.forEach(n => {
+        if (!(n instanceof Element)) return;
+        if (n.tagName === 'DOTLOTTIE-WC') observar(/** @type {ParentNode} */ (n.parentNode || document));
+        else if (n.querySelector('dotlottie-wc')) observar(n);
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  })();
   /** Presente comprado: vai para Recados recebidos com o recado de quem deu aberto. @param {any} gift */
   function abrirRecadoDoPresente(gift) {
     const ev = getActiveEvent();
@@ -9870,6 +10090,70 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`;
   }
 
+  /** @param {string} nome */
+  function iniciaisDoRecado(nome) {
+    const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
+    return (((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '')).toUpperCase() || '?';
+  }
+  /** Primeiro nome leve e o resto em negrito (igual Meus convidados). @param {string} nome */
+  function nomeDoRecadoHtml(nome) {
+    const partes = String(nome || 'Convidado').trim().split(/\s+/).filter(Boolean);
+    return `<span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}`;
+  }
+  /** Celular: o recado aberto em tela inteira (seta ←, iniciais, nome, data, presente e o recado). @param {any} g */
+  function fichaDoRecado(g) {
+    let ficha = document.getElementById('recado-ficha');
+    if (!g) { if (ficha) ficha.hidden = true; return; }
+    if (!ficha) {
+      ficha = document.createElement('div');
+      ficha.id = 'recado-ficha';
+      ficha.className = 'ficha-convidado recado-ficha';
+      ficha.setAttribute('role', 'dialog');
+      ficha.setAttribute('aria-modal', 'true');
+      ficha.setAttribute('aria-labelledby', 'recado-ficha-titulo');
+      document.body.appendChild(ficha);
+      ficha.addEventListener('click', (e) => {
+        if (/** @type {HTMLElement} */ (e.target).closest('[data-recado-ficha-voltar]')) { recadoAberto = null; renderRecadosRecebidos(); }
+      });
+      // Trocar de menu fecha o recado.
+      document.addEventListener('click', (e) => {
+        if (ficha && !ficha.hidden && /** @type {HTMLElement} */ (e.target).closest('.rail-icon-btn, #submenu-celular, .menu-celular-link')) { recadoAberto = null; ficha.hidden = true; }
+      }, true);
+    }
+    const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const msg = String(g.message || '').trim();
+    const video = g.videoUrl ? String(g.videoUrl) : '';
+    const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor) => `<div class="ficha-linha"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor">${escaparHtml(valor)}</span></div>`;
+    ficha.innerHTML = `
+      <div class="ficha-topo">
+        <button type="button" class="ficha-voltar" data-recado-ficha-voltar aria-label="Voltar para os recados">${ICONE_VOLTAR_FICHA}</button>
+        <h2 class="ficha-titulo" id="recado-ficha-titulo">Recado</h2>
+        <span class="recado-ficha-espaco" aria-hidden="true"></span>
+      </div>
+      <div class="ficha-corpo">
+        <div class="ficha-cabeca">
+          <div class="ficha-avatar">${escaparHtml(iniciaisDoRecado(g.guestName))}</div>
+          <div class="ficha-cabeca-texto">
+            <p class="ficha-nome">${escaparHtml(g.guestName || 'Convidado')}</p>
+            <span class="ficha-status">${escaparHtml(g.date || '—')}</span>
+          </div>
+        </div>
+        <section class="ficha-cartao">
+          <h3>Presente</h3>
+          ${linha('Presente', g.giftTitle || 'Presente')}
+          ${linha('Valor', brl(g.amount))}
+          ${linha('Comprado em', g.date || '—')}
+        </section>
+        <section class="ficha-cartao recado-ficha-mensagem">
+          <h3>Recado</h3>
+          ${video ? `<video class="recado-video" src="${escaparHtml(video)}" controls playsinline preload="metadata"></video>` : ''}
+          ${msg ? `<p class="recado-ficha-texto">${escaparHtml(msg)}</p>` : ''}
+        </section>
+      </div>`;
+    ficha.hidden = false;
+    /** @type {HTMLElement|null} */ (ficha.querySelector('.ficha-corpo'))?.scrollTo({ top: 0 });
+  }
+
   function renderRecadosRecebidos() {
     const raiz = document.getElementById('recados-raiz');
     if (!raiz) return;
@@ -9881,36 +10165,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const titulo = document.getElementById('gifts-header-title');
     if (titulo) titulo.textContent = aberto ? (aberto.guestName || 'Convidado') : 'Recados recebidos';
     document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', !aberto);
-    if (aberto) {
+    const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+    fichaDoRecado(noCelular ? aberto : null);
+    if (aberto && !noCelular) {
       raiz.innerHTML = `<div class="dash-card love-tabela-caixa recados-caixa is-carta">${cartaDoRecado(aberto)}</div>`;
       return;
     }
-    const semPresentes = !((ev && ev.giftList) || []).length;
+    if (aberto && titulo) titulo.textContent = 'Recados recebidos';
+    document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', noCelular || !aberto);
     const termo = recadosBusca.trim().toLowerCase();
     const lista = termo ? recados.filter(/** @param {any} g */ g => `${g.guestName} ${g.giftTitle} ${g.message}`.toLowerCase().includes(termo)) : recados;
     const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     const totalPaginas = Math.max(1, Math.ceil(lista.length / recadosPorPagina));
     recadosPagina = Math.min(Math.max(1, recadosPagina), totalPaginas);
-    const daPagina = lista.slice((recadosPagina - 1) * recadosPorPagina, recadosPagina * recadosPorPagina);
+    const daPagina = noCelular ? lista : lista.slice((recadosPagina - 1) * recadosPorPagina, recadosPagina * recadosPorPagina);
     const linhas = daPagina.map(/** @param {any} g */ g => {
       const id = String(g.id);
       const msg = String(g.message || '').trim();
       const previa = msg ? escaparHtml(msg.length > 80 ? msg.slice(0, 80) + '…' : msg) : '<span class="recado-tag-video">Recado em vídeo</span>';
       return `
         <tr class="recado-linha" data-recado-id="${escaparHtml(id)}" tabindex="0" aria-label="Abrir o recado de ${escaparHtml(g.guestName || 'Convidado')}">
-          <td><span class="recado-nome">${escaparHtml(g.guestName || 'Convidado')}</span></td>
+          <td><span class="recado-avatar-celular" aria-hidden="true">${escaparHtml(iniciaisDoRecado(g.guestName))}</span><span class="recado-celular-texto"><span class="recado-nome">${nomeDoRecadoHtml(g.guestName)}</span><span class="recado-celular-presente">${escaparHtml(g.giftTitle || 'Presente')}</span></span><span class="recado-celular-valor">${escaparHtml(brl(g.amount))}</span></td>
           <td>${escaparHtml(g.giftTitle || 'Presente')}<span class="recado-sub">${escaparHtml(brl(g.amount))}</span></td>
           <td class="recado-data">${escaparHtml(g.date || '—')}</td>
           <td class="recado-previa">${previa}${msg && g.videoUrl ? ' <span class="recado-tag-video">+ vídeo</span>' : ''}</td>
         </tr>`;
     }).join('');
+    if (!linhas && !recados.length) carregarPlayerLottie();
     raiz.innerHTML = `
       <div class="dash-card love-tabela-caixa recados-caixa">
+        <p class="rsvp-total-celular recados-total-celular">${recados.length} ${recados.length === 1 ? 'recado' : 'recados'}</p>
         <div class="love-tabela-barra">
           <div class="love-tabela-barra-esq">
             <div class="love-tabela-busca">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-              <input type="search" id="recados-busca" value="${escaparHtml(recadosBusca)}" placeholder="Buscar recado..." aria-label="Buscar recado" autocomplete="off">
+              <input type="search" id="recados-busca" value="${escaparHtml(recadosBusca)}" placeholder="Pesquisar recado..." aria-label="Pesquisar recado" autocomplete="off">
             </div>
           </div>
           <div class="love-tabela-barra-dir"><p class="recados-contagem">${recados.length} ${recados.length === 1 ? 'recado' : 'recados'}</p></div>
@@ -9918,7 +10207,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="w-full overflow-x-auto">
           <table class="love-tabela recados-tabela w-full text-left border-collapse font-sans">
             <thead><tr><th>Convidado</th><th>Presente</th><th>Recebido em</th><th>Recado</th></tr></thead>
-            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + (semPresentes ? 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.<br>Parece que ainda não existe nenhum presente adicionado. <button type="button" class="recados-link" data-recados-ir-presentes>Que tal adicionar um presente?</button>' : 'Os recados aparecem aqui quando os convidados presentearem e deixarem uma mensagem.')}</td></tr>`}</tbody>
+            <tbody>${linhas || `<tr><td colspan="4" class="recados-vazio">${recados.length ? 'Nenhum recado encontrado.' : ICONE_RECADO_VAZIO + 'Os recados dos seus convidados aparecerão aqui conforme os presentes forem chegando.'}</td></tr>`}</tbody>
           </table>
         </div>
         <div class="guests-pagination recados-paginacao">
@@ -10064,7 +10353,127 @@ document.addEventListener('DOMContentLoaded', () => {
     return (a.name || '').localeCompare(b.name || '', 'pt-BR', { sensitivity: 'base' });
   }
 
+  // ------------------------------------------------------------------
+  // Celular: arrastar o convidado para a esquerda revela os três pontinhos
+  // (Editar / Remover convidado). Uma linha aberta por vez; fecha ao tocar
+  // fora ou rolar; o toque só abre a ficha se não houve arraste.
+  // ------------------------------------------------------------------
+  const LARGURA_ACAO_CONVIDADO = 160;
+  /** @type {HTMLElement|null} */
+  let linhaDoConvidadoAberta = null;
+  const convidadosNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+
+  /**
+   * O convidado e os acompanhantes dele andam juntos (mesmo data-guest-id).
+   * @param {HTMLElement} celula
+   * @returns {HTMLElement[]}
+   */
+  function celulasDoGrupo(celula) {
+    const id = celula.closest('tr')?.dataset.guestId;
+    const corpo = celula.closest('tbody');
+    if (!id || !corpo) return [celula];
+    return /** @type {HTMLElement[]} */ (Array.from(corpo.querySelectorAll('td.guest-celula-arraste')))
+      .filter(c => c.closest('tr')?.dataset.guestId === id);
+  }
+  /** @param {HTMLElement} celula @param {number} x @param {boolean} animar */
+  function moverLinhaDoConvidado(celula, x, animar) {
+    // Editar/Remover ocupam a altura do grupo todo (convidado + acompanhantes).
+    const acoes = /** @type {HTMLElement|null} */ (celula.querySelector('.guest-acoes'));
+    // A faixa vai só até o fim do último card (passava 1px para a linha
+    // divisória e ficava um risco escuro) e some quando a linha fecha.
+    const grupo = celulasDoGrupo(celula);
+    const ultimoCard = /** @type {HTMLElement|null|undefined} */ (grupo[grupo.length - 1]?.querySelector('.guest-card-arraste'));
+    if (acoes && ultimoCard) {
+      acoes.style.height = '0px';
+      acoes.style.height = `${Math.max(0, Math.floor(ultimoCard.getBoundingClientRect().bottom - acoes.getBoundingClientRect().top))}px`;
+      if (x < 0) acoes.classList.add('is-visivel');
+      else if (!animar) acoes.classList.remove('is-visivel');
+      else setTimeout(() => { if (!celula.classList.contains('is-aberta')) acoes.classList.remove('is-visivel'); }, 420);
+    }
+    grupo.forEach((c) => {
+      const card = /** @type {HTMLElement|null} */ (c.querySelector('.guest-card-arraste'));
+      if (!card) return;
+      card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+      card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
+      c.classList.toggle('is-aberta', x < 0);
+    });
+  }
+  function fecharLinhaDoConvidado() {
+    if (linhaDoConvidadoAberta) moverLinhaDoConvidado(linhaDoConvidadoAberta, 0, true);
+    linhaDoConvidadoAberta = null;
+  }
+  /** @param {HTMLElement} celula @param {HTMLElement} card */
+  function prepararArrasteDoConvidado(celula, card) {
+    let x0 = 0, y0 = 0, inicio = 0, x = 0;
+    /** @type {null|'h'|'v'} */
+    let direcao = null;
+    card.addEventListener('touchstart', (e) => {
+      if (!convidadosNoCelular() || e.touches.length !== 1) return;
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+      inicio = celula === linhaDoConvidadoAberta ? -LARGURA_ACAO_CONVIDADO : 0;
+      x = inicio; direcao = null; celula.dataset.arrastou = '';
+    }, { passive: true });
+    card.addEventListener('touchmove', (e) => {
+      if (!convidadosNoCelular() || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+      if (!direcao) {
+        if (Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+        direcao = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        if (direcao === 'h') {
+          celula.dataset.arrastou = '1';
+          if (linhaDoConvidadoAberta && linhaDoConvidadoAberta !== celula) fecharLinhaDoConvidado();
+        }
+      }
+      if (direcao !== 'h') return;
+      e.preventDefault();
+      x = Math.max(-LARGURA_ACAO_CONVIDADO, Math.min(0, inicio + dx));
+      moverLinhaDoConvidado(celula, x, false);
+    }, { passive: false });
+    const soltar = () => {
+      if (direcao !== 'h') return;
+      const abrir = x < -LARGURA_ACAO_CONVIDADO / 2;
+      moverLinhaDoConvidado(celula, abrir ? -LARGURA_ACAO_CONVIDADO : 0, true);
+      linhaDoConvidadoAberta = abrir ? celula : (linhaDoConvidadoAberta === celula ? null : linhaDoConvidadoAberta);
+      direcao = null;
+      // O "click" que vem depois do toque não abre a ficha.
+      setTimeout(() => { celula.dataset.arrastou = ''; }, 350);
+    };
+    card.addEventListener('touchend', soltar);
+    card.addEventListener('touchcancel', soltar);
+  }
+  // Tocar fora da linha aberta (ou rolar a página) fecha Editar/Remover.
+  document.addEventListener('touchstart', (e) => {
+    const alvo = /** @type {Element} */ (e.target);
+    if (linhaDoConvidadoAberta && !(alvo.closest && (linhaDoConvidadoAberta.contains(alvo) || alvo.closest('.acoes-convidado')))) fecharLinhaDoConvidado();
+  }, { passive: true, capture: true });
+  window.addEventListener('scroll', () => { if (linhaDoConvidadoAberta) fecharLinhaDoConvidado(); }, { passive: true });
+
+  /** @param {string} guestId */
+  function removerConvidadoComConfirmacao(guestId) {
+    const ev = getActiveEvent();
+    const guest = ev && (ev.guests || []).find((/** @type {any} */ g) => g.id === guestId);
+    if (!guest) return;
+    const acomp = (guest.companionsNames || []).length;
+    confirmarNaLove({
+      titulo: 'Remover convidado?',
+      texto: `${guest.name || 'Este convidado'}${acomp ? ` e ${acomp === 1 ? 'o acompanhante' : `os ${acomp} acompanhantes`}` : ''} saem da sua lista.`,
+      botao: 'Remover',
+      aoConfirmar: async () => {
+        const { error } = await excluirConvidadoNoBanco(guestId).catch((/** @type {any} */ err) => ({ error: err }));
+        if (error) { showToast('Não foi possível remover o convidado. Tente de novo.', '⚠️'); return; }
+        const idx = ev.guests.findIndex((/** @type {any} */ g) => g.id === guestId);
+        if (idx !== -1) ev.guests.splice(idx, 1);
+        convidadosSelecionados.delete(guestId);
+        renderGuestsTable();
+        renderFloorPlanGuestCards();
+        updateAllCelebrationData();
+        showToast(`Convidado ${guest.name || ''} removido da lista.`, '🗑️');
+      }
+    });
+  }
+
   function renderGuestsTable(activeFilter = currentRsvpFilter, searchKeyword = '') {
+    linhaDoConvidadoAberta = null;
     currentRsvpFilter = activeFilter;
     const listEl = document.getElementById('rsvp-guests-table-body');
     const emptyStateEl = document.getElementById('rsvp-empty-state');
@@ -10102,6 +10511,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const countOptPending = document.getElementById('count-rsvp-opt-pending');
 
     if (countOptAll) countOptAll.textContent = totalCount;
+    // Celular: "137 convidados" acima da busca.
+    const barraDaBusca = document.querySelector('#tab-rsvp .love-tabela-barra');
+    if (barraDaBusca) {
+      let totalCelular = document.getElementById('rsvp-total-celular');
+      if (!totalCelular) {
+        totalCelular = document.createElement('p');
+        totalCelular.id = 'rsvp-total-celular';
+        totalCelular.className = 'rsvp-total-celular';
+      }
+      if (totalCelular.nextElementSibling !== barraDaBusca) barraDaBusca.parentElement?.insertBefore(totalCelular, barraDaBusca);
+      totalCelular.textContent = `${totalCount} ${totalCount === 1 ? 'convidado' : 'convidados'}`;
+    }
     if (countOptConfirmed) countOptConfirmed.textContent = confirmedCount;
     if (countOptDeclined) countOptDeclined.textContent = declinedCount;
     if (countOptPending) countOptPending.textContent = pendingCount;
@@ -10150,9 +10571,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const semNinguem = !(activeEvent.guests || []).length;
         const tituloVazio = document.getElementById('rsvp-vazio-titulo');
         const textoVazio = document.getElementById('rsvp-vazio-texto');
-        if (tituloVazio) tituloVazio.textContent = semNinguem ? 'Adicione os seus primeiros convidados' : 'Nenhum convidado encontrado com este filtro.';
+        // Lista vazia: o título é um link que já abre a ficha de "Adicionar convidado" (manual).
+        if (tituloVazio) {
+          tituloVazio.textContent = '';
+          if (semNinguem) {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'rsvp-vazio-link'; b.textContent = 'Adicione os seus primeiros convidados';
+            b.addEventListener('click', () => abrirFichaDoConvidado(null));
+            tituloVazio.appendChild(b);
+          } else tituloVazio.textContent = 'Nenhum convidado encontrado com este filtro.';
+        }
         if (textoVazio) { textoVazio.textContent = 'Cadastre a sua lista de convidados para enviar convites e acompanhar as confirmações de presença em tempo real.'; textoVazio.hidden = !semNinguem; }
+        if (semNinguem) carregarPlayerLottie();
         emptyStateEl.classList.remove('hidden');
+        // Celular: guarda a altura do ícone para o Mapa vazio usar a mesma.
+        if (semNinguem) setTimeout(guardarAlturaDoVazioDeConvidados, 360);
       }
       renderRsvpPagination(0);
       return;
@@ -10205,7 +10638,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // Um convidado com acompanhantes nunca aparece com nomes concatenados
     // ("Fulano & Beltrano") numa única linha — cada pessoa ganha sua própria
     // linha, sempre com um nome único, compartilhando status e mesa da mesma reserva.
+    let letraAnterior = '';
     pageGuests.forEach((guest, indiceGrupo) => {
+      {
+        const inicial = (String(guest.name || '').trim()[0] || '#').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+        const letra = /[A-Z]/.test(inicial) ? inicial : '#';
+        if (letra !== letraAnterior) {
+          letraAnterior = letra;
+          const linhaLetra = document.createElement('tr');
+          linhaLetra.className = 'guest-letra-linha';
+          // Celular: <td> simples (colspan apertava os nomes); desktop: a linha inteira.
+          linhaLetra.innerHTML = listaContinua ? `<td>${letra}</td>` : `<td colspan="6">${letra}</td>`;
+          listEl.appendChild(linhaLetra);
+        }
+      }
       const gifts = guest.giftsBought || [];
       const giftsTotal = gifts.reduce((acc, g) => acc + (g.amount || 0), 0);
       const giftLabel = giftsTotal > 0
@@ -10271,10 +10717,54 @@ document.addEventListener('DOMContentLoaded', () => {
           <td class="guest-col-restricao">${bolinhaDaRestricaoHtml(attendee.isPrimary ? guest.restricaoAlimentar : attendee.restricaoAlimentar)}</td>
         `;
         row.dataset.guestId = guest.id;
+        // Celular: arrastar o convidado para a esquerda mostra os três pontinhos.
+        if (attendee.isPrimary) {
+          const celula = /** @type {HTMLElement|null} */ (row.querySelector('td'));
+          const card = /** @type {HTMLElement|null} */ (celula && celula.querySelector(':scope > div'));
+          if (celula && card) {
+            celula.classList.add('guest-celula-arraste');
+            card.classList.add('guest-card-arraste');
+            // Arrastar revela Editar e Remover (botões retos, como no app).
+            const acoes = document.createElement('div');
+            acoes.className = 'guest-acoes';
+            acoes.innerHTML = `
+              <button type="button" class="guest-acao guest-acao-editar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg><span>Editar</span></button>
+              <button type="button" class="guest-acao guest-acao-remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Remover</span></button>`;
+            acoes.querySelector('.guest-acao-editar')?.addEventListener('click', (e) => {
+              e.stopPropagation();
+              fecharLinhaDoConvidado();
+              abrirFichaDoConvidado(guest.id); fichaEditando = true; desenharFichaDoConvidado();
+            });
+            acoes.querySelector('.guest-acao-remover')?.addEventListener('click', (e) => {
+              e.stopPropagation();
+              fecharLinhaDoConvidado();
+              removerConvidadoComConfirmacao(guest.id);
+            });
+            celula.appendChild(acoes);
+            prepararArrasteDoConvidado(celula, card);
+          }
+        } else {
+          // Acompanhante: arrasta junto com o convidado; Editar e Remover
+          // ficam na linha do convidado, com a altura do grupo todo.
+          const celula = /** @type {HTMLElement|null} */ (row.querySelector('td'));
+          const card = /** @type {HTMLElement|null} */ (celula && celula.querySelector(':scope > div'));
+          const principal = /** @type {HTMLElement|null} */ (Array.from(listEl.querySelectorAll('td.guest-celula-arraste'))
+            .find(c => /** @type {HTMLElement} */ (c.closest('tr')).dataset.guestId === guest.id && !c.closest('tr')?.classList.contains('is-acompanhante-row')) || null);
+          if (celula && card && principal) {
+            celula.classList.add('guest-celula-arraste');
+            card.classList.add('guest-card-arraste');
+            prepararArrasteDoConvidado(principal, card);
+          }
+        }
 
         // O nome abre o convidado (a linha continua livre para selecionar/copiar texto).
         row.querySelector('.guest-nome-btn')?.addEventListener('click', (e) => {
           e.stopPropagation();
+          // Depois de arrastar, ou com os três pontinhos à mostra, o toque só fecha a linha.
+          const celulaDoArraste = /** @type {HTMLElement|null} */ (Array.from(listEl.querySelectorAll('td.guest-celula-arraste'))
+            .find(c => /** @type {HTMLElement} */ (c.closest('tr')).dataset.guestId === guest.id && !c.closest('tr')?.classList.contains('is-acompanhante-row')) || null);
+          if (celulaDoArraste && celulaDoArraste.dataset.arrastou === '1') return;
+          if (celulaDoArraste && celulaDoArraste.classList.contains('is-aberta')) { fecharLinhaDoConvidado(); return; }
           // Celular: abre a ficha do convidado (ver e editar); desktop: o pop-up.
           if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) abrirFichaDoConvidado(guest.id);
           else openAddGuestDrawer(guest.id);
@@ -10324,15 +10814,18 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="ficha-pilula is-salvar" data-ficha="salvar" hidden>Salvar</button>
       </div>
       <div class="ficha-corpo">
-        <div class="ficha-avatar" id="ficha-avatar"></div>
-        <p class="ficha-nome" id="ficha-nome"></p>
-        <span class="ficha-status" id="ficha-status"></span>
+        <div class="ficha-cabeca">
+          <div class="ficha-avatar" id="ficha-avatar"></div>
+          <div class="ficha-cabeca-texto">
+            <p class="ficha-nome" id="ficha-nome"></p>
+            <span class="ficha-status" id="ficha-status"></span>
+          </div>
+        </div>
         <section class="ficha-cartao">
           <h3>Informações de contato</h3>
           <div id="ficha-contato"></div>
         </section>
         <section class="ficha-cartao ficha-so-leitura">
-          <h3>Respostas</h3>
           <div id="ficha-respostas"></div>
         </section>
         <section class="ficha-cartao ficha-so-edicao">
@@ -10369,7 +10862,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       else if (acao === 'editar') { fichaEditando = true; desenharFichaDoConvidado(); }
       else if (acao === 'salvar') salvarFichaDoConvidado();
-      else if (acao === 'add-acomp') { const linha = adicionarAcompanhanteNaFicha({}); linha?.querySelector('input')?.focus(); }
+      else if (acao === 'add-acomp') {
+        const linha = adicionarAcompanhanteNaFicha({});
+        // Celular: não abre o teclado; ele só sobe quando tocar no campo do nome.
+        if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) linha?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        else linha?.querySelector('input')?.focus();
+      }
       else if (acao === 'detalhes') {
         fichaEditando = true;
         desenharFichaDoConvidado();
@@ -10383,6 +10881,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (erro) erro.hidden = true;
     });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !ficha.hidden) fecharFichaDoConvidado(); });
+    // Computador: o fundo escuro do pop-up é o próprio body; clicar nele fecha.
+    document.addEventListener('click', (e) => { if (!ficha.hidden && e.target === document.body) fecharFichaDoConvidado(); });
     // Trocar de menu fecha a ficha.
     document.addEventListener('click', (e) => { if (!ficha.hidden && /** @type {HTMLElement} */ (e.target).closest('.rail-icon-btn, #submenu-celular')) fecharFichaDoConvidado(); }, true);
     return ficha;
@@ -10449,6 +10949,27 @@ document.addEventListener('DOMContentLoaded', () => {
     return linha;
   }
 
+  /**
+   * "Convidado de quem?" e "Relação" (iguais ao pop-up do computador), só
+   * para adicionar e editar; na leitura a relação aparece nas respostas.
+   * @param {any} guest
+   */
+  function vinculoDaFicha(guest) {
+    let anfitrioes = /** @type {string[]} */ ([]);
+    try { anfitrioes = getClienteHostNames() || []; } catch (e) { anfitrioes = []; }
+    const anfitriao = String(guest.relationshipHost || '');
+    if (anfitriao && !anfitrioes.includes(anfitriao)) anfitrioes = [...anfitrioes, anfitriao];
+    const relacoes = Array.from(/** @type {NodeListOf<HTMLOptionElement>} */ (document.querySelectorAll('#guest-title-input option')))
+      .map(o => ({ valor: o.value, rotulo: o.textContent || o.value }));
+    const relacao = guest.relationshipTitle || 'Convidado';
+    if (!relacoes.some(r => r.valor === relacao)) relacoes.push({ valor: relacao, rotulo: relacao });
+    const opcao = (/** @type {string} */ valor, /** @type {string} */ rotulo, /** @type {string} */ atual) => `<option value="${escaparHtml(valor)}"${valor === atual ? ' selected' : ''}>${escaparHtml(rotulo)}</option>`;
+    const campo = (/** @type {string} */ rotulo, /** @type {string} */ id, /** @type {string} */ opcoes) =>
+      `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-campo is-escolha"><select id="${id}" class="ficha-input">${opcoes}</select></span></label>`;
+    return campo('Convidado de quem?', 'ficha-anfitriao', opcao('', '—', anfitriao) + anfitrioes.map(n => opcao(n, n, anfitriao)).join(''))
+      + campo('Relação', 'ficha-relacao', relacoes.map(r => opcao(r.valor, r.rotulo, relacao)).join(''));
+  }
+
   /** @returns {boolean} */
   function desenharFichaDoConvidado() {
     const ficha = fichaDoConvidado();
@@ -10476,7 +10997,8 @@ document.addEventListener('DOMContentLoaded', () => {
       linha('Nome', primeiro, 'ficha-primeiro', 'text', 'Nome')
       + linha('Sobrenome', sobrenome, 'ficha-sobrenome', 'text', 'Sobrenome')
       + linha('Telefone', guest.phone || '', 'ficha-telefone', 'tel', '(00) 00000-0000')
-      + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail');
+      + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail')
+      + (fichaEditando ? vinculoDaFicha(guest) : '');
 
     const acompanhantes = (guest.companionsNames || []).map((/** @type {string} */ n) => String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
     const resposta = (/** @type {string} */ rotulo, /** @type {string} */ valor) => `<div class="ficha-linha is-resposta"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor">${escaparHtml(valor)}</span></div>`;
@@ -10485,8 +11007,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let relacao = '';
     try { relacao = formatGuestTitleLabel(guest) || ''; } catch (e) { relacao = ''; }
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-respostas')).innerHTML =
-      resposta('Presença', status)
-      + resposta('Acompanhantes', acompanhantes.length ? acompanhantes.join(', ') : 'Nenhum')
+      resposta('Acompanhantes', acompanhantes.length ? acompanhantes.join(', ') : 'Nenhum')
       + resposta('Mesa', guest.table && guest.table !== 'Mesa a Definir' ? guest.table : 'A definir')
       + resposta('Restrição alimentar', restricao || 'Nenhuma')
       + (relacao && relacao !== '—' ? resposta('Relação', relacao) : '');
@@ -10536,13 +11057,17 @@ document.addEventListener('DOMContentLoaded', () => {
       ageGroup: /** @type {HTMLSelectElement} */ (l.querySelector('.ficha-acomp-idade')).value,
       restricaoAlimentar: fichaRestricaoDoAcomp.get(l)?.valor() || { restrictionType: 'NONE' }
     }));
-    const campos = ['name', 'phone', 'email', 'companionsNames', 'companionsDetailed', 'companions', 'adults', 'children', 'restricaoAlimentar', 'dietaryRestrictions'];
+    const campos = ['name', 'phone', 'email', 'companionsNames', 'companionsDetailed', 'companions', 'adults', 'children', 'restricaoAlimentar', 'dietaryRestrictions', 'relationshipHost', 'relationshipTitle'];
     /** @type {any} */ const antes = {};
     campos.forEach(c => { antes[c] = guest[c]; });
     const acompanhantesAntes = guest.companions || 0;
     guest.name = nome;
     guest.phone = telefone;
     guest.email = email;
+    if (ficha.querySelector('#ficha-relacao')) {
+      guest.relationshipHost = valor('ficha-anfitriao');
+      guest.relationshipTitle = valor('ficha-relacao') || 'Convidado';
+    }
     guest.companionsDetailed = companionsDetailed;
     guest.companionsNames = companionsDetailed.map(c => c.name);
     guest.companions = companionsDetailed.length;
@@ -10716,9 +11241,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (w.LoveChecklist) w.LoveChecklist.render();
   }
 
-  // "Buscar fornecedores" de uma tarefa do checklist: abre o Explorar já
+  // "Pesquisar fornecedores" de uma tarefa do checklist: abre o Explorar já
   // filtrado pela categoria (ex.: Contratar o buffet → Buffet e Gastronomia).
   // Atalho para abrir uma página da plataforma (ex.: tarefas prontas do Checklist).
+  document.getElementById('btn-b2b-explorar-celular')?.addEventListener('click', () => window.loveIrPara?.('b2b', 'explore'));
   window.loveIrPara = (/** @type {string} */ tab, /** @type {string} */ sub) => {
     if (state.currentTab === tab) { abrirSubItem(tab, sub); registrarRota(caminhoSubRota(tab, sub)); return; }
     pendingSubItemId = sub;
@@ -11294,9 +11820,375 @@ document.addEventListener('DOMContentLoaded', () => {
     activeDrawerGuestId = null;
   }
 
+  // ------------------------------------------------------------------
+  // Celular: menu "Adicionar manual" / "Importar contatos". Importar abre
+  // os contatos do celular (Contact Picker, Android/Chrome); onde o navegador
+  // não deixa (Safari do iPhone), escolhe um arquivo de contatos (.vcf).
+  // ------------------------------------------------------------------
+  const MQ_CELULAR_CONVIDADOS = '(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)';
+  /** @type {HTMLElement|null} */
+  let menuAddConvidado = null;
+  /** @type {HTMLElement|null} */
+  let ancoraMenuAddConvidado = null;
+  function fecharMenuAddConvidado() {
+    menuAddConvidado?.remove();
+    menuAddConvidado = null;
+    ancoraMenuAddConvidado = null;
+  }
+  document.addEventListener('pointerdown', (e) => {
+    const alvo = /** @type {Node} */ (e.target);
+    if (menuAddConvidado && !menuAddConvidado.contains(alvo) && !(ancoraMenuAddConvidado && ancoraMenuAddConvidado.contains(alvo))) fecharMenuAddConvidado();
+  }, true);
+  window.addEventListener('scroll', () => { if (menuAddConvidado) fecharMenuAddConvidado(); }, { passive: true, capture: true });
+
+  /** @param {HTMLElement} ancora @param {{ naHome?: boolean }} [opcoes] */
+  function abrirMenuAddConvidado(ancora, opcoes = {}) {
+    if (menuAddConvidado) { fecharMenuAddConvidado(); return; }
+    const naHome = !!opcoes.naHome;
+    const menu = document.createElement('div');
+    menu.className = 'menu-add-convidado';
+    menu.setAttribute('role', 'menu');
+    // Na Home (Continuar), primeiro o atalho para a lista.
+    menu.innerHTML = `${naHome ? `
+      <button type="button" role="menuitem" data-add="lista">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>
+        <span>Ver lista</span>
+      </button>` : ''}
+      <button type="button" role="menuitem" data-add="manual">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+        <span>Adicionar manual</span>
+      </button>
+      <button type="button" role="menuitem" data-add="contatos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>
+        <span>Importar contatos</span>
+      </button>`;
+    document.body.appendChild(menu);
+    menuAddConvidado = menu;
+    ancoraMenuAddConvidado = ancora;
+    // Embaixo do botão (ou em cima, se não couber); botão largo: centralizado.
+    const r = ancora.getBoundingClientRect();
+    const larg = menu.offsetWidth, alt = menu.offsetHeight;
+    let topo = r.bottom + 6;
+    if (topo + alt > window.innerHeight - 8) topo = Math.max(8, r.top - alt - 6);
+    const esquerda = r.width > 200 ? r.left + (r.width - larg) / 2 : r.right - larg;
+    menu.style.top = `${Math.round(topo)}px`;
+    menu.style.left = `${Math.round(Math.min(Math.max(8, esquerda), window.innerWidth - larg - 8))}px`;
+
+    menu.querySelector('[data-add="lista"]')?.addEventListener('click', () => {
+      fecharMenuAddConvidado();
+      window.loveIrPara?.('rsvp', 'all');
+    });
+    menu.querySelector('[data-add="manual"]')?.addEventListener('click', () => {
+      fecharMenuAddConvidado();
+      if (naHome) { window.loveIrPara?.('rsvp', 'all'); setTimeout(() => abrirFichaDoConvidado(null), 80); }
+      else abrirFichaDoConvidado(null);
+    });
+    menu.querySelector('[data-add="contatos"]')?.addEventListener('click', () => {
+      fecharMenuAddConvidado();
+      importarContatosParaALista(naHome);
+    });
+  }
+
+  /** Abre o seletor de arquivo de contatos (.vcf). @returns {Promise<string|null>} */
+  function escolherArquivoDeContatos() {
+    return new Promise((resolve) => {
+      const entrada = document.createElement('input');
+      entrada.type = 'file';
+      entrada.accept = '.vcf,.csv,text/vcard,text/x-vcard,text/csv';
+      entrada.hidden = true;
+      document.body.appendChild(entrada);
+      const fim = (/** @type {string|null} */ v) => { entrada.remove(); resolve(v); };
+      entrada.addEventListener('change', async () => {
+        const f = entrada.files && entrada.files[0];
+        if (!f) return fim(null);
+        try { fim(await f.text()); } catch (e) { fim(null); }
+      });
+      entrada.addEventListener('cancel', () => fim(null));
+      entrada.click();
+    });
+  }
+
+  /**
+   * Contatos de um CSV exportado da agenda (Google Contatos, Outlook ou
+   * planilha simples) → [nome, telefone, e-mail]. Nome: coluna "Name/Nome"
+   * ou First + Middle + Last; telefone e e-mail: a primeira coluna que tiver.
+   * @param {string} texto @returns {string[][]}
+   */
+  function contatosDoCsvDaAgenda(texto) {
+    const linhas = lerCsv(texto);
+    if (linhas.length < 2) return [];
+    const norm = (/** @type {string} */ s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+    const cab = linhas[0].map(norm);
+    const achar = (/** @type {(c: string) => boolean} */ teste) => cab.findIndex(teste);
+    const iNome = achar(c => c === 'name' || c === 'nome' || c === 'nomecompleto' || c === 'convidado' || c === 'displayname');
+    const iPrimeiro = achar(c => c === 'firstname' || c === 'givenname' || c === 'primeironome');
+    const iMeio = achar(c => c === 'middlename' || c === 'additionalname');
+    const iUltimo = achar(c => c === 'lastname' || c === 'familyname' || c === 'sobrenome');
+    const iTel = achar(c => /(phone|telefone|celular|mobile|whatsapp)/.test(c) && !/(type|label|tipo|phonetic)/.test(c));
+    const iEmail = achar(c => /(email|mail)/.test(c) && !/(type|label|tipo)/.test(c));
+    // Google separa vários números/e-mails na mesma célula com " ::: ".
+    const primeiro = (/** @type {string|undefined} */ v) => String(v || '').split(':::')[0].trim();
+    return linhas.slice(1).map(l => {
+      const nome = iNome >= 0 && l[iNome] ? l[iNome] : [iPrimeiro, iMeio, iUltimo].filter(i => i >= 0).map(i => l[i] || '').filter(Boolean).join(' ');
+      return [String(nome || '').trim(), iTel >= 0 ? primeiro(l[iTel]) : '', iEmail >= 0 ? primeiro(l[iEmail]) : ''];
+    }).filter(([nome]) => nome);
+  }
+
+  /**
+   * Computador: janela que explica como baixar os contatos (Google, iPhone/
+   * Mac pelo iCloud, Outlook) e escolher o arquivo (.vcf ou .csv).
+   * @param {boolean} irParaLista
+   */
+  function mostrarImportarNoComputador(irParaLista) {
+    document.getElementById('ajuda-contatos')?.remove();
+    const tela = document.createElement('div');
+    tela.id = 'ajuda-contatos';
+    tela.className = 'ajuda-contatos is-computador';
+    tela.innerHTML = `
+      <div class="ajuda-contatos-fundo" data-fechar></div>
+      <div class="ajuda-contatos-folha" role="dialog" aria-modal="true" aria-labelledby="ajuda-contatos-titulo">
+        <h3 id="ajuda-contatos-titulo">Importar seus contatos</h3>
+        <p>No computador, o navegador não abre a agenda direto. Baixe seus contatos em um arquivo e escolha ele aqui: a Love traz nome, telefone e e-mail, sem repetir quem já está na lista.</p>
+        <div class="ajuda-origens">
+          <div class="ajuda-origem">
+            <strong>Google Contatos (Android)</strong>
+            <span>Em <a href="https://contacts.google.com" target="_blank" rel="noopener">contacts.google.com</a>, clique em <b>Exportar</b> e escolha <b>CSV do Google</b> ou <b>vCard</b>.</span>
+          </div>
+          <div class="ajuda-origem">
+            <strong>iPhone ou Mac</strong>
+            <span>Em <a href="https://www.icloud.com/contacts" target="_blank" rel="noopener">icloud.com/contacts</a>, selecione os contatos e use <b>Exportar vCard</b>.</span>
+          </div>
+          <div class="ajuda-origem">
+            <strong>Outlook</strong>
+            <span>Em Pessoas, abra <b>Gerenciar contatos › Exportar contatos</b> (arquivo CSV).</span>
+          </div>
+        </div>
+        <div class="ajuda-contatos-acoes">
+          <button type="button" class="ajuda-contatos-cancelar" data-fechar>Cancelar</button>
+          <button type="button" class="ajuda-contatos-ok" data-arquivo>Escolher arquivo</button>
+        </div>
+      </div>`;
+    document.body.appendChild(tela);
+    tela.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      if (alvo.closest('[data-arquivo]')) { tela.remove(); importarContatosParaALista(irParaLista, true); }
+      else if (alvo.closest('[data-fechar]')) tela.remove();
+    });
+    const fecharNoEsc = (/** @type {KeyboardEvent} */ e) => { if (e.key === 'Escape') { tela.remove(); document.removeEventListener('keydown', fecharNoEsc); } };
+    document.addEventListener('keydown', fecharNoEsc);
+  }
+
+  /** Contatos de um arquivo vCard → [nome, telefone, e-mail]. @param {string} texto @returns {string[][]} */
+  function contatosDoVcf(texto) {
+    const desdobrado = texto.replace(/\r\n/g, '\n').replace(/\n[ \t]/g, '');
+    const limpar = (/** @type {string} */ v) => v.replace(/\\([,;\\])/g, '$1').replace(/\\n/gi, ' ').trim();
+    /** @type {string[][]} */
+    const linhas = [];
+    desdobrado.split(/BEGIN:VCARD/i).slice(1).forEach((cartao) => {
+      const campo = (/** @type {string} */ nome) => {
+        const m = cartao.match(new RegExp(`^(?:item\\d+\\.)?${nome}(?:[;:][^\\n]*?)?:(.*)$`, 'im'));
+        return m ? limpar(m[1]) : '';
+      };
+      let nome = campo('FN');
+      if (!nome) {
+        const partes = campo('N').split(';');
+        nome = [partes[3], partes[1], partes[2], partes[0]].filter(Boolean).join(' ').trim();
+      }
+      if (nome) linhas.push([nome, campo('TEL'), campo('EMAIL')]);
+    });
+    return linhas;
+  }
+
+  /**
+   * O navegador não deixa abrir a agenda (Safari do iPhone sem o ajuste
+   * "Contact Picker API"): explica como ligar, em vez de abrir os Arquivos.
+   * @param {boolean} irParaLista
+   */
+  function mostrarAjudaDosContatos(irParaLista) {
+    document.getElementById('ajuda-contatos')?.remove();
+    const ehIphone = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // Desenho simplificado de cada tela dos Ajustes, com a opção a tocar destacada.
+    const ico = (/** @type {string} */ d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+    const ICO = {
+      geral: ico('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>'),
+      tela: ico('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/>'),
+      bateria: ico('<rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/>'),
+      apps: ico('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>'),
+      msg: ico('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/>'),
+      musica: ico('<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>'),
+      safari: ico('<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/>'),
+      telefone: ico('<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/>')
+    };
+    /** @param {{ texto: string, icone?: string, cor?: string, destaque?: boolean, chave?: boolean|null, seta?: boolean, barra?: boolean }} o */
+    const linha = (o) => `
+      <div class="ios-linha${o.destaque ? ' is-destaque' : ''}">
+        ${o.icone ? `<span class="ios-icone" style="background:${o.cor}">${o.icone}</span>` : ''}
+        ${o.barra ? '<span class="ios-barra"></span>' : `<span class="ios-texto">${o.texto}</span>`}
+        ${o.chave !== undefined && o.chave !== null ? `<span class="ios-chave${o.chave ? ' is-ligada' : ''}"></span>` : (o.seta === false ? '' : '<span class="ios-seta">›</span>')}
+      </div>`;
+    const telaIos = (/** @type {string} */ titulo, /** @type {string} */ voltar, /** @type {string} */ linhas, dica = '') => `
+      <div class="ios-tela" aria-hidden="true">
+        <div class="ios-topo">${voltar ? `<span class="ios-voltar">‹ ${voltar}</span>` : ''}<span class="ios-titulo">${titulo}</span></div>
+        ${dica ? `<span class="ios-dica">${dica}</span>` : ''}
+        <div class="ios-grupo">${linhas}</div>
+      </div>`;
+    const PASSOS = [
+      {
+        texto: 'Abra o app <strong>Ajustes</strong> do iPhone, role até o fim da lista e toque em <strong>Apps</strong>.',
+        tela: telaIos('Ajustes', '',
+          linha({ texto: 'Geral', icone: ICO.geral, cor: '#8E8E93' })
+          + linha({ texto: 'Tela e Brilho', icone: ICO.tela, cor: '#0A84FF' })
+          + linha({ texto: 'Bateria', icone: ICO.bateria, cor: '#34C759' })
+          + linha({ texto: 'Apps', icone: ICO.apps, cor: '#5E5CE6', destaque: true }), 'Lá no fim da lista ↓')
+      },
+      {
+        texto: 'Na lista de apps (em ordem alfabética), toque em <strong>Safari</strong>.',
+        tela: telaIos('Apps', 'Ajustes',
+          linha({ texto: 'Mensagens', icone: ICO.msg, cor: '#34C759' })
+          + linha({ texto: 'Música', icone: ICO.musica, cor: '#FF2D55' })
+          + linha({ texto: 'Safari', icone: ICO.safari, cor: '#0A84FF', destaque: true })
+          + linha({ texto: 'Telefone', icone: ICO.telefone, cor: '#34C759' }))
+      },
+      {
+        texto: 'Dentro do Safari, role a tela até lá embaixo e toque em <strong>Avançado</strong>, a última opção.',
+        tela: telaIos('Safari', 'Apps',
+          linha({ texto: 'Privacidade e Segurança', seta: false })
+          + linha({ texto: 'Limpar Histórico e Dados', seta: false })
+          + linha({ texto: 'Configurações dos Sites' })
+          + linha({ texto: 'Avançado', destaque: true }), 'Role até o fim ↓')
+      },
+      {
+        texto: 'Em Avançado, toque em <strong>Sinalizações de destaque</strong>.',
+        tela: telaIos('Avançado', 'Safari',
+          linha({ texto: 'Dados dos Sites' })
+          + linha({ texto: 'JavaScript', chave: true })
+          + linha({ texto: 'Web Inspector', chave: false })
+          + linha({ texto: 'Sinalizações de destaque', destaque: true }))
+      },
+      {
+        texto: 'Ative <strong>Contact Picker API</strong> (procure na letra C). Depois volte e toque em <strong>Importar contatos</strong> de novo.',
+        tela: telaIos('Sinalizações de destaque', 'Avançado',
+          linha({ texto: '', barra: true, chave: true })
+          + linha({ texto: 'Contact Picker API', chave: true, destaque: true })
+          + linha({ texto: '', barra: true, chave: false })
+          + linha({ texto: '', barra: true, chave: true }))
+      }
+    ];
+
+    const tela = document.createElement('div');
+    tela.id = 'ajuda-contatos';
+    tela.className = 'ajuda-contatos';
+    tela.innerHTML = `
+      <div class="ajuda-contatos-fundo" data-fechar></div>
+      <div class="ajuda-contatos-folha" role="dialog" aria-modal="true" aria-labelledby="ajuda-contatos-titulo">
+        <h3 id="ajuda-contatos-titulo">${ehIphone ? 'Abrir os contatos do iPhone' : 'Abrir os contatos do celular'}</h3>
+        ${ehIphone ? `
+          <p>O Safari só deixa a Love abrir seus contatos com um ajuste ligado. Leva menos de um minuto e só precisa ser feito uma vez.</p>
+          <div class="ajuda-passos">
+            ${PASSOS.map((p, i) => `
+              <div class="ajuda-passo">
+                <span class="ajuda-passo-num">Passo ${i + 1} de ${PASSOS.length}</span>
+                <p class="ajuda-passo-texto">${p.texto}</p>
+                ${p.tela}
+              </div>`).join('')}
+          </div>
+          <div class="ajuda-pontos">${PASSOS.map((_, i) => `<span class="${i === 0 ? 'is-atual' : ''}"></span>`).join('')}</div>
+          <button type="button" class="ajuda-contatos-ok" data-avancar>Próximo</button>` : `
+          <p>Este navegador não deixa abrir a agenda do celular. Abra a Love no <strong>Chrome</strong> para escolher seus contatos.</p>
+          <button type="button" class="ajuda-contatos-ok" data-fechar>Entendi</button>`}
+        <button type="button" class="ajuda-contatos-arquivo" data-arquivo>Prefiro escolher um arquivo de contatos (.vcf)</button>
+      </div>`;
+    document.body.appendChild(tela);
+
+    // Passo a passo: arrastar para o lado ou "Próximo"; no último vira "Entendi".
+    const trilho = /** @type {HTMLElement|null} */ (tela.querySelector('.ajuda-passos'));
+    const botao = /** @type {HTMLElement|null} */ (tela.querySelector('[data-avancar]'));
+    const pontos = Array.from(tela.querySelectorAll('.ajuda-pontos span'));
+    const passoAtual = () => (trilho ? Math.round(trilho.scrollLeft / Math.max(1, trilho.clientWidth)) : 0);
+    const atualizar = () => {
+      const i = passoAtual();
+      pontos.forEach((p, n) => p.classList.toggle('is-atual', n === i));
+      if (botao) botao.textContent = i >= PASSOS.length - 1 ? 'Entendi' : 'Próximo';
+    };
+    trilho?.addEventListener('scroll', atualizar, { passive: true });
+    tela.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      if (alvo.closest('[data-arquivo]')) { tela.remove(); importarContatosParaALista(irParaLista, true); }
+      else if (alvo.closest('[data-avancar]') && trilho) {
+        const i = passoAtual();
+        if (i >= PASSOS.length - 1) tela.remove();
+        else trilho.scrollTo({ left: (i + 1) * trilho.clientWidth, behavior: 'smooth' });
+      }
+      else if (alvo.closest('[data-fechar]')) tela.remove();
+    });
+  }
+
+  /** @param {boolean} irParaLista @param {boolean} [usarArquivo] */
+  async function importarContatosParaALista(irParaLista, usarArquivo = false) {
+    const ev = getActiveEvent();
+    if (!ev) return;
+    if (!Array.isArray(ev.guests)) ev.guests = [];
+    /** @type {string[][]} */
+    let linhas = [];
+    const nav = /** @type {any} */ (navigator);
+    if (!usarArquivo && nav.contacts && typeof nav.contacts.select === 'function') {
+      try {
+        const lista = await nav.contacts.select(['name', 'tel', 'email'], { multiple: true });
+        linhas = (lista || []).map((/** @type {any} */ c) => [(c.name || [])[0] || '', (c.tel || [])[0] || '', (c.email || [])[0] || '']);
+      } catch (err) { console.error('Não foi possível abrir os contatos:', err); return; }
+    } else if (!usarArquivo) {
+      // Computador: o navegador não abre a agenda; explica como exportar e escolher o arquivo.
+      if (!window.matchMedia(MQ_CELULAR_CONVIDADOS).matches) mostrarImportarNoComputador(irParaLista);
+      else mostrarAjudaDosContatos(irParaLista);
+      return;
+    } else {
+      const texto = await escolherArquivoDeContatos();
+      if (texto === null) return;
+      linhas = /BEGIN:VCARD/i.test(texto) ? contatosDoVcf(texto) : contatosDoCsvDaAgenda(texto);
+    }
+    if (!linhas.length) return;
+    // Telefone do celular vem com +55 / 0 na frente: fica só DDD + número.
+    linhas = linhas.map(([nome, tel, email]) => {
+      let d = String(tel || '').replace(/\D/g, '');
+      if (d.length >= 12 && d.startsWith('55')) d = d.slice(2);
+      if (d.length >= 11 && d.startsWith('0')) d = d.replace(/^0+/, '');
+      return [nome, d, email];
+    });
+    const novos = convidadosDoCsv([['Nome', 'Telefone', 'E-mail'], ...linhas], ev.guests);
+    let falhas = 0;
+    for (const g of novos) {
+      ev.guests.push(g);
+      const { error } = await salvarConvidadoNoBanco(g).catch(err => ({ error: err }));
+      if (error) { falhas++; ev.guests.splice(ev.guests.indexOf(g), 1); }
+    }
+    renderGuestsTable();
+    renderFloorPlanGuestCards();
+    updateAllCelebrationData();
+    if (irParaLista) window.loveIrPara?.('rsvp', 'all');
+    // Retorno na linha "N convidados" acima da busca, por alguns segundos.
+    const ok = novos.length - falhas;
+    setTimeout(() => {
+      const linha = document.getElementById('rsvp-total-celular');
+      if (!linha) return;
+      const antes = linha.textContent;
+      linha.textContent = ok ? `${ok} ${ok === 1 ? 'convidado importado' : 'convidados importados'}` : 'Nenhum contato novo para importar';
+      setTimeout(() => { linha.textContent = antes; }, 4000);
+    }, 300);
+  }
+
   const btnHostAddGuest = document.getElementById('btn-host-add-guest');
   // Celular: o "+" abre a ficha em tela inteira, já em "Adicionar convidado".
-  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => { if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) abrirFichaDoConvidado(null); else openAddGuestDrawer(); });
+  // Celular e computador: o bonequinho com + abre a ficha já em "Adicionar
+  // convidado" (no computador ela vira um pop-up centralizado).
+  // No celular ele pergunta antes: adicionar manualmente ou importar contatos.
+  if (btnHostAddGuest) btnHostAddGuest.addEventListener('click', () => {
+    if (window.matchMedia(MQ_CELULAR_CONVIDADOS).matches) abrirMenuAddConvidado(btnHostAddGuest);
+    else abrirFichaDoConvidado(null);
+  });
+  // Home (celular): "Continuar" da caixa "Monte sua lista..." abre o mesmo menu.
+  const btnHomeContatos = document.getElementById('home-contatos-continuar');
+  if (btnHomeContatos) btnHomeContatos.addEventListener('click', () => abrirMenuAddConvidado(btnHomeContatos, { naHome: true }));
   // Mapear mesas › "+ Adicionar" ao lado de Convidados: o mesmo drawer.
   document.getElementById('btn-floorplan-add-guest')?.addEventListener('click', () => openAddGuestDrawer());
   const btnCloseAddGuestDrawer = document.getElementById('btn-close-add-guest-drawer');
@@ -12071,13 +12963,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const ZOOM_MAXIMO_DA_PLANTA = 2.5;
   const plantaNoCelular = () => window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
   // Preenchido por iniciarPlantaNoCelular(): abre a gaveta da mesa (editar/convidados) no celular.
-  let abrirMesaNoCelularRef = /** @type {((id: string) => void)|null} */ (null);
+  let abrirMesaNoCelularRef = /** @type {((id: string, modo?: string) => void)|null} */ (null);
   /** @param {HTMLElement} canvas @param {any[]} elements */
   function escalaParaCaber(canvas, elements) {
     // Com zoom no celular a planta fica mais larga que a tela: a conta de
     // caber usa a largura da tela, e o zoom multiplica o resultado.
     const z = zoomDaPlanta || 1;
-    if (z !== 1) return escalaParaCaberSemZoom(canvas.clientWidth / z, elements) * z;
+    if (z !== 1) return escalaParaCaberSemZoom(canvas.parentElement ? canvas.parentElement.clientWidth : canvas.clientWidth / z, elements) * z;
     return escalaParaCaberSemZoom(canvas.clientWidth || 0, elements);
   }
   /** @param {number} largura @param {any[]} elements */
@@ -12143,7 +13035,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let plantaAntesDoPopup = null;
   const FLOORPLAN_TYPE_META = {};
   FLOORPLAN_ELEMENT_TYPES.forEach(t => { FLOORPLAN_TYPE_META[t.type] = t; });
-  const FLOORPLAN_MAX_SEATS = 24;
+  const FLOORPLAN_MAX_SEATS = 12; // máximo de cadeiras por mesa (desktop e celular)
 
   let floorplanActiveTableId = null;
 
@@ -12346,6 +13238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (marcador.checked) convidadosMarcadosNaPlanta().add(g.name || '');
         else convidadosMarcadosNaPlanta().delete(g.name || '');
         card.classList.toggle('is-marcado', marcador.checked);
+        atualizarTituloDosMarcados();
       });
       card.classList.toggle('is-marcado', marcador.checked);
       card.appendChild(marcador);
@@ -12378,6 +13271,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       container.appendChild(card);
     });
+    atualizarTituloDosMarcados();
+  }
+
+  /** Título da lista: "Convidados (2)" com a quantidade marcada nas caixinhas. */
+  function atualizarTituloDosMarcados() {
+    const titulo = document.getElementById('floorplan-convidados-titulo');
+    if (!titulo) return;
+    const marcados = [...convidadosMarcadosNaPlanta()].filter(Boolean).length;
+    titulo.textContent = marcados ? `Convidados (${marcados})` : 'Convidados';
   }
 
   // ==========================================
@@ -12576,7 +13478,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function ajustarAlturaDaPlanta(canvas, elements) {
     const maisBaixa = elements.reduce((max, item) => Math.max(max, (parseFloat(item.y) || 0) + alturaNaPlanta(item)), 0);
     // Com zoom, a planta cresce junto (para dar para arrastar até as bordas).
-    const comZoom = zoomDaPlanta !== 1 && canvas.parentElement ? canvas.parentElement.clientHeight * zoomDaPlanta : 0;
+    const comZoom = zoomDaPlanta !== 1 && canvas.parentElement ? canvas.parentElement.clientHeight * Math.max(1, zoomDaPlanta) : 0;
     canvas.style.minHeight = (maisBaixa || comZoom) ? `${Math.max(360, (maisBaixa + 16) * escalaDaPlanta, comZoom)}px` : '';
     const camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
     if (camada) camada.style.height = `${Math.max(canvas.offsetHeight, (maisBaixa + 16) * escalaDaPlanta) / escalaDaPlanta}px`;
@@ -12608,6 +13510,60 @@ document.addEventListener('DOMContentLoaded', () => {
   // Formatos de mesa da planta (o mesmo nome vai em elements[].formato).
   const FORMATOS_DE_MESA = ['redonda', 'retangular', 'quadrada', 'bistro'];
 
+  // Celular: o desenho e o texto do mapa vazio ficam no meio da tela (entre o
+  // topo e a barra de baixo), não no meio da área do mapa. Não dá para usar
+  // position:fixed porque a animação de entrada da aba usa transform.
+  function centralizarVazioDoMapa() {
+    const hint = document.getElementById('floorplan-empty-hint');
+    if (!hint) return;
+    hint.style.transform = '';
+    if (!plantaNoCelular() || hint.style.display === 'none') return;
+    const caixa = hint.getBoundingClientRect();
+    const filhos = [...hint.children].map(el => el.getBoundingClientRect()).filter(r => r.height);
+    if (!caixa.height || !filhos.length) return;
+    const topo = Math.min(...filhos.map(r => r.top));
+    const base = Math.max(...filhos.map(r => r.bottom));
+    const barra = document.querySelector('.sidebar-icon-rail');
+    const rBarra = barra ? barra.getBoundingClientRect() : null;
+    const fimDaTela = rBarra && rBarra.height ? rBarra.top : window.innerHeight;
+    let delta = fimDaTela / 2 - (topo + base) / 2;
+    // Mesma altura do ícone de "Adicione os seus primeiros convidados" (o
+    // texto vem logo abaixo, no mesmo respiro de 12px).
+    const alturaConvidados = alturaDoVazioDeConvidados();
+    if (alturaConvidados != null) delta = alturaConvidados - topo;
+    // Sem sair da área do mapa.
+    delta = Math.max(caixa.top + 16 - topo, Math.min(caixa.bottom - 16 - base, delta));
+    hint.style.transform = `translateY(${Math.round(delta)}px)`;
+  }
+  // Altura (na tela) do ícone do vazio de Meus convidados no celular, guardada
+  // junto com a altura da tela para só valer no mesmo aparelho/orientação.
+  function guardarAlturaDoVazioDeConvidados() {
+    if (!plantaNoCelular()) return;
+    const icone = document.querySelector('#rsvp-empty-state:not(.hidden) .rsvp-vazio-icone');
+    if (!icone || !icone.offsetHeight) return;
+    const topo = Math.round(icone.getBoundingClientRect().top);
+    if (topo <= 0 || topo >= window.innerHeight) return;
+    try { localStorage.setItem('love-vazio-icone-topo', JSON.stringify({ topo, tela: window.innerHeight })); } catch (e) {}
+  }
+  function alturaDoVazioDeConvidados() {
+    try {
+      const salvo = JSON.parse(localStorage.getItem('love-vazio-icone-topo') || 'null');
+      if (salvo && Math.abs(salvo.tela - window.innerHeight) <= 80) return salvo.topo;
+    } catch (e) {}
+    return null;
+  }
+  let observadorVazioDoMapa = null;
+  function agendarCentralizarVazioDoMapa() {
+    requestAnimationFrame(centralizarVazioDoMapa);
+    setTimeout(centralizarVazioDoMapa, 320); // depois da animação de entrada da aba
+    const canvas = document.getElementById('floorplan-canvas');
+    if (!observadorVazioDoMapa && canvas && 'ResizeObserver' in window) {
+      observadorVazioDoMapa = new ResizeObserver(() => { centralizarVazioDoMapa(); setTimeout(centralizarVazioDoMapa, 320); });
+      observadorVazioDoMapa.observe(canvas);
+      window.addEventListener('resize', centralizarVazioDoMapa);
+    }
+  }
+
   function renderFloorPlanCanvas() {
     const canvas = document.getElementById('floorplan-canvas');
     const emptyHint = document.getElementById('floorplan-empty-hint');
@@ -12617,9 +13573,19 @@ document.addEventListener('DOMContentLoaded', () => {
     canvas.querySelectorAll('.floorplan-el, .floorplan-guia').forEach(el => el.remove());
     // Zoom só existe no celular; a largura da planta acompanha o zoom.
     if (!plantaNoCelular()) zoomDaPlanta = 1;
-    canvas.style.width = zoomDaPlanta === 1 || !canvas.parentElement ? '' : `${canvas.parentElement.clientWidth * zoomDaPlanta}px`;
+    // Afastando (zoom < 1) a planta continua ocupando a tela toda: o
+    // quadriculado vai de ponta a ponta e só fica menor, junto com as mesas.
+    canvas.style.width = zoomDaPlanta === 1 || !canvas.parentElement ? '' : `${canvas.parentElement.clientWidth * Math.max(1, zoomDaPlanta)}px`;
     canvas.classList.toggle('tem-zoom', zoomDaPlanta !== 1);
-    if (emptyHint) emptyHint.style.display = elements.some(x => x.type !== 'guia' && x.type !== 'config') ? 'none' : 'flex';
+    if (zoomDaPlanta === 1) canvas.style.removeProperty('background-size');
+    else {
+      const q = (n) => `${Math.round(n * zoomDaPlanta * 100) / 100}px`;
+      canvas.style.setProperty('background-size', `${q(50)} ${q(50)}, ${q(50)} ${q(50)}, ${q(10)} ${q(10)}, ${q(10)} ${q(10)}`, 'important');
+    }
+    const mapaVazio = !elements.some(x => x.type !== 'guia' && x.type !== 'config');
+    if (emptyHint) emptyHint.style.display = mapaVazio ? 'flex' : 'none';
+    if (mapaVazio) carregarPlayerLottie();
+    agendarCentralizarVazioDoMapa();
     // Camada com todos os elementos, na escala que faz tudo caber na largura.
     escalaDaPlanta = escalaParaCaber(canvas, elements);
     let camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
@@ -12713,10 +13679,10 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!guestName) seatDot.title = 'Lugar vago';
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
-          // Cadeira (modelo de planta baixa): encosto do lado de fora da mesa.
+          // Assento: quadrado com cantos arredondados (padrão da Love).
           let anguloDaCadeira = Math.atan2(seatY - containerSize / 2, seatX - containerSize / 2) * 180 / Math.PI;
           if (formato !== 'redonda') anguloDaCadeira = Math.round(anguloDaCadeira / 90) * 90;
-          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><path d="M5.2 5.2h19.6l-.9 18.5a1.7 1.7 0 0 1-1.7 1.6H7.8a1.7 1.7 0 0 1-1.7-1.6Z"/><path d="M3.8 5.9Q15 2.7 26.2 5.9V3.9Q15 .7 3.8 3.9Z"/></svg>`);
+          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><rect x="3.5" y="3.5" width="23" height="23" rx="6"/></svg>`);
           if (guestName) {
             seatDot.title = guestName;
             if (showNames) {
@@ -12919,13 +13885,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const alvo = lista.find(x => x.id === id);
     if (!alvo) return;
     if (acao === 'convidados') {
-      if (alvo.type === 'mesa' && plantaNoCelular() && abrirMesaNoCelularRef) { abrirMesaNoCelularRef(id); return; }
+      if (alvo.type === 'mesa' && plantaNoCelular() && abrirMesaNoCelularRef) { abrirMesaNoCelularRef(id, 'lista'); return; }
       if (botao) abrirListaDaMesa(botao, alvo);
       return;
     }
     if (acao === 'editar') {
       if (alvo.type === 'mesa') {
-        if (plantaNoCelular() && abrirMesaNoCelularRef) abrirMesaNoCelularRef(id);
+        if (plantaNoCelular() && abrirMesaNoCelularRef) abrirMesaNoCelularRef(id, 'editar');
         else openFloorplanTableModal(id);
       }
       else if (alvo.type === 'texto') editarTextoDaPlanta(id);
@@ -12977,13 +13943,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Alças da seleção: arrastar para fora aumenta, para dentro diminui.
   // Mesa e item crescem por igual (na proporção). O centro fica no lugar.
   /** @param {MouseEvent} e @param {string} id */
-  function iniciarRedimensionamento(e, id) {
-    e.preventDefault();
-    e.stopPropagation();
+  /**
+   * Muda o tamanho de um elemento da planta por um fator (1 = como está).
+   * Usado pelas alças (mouse/dedo) e pela pinça no celular.
+   * @param {string} id
+   * @returns {{centroNaTela: () => {x: number, y: number}, mover: (fator: number) => void, terminar: () => void}|null}
+   */
+  function comecarRedimensionamento(id) {
     const canvas = document.getElementById('floorplan-canvas');
     const el = canvas && /** @type {HTMLElement|null} */ (canvas.querySelector(`.floorplan-el[data-el-id="${CSS.escape(id)}"]`));
     const alvo = getFloorPlanElements().find(x => x.id === id);
-    if (!canvas || !el || !alvo) return;
+    if (!canvas || !el || !alvo || alvo.type === 'linha') return null;
     const base = canvas.getBoundingClientRect();
     const isMesa = alvo.type === 'mesa';
     const tam0 = isMesa ? { w: 220, h: 220 } : tamanhoDoItem(alvo);
@@ -12992,17 +13962,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const centroX = x0 + tam0.w / 2;
     const centroY = y0 + tam0.h / 2;
     const s = escalaDaPlanta;
-    const dx0 = Math.abs(e.clientX - base.left - centroX * s) || 1;
-    const dy0 = Math.abs(e.clientY - base.top - centroY * s) || 1;
     const escala0 = isMesa ? escalaDaMesa(alvo) : tamanhoDoItem(alvo).escala;
     /** @type {Record<string, any>} */
     let resultado = isMesa ? { escala: escala0 } : { escala: escala0, rotacao: tamanhoDoItem(alvo).rotacao, x: x0, y: y0 };
     document.body.classList.add('planta-redimensionando');
 
-    const mover = (/** @type {MouseEvent} */ ev) => {
-      const dx = Math.abs(ev.clientX - base.left - centroX * s);
-      const dy = Math.abs(ev.clientY - base.top - centroY * s);
-      const fator = Math.hypot(dx, dy) / Math.hypot(dx0, dy0);
+    const mover = (/** @type {number} */ fator) => {
       if (isMesa) {
         const escala = Math.round(Math.min(ESCALA_MAXIMA_NA_PLANTA, Math.max(ESCALA_MINIMA_NA_PLANTA, escala0 * fator)) * 100) / 100;
         el.style.transform = escala === 1 ? '' : `scale(${escala})`;
@@ -13030,9 +13995,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       desenharSelecaoDaPlanta();
     };
-    const soltar = () => {
-      document.removeEventListener('mousemove', mover);
-      document.removeEventListener('mouseup', soltar);
+    const terminar = () => {
       document.body.classList.remove('planta-redimensionando');
       const lista = getFloorPlanElements();
       const t = lista.find(x => x.id === id);
@@ -13041,6 +14004,22 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!isMesa) { delete t.w; delete t.h; delete t.girado; }
       saveFloorPlanElements(lista);
       renderFloorPlanCanvas();
+    };
+    return { centroNaTela: () => ({ x: base.left + centroX * s, y: base.top + centroY * s }), mover, terminar };
+  }
+
+  function iniciarRedimensionamento(e, id) {
+    e.preventDefault();
+    e.stopPropagation();
+    const r = comecarRedimensionamento(id);
+    if (!r) return;
+    const c = r.centroNaTela();
+    const d0 = Math.hypot(Math.abs(e.clientX - c.x) || 1, Math.abs(e.clientY - c.y) || 1);
+    const mover = (/** @type {MouseEvent} */ ev) => r.mover(Math.hypot(Math.abs(ev.clientX - c.x), Math.abs(ev.clientY - c.y)) / d0);
+    const soltar = () => {
+      document.removeEventListener('mousemove', mover);
+      document.removeEventListener('mouseup', soltar);
+      r.terminar();
     };
     document.addEventListener('mousemove', mover);
     document.addEventListener('mouseup', soltar);
@@ -14249,6 +15228,12 @@ document.addEventListener('DOMContentLoaded', () => {
       <button type="button" data-zoom="menos" aria-label="Afastar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg></button>
       <button type="button" data-zoom="centro" aria-label="Centralizar a planta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="2.5"/></svg></button>`;
     document.body.appendChild(controles);
+    controles.addEventListener('touchend', (e) => {
+      const b = /** @type {HTMLElement} */ (e.target).closest('[data-zoom]');
+      if (!b) return;
+      e.preventDefault();
+      b.click();
+    }, { passive: false });
     controles.addEventListener('click', (e) => {
       const b = /** @type {HTMLElement} */ (e.target).closest('[data-zoom]');
       if (!b) return;
@@ -14258,7 +15243,7 @@ document.addEventListener('DOMContentLoaded', () => {
       else { zoomDaPlanta = 1; renderFloorPlanCanvas(); corpo.scrollTo({ left: 0, top: 0, behavior: 'smooth' }); }
     });
 
-    /** @type {{d0: number, m0x: number, m0y: number, px: number, py: number, k: number, m1x: number, m1y: number}|null} */
+    /** @type {{d0: number, m0x: number, m0y: number, px: number, py: number, k: number, m1x: number, m1y: number, ox?: number, oy?: number}|null} */
     let pinca = null;
     /** @type {{x0: number, y0: number, sl: number, st: number}|null} */
     let arrasto = null;
@@ -14266,6 +15251,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const meio = (ts) => ({ x: (ts[0].clientX + ts[1].clientX) / 2, y: (ts[0].clientY + ts[1].clientY) / 2 });
     /** @param {TouchList} ts */
     const distancia = (ts) => Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY) || 1;
+    /** Pinça com um elemento selecionado: muda o tamanho dele. @type {{d0: number, r: ReturnType<typeof comecarRedimensionamento>}|null} */
+    let pincaNoElemento = null;
     canvas.addEventListener('touchstart', (e) => {
       if (!noCelular.matches) return;
       if (e.touches.length === 2) {
@@ -14273,11 +15260,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Segundo dedo: larga o arraste da mesa (se tinha) e vira pinça.
         if (toque) { mouse('mouseup', e.touches[0], document); toque = null; }
         arrasto = null;
+        const redim = plantaSelecionada ? comecarRedimensionamento(plantaSelecionada) : null;
+        if (redim) { pincaNoElemento = { d0: distancia(e.touches), r: redim }; return; }
         const m = meio(e.touches);
         const r = canvas.getBoundingClientRect();
         pinca = { d0: distancia(e.touches), m0x: m.x, m0y: m.y, px: (m.x - r.left) / escalaDaPlanta, py: (m.y - r.top) / escalaDaPlanta, k: 1, m1x: m.x, m1y: m.y };
-        canvas.style.transformOrigin = `${m.x - r.left}px ${m.y - r.top}px`;
-        canvas.style.willChange = 'transform';
+        pinca.ox = m.x - r.left; pinca.oy = m.y - r.top;
+        canvas.querySelectorAll('.floorplan-selecao').forEach(s => /** @type {HTMLElement} */ (s).style.visibility = 'hidden');
         return;
       }
       if (e.touches.length === 1 && !(e.target instanceof Element && e.target.closest('.floorplan-el'))) {
@@ -14286,13 +15275,26 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: false });
     canvas.addEventListener('touchmove', (e) => {
+      if (pincaNoElemento && e.touches.length >= 2) {
+        e.preventDefault();
+        pincaNoElemento.r?.mover(distancia(e.touches) / pincaNoElemento.d0);
+        return;
+      }
       if (pinca && e.touches.length >= 2) {
         e.preventDefault();
         const m = meio(e.touches);
         const z = Math.min(ZOOM_MAXIMO_DA_PLANTA, Math.max(ZOOM_MINIMO_DA_PLANTA, zoomDaPlanta * distancia(e.touches) / pinca.d0));
         pinca.k = z / zoomDaPlanta;
         pinca.m1x = m.x; pinca.m1y = m.y;
-        canvas.style.transform = `translate(${m.x - pinca.m0x}px, ${m.y - pinca.m0y}px) scale(${pinca.k})`;
+        // A camada leva o zoom em volta do ponto da pinça; o quadriculado acompanha.
+        const k = pinca.k;
+        const tx = (m.x - pinca.m0x) + pinca.ox * (1 - k);
+        const ty = (m.y - pinca.m0y) + pinca.oy * (1 - k);
+        const camada = /** @type {HTMLElement|null} */ (canvas.querySelector('.floorplan-camada'));
+        if (camada) camada.style.transform = `translate(${tx}px, ${ty}px) scale(${escalaDaPlanta * k})`;
+        const q = (n) => `${Math.round(n * zoomDaPlanta * k * 100) / 100}px`;
+        canvas.style.setProperty('background-size', `${q(50)} ${q(50)}, ${q(50)} ${q(50)}, ${q(10)} ${q(10)}, ${q(10)} ${q(10)}`, 'important');
+        canvas.style.setProperty('background-position', `${tx}px ${ty}px`, 'important');
         return;
       }
       if (arrasto && e.touches.length === 1) {
@@ -14303,12 +15305,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }, { passive: false });
     const fimDoGesto = (/** @type {TouchEvent} */ e) => {
+      if (pincaNoElemento && e.touches.length < 2) {
+        const p = pincaNoElemento;
+        pincaNoElemento = null;
+        p.r?.terminar();
+      }
       if (pinca && e.touches.length < 2) {
         const g = pinca;
         pinca = null;
-        canvas.style.transform = '';
-        canvas.style.transformOrigin = '';
-        canvas.style.willChange = '';
+        canvas.style.removeProperty('background-position');
+        if (!(Math.abs(g.k - 1) > 0.01 || Math.hypot(g.m1x - g.m0x, g.m1y - g.m0y) > 2)) renderFloorPlanCanvas();
         if (Math.abs(g.k - 1) > 0.01 || Math.hypot(g.m1x - g.m0x, g.m1y - g.m0y) > 2) aplicarZoom(zoomDaPlanta * g.k, g.px, g.py, g.m1x, g.m1y);
       }
       if (!e.touches.length) arrasto = null;
@@ -14339,10 +15345,9 @@ document.addEventListener('DOMContentLoaded', () => {
       mouse('mouseup', e.changedTouches[0], document);
       if (atual.moveu) return;
       const dado = getFloorPlanElements().find(x => x.id === atual.id);
-      if (dado && dado.type === 'mesa') {
-        plantaSelecionada = null;
+      if (dado) {
+        plantaSelecionada = dado.id;
         desenharSelecaoDaPlanta();
-        abrirMesa(atual.id);
       }
     };
     document.addEventListener('touchend', soltar);
@@ -14385,6 +15390,9 @@ document.addEventListener('DOMContentLoaded', () => {
     tela.setAttribute('aria-modal', 'true');
     document.body.append(fundoMesa, tela);
     let mesaId = '';
+    // "lista" (ícone de lista): só a mesa e quem está nela.
+    // "editar" (lápis): também nome, formato, lugares, cor e as ações.
+    let modoMesa = 'lista';
     let escolhendo = false;
     let buscaEscolha = '';
 
@@ -14411,9 +15419,10 @@ document.addEventListener('DOMContentLoaded', () => {
       escolhendo = false;
       document.body.classList.remove('mesa-celular-aberta');
     };
-    /** @param {string} id */
-    function abrirMesa(id) {
+    /** @param {string} id @param {string} [modo] */
+    function abrirMesa(id, modo) {
       mesaId = id;
+      modoMesa = modo === 'editar' ? 'editar' : 'lista';
       escolhendo = false;
       buscaEscolha = '';
       tela.classList.add('is-aberta');
@@ -14436,6 +15445,29 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!alvo) return;
       if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaMesaY > 40) fecharMesa();
     });
+
+    // "Gregory Henderson" -> "Gregory H." (nome e a inicial do sobrenome).
+    /** @param {string} nome */
+    const nomeCurto = (nome) => {
+      const partes = String(nome).trim().split(/\s+/);
+      return partes.length > 1 ? `${partes[0]} ${(partes[partes.length - 1][0] || '').toUpperCase()}.` : partes[0];
+    };
+    // Aviso verde no topo da tela, por cima da gaveta, ao pôr alguém na mesa.
+    const avisoMesa = document.createElement('div');
+    avisoMesa.className = 'mesa-celular-aviso';
+    avisoMesa.setAttribute('role', 'status');
+    avisoMesa.setAttribute('aria-live', 'polite');
+    document.body.appendChild(avisoMesa);
+    let avisoMesaTempo = 0;
+    /** @param {string} texto */
+    function avisarNaMesa(texto) {
+      avisoMesa.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg><span>${escaparHtml(texto)}</span>`;
+      avisoMesa.classList.remove('is-visivel');
+      void avisoMesa.offsetWidth;
+      avisoMesa.classList.add('is-visivel');
+      clearTimeout(avisoMesaTempo);
+      avisoMesaTempo = window.setTimeout(() => avisoMesa.classList.remove('is-visivel'), 2600);
+    }
 
     const ICONES_FORMATO = /** @type {Record<string, string>} */ ({});
     menuItens.querySelectorAll('[data-mesa-formato]').forEach(b => {
@@ -14469,7 +15501,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2>Adicionar à ${titulo}</h2><span class="mesa-celular-espaco"></span>
           </div>
           <div class="mesa-celular-corpo">
-            <input type="search" class="mesa-celular-busca" placeholder="Buscar convidado..." value="${escaparHtml(buscaEscolha)}" autocomplete="off">
+            <input type="search" class="mesa-celular-busca" placeholder="Pesquisar convidado..." value="${escaparHtml(buscaEscolha)}" autocomplete="off">
             <p class="mesa-celular-contagem">${ocupados} de ${total} lugares ocupados</p>
             <div class="mesa-celular-lista">${lista.length ? lista.map(pp => {
               const onde = ondeEsta(pp.name);
@@ -14510,7 +15542,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="mesa-celular-lugares">${lugares}</div>
           </div>
 
-          <div class="mesa-celular-cartao">
+          ${modoMesa === 'editar' ? `<div class="mesa-celular-cartao">
             <label class="mesa-celular-rotulo" for="mesa-celular-nome">Nome da mesa</label>
             <input type="text" id="mesa-celular-nome" class="mesa-celular-campo" maxlength="50" placeholder="Ex.: Mesa da família" value="${escaparHtml(m.name || '')}">
             <p class="mesa-celular-rotulo">Formato</p>
@@ -14532,7 +15564,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <button type="button" data-acao="duplicar">Duplicar</button>
               <button type="button" data-acao="excluir">Excluir mesa</button>
             </div>
-          </div>
+          </div>` : ''}
 
           <div class="mesa-celular-cabeca">
             <h3>Convidados</h3>
@@ -14541,9 +15573,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="mesa-celular-lista">${listaPessoas.length ? listaPessoas.map(({ nome }, n) => {
             const pp = pessoas.find(x => x.name.toLowerCase() === nome.toLowerCase());
             const sub = pp && !pp.isPrimary && pp.host ? `Acompanhante de ${pp.host}` : '';
+            // Situação do RSVP embaixo do nome (acompanhante segue o titular).
+            const situacao = pp ? ({ confirmed: 'confirmed', declined: 'declined' }[pp.status] || 'pending') : '';
+            const selo = situacao ? `<em class="mesa-celular-situacao is-${situacao}">${{ confirmed: 'Confirmado', declined: 'Recusado', pending: 'Pendente' }[situacao]}</em>` : '';
             return `<div class="mesa-celular-pessoa">
               <span class="mesa-celular-numero">${n + 1}</span>
-              <span class="mesa-celular-nome"><strong>${escaparHtml(nome)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}</span>
+              <span class="mesa-celular-nome"><strong>${escaparHtml(nome)}</strong>${sub ? `<span>${escaparHtml(sub)}</span>` : ''}${selo}</span>
               <button type="button" class="mesa-celular-tirar" data-tirar="${escaparHtml(nome)}" aria-label="Tirar ${escaparHtml(nome)} desta mesa">${XIS}</button>
             </div>`;
           }).join('') : '<p class="mesa-celular-vazio">Ninguém nesta mesa ainda. Toque em um lugar vazio ou em “Adicionar convidados”.</p>'}</div>
@@ -14579,6 +15614,8 @@ document.addEventListener('DOMContentLoaded', () => {
         moverPessoasParaMesa([escolher.trim().toLowerCase()], mesaId);
         escolhendo = false;
         desenharMesa();
+        const mm = mesaAtual();
+        if (mm) avisarNaMesa(`${nomeCurto(escolher)} foi adicionado à Mesa ${mm.number}`);
         return;
       }
       if (formato) { mudarMesa(m => { m.formato = formato; }); desenharMesa(); return; }
@@ -14927,7 +15964,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const w = /** @type {any} */ (window);
         if (w.LoveCarteira) w.LoveCarteira.render();
       } else if (subId === 'wallet-budget') {
-        title.textContent = 'Orçamento';
+        title.textContent = 'Gerenciar despesas';
         // Sem subtítulo: o cabeçalho termina na linha, como nas outras telas.
         if (desc) desc.classList.add('hidden');
         checkAndPromptBudgetSetup();
@@ -15192,15 +16229,155 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // 8.5 MÓDULO DE ORÇAMENTO & ONBOARDING POPUP
   // ==========================================
+  // ---- Celular: Orçamento em página inteira (botão da Home) ----
+  // Depois do pop-up "Defina seu orçamento" (também em tela cheia), abre
+  // "Seu orçamento": barras de orçamento máximo, custo total e a pagar, e as
+  // despesas por categoria (Custo / A pagar). Desktop não muda.
+  /** @type {string|null} */ var orcCelularVoltarPara = null;
+  var orcCelularPendente = false;
+  /** @type {Set<string>} */ var orcCelularFechadas = new Set();
+  function orcamentoNoCelular() { return window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches; }
+  /** @param {any} ev */
+  function orcamentoConfigurado(ev) {
+    let salvo = false;
+    try { salvo = !!ev && localStorage.getItem(`love_budget_configured_${ev.id}`) === 'true'; } catch (e) {}
+    return Boolean(ev && (ev.budgetConfigured || (ev.budgetTotal && ev.budgetTotal > 0) || salvo));
+  }
+  function telaOrcamentoCelular() {
+    let tela = document.getElementById('orc-celular');
+    if (tela) return tela;
+    tela = document.createElement('section');
+    tela.id = 'orc-celular';
+    tela.className = 'orc-celular';
+    tela.hidden = true;
+    tela.setAttribute('role', 'dialog');
+    tela.setAttribute('aria-modal', 'true');
+    tela.setAttribute('aria-labelledby', 'orc-celular-titulo');
+    tela.innerHTML = `
+      <header class="orc-cel-topo">
+        <button type="button" class="orc-cel-icone" data-orc-cel="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg></button>
+        <h2 id="orc-celular-titulo">Gerenciar despesas</h2>
+        <div class="orc-cel-topo-acoes">
+          <button type="button" class="orc-cel-icone" data-orc-cel="adicionar" aria-label="Adicionar despesa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button type="button" class="orc-cel-icone" data-orc-cel="definir" aria-label="Definir orçamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></button>
+        </div>
+      </header>
+      <div class="orc-cel-corpo"></div>`;
+    document.body.appendChild(tela);
+    tela.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement|null} */ (/** @type {HTMLElement} */ (e.target).closest('[data-orc-cel], [data-orc-cel-grupo], [data-orc-cel-despesa]'));
+      if (!alvo) return;
+      const acao = alvo.dataset.orcCel;
+      if (acao === 'fechar') fecharOrcamentoCelular();
+      else if (acao === 'adicionar') document.getElementById('btn-open-add-expense')?.click();
+      else if (acao === 'definir') checkAndPromptBudgetSetup(true);
+      else if (alvo.dataset.orcCelGrupo !== undefined) {
+        const grupo = alvo.dataset.orcCelGrupo || '';
+        if (orcCelularFechadas.has(grupo)) orcCelularFechadas.delete(grupo); else orcCelularFechadas.add(grupo);
+        desenharOrcamentoCelular();
+      } else if (alvo.dataset.orcCelDespesa) abrirDespesaNoDrawer(alvo.dataset.orcCelDespesa);
+    });
+    return tela;
+  }
+  function desenharOrcamentoCelular() {
+    const tela = document.getElementById('orc-celular');
+    if (!tela || tela.hidden) return;
+    const corpo = tela.querySelector('.orc-cel-corpo');
+    if (!corpo) return;
+    const brl = (/** @type {number} */ v) => `R$ ${Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const itens = getBudgetExpenses().map(exp => ({ exp, s: situacaoDaDespesa(exp) }));
+    let custo = 0, aPagar = 0, estimado = 0;
+    itens.forEach(({ exp, s }) => { custo += s.contrato; aPagar += s.falta; estimado += Number(exp.estimated) || 0; });
+    const ev = getActiveEvent();
+    let maximo = ev && Number(ev.budgetTotal);
+    if (!maximo && ev) { try { maximo = parseInt(localStorage.getItem(`love_budget_total_${ev.id}`) || '', 10); } catch (e) {} }
+    if (!maximo) maximo = estimado || 0;
+    const largura = (/** @type {number} */ v) => maximo > 0 ? Math.max(0, Math.min(100, (v / maximo) * 100)) : 0;
+    const barra = (/** @type {string} */ classe, /** @type {string} */ rotulo, /** @type {number} */ valor, /** @type {number} */ pct, extra = '') => `
+      <div class="orc-cel-barra ${classe}" style="width:${pct.toFixed(1)}%">
+        <span class="orc-cel-barra-rotulo">${rotulo}</span>
+        <span class="orc-cel-barra-valor">${brl(valor)}</span>
+        ${extra}
+      </div>`;
+    /** @type {Map<string, typeof itens>} */
+    const grupos = new Map();
+    itens.forEach(o => {
+      const cat = String(o.exp.category || '').trim() || 'Geral';
+      if (!grupos.has(cat)) grupos.set(cat, []);
+      /** @type {typeof itens} */ (grupos.get(cat)).push(o);
+    });
+    const valor = (/** @type {number} */ v) => `<span class="orc-cel-valor${v > 0 ? '' : ' is-zero'}">${brl(v)}</span>`;
+    corpo.innerHTML = `
+      <section class="orc-cel-resumo" aria-label="Resumo do orçamento">
+        ${barra('is-max', 'Orçamento máximo', maximo, 100, '<button type="button" class="orc-cel-editar" data-orc-cel="definir">Editar</button>')}
+        ${barra('is-custo' + (custo > maximo && maximo > 0 ? ' is-acima' : ''), 'Custo total', custo, largura(custo))}
+        ${barra('is-pagar', 'Total a pagar', aPagar, largura(aPagar))}
+      </section>
+      ${itens.length ? `
+        <div class="orc-cel-colunas" aria-hidden="true"><span></span><span>Custo</span><span>A pagar</span></div>
+        ${Array.from(grupos.entries()).map(([cat, lista]) => {
+          const aberto = !orcCelularFechadas.has(cat);
+          return `
+          <section class="orc-cel-grupo">
+            <button type="button" class="orc-cel-grupo-cab" data-orc-cel-grupo="${escaparHtml(cat)}" aria-expanded="${aberto}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
+              <span>${escaparHtml(cat)}</span>
+            </button>
+            ${aberto ? lista.map(({ exp, s }) => `
+              <button type="button" class="orc-cel-linha" data-orc-cel-despesa="${escaparHtml(exp.id)}">
+                <span class="orc-cel-nome">${escaparHtml(exp.item || exp.vendor || 'Despesa')}</span>
+                ${valor(s.contrato)}
+                ${valor(s.falta)}
+              </button>`).join('') : ''}
+          </section>`;
+        }).join('')}` : '<p class="orc-cel-vazio">Nenhuma despesa ainda. Toque em + para adicionar.</p>'}`;
+  }
+  function abrirOrcamentoCelular() {
+    const tela = telaOrcamentoCelular();
+    tela.hidden = false;
+    document.body.classList.add('orc-celular-aberto');
+    desenharOrcamentoCelular();
+    const corpo = tela.querySelector('.orc-cel-corpo');
+    if (corpo) corpo.scrollTop = 0;
+  }
+  function fecharOrcamentoCelular() {
+    const tela = document.getElementById('orc-celular');
+    if (tela) tela.hidden = true;
+    document.body.classList.remove('orc-celular-aberto');
+    orcCelularPendente = false;
+    const volta = orcCelularVoltarPara;
+    orcCelularVoltarPara = null;
+    if (volta && volta !== 'wallet') switchRailTab(volta);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  /** Depois do "Começar" do pop-up: abre (ou atualiza) a página do orçamento. */
+  function aoDefinirOrcamentoCelular() {
+    if (orcCelularPendente) { orcCelularPendente = false; abrirOrcamentoCelular(); }
+    else desenharOrcamentoCelular();
+  }
+  // Celular: o "X" do pop-up em tela cheia volta para onde a pessoa estava.
+  document.getElementById('btn-fechar-setup-orcamento')?.addEventListener('click', () => {
+    closeModal(document.getElementById('modal-setup-budget'));
+    const telaAberta = !!document.getElementById('orc-celular') && !(/** @type {HTMLElement} */ (document.getElementById('orc-celular')).hidden);
+    if (!telaAberta && orcCelularPendente) fecharOrcamentoCelular();
+  });
+
   window.navigateToBudget = function() {
+    const vinhaDe = state.currentTab;
     pendingSubItemId = 'wallet-budget';
     switchRailTab('wallet');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Orçamento'));
+        b.classList.toggle('active', b.textContent.includes('Gerenciar despesas'));
       });
     }
-    switchWalletSubSection('wallet-budget', 'Orçamento');
+    switchWalletSubSection('wallet-budget', 'Gerenciar despesas');
+    if (orcamentoNoCelular()) {
+      orcCelularVoltarPara = vinhaDe;
+      const ev = getActiveEvent();
+      if (!ev || orcamentoConfigurado(ev)) abrirOrcamentoCelular();
+      else orcCelularPendente = true;
+    }
   };
 
   // Home (Mais recursos › Save the Date e o passo "Escolher Save the Date" do
@@ -15389,7 +16566,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  function checkAndPromptBudgetSetup() {
+  /** @param {boolean} [forcar] abre mesmo já definido (Editar, no celular) */
+  function checkAndPromptBudgetSetup(forcar) {
     const activeEv = getActiveEvent();
     if (!activeEv) return;
 
@@ -15399,7 +16577,7 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.getItem(`love_budget_configured_${activeEv.id}`) === 'true'
     );
 
-    if (isConfigured) {
+    if (isConfigured && !forcar) {
       updateBudgetKPIs();
       return;
     }
@@ -15415,7 +16593,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (reqMsg) reqMsg.classList.add('hidden');
     if (inputTotal) {
       inputTotal.classList.remove('border-rose-500', 'ring-2', 'ring-rose-500/20');
-      inputTotal.value = '';
+      inputTotal.value = forcar && activeEv.budgetTotal ? Number(activeEv.budgetTotal).toLocaleString('pt-BR') : '';
     }
 
     // Localização preenchida se já salva no evento
@@ -15544,6 +16722,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         updateBudgetKPIs();
         closeModal(modal);
+        aoDefinirOrcamentoCelular();
         showToast('Orçamento definido com sucesso!', '✨');
       });
     }
@@ -15772,6 +16951,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Despesa aberta: atualiza junto.
     if (despesaAberta) desenharDespesa(despesaAberta);
+    desenharOrcamentoCelular();
   }
 
   // ---- Despesa aberta (+): na mesma caixa da tabela, com a setinha de voltar no título ----
@@ -15843,7 +17023,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const noOrcamento = !document.getElementById('wallet-sub-budget')?.classList.contains('hidden');
     if (estavaAberta && noOrcamento) {
       const titulo = document.getElementById('wallet-header-title');
-      if (titulo) titulo.textContent = 'Orçamento';
+      if (titulo) titulo.textContent = 'Gerenciar despesas';
       document.getElementById('wallet-header-actions')?.classList.remove('hidden');
     }
   }
@@ -16350,6 +17530,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedNewType = 'wedding';
   /** Tipo escolhido no catálogo (slug '' = digitado livre). @type {{ slug: string, nome: string }|null} */
   let selectedTipoEvento = null;
+  /** Tipo que veio do /cadastro (slug do catálogo, ou só o nome digitado). @param {string|null} slug @param {string|null} nome */
+  function definirTipoDoCadastro(slug, nome) { selectedTipoEvento = (slug || nome) ? { slug: slug || "", nome: nome || "" } : null; }
   let createdCoverImageSrc = 'assets/wedding_hero_banner.jpg';
 
   // Transição: Clicar em "+ Criar Evento" abre o modal pop-up de escolha de tipo de evento (estilo Joy)
@@ -16976,6 +18158,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // reaparecer a cada login.
       localStorage.removeItem('love-pending-event-type');
       localStorage.removeItem('love-pending-event-type-label');
+      localStorage.removeItem('love-pending-event-type-slug');
       localStorage.removeItem('love-pending-event-name');
       localStorage.removeItem('love-pending-event-date');
 
@@ -18014,7 +19197,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function aplicarCidadePadraoVitrine() {
     // Explorar mostra todas as cidades; só filtra quando a pessoa escolhe uma.
     if (b2bCityChosenByUser) return;
-    b2bSelectedCity = null;
+    b2bSelectedCity = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'São Paulo' : null;
   }
 
   // Alternância Lista / Grid do Explorar — lista é o padrão.
@@ -18184,12 +19367,91 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
+  /** "São Paulo, SP" (cidade + UF) ou "Todas as cidades". */
+  function textoDaCidadeCelular() {
+    if (!b2bSelectedCity) return 'Todas as cidades';
+    const achada = cidadesDaVitrine().find(c => cidadeNormalizada(c.city) === cidadeNormalizada(b2bSelectedCity));
+    const uf = achada && achada.uf ? achada.uf : (cidadeNormalizada(b2bSelectedCity) === cidadeNormalizada('São Paulo') ? 'SP' : '');
+    return uf ? `${b2bSelectedCity}, ${uf}` : b2bSelectedCity;
+  }
+
+  // Celular: tocar na cidade do cabeçalho abre uma caixinha para trocar
+  // (digitar ou escolher uma das cidades com fornecedor).
+  (function ligarCidadeDoCelular() {
+    const botao = document.getElementById('btn-b2b-cidade-celular');
+    if (!botao || botao.dataset.ligado) return;
+    botao.dataset.ligado = '1';
+    const caixa = document.createElement('div');
+    caixa.id = 'b2b-cidade-caixa';
+    caixa.className = 'b2b-cidade-caixa';
+    caixa.setAttribute('role', 'dialog');
+    caixa.setAttribute('aria-label', 'Trocar a cidade');
+    caixa.hidden = true;
+    document.body.appendChild(caixa);
+    const fechar = () => { caixa.hidden = true; botao.setAttribute('aria-expanded', 'false'); };
+    const escolher = (/** @type {string|null} */ cidade) => {
+      b2bCityChosenByUser = true;
+      b2bSelectedCity = cidade;
+      renderB2BCityFilter();
+      renderB2BExplore();
+      fechar();
+    };
+    const desenharLista = (/** @type {string} */ termo) => {
+      const alvo = cidadeNormalizada(termo || '');
+      const cidades = cidadesDaVitrine().filter(c => !alvo || cidadeNormalizada(c.city).includes(alvo));
+      const lista = /** @type {HTMLElement} */ (caixa.querySelector('.b2b-cidade-lista'));
+      lista.innerHTML = (alvo ? '' : `<button type="button" class="b2b-cidade-opcao${b2bSelectedCity ? '' : ' is-ativa'}" data-cidade="">Todas as cidades</button>`)
+        + cidades.map(c => `<button type="button" class="b2b-cidade-opcao${cidadeNormalizada(c.city) === cidadeNormalizada(b2bSelectedCity || '') ? ' is-ativa' : ''}" data-cidade="${escaparHtml(c.city)}">${escaparHtml(c.city)}${c.uf ? `, ${escaparHtml(c.uf)}` : ''}</button>`).join('')
+        + (alvo && !cidades.length ? `<button type="button" class="b2b-cidade-opcao" data-cidade-digitada>Pesquisar em "${escaparHtml(termo.trim())}"</button>` : '');
+    };
+    botao.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!caixa.hidden) { fechar(); return; }
+      caixa.innerHTML = `
+        <input type="text" class="b2b-cidade-campo" placeholder="Digite a cidade" autocomplete="off" aria-label="Cidade">
+        <div class="b2b-cidade-lista"></div>`;
+      desenharLista('');
+      const r = botao.getBoundingClientRect();
+      caixa.style.top = `${Math.round(r.bottom + 6)}px`;
+      caixa.hidden = false;
+      botao.setAttribute('aria-expanded', 'true');
+      const campo = /** @type {HTMLInputElement} */ (caixa.querySelector('.b2b-cidade-campo'));
+      campo.addEventListener('input', () => desenharLista(campo.value));
+      campo.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') { fechar(); return; }
+        if (ev.key !== 'Enter') return;
+        ev.preventDefault();
+        if (campo.value.trim()) { aplicarCidadeDigitada(campo.value); fechar(); }
+      });
+      setTimeout(() => campo.focus(), 50);
+    });
+    caixa.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const opcao = /** @type {HTMLElement|null} */ (/** @type {HTMLElement} */ (e.target).closest('.b2b-cidade-opcao'));
+      if (!opcao) return;
+      if (opcao.hasAttribute('data-cidade-digitada')) {
+        const campo = /** @type {HTMLInputElement|null} */ (caixa.querySelector('.b2b-cidade-campo'));
+        aplicarCidadeDigitada(campo ? campo.value : '');
+        fechar();
+        return;
+      }
+      escolher(opcao.dataset.cidade || null);
+    });
+    document.addEventListener('click', () => { if (!caixa.hidden) fechar(); });
+    // Já começa mostrando a cidade padrão (São Paulo), antes de os fornecedores chegarem.
+    aplicarCidadePadraoVitrine();
+    const nome = document.getElementById('b2b-cidade-celular-nome');
+    if (nome) nome.textContent = textoDaCidadeCelular();
+  })();
+
   function renderB2BCityFilter() {
     const row = document.getElementById('b2b-city-filter-row');
     if (!row) return;
     // O campo "Local" mostra a cidade que está filtrando (se não estiver sendo digitado).
     const campoLocal = document.getElementById('b2b-location-input');
     if (campoLocal && document.activeElement !== campoLocal) campoLocal.value = b2bSelectedCity || '';
+    const nomeCidadeCelular = document.getElementById('b2b-cidade-celular-nome');
+    if (nomeCidadeCelular) nomeCidadeCelular.textContent = textoDaCidadeCelular();
 
     const cidades = cidadesDaVitrine();
     // Só as cidades que têm fornecedor na vitrine; sem nenhuma, a barra some.
@@ -18554,6 +19816,8 @@ document.addEventListener('DOMContentLoaded', () => {
           ${(item.cardImage || item.image)
             ? `<img src="${escaparHtml(item.cardImage || item.image)}" alt="${escaparHtml(item.name)}" style="object-position:${item.cardImage ? '50% 50%' : (item.imageFocus || '50% 50%')}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">`
             : '<div class="w-full h-full bg-gradient-to-br from-blue-50 via-zinc-50 to-orange-50"></div>'}
+          <!-- Celular: favoritar no canto de cima da capa -->
+          <button type="button" class="btn-toggle-card-fav b2b-fav-capa" aria-label="Favoritar"><svg class="${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
         </div>
 
         <div class="flex-1 flex flex-col justify-between min-w-0">
@@ -18609,11 +19873,11 @@ document.addEventListener('DOMContentLoaded', () => {
         openB2BVendorProfile(item, servicoDestaque(item));
       });
 
-      card.querySelector('.btn-toggle-card-fav')?.addEventListener('click', (e) => {
+      card.querySelectorAll('.btn-toggle-card-fav').forEach(botao => botao.addEventListener('click', (e) => {
         e.stopPropagation();
         toggleB2BFavorite(item);
         renderB2BExplore();
-      });
+      }));
 
       card.querySelector('.btn-message-supplier')?.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -19497,6 +20761,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     if (locationTextEl) locationTextEl.textContent = enderecoCompleto(item);
+    const enderecoNoSobre = document.getElementById('b2b-profile-sobre-endereco');
+    if (enderecoNoSobre) {
+      const endereco = enderecoCompleto(item);
+      enderecoNoSobre.textContent = endereco || '';
+      enderecoNoSobre.classList.toggle('hidden', !endereco);
+    }
     renderB2BProfileBreadcrumb(item, servicoAtual);
 
     // "Acessar site" só aparece se o fornecedor publicou um site próprio
@@ -20108,8 +21378,34 @@ document.addEventListener('DOMContentLoaded', () => {
     return b2bConversationsData.reduce((acc, c) => acc + (c.unread || 0), 0);
   }
 
+  // O aviso "N fornecedores te mandaram mensagem!" fica, no computador, na
+  // coluna da direita logo acima do Guia de primeiros passos; no celular,
+  // antes dos atalhos (dentro de #home-atalhos-celular).
+  (function lugarDoAvisoDeMensagens() {
+    const mq = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+    const posicionar = () => {
+      const aviso = document.getElementById('home-aviso-mensagens');
+      const guia = document.getElementById('quick-start-guide-widget');
+      const atalhos = document.getElementById('home-atalhos-celular');
+      if (!aviso || !guia || !atalhos) return;
+      if (mq.matches) { if (aviso.parentElement !== atalhos) atalhos.prepend(aviso); }
+      else if (aviso.nextElementSibling !== guia) guia.before(aviso);
+    };
+    posicionar();
+    mq.addEventListener?.('change', posicionar);
+    window.addEventListener('resize', posicionar, { passive: true });
+  })();
+
   function atualizarContadoresDoChat() {
     const total = totalNaoLidasDoChat();
+    // Home (celular): "2 fornecedores te mandaram mensagem!" antes dos atalhos.
+    const aviso = document.getElementById('home-aviso-mensagens');
+    if (aviso) {
+      const fornecedores = b2bConversationsData.filter(c => !c.isSuporte && (c.unread || 0) > 0).length;
+      const titulo = document.getElementById('home-aviso-mensagens-titulo');
+      if (titulo) titulo.textContent = fornecedores === 1 ? '1 fornecedor te mandou mensagem!' : `${fornecedores} fornecedores te mandaram mensagem!`;
+      aviso.hidden = fornecedores === 0;
+    }
     const texto = total > 99 ? '99+' : String(total);
     const badgeHeader = document.querySelector('.badge-header-chat');
     if (badgeHeader) {
@@ -20325,7 +21621,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.add('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');
       if (toolbarTitle) toolbarTitle.textContent = 'Mensagens';
-      if (searchInput) searchInput.placeholder = 'Buscar nas conversas...';
+      if (searchInput) searchInput.placeholder = 'Pesquisar nas conversas...';
       if (exploreView) exploreView.classList.add('hidden');
       if (contractedView) contractedView.classList.add('hidden');
       if (insuranceView) insuranceView.classList.add('hidden');
@@ -20345,7 +21641,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (insuranceView) insuranceView.classList.add('hidden');
         if (contractedView) contractedView.classList.remove('hidden');
         if (toolbarTitle) toolbarTitle.textContent = 'Contratos';
-        if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
+        if (searchInput) searchInput.placeholder = 'Pesquisar fornecedores';
         renderB2BContracted();
       } else if (viewId === 'insurance') {
         if (exploreView) exploreView.classList.add('hidden');
@@ -20356,7 +21652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (contractedView) contractedView.classList.add('hidden');
         if (insuranceView) insuranceView.classList.add('hidden');
         if (exploreView) exploreView.classList.remove('hidden');
-        if (searchInput) searchInput.placeholder = 'Buscar fornecedores';
+        if (searchInput) searchInput.placeholder = 'Pesquisar fornecedores';
         const categoryTabs = document.getElementById('b2b-category-tabs');
         // Favoritos não tem o filtro de cidades (a barra só existe no Explorar).
         document.getElementById('b2b-city-filter-wrap')?.classList.toggle('hidden', viewId === 'favorites');
@@ -20556,13 +21852,30 @@ document.addEventListener('DOMContentLoaded', () => {
     menu.className = 'conv-menu';
     menu.setAttribute('role', 'menu');
     menu.innerHTML = `
+      ${btn.classList.contains('conv-acao-mais') ? `${conv.unread > 0 ? '<button type="button" role="menuitem" data-conv-lida>Marcar como lida</button>' : ''}
+      <button type="button" role="menuitem" data-conv-abrir>Abrir conversa</button>` : ''}
       <button type="button" role="menuitem" data-conv-excluir>Excluir</button>`;
     document.body.appendChild(menu);
     const r = btn.getBoundingClientRect();
     menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
     menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
     btn.closest('.conv-item')?.classList.add('menu-aberto');
+    menu.querySelector('[data-conv-lida]')?.addEventListener('click', async () => {
+      fecharMenuConversa(); fecharLinhaDaConversa();
+      conv.unread = 0;
+      renderB2BChatContacts(filtroDaListaDoChat());
+      atualizarContadoresDoChat();
+      const { error } = await supabaseClient.rpc('marcar_conversa_lida', { p_conversation_id: conv.id });
+      if (error) console.error('Erro ao marcar conversa como lida:', error);
+    });
+    menu.querySelector('[data-conv-abrir]')?.addEventListener('click', () => {
+      fecharMenuConversa(); fecharLinhaDaConversa();
+      activeB2BConversationId = conv.id;
+      conv.unread = 0;
+      renderB2BChat();
+    });
     menu.querySelector('[data-conv-excluir]').addEventListener('click', () => {
+      fecharLinhaDaConversa();
       fecharMenuConversa();
       confirmarNaLove({
         titulo: 'Excluir conversa?',
@@ -20578,6 +21891,84 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenuConversa(); });
 
+  // ------------------------------------------------------------------
+  // Celular: arrastar a conversa para a esquerda mostra Abrir e Remover
+  // (como no WhatsApp). Uma linha aberta por vez; fecha ao tocar fora ou
+  // rolar a lista; o toque só abre a conversa se não houve arraste.
+  // ------------------------------------------------------------------
+  const CHAT_NO_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  const LARGURA_ACOES_CONVERSA = 160;
+  /** @type {HTMLElement|null} */
+  let linhaDaConversaAberta = null;
+
+  /** @param {HTMLElement} linha @param {number} x @param {boolean} animar */
+  function moverLinhaDaConversa(linha, x, animar) {
+    const card = /** @type {HTMLElement|null} */ (linha.querySelector('.conv-item'));
+    if (!card) return;
+    card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+    card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
+    linha.classList.toggle('is-aberta', x < 0);
+    // Abrir/Remover só existem enquanto a linha está aberta ou fechando;
+    // fechada, nada fica aparecendo embaixo do card.
+    if (x < 0) linha.classList.add('acoes-visiveis');
+    else if (!animar) linha.classList.remove('acoes-visiveis');
+    else setTimeout(() => { if (!linha.classList.contains('is-aberta')) linha.classList.remove('acoes-visiveis'); }, 420);
+  }
+  function fecharLinhaDaConversa() {
+    if (linhaDaConversaAberta) moverLinhaDaConversa(linhaDaConversaAberta, 0, true);
+    linhaDaConversaAberta = null;
+  }
+
+  /** @param {HTMLElement} linha */
+  function prepararArrasteDaConversa(linha) {
+    const card = /** @type {HTMLElement} */ (linha.querySelector('.conv-item'));
+    let x0 = 0, y0 = 0, inicio = 0, x = 0;
+    /** @type {null|'h'|'v'} */
+    let direcao = null;
+    card.addEventListener('touchstart', (e) => {
+      if (!CHAT_NO_CELULAR.matches || e.touches.length !== 1) return;
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+      inicio = linha === linhaDaConversaAberta ? -LARGURA_ACOES_CONVERSA : 0;
+      x = inicio; direcao = null; linha.dataset.arrastou = '';
+    }, { passive: true });
+    card.addEventListener('touchmove', (e) => {
+      if (!CHAT_NO_CELULAR.matches || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+      if (!direcao) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        direcao = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        if (direcao === 'h') {
+          linha.dataset.arrastou = '1';
+          if (linhaDaConversaAberta && linhaDaConversaAberta !== linha) fecharLinhaDaConversa();
+          fecharMenuConversa();
+        }
+      }
+      if (direcao !== 'h') return;
+      e.preventDefault();
+      x = Math.max(-LARGURA_ACOES_CONVERSA, Math.min(0, inicio + dx));
+      moverLinhaDaConversa(linha, x, false);
+    }, { passive: false });
+    const soltar = () => {
+      if (direcao !== 'h') return;
+      const abrir = x < -LARGURA_ACOES_CONVERSA / 2;
+      moverLinhaDaConversa(linha, abrir ? -LARGURA_ACOES_CONVERSA : 0, true);
+      linhaDaConversaAberta = abrir ? linha : (linhaDaConversaAberta === linha ? null : linhaDaConversaAberta);
+      direcao = null;
+      // O "click" que vem depois do toque não abre a conversa.
+      setTimeout(() => { linha.dataset.arrastou = ''; }, 350);
+    };
+    card.addEventListener('touchend', soltar);
+    card.addEventListener('touchcancel', soltar);
+  }
+  // Tocar fora da linha aberta (ou rolar a lista) fecha as ações.
+  document.addEventListener('touchstart', (e) => {
+    const alvo = /** @type {Element} */ (e.target);
+    if (linhaDaConversaAberta && !(alvo.closest && (linhaDaConversaAberta.contains(alvo) || alvo.closest('.conv-menu')))) fecharLinhaDaConversa();
+  }, { passive: true, capture: true });
+  document.addEventListener('scroll', (e) => {
+    if (linhaDaConversaAberta && /** @type {Element} */ (e.target).id === 'b2b-chat-contacts-list') fecharLinhaDaConversa();
+  }, { passive: true, capture: true });
+
   const ICONE_CONVERSA_MAIS = '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
 
   /** Texto da busca da lista de conversas. */
@@ -20586,14 +21977,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return campo ? campo.value : '';
   }
 
+  /** Celular: "N conversas" acima da pesquisa, como no Hub. */
+  function atualizarTotalDoChat(/** @type {number} */ n) {
+    const el = document.getElementById('b2b-chat-total-celular');
+    if (el) el.textContent = `${n} ${n === 1 ? 'conversa' : 'conversas'}`;
+  }
+
   function renderB2BChatContacts(filterQuery = buscaDoChat()) {
     const list = document.getElementById('b2b-chat-contacts-list');
     if (!list) return;
 
     list.innerHTML = '';
+    linhaDaConversaAberta = null;
 
     if (!b2bConversationsData.length) {
       list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Fale com um fornecedor pelo Explorar.</div>';
+      atualizarTotalDoChat(0);
       return;
     }
 
@@ -20615,9 +22014,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       list.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa encontrada.</div>';
+      atualizarTotalDoChat(0);
       return;
     }
 
+    atualizarTotalDoChat(filtered.length);
     filtered.forEach(conv => {
       const isActive = conv.id === activeB2BConversationId;
       const item = document.createElement('div');
@@ -20653,13 +22054,47 @@ document.addEventListener('DOMContentLoaded', () => {
         abrirMenuConversa(/** @type {HTMLElement} */ (e.currentTarget), conv);
       });
 
+      // Linha: o card por cima e, por trás, as ações que o arraste revela (celular).
+      const linha = document.createElement('div');
+      linha.className = 'conv-linha';
+      linha.appendChild(item);
+      if (!conv.isSuporte) {
+        const acoes = document.createElement('div');
+        acoes.className = 'conv-acoes';
+        acoes.innerHTML = `
+          <button type="button" class="conv-acao conv-acao-abrir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg><span>Abrir</span></button>
+          <button type="button" class="conv-acao conv-acao-remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Remover</span></button>`;
+        linha.insertBefore(acoes, item);
+        acoes.querySelector('.conv-acao-abrir')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaDaConversa();
+          activeB2BConversationId = conv.id;
+          conv.unread = 0;
+          renderB2BChat();
+        });
+        acoes.querySelector('.conv-acao-remover')?.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fecharLinhaDaConversa();
+          confirmarNaLove({
+            titulo: 'Remover conversa?',
+            texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
+            botao: 'Remover',
+            aoConfirmar: () => excluirConversaDaLista(conv.id)
+          });
+        });
+        prepararArrasteDaConversa(linha);
+      }
+
       item.addEventListener('click', () => {
+        // Depois de arrastar, ou com as ações abertas, o toque só fecha a linha.
+        if (linha.dataset.arrastou === '1') return;
+        if (linha.classList.contains('is-aberta')) { fecharLinhaDaConversa(); return; }
         activeB2BConversationId = conv.id;
         conv.unread = 0;
         renderB2BChat();
       });
 
-      list.appendChild(item);
+      list.appendChild(linha);
     });
   }
 
@@ -21226,7 +22661,7 @@ document.addEventListener('DOMContentLoaded', () => {
       elements.drawerSubItemsList?.querySelectorAll('[data-pagina-item]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.paginaItem === aba));
     }
     const tituloDaPagina = document.getElementById('account-settings-header-title');
-    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
+    if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'contas' ? 'Contas bancárias' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
     document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
     document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', aba !== 'privacidade');
     if (aba === 'privacidade') refreshMfaStatus();
@@ -21235,6 +22670,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
     if (aba === 'eventos') renderMeuEvento();
+    document.getElementById('config-painel-contas')?.classList.toggle('hidden', aba !== 'contas');
+    if (aba === 'contas') /** @type {any} */ (window).LoveCarteira?.contasBancarias();
   }
   document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));
 
@@ -21271,7 +22708,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lixeira.id = 'btn-config-eventos-excluir';
     lixeira.className = 'love-tabela-lixeira hidden';
     lixeira.innerHTML = '<svg stroke-linejoin="round" stroke-linecap="round" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6.5h16"/><path d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
-    montarBarraDaTabela(tabela, { caixa: document.getElementById('config-eventos-caixa'), placeholder: 'Buscar evento...', nome: 'eventos', extras: [lixeira] });
+    montarBarraDaTabela(tabela, { caixa: document.getElementById('config-eventos-caixa'), placeholder: 'Pesquisar evento...', nome: 'eventos', extras: [lixeira] });
     lixeira.addEventListener('click', async () => {
       const ids = [...eventosSelecionados];
       if (!ids.length || lixeira.disabled) return;
@@ -22116,7 +23553,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnFooterFind) {
     btnFooterFind.addEventListener('click', () => {
-      showToast('Digite o nome dos anfitriões na busca para encontrar o evento desejado.', '🔍');
+      window.location.href = '/encontrar-evento';
     });
   }
 
@@ -22582,7 +24019,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // do /cadastro (ex.: cadastro pelo Google, ou um evento criado por outro
     // caminho) não pode mandar de novo para "criar evento" a cada recarga.
     if (events.length && pendingType) {
-      ['love-pending-event-type', 'love-pending-event-type-label', 'love-pending-event-name', 'love-pending-event-date']
+      ['love-pending-event-type', 'love-pending-event-type-label', 'love-pending-event-type-slug', 'love-pending-event-name', 'love-pending-event-date']
         .forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
       pendingType = null;
     }
@@ -22635,6 +24072,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // deslogar e logar de novo precisa continuar voltando pra esta mesma
       // tela pré-preenchida, em vez de "esquecer" o que a pessoa já tinha
       // escolhido no /cadastro e mandar pra tela genérica de boas-vindas.
+      if (typeof definirTipoDoCadastro === 'function') definirTipoDoCadastro(localStorage.getItem('love-pending-event-type-slug'), pendingTypeLabel);
       proceedToEventForm(pendingType, pendingTypeLabel || 'Novo Evento');
 
       // Nome e data do evento já coletados no onboarding de /cadastro
@@ -22707,4 +24145,70 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
   else iniciar();
+})();
+
+// Celular: Fornecedores. A busca ("Pesquisar fornecedores" + "Em Local") sai do
+// cabeçalho e fica logo abaixo das abas, como em Convidados e Presentes; em
+// Criar solicitação as abas internas somem e "Minhas solicitações" vira o
+// ícone de lista no cabeçalho (lá dentro, o + volta a criar). Desktop não muda.
+(function fornecedoresNoCelular() {
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  const iniciar = () => {
+    const aba = document.getElementById('tab-b2b');
+    const cabecalho = document.getElementById('b2b-top-search-bar');
+    const controles = document.getElementById('b2b-toolbar-controls');
+    const busca = document.getElementById('b2b-search-container');
+    const local = document.getElementById('b2b-location-input')?.parentElement;
+    if (!aba || !cabecalho || !controles || !busca || !local) return;
+    const barra = document.createElement('div');
+    barra.id = 'b2b-busca-celular';
+    barra.className = 'b2b-busca-celular';
+    const arrumar = () => {
+      if (noCelular.matches) {
+        if (busca.parentElement !== barra) barra.append(busca, local);
+        if (!barra.parentElement) {
+          // Logo depois das abas (o submenu entra logo depois do cabeçalho).
+          const sub = document.getElementById('submenu-celular');
+          (sub && sub.parentElement === aba ? sub : cabecalho).after(barra);
+        }
+      } else if (busca.parentElement === barra) {
+        controles.append(busca, local);
+        barra.remove();
+      }
+    };
+    noCelular.addEventListener?.('change', arrumar);
+    window.addEventListener('resize', arrumar);
+    arrumar();
+    document.getElementById('btn-rfp-voltar-explorar-celular')?.addEventListener('click', () => {
+      if (/** @type {any} */ (window).LovePedidos?.voltarEtapa?.()) return;
+      window.loveIrPara?.('b2b', 'explore');
+    });
+    document.getElementById('btn-rfp-lista-celular')?.addEventListener('click', () => {
+      const lista = document.getElementById('pedidos-painel-minhas');
+      const naLista = !!lista && !lista.classList.contains('hidden');
+      /** @type {any} */ (window).LovePedidos?.mostrarAba(naLista ? 'nova' : 'minhas');
+      window.scrollTo({ top: 0 });
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();
+
+// Celular: tocar em qualquer menu da barra de baixo sempre volta para o topo
+// (mesmo menu ou outro, inclusive a Home), também nas áreas que rolam por dentro.
+(function barraDeBaixoVoltaAoTopo() {
+  const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  document.addEventListener('click', (e) => {
+    if (!noCelular.matches || !(e.target instanceof Element)) return;
+    const botao = e.target.closest('.rail-icon-btn[data-rail-tab]');
+    if (!botao) return;
+    const subir = () => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.querySelectorAll('#view-event-os-dashboard *').forEach((el) => {
+        if (el.scrollTop > 0 && el.scrollHeight > el.clientHeight) el.scrollTo({ top: 0, behavior: 'instant' });
+      });
+    };
+    subir();
+    setTimeout(subir, 60); // depois que a tela nova aparece
+  }, true);
 })();

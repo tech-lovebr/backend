@@ -20,13 +20,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderLeadStatusTabs();
   renderLeadsTable();
   initLeadDrawer();
+  fichaNaPaginaNoDesktop('lead-drawer', '[data-leads-painel="leads"]');
   initLeadEmailAutocomplete();
   initLeadImport();
 
   // Barra da tabela: busca, Filtrar por (produto/serviço e estado),
   // Importar e Exportar (o que está filtrado/buscado no momento).
   leadsTabelaEstado = montarBarraTabela(document.getElementById('leads-table-card'), {
-    placeholder: 'Buscar lead, e-mail ou CPF...',
+    placeholder: 'Pesquisar cliente, e-mail ou CPF...',
+    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', vazio: { lottie: 'clientes-lista-vazio', titulo: 'Adicione seu primeiro cliente', texto: 'Quem você cadastrar ou quem pedir orçamento pelo chat aparece aqui.', abrirSel: '#lead-add-celular' }, nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
     filtros: [
       { chave: 'tipo', rotulo: 'Tipo do evento', opcoes: () => [...new Set(crmLeads.map(l => l.tipo_evento).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'produto', rotulo: 'Produto/serviço', opcoes: () => [...new Set(crmLeads.map(l => l.event_name).filter(Boolean))].sort().map(v => [v, v]) },
@@ -300,7 +302,7 @@ function renderLeadsTable() {
 
 /* -------------------- Exclusão em massa (caixinhas + lixeira) -------------------- */
 
-const LEADS_ICONE_LIXEIRA = '<svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
+const LEADS_ICONE_LIXEIRA = '<svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>';
 
 // Lixeira na barra da tabela, logo à esquerda do "Filtrar por". Só aparece
 // com pelo menos 1 lead marcado.
@@ -366,6 +368,26 @@ async function excluirLeadsSelecionados() {
       leadsSelecionados.clear();
       renderLeadsTable();
       showToast(n === 1 ? 'Lead excluído.' : `${n} leads excluídos.`);
+    }
+  });
+}
+
+/* Celular: "Remover" do arrastar a linha para a esquerda. */
+function excluirLeadDaLinha(tr) {
+  const id = tr.querySelector('[data-open-lead]')?.dataset.openLead;
+  const lead = crmLeads.find(l => String(l.id) === String(id));
+  if (!lead) return;
+  confirmarNoHub({
+    titulo: `Remover ${lead.name}?`,
+    texto: 'O cliente sai da sua lista. Essa ação não pode ser desfeita.',
+    botao: 'Remover',
+    aoConfirmar: async () => {
+      const { error } = await supabaseClient.from('leads').delete().eq('id', lead.id);
+      if (error) throw new Error('Não foi possível remover o cliente. Tente de novo.');
+      crmLeads = crmLeads.filter(l => l.id !== lead.id);
+      leadsSelecionados.delete(lead.id);
+      renderLeadsTable();
+      showToast('Cliente removido.');
     }
   });
 }
@@ -479,7 +501,7 @@ function initLeadDrawer() {
       showToast(form.dataset.editId ? 'Não foi possível atualizar o lead.' : 'Não foi possível adicionar o lead.', true);
       return;
     }
-    showToast(form.dataset.editId ? 'Lead atualizado.' : 'Lead adicionado.');
+    if (form.dataset.editId) showToast('Lead atualizado.'); else avisarAdicionado(name, 'Lead adicionado.');
 
     await loadLeads();
     close();
@@ -780,7 +802,7 @@ function renderLeadActivityEntry(entry) {
         <p class="task-activity-line">
           <strong>${escapeHtml(entry.user)}</strong> adicionou um comentário
           <button type="button" class="task-activity-comment-delete" data-comment-id="${entry.id}" title="Apagar comentário" aria-label="Apagar comentário">
-            <svg stroke-linejoin="round" stroke-linecap="round" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+            <svg stroke-linejoin="round" stroke-linecap="round" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
           </button>
         </p>
         <p class="task-activity-comment-text">${escapeHtml(entry.text || '')}</p>
@@ -827,3 +849,52 @@ async function deleteLeadComment(commentId) {
   await supabaseClient.from('leads').update({ comentarios: lead.comentarios }).eq('id', id);
   renderLeadComments(lead);
 }
+
+/* -------------------- Celular: "+" de Clientes --------------------
+   Gaveta de baixo com "Adicionar manualmente" (abre a ficha de Adicionar) e
+   "Importar contatos" (contatos do celular ou arquivo .vcf; .csv vai para o
+   importar de planilha que já existe). */
+async function importarContatosComoClientes() {
+  const escolhidos = await escolherContatosDoCelular();
+  if (!escolhidos) return;
+  if (escolhidos.csv) {
+    const entrada = document.getElementById('lead-import-file');
+    if (entrada && typeof DataTransfer !== 'undefined') {
+      const dt = new DataTransfer();
+      dt.items.add(escolhidos.csv);
+      entrada.files = dt.files;
+      entrada.dispatchEvent(new Event('change'));
+    }
+    return;
+  }
+  if (!escolhidos.length) { showToast('Nenhum contato com nome para importar.', true); return; }
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return;
+  const leads = escolhidos.map(c => {
+    const lead = { fornecedor_id: empresaId(session), status: 'novo', name: maiusculaNoNome(c.nome) };
+    if (c.email) lead.email = c.email;
+    const tel = String(c.telefone || '').replace(/\D/g, '').replace(/^55(?=\d{10,11}$)/, '').slice(0, 11);
+    if (tel) lead.whatsapp = formatPhoneDigits(tel);
+    return lead;
+  });
+  let { error } = await supabaseClient.from('leads').insert(leads);
+  if (error && /column|schema cache/i.test(error.message || '')) {
+    ({ error } = await supabaseClient.from('leads').insert(leads.map(({ whatsapp, ...resto }) => resto)));
+  }
+  if (error) { showToast('Não foi possível importar os contatos. Tente de novo.', true); return; }
+  await loadLeads();
+  renderLeadsTable();
+  if (leads.length === 1) avisarAdicionado(leads[0].name, '1 lead importado.');
+  else showToast(`${leads.length} clientes importados.`, false, 'sucesso');
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest || !e.target.closest('#lead-add-celular')) return;
+  abrirGavetaDeOpcoes({
+    titulo: 'Adicionar cliente',
+    opcoes: [
+      { rotulo: 'Adicionar manualmente', icone: ICONE_GAVETA_MANUAL, aoTocar: () => document.getElementById('lead-add-btn')?.click() },
+      { rotulo: 'Importar contatos', icone: ICONE_GAVETA_CONTATOS, aoTocar: importarContatosComoClientes }
+    ]
+  });
+});

@@ -920,39 +920,10 @@ html body #view-public-site :is(.lp-btn, .lp2-btn-tom, .lp2-hero-encontrar):not(
 }
 
 /* ---------- v8: cabeçalho do celular como a Zola ----------
-   Mais alto (72px), hambúrguer e logo maior à esquerda e "Entrar" à
-   direita. O hambúrguer abre o menu logo abaixo do cabeçalho. Desktop intocado. */
-#view-public-site .lp-menu-btn, #view-public-site .lp-menu-celular { display: none; }
+   Mais alto (72px), logo maior à esquerda e "Entrar" à direita. Desktop intocado. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  /* Logo colado no hambúrguer, à esquerda (como a Zola). */
-  #view-public-site .lp-topo-linha { height: 72px; gap: 8px; }
+  #view-public-site .lp-topo-linha { height: 72px; }
   #view-public-site .lp-logo img { height: 36px; }
   #view-public-site .lp-topo-acoes { margin-left: auto; }
   #view-public-site .lp-link-entrar { font-size: 16px !important; }
-
-  #view-public-site .lp-menu-btn {
-    display: inline-flex; flex-direction: column; justify-content: center; gap: 5px;
-    width: 40px; height: 40px; margin-left: -8px; padding: 0 8px;
-    background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent;
-  }
-  #view-public-site .lp-menu-btn span { display: block; width: 22px; height: 2px; border-radius: 2px; background: #181D24; transition: transform .2s ease, opacity .2s ease; }
-  #view-public-site .lp-menu-btn.is-aberto span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  #view-public-site .lp-menu-btn.is-aberto span:nth-child(2) { opacity: 0; }
-  #view-public-site .lp-menu-btn.is-aberto span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
-  #view-public-site .lp-menu-celular:not([hidden]) {
-    display: flex; flex-direction: column; padding: 8px 16px 20px;
-    background: #FFFFFF; border-top: 1px solid #E4E4E7;
-  }
-  #view-public-site .lp-menu-celular > a,
-  #view-public-site .lp-menu-celular > button:not(.lp-menu-criar) {
-    display: block; width: 100%; padding: 14px 0; text-align: left;
-    font: 500 16px Inter, sans-serif; color: #181D24; text-decoration: none;
-    background: none; border: 0; border-bottom: 1px solid #F4F4F5; cursor: pointer;
-  }
-  #view-public-site .lp-menu-celular > a[aria-current="page"] { font-weight: 600; color: #183b54; }
-  html body #view-public-site .lp-menu-celular > .lp-menu-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
-    display: flex; align-items: center; justify-content: center;
-    width: 100%; height: 48px; margin-top: 16px; font-size: 15px; border-radius: 999px;
-  }
 }

@@ -16,9 +16,21 @@
   <title>Criar conta — Love</title>
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <link rel="apple-touch-icon" href="assets/love-logo-google-120.png?v=1">
+  <script>
+    // planwithlove.com: mesmo cadastro do love.com.br, só que em inglês (ver
+    // js/i18n.js). Mesma detecção por hostname usada no resto da plataforma.
+    try {
+      if (/(^|\.)planwithlove\.com$/i.test(location.hostname)) {
+        document.documentElement.classList.add('love-en-domain');
+        document.documentElement.lang = 'en';
+        document.title = 'Create your account — Love';
+      }
+    } catch (e) {}
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=20261022_aparelho"></script>
+  <script src="js/i18n.js?v=1"></script>
   <script src="js/tipos-evento.js?v=20261031_cadastro"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
@@ -100,17 +112,17 @@
       <div class="flex items-center mt-4 max-w-md w-full" id="onboard-steps">
         <div class="flex items-center gap-2" data-step-indicator="1">
           <div class="step-circle is-active">1</div>
-          <span class="step-label is-active">Começar</span>
+          <span class="step-label is-active" data-i18n="cadastro.etapaComecar">Começar</span>
         </div>
         <div class="step-line"></div>
         <div class="flex items-center gap-2" data-step-indicator="2">
           <div class="step-circle">2</div>
-          <span class="step-label">Seus dados</span>
+          <span class="step-label" data-i18n="cadastro.etapaSeusDados">Seus dados</span>
         </div>
         <div class="step-line"></div>
         <div class="flex items-center gap-2" data-step-indicator="3">
           <div class="step-circle">3</div>
-          <span class="step-label">Finalizar</span>
+          <span class="step-label" data-i18n="cadastro.etapaFinalizar">Finalizar</span>
         </div>
       </div>
 
@@ -118,102 +130,102 @@
 
         <!-- Etapa 1: tipo de evento -->
         <div class="onboard-step is-active" data-step="1">
-          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Vamos planejar o seu grande dia?</h1>
-          <p class="text-sm font-normal text-zinc-800 mb-4">Para começar, que tipo de evento você quer celebrar?</p>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-i18n="cadastro.tituloTipoEvento">Vamos planejar o seu grande dia?</h1>
+          <p class="text-sm font-normal text-zinc-800 mb-4" data-i18n="cadastro.subTituloTipoEvento">Para começar, que tipo de evento você quer celebrar?</p>
 
           <div class="space-y-2.5" id="onboard-type-list">
             <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="wedding" data-label="Casamento">
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="8.5" cy="14.5" r="4.25"/><circle cx="15.5" cy="14.5" r="4.25"/></svg>
-              <span>Casamento</span>
+              <span data-i18n="cadastro.casamento">Casamento</span>
             </button>
             <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="birthday" data-label="Aniversário">
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
-              <span>Aniversário</span>
+              <span data-i18n="cadastro.aniversario">Aniversário</span>
             </button>
             <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="anniversary" data-label="Bodas">
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
-              <span>Bodas</span>
+              <span data-i18n="cadastro.bodas">Bodas</span>
             </button>
             <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="baby_shower" data-label="Chá de Bebê">
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3h6M10.5 3v2.4a1.5 1.5 0 0 1-.44 1.06l-1.12 1.12A3 3 0 0 0 8 9.74V18a3 3 0 0 0 3 3h2a3 3 0 0 0 3-3V9.74a3 3 0 0 0-.94-2.16l-1.12-1.12a1.5 1.5 0 0 1-.44-1.06V3M8.5 12h7"/></svg>
-              <span>Chá de Bebê</span>
+              <span data-i18n="cadastro.chaDeBebe">Chá de Bebê</span>
             </button>
             <button type="button" class="type-card w-full text-left px-5 py-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-sm font-normal text-zinc-800 transition-all flex items-center gap-3" data-type="birthday" data-label="Festa de 15 Anos">
               <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H4.5a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18A1.125 1.125 0 0 0 2.25 8.625v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg>
-              <span>Festa de 15 Anos</span>
+              <span data-i18n="cadastro.festaDe15">Festa de 15 Anos</span>
             </button>
             <!-- Outro tipo: texto livre com sugestões do catálogo (tabela tipos_evento) -->
             <div class="cadastro-outro">
-              <input type="text" id="onboard-outro-input" role="combobox" aria-autocomplete="list" aria-controls="onboard-outro-sugestoes" aria-expanded="false" autocomplete="off" placeholder="Outro" aria-label="Outro tipo de evento">
+              <input type="text" id="onboard-outro-input" role="combobox" aria-autocomplete="list" aria-controls="onboard-outro-sugestoes" aria-expanded="false" autocomplete="off" placeholder="Outro" data-i18n-placeholder="cadastro.outro" aria-label="Outro tipo de evento" data-i18n-aria-label="cadastro.outroTipoEvento">
               <div id="onboard-outro-sugestoes" class="cadastro-outro-sugestoes" role="listbox" aria-label="Tipos de evento" hidden></div>
             </div>
           </div>
 
           <div class="mt-8">
-            <button type="button" id="btn-onboard-next-1" disabled class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed transition-opacity">Próximo</button>
+            <button type="button" id="btn-onboard-next-1" disabled class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed transition-opacity" data-i18n="cadastro.proximo">Próximo</button>
           </div>
 
-          <p class="text-sm text-zinc-500 text-center mt-5">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entre por aqui</a></p>
-          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><a href="/" class="hover:underline">Voltar</a></p>
+          <p class="text-sm text-zinc-500 text-center mt-5" data-i18n-html="cadastro.jaTemContaEntre">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entre por aqui</a></p>
+          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><a href="/" class="hover:underline" data-i18n="cadastro.voltar">Voltar</a></p>
         </div>
 
         <!-- Etapa 2: dados pessoais e do evento -->
         <div class="onboard-step" data-step="2">
-          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline">Voltar</button></p>
+          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline" data-i18n="cadastro.voltar">Voltar</button></p>
 
-          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Conte um pouco sobre você.</h1>
-          <p class="text-zinc-500 text-sm mb-7">Isso nos ajuda a personalizar sua experiência.</p>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-i18n="cadastro.tituloDadosPessoais">Conte um pouco sobre você.</h1>
+          <p class="text-zinc-500 text-sm mb-7" data-i18n="cadastro.subTituloDadosPessoais">Isso nos ajuda a personalizar sua experiência.</p>
 
           <div class="space-y-3.5">
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-xs font-normal text-zinc-700 mb-1">Nome</label>
-                <input type="text" id="onboard-firstname-input" autocapitalize="words" required placeholder="Seu nome" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+                <label class="block text-xs font-normal text-zinc-700 mb-1" data-i18n="cadastro.nome">Nome</label>
+                <input type="text" id="onboard-firstname-input" autocapitalize="words" required placeholder="Seu nome" data-i18n-placeholder="cadastro.nomePlaceholder" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
               </div>
               <div>
-                <label class="block text-xs font-normal text-zinc-700 mb-1">Sobrenome</label>
-                <input type="text" id="onboard-lastname-input" autocapitalize="words" required placeholder="Seu sobrenome" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+                <label class="block text-xs font-normal text-zinc-700 mb-1" data-i18n="cadastro.sobrenome">Sobrenome</label>
+                <input type="text" id="onboard-lastname-input" autocapitalize="words" required placeholder="Seu sobrenome" data-i18n-placeholder="cadastro.sobrenomePlaceholder" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
               </div>
             </div>
             <div>
-              <label class="block text-xs font-normal text-zinc-700 mb-1">Data de nascimento</label>
+              <label class="block text-xs font-normal text-zinc-700 mb-1" data-i18n="cadastro.dataNascimento">Data de nascimento</label>
               <input type="date" id="onboard-birthday-input" min="1900-01-01" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
             </div>
             <div>
-              <label class="block text-xs font-normal text-zinc-700 mb-1">Data do evento</label>
+              <label class="block text-xs font-normal text-zinc-700 mb-1" data-i18n="cadastro.dataEvento">Data do evento</label>
               <div class="flex items-center gap-3">
                 <input type="date" id="onboard-eventdate-input" min="1900-01-01" max="2099-12-31" class="flex-1 text-sm p-3 rounded-xl border border-zinc-200 bg-white focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed">
                 <label class="flex items-center gap-2 cursor-pointer flex-shrink-0">
                   <input type="checkbox" id="onboard-eventdate-unknown" class="w-4 h-4 rounded border-zinc-300 text-[#537bae] focus:ring-[#537bae]">
-                  <span class="text-xs text-zinc-500 whitespace-nowrap">Ainda não sei</span>
+                  <span class="text-xs text-zinc-500 whitespace-nowrap" data-i18n="cadastro.aindaNaoSei">Ainda não sei</span>
                 </label>
               </div>
             </div>
           </div>
 
           <div class="mt-8">
-            <button type="button" id="btn-onboard-next-2" class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal transition-colors">Próximo</button>
+            <button type="button" id="btn-onboard-next-2" class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal transition-colors" data-i18n="cadastro.proximo">Próximo</button>
           </div>
         </div>
 
         <!-- Etapa 3: e-mail e senha -->
         <div class="onboard-step" data-step="3">
-          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline">Voltar</button></p>
+          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline" data-i18n="cadastro.voltar">Voltar</button></p>
 
-          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Finalize seu cadastro.</h1>
-          <p class="text-zinc-500 text-sm mb-7">Só falta criar seu acesso à plataforma.</p>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-i18n="cadastro.tituloFinalizar">Finalize seu cadastro.</h1>
+          <p class="text-zinc-500 text-sm mb-7" data-i18n="cadastro.subTituloFinalizar">Só falta criar seu acesso à plataforma.</p>
 
           <form id="form-onboard-register" class="space-y-3.5 mt-5" autocomplete="off">
             <div>
-              <label class="block text-xs font-normal text-zinc-700 mb-1">E-mail</label>
-              <input type="email" id="onboard-email-input" required autocomplete="off" placeholder="seu.email@exemplo.com" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+              <label class="block text-xs font-normal text-zinc-700 mb-1" data-i18n="cadastro.email">E-mail</label>
+              <input type="email" id="onboard-email-input" required autocomplete="off" placeholder="seu.email@exemplo.com" data-i18n-placeholder="login.emailPlaceholder" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
             </div>
             <div class="relative">
-              <label class="block text-xs font-normal text-zinc-700 mb-1">Senha</label>
+              <label class="block text-xs font-normal text-zinc-700 mb-1" data-i18n="cadastro.senha">Senha</label>
               <div class="campo-senha-com-olho">
-                <input type="text" id="onboard-password-input" required minlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Crie uma senha" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+                <input type="text" id="onboard-password-input" required minlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Crie uma senha" data-i18n-placeholder="cadastro.criarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
                 <!-- Olhinho: mostra/esconde a senha -->
-                <button type="button" id="btn-onboard-ver-senha" class="olho-senha" aria-label="Mostrar senha" aria-pressed="false"><svg class="login-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="login-olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+                <button type="button" id="btn-onboard-ver-senha" class="olho-senha" aria-label="Mostrar senha" data-i18n-aria-label="cadastro.mostrarSenha" aria-pressed="false"><svg class="login-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="login-olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
               </div>
 
               <div id="password-strength-panel" class="password-strength-panel">
@@ -222,19 +234,19 @@
                 </div>
                 <p id="password-strength-label" class="password-strength-label"></p>
                 <ul class="password-strength-checklist">
-                  <li data-rule="length"><span class="password-strength-check">○</span> Pelo menos 8 caracteres</li>
-                  <li data-rule="upper"><span class="password-strength-check">○</span> Uma letra maiúscula</li>
-                  <li data-rule="lower"><span class="password-strength-check">○</span> Uma letra minúscula</li>
-                  <li data-rule="number"><span class="password-strength-check">○</span> Um número</li>
+                  <li data-rule="length"><span class="password-strength-check">○</span> <span data-i18n="cadastro.senhaPeloMenos8">Pelo menos 8 caracteres</span></li>
+                  <li data-rule="upper"><span class="password-strength-check">○</span> <span data-i18n="cadastro.senhaUmaMaiuscula">Uma letra maiúscula</span></li>
+                  <li data-rule="lower"><span class="password-strength-check">○</span> <span data-i18n="cadastro.senhaUmaMinuscula">Uma letra minúscula</span></li>
+                  <li data-rule="number"><span class="password-strength-check">○</span> <span data-i18n="cadastro.senhaUmNumero">Um número</span></li>
                 </ul>
               </div>
             </div>
-            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2">Criar conta</button>
+            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2" data-i18n="cadastro.criarConta">Criar conta</button>
           </form>
 
           <div class="flex items-center gap-3 my-2">
             <div class="h-px bg-zinc-200 flex-1"></div>
-            <span class="text-[11px] text-zinc-400 uppercase">ou continue com</span>
+            <span class="text-[11px] text-zinc-400 uppercase" data-i18n="cadastro.ouContinueCom">ou continue com</span>
             <div class="h-px bg-zinc-200 flex-1"></div>
           </div>
 
@@ -246,18 +258,18 @@
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
               </svg>
-              <span>Continuar com o Google</span>
+              <span data-i18n="cadastro.continuarComGoogle">Continuar com o Google</span>
             </button>
             <button type="button" id="btn-onboard-apple" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-sm font-normal flex items-center justify-center gap-3 transition-all">
               <svg class="w-4 h-4 fill-zinc-900" viewBox="0 0 170 170">
                 <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.66-7.83-11.87-14.28-5.77-8.91-10.35-18.9-13.74-29.96-3.4-11.06-5.1-21.73-5.1-32.01 0-14.65 3.63-26.68 10.89-36.09 7.26-9.41 16.5-14.23 27.72-14.47 4.58 0 9.87 1.25 15.86 3.76 6 2.5 9.8 3.82 11.41 3.94 1.34-.12 5.37-1.48 12.08-4.08 6.71-2.6 12.19-3.8 16.45-3.6 12.67.63 22.56 5.33 29.68 14.09-11.14 6.78-16.58 16.2-16.32 28.27.24 9.4 3.82 17.15 10.74 23.27 6.92 6.12 15.22 9.53 24.9 10.23-2.12 6.64-4.87 13.43-8.24 20.37zM119.22 31.84c0-7.39 2.66-14.35 7.98-20.89C132.52 4.41 139.19.78 147.21 0c.12 1.03.18 1.94.18 2.74 0 7.39-2.78 14.46-8.33 21.21-5.56 6.75-12.38 10.51-20.47 11.28-.48-1.14-.72-2.27-.72-3.39z"/>
               </svg>
-              <span>Continuar com a Apple</span>
+              <span data-i18n="cadastro.continuarComApple">Continuar com a Apple</span>
             </button>
           </div>
 
 
-          <p class="text-sm text-zinc-500 text-center mt-5">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
+          <p class="text-sm text-zinc-500 text-center mt-5" data-i18n-html="cadastro.jaTemContaEntrar">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
         </div>
 
       </div>
@@ -271,7 +283,7 @@
         <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
           <div></div>
           <div>
-            <h2 class="text-white text-4xl font-normal leading-tight mb-10">Para o dia em<br>que tudo começa</h2>
+            <h2 class="text-white text-4xl font-normal leading-tight mb-10" data-i18n-html="cadastro.fraseLateral">Para o dia em<br>que tudo começa</h2>
             <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
           </div>
         </div>
@@ -456,21 +468,22 @@
       });
 
       passwordBarFill.classList.remove('is-weak', 'is-medium', 'is-strong');
+      var t = window.LoveI18n && window.LoveI18n.t;
       if (!value) {
         passwordBarFill.style.width = '0%';
         passwordLabel.textContent = '';
       } else if (metCount <= 1) {
         passwordBarFill.style.width = '25%';
         passwordBarFill.classList.add('is-weak');
-        passwordLabel.textContent = 'Senha fraca';
+        passwordLabel.textContent = t ? t('cadastro.senhaFraca') : 'Senha fraca';
       } else if (metCount <= 3) {
         passwordBarFill.style.width = '65%';
         passwordBarFill.classList.add('is-medium');
-        passwordLabel.textContent = 'Senha média';
+        passwordLabel.textContent = t ? t('cadastro.senhaMedia') : 'Senha média';
       } else {
         passwordBarFill.style.width = '100%';
         passwordBarFill.classList.add('is-strong');
-        passwordLabel.textContent = 'Senha forte';
+        passwordLabel.textContent = t ? t('cadastro.senhaForte') : 'Senha forte';
       }
     }
 
@@ -516,7 +529,7 @@
 
     // Apple: ainda não configurado.
     document.getElementById('btn-onboard-apple').addEventListener('click', () => {
-      alert('Cadastro com a Apple ainda não disponível. Use o Google ou e-mail e senha.');
+      alert(window.LoveI18n ? window.LoveI18n.t('cadastro.appleIndisponivel') : 'Cadastro com a Apple ainda não disponível. Use o Google ou e-mail e senha.');
     });
 
     document.getElementById('form-onboard-register').addEventListener('submit', async (e) => {
@@ -532,7 +545,7 @@
       const submitBtn = document.getElementById('btn-onboard-submit');
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Criando...';
+      submitBtn.textContent = window.LoveI18n ? window.LoveI18n.t('cadastro.criando') : 'Criando...';
 
       const { data, error } = await supabaseClient.auth.signUp({
         email,
@@ -557,8 +570,11 @@
 
       if (error) {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Criar conta';
-        alert(error.message === 'User already registered' ? 'Esse e-mail já tem uma conta. Faça login.' : 'Não foi possível criar sua conta: ' + error.message);
+        var t = window.LoveI18n && window.LoveI18n.t;
+        submitBtn.textContent = t ? t('cadastro.criarConta') : 'Criar conta';
+        alert(error.message === 'User already registered'
+          ? (t ? t('cadastro.emailJaExiste') : 'Esse e-mail já tem uma conta. Faça login.')
+          : (t ? t('cadastro.erroCriarConta') : 'Não foi possível criar sua conta: ') + error.message);
         return;
       }
 
@@ -577,10 +593,11 @@
       // e o fluxo segue direto pro painel), mas isso deixa pronto pro dia
       // em que for ligada, sem precisar tocar neste arquivo de novo.
       if (!data.session) {
+        var t = window.LoveI18n && window.LoveI18n.t;
         document.querySelector('.onboard-step.is-active').innerHTML = `
-          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">Confirme seu e-mail</h1>
-          <p class="text-zinc-500 text-sm mb-2">Enviamos um link de confirmação para <strong>${email}</strong>.</p>
-          <p class="text-zinc-500 text-sm">Clique no link para ativar sua conta e poder entrar na plataforma.</p>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2">${t ? t('cadastro.confirmeSeuEmail') : 'Confirme seu e-mail'}</h1>
+          <p class="text-zinc-500 text-sm mb-2">${t ? t('cadastro.linkConfirmacaoEnviado') : 'Enviamos um link de confirmação para'} <strong>${email}</strong>.</p>
+          <p class="text-zinc-500 text-sm">${t ? t('cadastro.cliqueNoLink') : 'Clique no link para ativar sua conta e poder entrar na plataforma.'}</p>
         `;
         return;
       }
@@ -601,7 +618,7 @@
       campo.style.setProperty('-webkit-text-security', mostrar ? 'none' : 'disc');
       campo.style.setProperty('text-security', mostrar ? 'none' : 'disc');
       btn.setAttribute('aria-pressed', String(mostrar));
-      btn.setAttribute('aria-label', mostrar ? 'Esconder senha' : 'Mostrar senha');
+      btn.setAttribute('aria-label', window.LoveI18n ? window.LoveI18n.t(mostrar ? 'cadastro.esconderSenha' : 'cadastro.mostrarSenha') : (mostrar ? 'Esconder senha' : 'Mostrar senha'));
       btn.querySelector('.login-olho-aberto').classList.toggle('hidden', mostrar);
       btn.querySelector('.login-olho-fechado').classList.toggle('hidden', !mostrar);
       campo.focus();

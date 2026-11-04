@@ -265,13 +265,14 @@ async function tipoDeContaDoEmail(email) {
 
 // Texto do aviso quando o Google não pode seguir.
 function mensagemErroGoogle(motivo) {
+  var t = window.LoveI18n && window.LoveI18n.t;
   if (motivo && motivo.codigo === 'fornecedor') {
-    return 'Esse e-mail já está cadastrado na Love como fornecedor. Para cadastrar-se como anfitrião, use outro e-mail.';
+    return t ? t('login.googleJaCadastradoFornecedor') : 'Esse e-mail já está cadastrado na Love como fornecedor. Para cadastrar-se como anfitrião, use outro e-mail.';
   }
   if (motivo && motivo.codigo === 'nao-cadastrado') {
-    return 'Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" style="font-weight:700;color:#537bae;">Cadastre-se</a>';
+    return t ? t('login.googleNaoCadastradoHtml') : 'Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" style="font-weight:700;color:#537bae;">Cadastre-se</a>';
   }
-  return 'Não foi possível continuar com o Google. Tente de novo.';
+  return t ? t('login.googleNaoFoiPossivelContinuar') : 'Não foi possível continuar com o Google. Tente de novo.';
 }
 
 // Aviso logo abaixo do botão do Google (cadastro e "Criar conta").

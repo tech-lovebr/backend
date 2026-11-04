@@ -18262,14 +18262,16 @@ document.addEventListener('DOMContentLoaded', () => {
   function avisoConfirmeEmail(email, frase) {
     if (!loginErrorMessage) return;
     const seguro = String(email).replace(/[<>&"]/g, '');
-    loginErrorMessage.innerHTML = `${frase} <strong>${seguro}</strong>. Confira também o spam. <button type="button" id="btn-reenviar-confirmacao" class="font-bold text-[#537bae] hover:underline">Reenviar e-mail</button>`;
+    const confiraSpam = window.LoveI18n ? window.LoveI18n.t('login.confiraSpam') : 'Confira também o spam.';
+    const reenviarEmail = window.LoveI18n ? window.LoveI18n.t('login.reenviarEmail') : 'Reenviar e-mail';
+    loginErrorMessage.innerHTML = `${frase} <strong>${seguro}</strong>. ${confiraSpam} <button type="button" id="btn-reenviar-confirmacao" class="font-bold text-[#537bae] hover:underline">${reenviarEmail}</button>`;
     loginErrorMessage.classList.replace('text-red-600', 'text-slate-600');
     loginErrorMessage.classList.remove('hidden');
     document.getElementById('btn-reenviar-confirmacao')?.addEventListener('click', async (e) => {
       const btn = e.currentTarget;
       btn.disabled = true;
       const { error } = await supabaseClient.auth.resend({ type: 'signup', email, options: { emailRedirectTo: `${window.location.origin}/` } });
-      btn.textContent = error ? 'Aguarde um minuto e tente de novo' : 'E-mail reenviado';
+      btn.textContent = window.LoveI18n ? window.LoveI18n.t(error ? 'login.aguardeUmMinuto' : 'login.emailReenviado') : (error ? 'Aguarde um minuto e tente de novo' : 'E-mail reenviado');
     });
   }
 
@@ -18288,13 +18290,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Conta criada com e-mail e ainda sem clicar no link de confirmação.
         if (/not confirmed/i.test(error.message || '') || error.code === 'email_not_confirmed') {
           submitBtn.disabled = false;
-          avisoConfirmeEmail(email, 'Confirme seu e-mail para entrar. Enviamos um link para');
+          avisoConfirmeEmail(email, window.LoveI18n ? window.LoveI18n.t('login.confirmeEmailFrase') : 'Confirme seu e-mail para entrar. Enviamos um link para');
           loginFailedAttempts = 0;
           return;
         }
         if (/banned/i.test(error.message || '')) {
           submitBtn.disabled = false;
-          showLoginError('Este usuário está bloqueado.');
+          showLoginError(window.LoveI18n ? window.LoveI18n.t('login.usuarioBloqueado') : 'Este usuário está bloqueado.');
           loginFailedAttempts = 0;
           return;
         }
@@ -18308,7 +18310,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = false;
 
         if (!checkError && !emailCadastrado) {
-          showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
+          showLoginError(window.LoveI18n ? window.LoveI18n.t('login.emailNaoCadastradoHtml') : 'Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
           loginFailedAttempts = 0;
           return;
         }
@@ -18319,7 +18321,8 @@ document.addEventListener('DOMContentLoaded', () => {
           loginFailedAttempts = 0;
           return;
         }
-        showLoginError(`Usuário ou senha inválidos. (${loginFailedAttempts}/3)`);
+        const msgInvalido = window.LoveI18n ? window.LoveI18n.t('login.usuarioSenhaInvalidosTemplate') : 'Usuário ou senha inválidos. ({n}/3)';
+        showLoginError(msgInvalido.replace('{n}', loginFailedAttempts));
         return;
       }
 
@@ -18335,14 +18338,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (!cliente) {
         await supabaseClient.auth.signOut();
-        showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
+        showLoginError(window.LoveI18n ? window.LoveI18n.t('login.emailNaoCadastradoHtml') : 'Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
         loginFailedAttempts = 0;
         return;
       }
 
       if (cliente.status === 'bloqueado') {
         await supabaseClient.auth.signOut();
-        showLoginError('Este usuário está bloqueado.');
+        showLoginError(window.LoveI18n ? window.LoveI18n.t('login.usuarioBloqueado') : 'Este usuário está bloqueado.');
         loginFailedAttempts = 0;
         return;
       }
@@ -18468,7 +18471,7 @@ document.addEventListener('DOMContentLoaded', () => {
       errorEl.classList.add('hidden');
 
       if (code.length !== 6) {
-        errorEl.textContent = 'O código tem 6 dígitos.';
+        errorEl.textContent = window.LoveI18n ? window.LoveI18n.t('login.codigoSeisDigitos') : 'O código tem 6 dígitos.';
         errorEl.classList.remove('hidden');
         return;
       }
@@ -18482,7 +18485,7 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.disabled = false;
 
       if (error) {
-        errorEl.textContent = 'Código inválido ou expirado. Tente de novo.';
+        errorEl.textContent = window.LoveI18n ? window.LoveI18n.t('login.codigoInvalidoExpirado') : 'Código inválido ou expirado. Tente de novo.';
         errorEl.classList.remove('hidden');
         return;
       }
@@ -18551,7 +18554,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       submitBtn.disabled = false;
 
-      showToast('Se esse e-mail estiver cadastrado, você vai receber um link de recuperação.', '✉️');
+      showToast(window.LoveI18n ? window.LoveI18n.t('login.seEmailCadastradoRecuperacao') : 'Se esse e-mail estiver cadastrado, você vai receber um link de recuperação.', '✉️');
     });
   }
 
@@ -18564,7 +18567,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const mostrar = campo.type === 'password';
       campo.type = mostrar ? 'text' : 'password';
       btn.setAttribute('aria-pressed', String(mostrar));
-      btn.setAttribute('aria-label', mostrar ? 'Esconder senha' : 'Mostrar senha');
+      btn.setAttribute('aria-label', window.LoveI18n ? window.LoveI18n.t(mostrar ? 'login.esconderSenha' : 'login.mostrarSenha') : (mostrar ? 'Esconder senha' : 'Mostrar senha'));
       btn.querySelector('.login-olho-aberto')?.classList.toggle('hidden', mostrar);
       btn.querySelector('.login-olho-fechado')?.classList.toggle('hidden', !mostrar);
       campo.focus();
@@ -18585,7 +18588,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.disabled = false;
       if (error && !/não concluído/.test(error.message || '')) {
         console.error('Erro ao entrar com o Google:', error);
-        if (typeof showLoginError === 'function') showLoginError('Não foi possível entrar com o Google. Tente de novo.');
+        if (typeof showLoginError === 'function') showLoginError(window.LoveI18n ? window.LoveI18n.t('login.naoFoiPossivelEntrarGoogle') : 'Não foi possível entrar com o Google. Tente de novo.');
       }
     });
   });

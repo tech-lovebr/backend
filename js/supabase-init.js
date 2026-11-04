@@ -306,7 +306,11 @@ function carregarGoogleIdentity() {
   if (googleIdentityPromessa) return googleIdentityPromessa;
   googleIdentityPromessa = new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = 'https://accounts.google.com/gsi/client';
+    // planwithlove.com: o parâmetro "locale" do renderButton sozinho não
+    // muda o idioma do botão (testado — o Google ignora); precisa do "hl" já
+    // na URL do script do Google Identity, que define o idioma de verdade.
+    const emIngles = window.LoveI18n && window.LoveI18n.emIngles;
+    s.src = 'https://accounts.google.com/gsi/client' + (emIngles ? '?hl=en' : '');
     s.async = true;
     s.defer = true;
     s.onload = () => resolve();

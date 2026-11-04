@@ -412,7 +412,7 @@ async function botaoOficialDoGoogle(botaoAntigo, { aoEntrar, aoFalhar, texto = '
       shape: 'rectangular',
       logo_alignment: 'center',
       width: largura,
-      locale: 'pt-BR',
+      locale: (window.LoveI18n && window.LoveI18n.emIngles) ? 'en' : 'pt-BR',
       click_listener: () => { googleAoEntrarAtual = aoEntrar; googleAoFalharAtual = aoFalhar; googleSoEntrarAtual = !!soEntrar; googleQualquerContaAtual = !!qualquerConta; }
     });
   };

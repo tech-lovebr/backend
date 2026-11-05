@@ -13070,3 +13070,23 @@ html body .construtor-celular-aviso:not(#love-h-a) { display: none; }
   body[data-theme="dark"] .construtor-celular-aviso-icone { background: #333333 !important; color: #FFFFFF !important; }
   body[data-theme="dark"] .construtor-celular-aviso-titulo { color: #FFFFFF !important; }
 }
+
+/* Pop-up modelo, arte "ficha" (Complete seu cadastro): mais sóbria, uma
+   ficha branca com a empresa e dois campos, o segundo ainda vazio. */
+html body .love-pop-arte--ficha:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: auto; padding: 20px 0; background: #EEF2F5; }
+html body .love-pop-ficha:not(#love-h-a) { width: 220px; max-width: calc(100% - 48px); padding: 14px 16px 16px; background: #FFFFFF; border: 1px solid #DCE3E9; border-radius: 8px; text-align: left; }
+html body .love-pop-ficha-topo:not(#love-h-a) { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #EEF1F3; }
+html body .love-pop-ficha-topo .love-pop-etiqueta-foto:not(#love-h-a) { width: 28px; height: 28px; font-size: 12px; }
+html body .love-pop-ficha-nome:not(#love-h-a) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 13px Inter, sans-serif; color: #18181B; }
+html body .love-pop-ficha-campo:not(#love-h-a) { display: block; }
+html body .love-pop-ficha-campo + .love-pop-ficha-campo:not(#love-h-a) { margin-top: 10px; }
+html body .love-pop-ficha-rotulo:not(#love-h-a) { display: block; width: 56px; height: 6px; margin-bottom: 6px; border-radius: 3px; background: #D4DCE3; }
+html body .love-pop-ficha-linha:not(#love-h-a) { display: block; height: 22px; border-radius: 6px; border: 1px dashed #C5D0D9; background: #FFFFFF; }
+html body .love-pop-ficha-linha.is-feita:not(#love-h-a) { border-style: solid; border-color: #DCE3E9; background: #F6F8FA; }
+body[data-theme="dark"] .love-pop-arte--ficha { background: #252525 !important; }
+body[data-theme="dark"] .love-pop-ficha { background: #1F1F1F !important; border-color: #404040 !important; }
+body[data-theme="dark"] .love-pop-ficha-topo { border-bottom-color: #333333 !important; }
+body[data-theme="dark"] .love-pop-ficha-nome { color: #FFFFFF !important; }
+body[data-theme="dark"] .love-pop-ficha-rotulo { background: #404040 !important; }
+body[data-theme="dark"] .love-pop-ficha-linha { background: #1F1F1F !important; border-color: #4A4A4A !important; }
+body[data-theme="dark"] .love-pop-ficha-linha.is-feita { background: #2A2A2A !important; }

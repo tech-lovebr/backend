@@ -13003,3 +13003,52 @@ html body .settings-url-editar-topo:not(#love-h-a):not(#love-h-b) { display: non
 /* Meus produtos sem produto: só o cartão de cadastrar, com o título maior. */
 html body #products-grid .produtos-vazio-criar strong:not(#love-h-a):not(#love-h-b) { font-size: 20px; line-height: 1.3; letter-spacing: -0.025em; }
 html body #products-grid .produtos-vazio-criar-sub:not(#love-h-a):not(#love-h-b) { margin-top: 6px; max-width: 340px; font-size: 14px; line-height: 1.5; text-align: center; }
+
+/* ===== Pop-up modelo do Hub (.love-pop) =====
+   Arte no topo (faixa azul clara com formas, ícone redondo e uma etiqueta
+   do assunto), título grande, texto e o botão. Usado em "Adicione seus
+   serviços" (Home) e "Finalize seu cadastro" (Meus produtos). */
+html body .modal-card.love-pop:not(#love-h-a) { position: relative; width: 100%; max-width: 440px; padding: 24px 24px 28px; border-radius: 10px; text-align: center; }
+html body .love-pop-fechar:not(#love-h-a) { position: absolute; top: 12px; right: 12px; z-index: 2; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: #71717A; cursor: pointer; }
+html body .love-pop-fechar:hover:not(#love-h-a) { color: #181D24; }
+html body .love-pop-fechar svg:not(#love-h-a) { width: 20px; height: 20px; }
+html body .love-pop-arte:not(#love-h-a) { position: relative; overflow: hidden; height: 144px; margin-bottom: 24px; border-radius: 8px; background: #E9EFF4; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; }
+html body .love-pop-forma:not(#love-h-a) { position: absolute; display: block; height: 46px; border-radius: 10px; background: #DCE5EC; }
+html body .love-pop-forma--1:not(#love-h-a) { top: -18px; left: -12px; width: 150px; }
+html body .love-pop-forma--2:not(#love-h-a) { top: 4px; right: -16px; width: 140px; }
+html body .love-pop-forma--3:not(#love-h-a) { bottom: -20px; left: -10px; width: 170px; }
+html body .love-pop-forma--4:not(#love-h-a) { bottom: -14px; right: -14px; width: 92px; }
+html body .love-pop-icone:not(#love-h-a) { position: relative; z-index: 1; width: 36px; height: 36px; margin-bottom: -6px; border-radius: 999px; background: #D3DEE7; color: #183b54; display: inline-flex; align-items: center; justify-content: center; }
+html body .love-pop-icone svg:not(#love-h-a) { width: 20px; height: 20px; }
+html body .love-pop-etiqueta:not(#love-h-a) { position: relative; z-index: 1; max-width: calc(100% - 32px); display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 999px; background: #FFFFFF; }
+html body .love-pop-etiqueta-foto:not(#love-h-a) { flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px; overflow: hidden; background: #183b54; color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; font: 600 14px Inter, sans-serif; }
+html body .love-pop-etiqueta-foto img:not(#love-h-a) { width: 100%; height: 100%; object-fit: cover; display: block; }
+html body .love-pop-etiqueta-foto--icone:not(#love-h-a) { background: #F4F6F7; color: #183b54; }
+html body .love-pop-etiqueta-foto--icone svg:not(#love-h-a) { width: 18px; height: 18px; }
+html body .love-pop-etiqueta-nome:not(#love-h-a) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 14px Inter, sans-serif; color: #18181B; }
+html body .love-pop-etiqueta-selo:not(#love-h-a) { flex-shrink: 0; padding: 2px 8px; border-radius: 6px; background: #E3EDF5; color: #183b54; font: 500 11px Inter, sans-serif; }
+html body .love-pop-etiqueta-selo--pendente:not(#love-h-a) { background: #FEF3C7; color: #92400E; }
+html body .love-pop-titulo:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 26px; line-height: 1.2; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+html body .love-pop-texto:not(#love-h-a) { margin: 10px auto 0; max-width: 340px; font-size: 15px; line-height: 1.55; color: #71717A; }
+html body .love-pop-botao:not(#love-h-a) { width: 100%; height: 44px; margin-top: 24px; justify-content: center; border-radius: 8px; }
+html body .love-pop-depois:not(#love-h-a) { margin-top: 12px; padding: 4px 8px; border: 0; background: none; font: 500 14px Inter, sans-serif; color: #71717A; cursor: pointer; }
+html body .love-pop-depois:hover:not(#love-h-a) { color: #181D24; }
+body[data-theme="dark"] .love-pop-arte { background: #252525 !important; }
+body[data-theme="dark"] .love-pop-forma { background: #2E2E2E !important; }
+body[data-theme="dark"] .love-pop-icone { background: #333333 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .love-pop-etiqueta { background: #1F1F1F !important; }
+body[data-theme="dark"] .love-pop-etiqueta-nome, body[data-theme="dark"] .love-pop-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .love-pop-texto, body[data-theme="dark"] .love-pop-depois { color: #A1A1AA !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* No celular os outros pop-ups viram tela inteira; este fica como caixa branca no meio. */
+  html body .modal-backdrop:has(> .love-pop):not(#love-h-a):not(#love-h-b) { padding: 16px; align-items: center; justify-content: center; }
+  html body .modal-backdrop > .modal-card.love-pop:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    position: relative !important; inset: auto !important; z-index: auto !important; height: auto !important; min-height: 0 !important;
+    width: 100% !important; max-width: 440px !important; max-height: calc(100dvh - 32px) !important; margin: 0 !important;
+    padding: 20px 20px 24px !important; border-radius: 10px !important; background: #FFFFFF !important; border: 1px solid var(--borda-suave, #E4E4E7) !important;
+  }
+  body[data-theme="dark"] .modal-backdrop > .modal-card.love-pop { background: #1F1F1F !important; }
+  html body .love-pop-arte:not(#love-h-a):not(#love-h-b) { height: 128px; margin-bottom: 20px; }
+  html body .love-pop-titulo:not(#love-h-a):not(#love-h-b) { font-size: 22px; }
+  html body .love-pop-texto:not(#love-h-a):not(#love-h-b) { font-size: 14px; }
+}

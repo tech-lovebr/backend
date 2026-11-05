@@ -28,7 +28,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=882">
+  <link rel="stylesheet" href="css/styles.css?v=883">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -585,12 +585,23 @@
   <div class="drawer-backdrop" id="product-drawer-backdrop"></div>
 
   <div class="modal-backdrop" id="complete-profile-modal">
-    <div class="modal-card" style="max-width:400px; text-align:center;">
-      <div class="onboarding-icon">📝</div>
-      <h2 class="text-lg font-bold text-zinc-900 mb-2">Finalize seu cadastro</h2>
-      <p class="text-sm text-zinc-500 mb-6">Para adicionar produtos ou serviços, complete os dados obrigatórios do seu perfil.</p>
-      <a href="configuracoes" class="btn-primary justify-center w-full py-3">Editar perfil</a>
-      <button type="button" class="btn-secondary justify-center w-full mt-2" id="complete-profile-modal-close">Agora não</button>
+    <div class="modal-card love-pop" role="dialog" aria-modal="true" aria-labelledby="complete-profile-titulo">
+      <div class="love-pop-arte" aria-hidden="true">
+        <span class="love-pop-forma love-pop-forma--1"></span>
+        <span class="love-pop-forma love-pop-forma--2"></span>
+        <span class="love-pop-forma love-pop-forma--3"></span>
+        <span class="love-pop-forma love-pop-forma--4"></span>
+        <span class="love-pop-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17v3"/><path d="m13.5 6.5 3 3"/></svg></span>
+        <span class="love-pop-etiqueta">
+          <span class="love-pop-etiqueta-foto" id="complete-profile-foto"></span>
+          <span class="love-pop-etiqueta-nome" id="complete-profile-nome">Sua empresa</span>
+          <span class="love-pop-etiqueta-selo love-pop-etiqueta-selo--pendente">Incompleto</span>
+        </span>
+      </div>
+      <h2 class="love-pop-titulo" id="complete-profile-titulo">Finalize seu cadastro</h2>
+      <p class="love-pop-texto">Para adicionar produtos ou serviços, complete os dados obrigatórios do seu perfil.</p>
+      <a href="configuracoes" class="btn-primary love-pop-botao">Completar cadastro</a>
+      <button type="button" class="love-pop-depois" id="complete-profile-modal-close">Agora não</button>
     </div>
   </div>
 
@@ -620,6 +631,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=79"></script>
-  <script src="js/produtos.js?v=74"></script>
+  <script src="js/produtos.js?v=75"></script>
 </body>
 </html>

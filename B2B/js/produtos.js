@@ -253,7 +253,25 @@ function initCompleteProfileModal() {
 
 function openCompleteProfileModal() {
   const modal = document.getElementById('complete-profile-modal');
-  if (modal) modal.classList.add('show');
+  if (!modal) return;
+  // Etiqueta da arte: foto (ou inicial) e nome da empresa.
+  const p = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
+  const nome = String(p.company || p.name || '').trim() || 'Sua empresa';
+  const nomeEl = document.getElementById('complete-profile-nome');
+  if (nomeEl) nomeEl.textContent = nome;
+  const foto = document.getElementById('complete-profile-foto');
+  if (foto) {
+    foto.textContent = '';
+    if (p.profilePhoto) {
+      const img = document.createElement('img');
+      img.src = p.profilePhoto;
+      img.alt = '';
+      foto.appendChild(img);
+    } else {
+      foto.textContent = nome.charAt(0).toUpperCase();
+    }
+  }
+  modal.classList.add('show');
 }
 
 // Garante que produtos com uma categoria antiga/customizada (de antes desta

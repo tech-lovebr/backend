@@ -932,13 +932,33 @@ function modeloDeConviteEmCodigo(typeKey) {
   return state;
 }
 
+/**
+ * Põe o nome no primeiro título vazio do convite (o "Insira um título" do
+ * modelo). "Aniversário de Victor" vira "Victor", porque o texto de cima já
+ * diz "…para o aniversário de".
+ * @param {any} state @param {string} [nomeDoEvento]
+ */
+function preencherTituloDoTemplate(state, nomeDoEvento) {
+  let nome = String(nomeDoEvento || '').trim();
+  if (!nome) return;
+  const m = nome.match(/^(anivers[aá]rio|casamento|ch[aá] de (beb[eê]|panela|cozinha)|ch[aá] revela[cç][aã]o|bodas( de [a-zç]+)?|festa)\s+(de|do|da)\s+(.+)$/i);
+  if (m) nome = m[m.length - 1].trim();
+  for (const s of state.sections || []) {
+    const titulo = (s.columns || []).flatMap((/** @type {any} */ c) => c.elements || []).find((/** @type {any} */ e) => e.type === 'titulo' && !String(e.content || '').trim());
+    if (titulo) { titulo.content = escapeHtml(nome); return; }
+  }
+}
+
 async function seedConviteDigitalForEvent(eventoId, typeKey, quando) {
   if (typeof supabaseClient === 'undefined') return;
   // Com template padrão do tipo (ex.: casamento), o evento já nasce com ele.
-  // Sem template salvo no banco: modelo pronto do código (chás e bodas).
-  let state = (await templatePadraoDoTipo(typeKey)) || modeloDeConviteEmCodigo(typeKey);
+  // Sem template salvo no banco: modelo pronto do código (chás e bodas) ou o
+  // primeiro dos modelos prontos do tipo (ex.: aniversário, "Festa").
+  let state = (await templatePadraoDoTipo(typeKey)) || modeloDeConviteEmCodigo(typeKey)
+    || (VARIACOES_DOS_MODELOS[typeKey] ? conviteDoModelo(typeKey, VARIACOES_DOS_MODELOS[typeKey][0]) : null);
   if (state) {
     ajustarDatasDoTemplate(state, quando);
+    preencherTituloDoTemplate(state, quando && quando.nome);
   } else {
     const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
     state = defaultPageState();

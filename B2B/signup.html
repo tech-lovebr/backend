@@ -38,6 +38,8 @@
   <script src="js/supabase-init.js?v=4"></script>
   <style>
     body.auth-completar .sem-completar { display: none !important; }
+    /* CEP do local na mesma altura do Tipo, que fica ao lado. */
+    .so-locacao #signup-cep { height: var(--altura-tipo, 43px); padding-top: 0; padding-bottom: 0; }
   </style>
 </head>
 <body class="font-sans bg-white" data-auth-view="signup">
@@ -141,6 +143,32 @@
                     <div class="category-tree-row" data-category-value="Aluguel de Trajes">Aluguel de Trajes</div>
                     <div class="category-tree-row" data-category-value="Beleza e Estilo">Beleza e Estilo</div>
                     <div class="category-tree-row" data-category-value="Aluguel de Carros">Aluguel de Carros</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="so-locacao grid grid-cols-2 gap-3" hidden>
+              <div>
+                <label for="signup-cep" class="block text-xs font-bold text-slate-700 mb-1">CEP do local</label>
+                <input type="text" id="signup-cep" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder="00000-000" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Tipo</label>
+                <div class="category-select" id="signup-tipo-select">
+                  <button type="button" class="category-select-trigger" id="signup-tipo-trigger">
+                    <span id="signup-tipo-trigger-label">Selecione...</span>
+                    <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  <div class="category-select-panel" id="signup-tipo-panel" hidden>
+                    <div class="category-tree category-tree-flat" id="signup-tipo-tree">
+                      <div class="category-tree-row" data-tipo-value="Salão de Festas">Salão de Festas</div>
+                      <div class="category-tree-row" data-tipo-value="Sítio/Chácara">Sítio/Chácara</div>
+                      <div class="category-tree-row" data-tipo-value="Rooftop">Rooftop</div>
+                      <div class="category-tree-row" data-tipo-value="Igreja/Capela">Igreja/Capela</div>
+                      <div class="category-tree-row" data-tipo-value="Praia">Praia</div>
+                      <div class="category-tree-row" data-tipo-value="Hotel">Hotel</div>
+                      <div class="category-tree-row" data-tipo-value="Espaços Exclusivos">Espaços Exclusivos</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -388,6 +416,57 @@
       }
     })();
 
+    /* Espaços para Locação (só no completar): CEP do local e o tipo do espaço,
+       lado a lado. Os tipos são as subcategorias de Meus produtos
+       (SUBCATEGORY_MAP em js/produtos.js). */
+    const LOCACAO = 'Espaços para Locação';
+    let signupTipoValue = '';
+    const tipoSelect = document.getElementById('signup-tipo-select');
+    const tipoPanel = document.getElementById('signup-tipo-panel');
+    const fecharTipo = () => { tipoPanel.hidden = true; tipoSelect.classList.remove('is-open'); };
+    document.getElementById('signup-tipo-trigger').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const abrir = tipoPanel.hidden;
+      fecharTipo();
+      closeSignupCategoryPanel();
+      if (abrir) { tipoPanel.hidden = false; tipoSelect.classList.add('is-open'); }
+    });
+    document.querySelectorAll('#signup-tipo-tree [data-tipo-value]').forEach(row => {
+      row.addEventListener('click', () => {
+        signupTipoValue = row.dataset.tipoValue;
+        document.getElementById('signup-tipo-trigger-label').textContent = signupTipoValue;
+        document.querySelectorAll('#signup-tipo-tree [data-tipo-value]').forEach(r => r.classList.toggle('active', r === row));
+        fecharTipo();
+      });
+    });
+    document.addEventListener('click', (e) => { if (!tipoSelect.contains(e.target)) fecharTipo(); });
+    const campoCep = document.getElementById('signup-cep');
+    campoCep.addEventListener('input', () => {
+      const d = campoCep.value.replace(/\D/g, '').slice(0, 8);
+      campoCep.value = d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d;
+    });
+    const mostrarLocacao = () => {
+      document.querySelector('.so-locacao').hidden = !(completando && signupCategoryValue === LOCACAO);
+      const alturaTipo = document.getElementById('signup-tipo-trigger').offsetHeight;
+      if (alturaTipo) campoCep.style.setProperty('--altura-tipo', alturaTipo + 'px');
+    };
+    document.querySelectorAll('#signup-category-tree [data-category-value]').forEach(row => row.addEventListener('click', mostrarLocacao));
+
+    // Cidade, estado, bairro e rua pelo CEP (ViaCEP). Se não achar, salva só o CEP.
+    async function enderecoDoCep(cep) {
+      try {
+        const r = await fetch('https://viacep.com.br/ws/' + cep + '/json/');
+        const j = await r.json();
+        if (!j || j.erro) return {};
+        const out = {};
+        if (j.localidade) out.business_city = j.localidade;
+        if (j.uf) out.business_state = j.uf;
+        if (j.bairro) out.business_bairro = j.bairro;
+        if (j.logradouro) out.business_address = j.logradouro;
+        return out;
+      } catch (e) { return {}; }
+    }
+
     async function completarCadastro(errorEl, submitBtn) {
       const nome = document.getElementById('signup-empresa').value.replace(/\s+/g, ' ').trim();
       if (!nome) {
@@ -400,11 +479,33 @@
         errorEl.classList.remove('hidden');
         return;
       }
+      const locacao = signupCategoryValue === LOCACAO;
+      const cep = campoCep.value.replace(/\D/g, '');
+      if (locacao && cep.length !== 8) {
+        errorEl.textContent = 'Digite o CEP do local com 8 números.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (locacao && !signupTipoValue) {
+        errorEl.textContent = 'Escolha o tipo do espaço.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
       submitBtn.disabled = true;
       const { data: { session } } = await supabaseClient.auth.getSession();
-      const { error } = session
-        ? await supabaseClient.from('fornecedores').update({ company_name: nome, category: signupCategoryValue }).eq('id', session.user.id)
-        : { error: new Error('sem sessão') };
+      const campos = { company_name: nome, category: signupCategoryValue };
+      if (locacao) Object.assign(campos, { business_cep: cep.slice(0, 5) + '-' + cep.slice(5), usa_endereco_perfil: false }, await enderecoDoCep(cep));
+      let error = session ? null : new Error('sem sessão');
+      if (session) {
+        const tabela = () => supabaseClient.from('fornecedores');
+        ({ error } = await tabela().update(locacao ? { ...campos, subcategoria: signupTipoValue } : campos).eq('id', session.user.id));
+        // Sem a coluna subcategoria (migration 123): salva o resto e guarda o
+        // tipo nos dados da conta.
+        if (error && locacao) {
+          ({ error } = await tabela().update(campos).eq('id', session.user.id));
+          if (!error) await supabaseClient.auth.updateUser({ data: { subcategoria: signupTipoValue } });
+        }
+      }
       if (error) {
         submitBtn.disabled = false;
         errorEl.textContent = 'Não foi possível salvar agora. Tente de novo.';

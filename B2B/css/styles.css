@@ -12999,3 +12999,7 @@ html body .settings-url-editar-topo:not(#love-h-a):not(#love-h-b) { display: non
    etapa 2, com o mesmo respiro das seções de baixo. */
 .produto-cobranca-etapa2:not([hidden]) { display: flex; flex-direction: column; margin-bottom: 24px; }
 .produto-cobranca-etapa2 #product-sku-linha { margin-bottom: 0 !important; }
+
+/* Meus produtos sem produto: só o cartão de cadastrar, com o título maior. */
+html body #products-grid .produtos-vazio-criar strong:not(#love-h-a):not(#love-h-b) { font-size: 20px; line-height: 1.3; letter-spacing: -0.025em; }
+html body #products-grid .produtos-vazio-criar-sub:not(#love-h-a):not(#love-h-b) { margin-top: 6px; max-width: 340px; font-size: 14px; line-height: 1.5; text-align: center; }

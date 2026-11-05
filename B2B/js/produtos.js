@@ -336,12 +336,11 @@ function renderProducts() {
     }
     grid.innerHTML = `
       <div class="produtos-vazio" style="grid-column:1/-1;">
-        <p class="produtos-vazio-texto">Você ainda não tem nenhum produto cadastrado. <button type="button" class="produtos-vazio-link" data-produto-vazio-criar>Que tal cadastrar um novo?</button></p>
         <div class="produtos-vazio-cards">
           <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar>
             <dotlottie-wc class="produtos-vazio-lottie" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
             <strong>Cadastrar novo produto</strong>
-            <span class="produtos-vazio-criar-sub">Crie um produto ou serviço do zero</span>
+            <span class="produtos-vazio-criar-sub">Cadastre seu primeiro produto/serviço para começar a encontrar clientes na Love.</span>
           </button>
         </div>
       </div>`;

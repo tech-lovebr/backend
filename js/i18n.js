@@ -6,11 +6,15 @@
  * (nunca por preferência do navegador nem por um seletor visível), igual ao
  * que já roda na landing pública (ver index.html, classe "love-en-domain").
  *
+ * O atributo é data-love-i18n (e não data-i18n) porque extensões do Chrome,
+ * como a "Método Pomodoro", traduzem qualquer [data-i18n] da página com o
+ * dicionário delas e escrevem a chave crua (ex.: "login.entrar") na tela.
+ *
  * Como usar num elemento estático:
- *   <h3 data-i18n="login.acessarConta">Acesse sua conta</h3>
- *   <input data-i18n-placeholder="login.emailPlaceholder" placeholder="seu.email@exemplo.com">
- * (atributos aceitos: data-i18n [textContent], data-i18n-html [innerHTML],
- *  data-i18n-placeholder, data-i18n-aria-label, data-i18n-title, data-i18n-alt)
+ *   <h3 data-love-i18n="login.acessarConta">Acesse sua conta</h3>
+ *   <input data-love-i18n-placeholder="login.emailPlaceholder" placeholder="seu.email@exemplo.com">
+ * (atributos aceitos: data-love-i18n [textContent], data-love-i18n-html [innerHTML],
+ *  data-love-i18n-placeholder, data-love-i18n-aria-label, data-love-i18n-title, data-love-i18n-alt)
  *
  * Para texto montado em JS (toasts, erros, innerHTML dinâmico), chame
  * LoveI18n.t('namespace.chave') direto no lugar do literal em português.
@@ -176,25 +180,25 @@
     return par[IDIOMA] || par.pt || chave;
   }
 
-  // chave do atributo data-i18n-<chave> → nome real do atributo a trocar.
+  // chave do atributo data-love-i18n-<chave> → nome real do atributo a trocar.
   var MAPA_ATRIBUTOS = { placeholder: 'placeholder', 'aria-label': 'aria-label', title: 'title', alt: 'alt', dica: 'data-dica' };
 
   /** Aplica as traduções dentro de `raiz` (documento inteiro por padrão). Chame de novo depois de inserir HTML novo dinamicamente. */
   function aplicarTraducao(raiz) {
     if (!EM_INGLES) return;
     raiz = raiz || document;
-    raiz.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var par = resolverChave(el.getAttribute('data-i18n'));
+    raiz.querySelectorAll('[data-love-i18n]').forEach(function (el) {
+      var par = resolverChave(el.getAttribute('data-love-i18n'));
       if (par) el.textContent = par.en || par.pt;
     });
-    raiz.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      var par = resolverChave(el.getAttribute('data-i18n-html'));
+    raiz.querySelectorAll('[data-love-i18n-html]').forEach(function (el) {
+      var par = resolverChave(el.getAttribute('data-love-i18n-html'));
       if (par) el.innerHTML = par.en || par.pt;
     });
     Object.keys(MAPA_ATRIBUTOS).forEach(function (chaveAttr) {
       var attrReal = MAPA_ATRIBUTOS[chaveAttr];
-      raiz.querySelectorAll('[data-i18n-' + chaveAttr + ']').forEach(function (el) {
-        var par = resolverChave(el.getAttribute('data-i18n-' + chaveAttr));
+      raiz.querySelectorAll('[data-love-i18n-' + chaveAttr + ']').forEach(function (el) {
+        var par = resolverChave(el.getAttribute('data-love-i18n-' + chaveAttr));
         if (par) el.setAttribute(attrReal, par.en || par.pt);
       });
     });

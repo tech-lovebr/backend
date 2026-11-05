@@ -37,7 +37,7 @@
        corpo da página (ex.: o carrossel do login) que já chama LoveI18n.t()
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
-  <script src="js/i18n.js?v=20261105_cache"></script>
+  <script src="js/i18n.js?v=20261105_atributo"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -527,11 +527,11 @@
 
     <!-- Celular: prévia da barra de baixo da plataforma (enfeite; só o Início clica e volta para a landing) -->
     <nav class="login-barra-previa">
-      <a href="/" class="login-barra-item is-ativo login-barra-inicio" aria-label="Voltar para o início"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path> </svg><small data-i18n="dashboardChrome.inicio">Início</small></a>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path> </svg><small data-i18n="dashboardChrome.convidados">Convidados</small></span>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path> </svg><small data-i18n="dashboardChrome.presentes">Presentes</small></span>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/> </svg><small data-i18n="dashboardChrome.convite">Convite</small></span>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/> </svg><small data-i18n="dashboardChrome.mensagens">Mensagens</small></span>
+      <a href="/" class="login-barra-item is-ativo login-barra-inicio" aria-label="Voltar para o início"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path> </svg><small data-love-i18n="dashboardChrome.inicio">Início</small></a>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path> </svg><small data-love-i18n="dashboardChrome.convidados">Convidados</small></span>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path> </svg><small data-love-i18n="dashboardChrome.presentes">Presentes</small></span>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/> </svg><small data-love-i18n="dashboardChrome.convite">Convite</small></span>
+      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/> </svg><small data-love-i18n="dashboardChrome.mensagens">Mensagens</small></span>
     </nav>
 
     <!-- Esquerda: formulário -->
@@ -542,14 +542,14 @@
         <div id="login-panel-signin">
           <div class="mb-6">
             <img src="assets/logo.png?v=2" alt="Love" class="h-12 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900" data-i18n="login.acessarConta">Acesse sua conta</h3>
+            <h3 class="text-2xl font-extrabold text-slate-900" data-love-i18n="login.acessarConta">Acesse sua conta</h3>
           </div>
 
           <!-- Formulário E-mail e Senha -->
           <form id="form-login-email" class="space-y-3.5 text-left" method="post" autocomplete="on">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="login.email">E-mail</label>
-              <input type="email" id="login-email-input" name="email" autocomplete="username email" required placeholder="seu.email@exemplo.com" data-i18n-placeholder="login.emailPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.email">E-mail</label>
+              <input type="email" id="login-email-input" name="email" autocomplete="username email" required placeholder="seu.email@exemplo.com" data-love-i18n-placeholder="login.emailPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
               <!-- Erro do login (e-mail/senha errados, não cadastrado, Google
                    recusado etc.): logo abaixo do e-mail, não em cima do botão
                    Entrar — é sobre a CONTA, não sobre qual campo foi digitado. -->
@@ -557,26 +557,26 @@
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="login.senha">Senha</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.senha">Senha</label>
               <div class="login-campo-com-icone">
-                <input type="password" id="login-password-input" name="password" autocomplete="current-password" required placeholder="Sua senha secreta" data-i18n-placeholder="login.senhaPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+                <input type="password" id="login-password-input" name="password" autocomplete="current-password" required placeholder="Sua senha secreta" data-love-i18n-placeholder="login.senhaPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
                 <!-- Olhinho: mostra/esconde a senha -->
-                <button type="button" id="btn-login-ver-senha" class="login-campo-icone login-ver-senha" data-ver-senha="login-password-input" aria-label="Mostrar senha" data-i18n-aria-label="login.mostrarSenha" aria-pressed="false"><svg class="login-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="login-olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+                <button type="button" id="btn-login-ver-senha" class="login-campo-icone login-ver-senha" data-ver-senha="login-password-input" aria-label="Mostrar senha" data-love-i18n-aria-label="login.mostrarSenha" aria-pressed="false"><svg class="login-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="login-olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
               </div>
               <!-- Esqueceu a senha: embaixo da senha, à direita, em cinza -->
               <div class="flex justify-end mt-1.5">
-                <button type="button" id="btn-login-forgot-password" class="login-esqueceu-senha" data-i18n="login.esqueceuSenha">Esqueceu a senha?</button>
+                <button type="button" id="btn-login-forgot-password" class="login-esqueceu-senha" data-love-i18n="login.esqueceuSenha">Esqueceu a senha?</button>
               </div>
             </div>
 
             <button type="submit" id="btn-do-email-login" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-              <span data-i18n="login.entrar">Entrar</span>
+              <span data-love-i18n="login.entrar">Entrar</span>
             </button>
           </form>
 
           <div class="flex items-center gap-3 my-4">
             <div class="h-px bg-slate-200 flex-1"></div>
-            <span class="login-ou-continue" data-i18n="login.ouContinueCom">ou continue com</span>
+            <span class="login-ou-continue" data-love-i18n="login.ouContinueCom">ou continue com</span>
             <div class="h-px bg-slate-200 flex-1"></div>
           </div>
 
@@ -588,13 +588,13 @@
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
               </svg>
-              <span data-i18n="login.continuarComGoogle">Continuar com o Google</span>
+              <span data-love-i18n="login.continuarComGoogle">Continuar com o Google</span>
             </button>
           </div>
 
           <div class="pt-5 text-sm text-slate-500 flex items-center gap-1">
-            <span class="text-sm text-slate-500" data-i18n="login.aindaNaoTemConta">Ainda não tem uma conta?</span>
-            <button type="button" id="btn-login-to-register" class="text-sm text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-i18n="login.cadastreSe">
+            <span class="text-sm text-slate-500" data-love-i18n="login.aindaNaoTemConta">Ainda não tem uma conta?</span>
+            <button type="button" id="btn-login-to-register" class="text-sm text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-love-i18n="login.cadastreSe">
               Cadastre-se
             </button>
           </div>
@@ -604,23 +604,23 @@
         <div id="login-panel-forgot" class="hidden">
           <div class="mb-6">
             <img src="assets/logo.png?v=2" alt="Love" class="h-12 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900" data-i18n="login.recuperarSenha">Recuperar senha</h3>
-            <p class="text-xs sm:text-sm text-slate-500 mt-2" data-i18n="login.recuperarSenhaDesc">Digite seu e-mail e enviaremos um link para você criar uma nova senha.</p>
+            <h3 class="text-2xl font-extrabold text-slate-900" data-love-i18n="login.recuperarSenha">Recuperar senha</h3>
+            <p class="text-xs sm:text-sm text-slate-500 mt-2" data-love-i18n="login.recuperarSenhaDesc">Digite seu e-mail e enviaremos um link para você criar uma nova senha.</p>
           </div>
 
           <form id="form-login-forgot" class="space-y-3.5 text-left">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="login.email">E-mail</label>
-              <input type="email" id="login-forgot-email-input" required placeholder="seu.email@exemplo.com" data-i18n-placeholder="login.emailPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.email">E-mail</label>
+              <input type="email" id="login-forgot-email-input" required placeholder="seu.email@exemplo.com" data-love-i18n-placeholder="login.emailPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
             </div>
 
             <button type="submit" id="btn-do-forgot-password" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-              <span data-i18n="login.reenviarSenha">Reenviar senha</span>
+              <span data-love-i18n="login.reenviarSenha">Reenviar senha</span>
             </button>
           </form>
 
           <div class="pt-4 text-xs text-slate-500 flex items-center gap-1">
-            <button type="button" id="btn-forgot-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-i18n="login.voltarParaLogin">
+            <button type="button" id="btn-forgot-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-love-i18n="login.voltarParaLogin">
               ← Voltar para o login
             </button>
           </div>
@@ -630,25 +630,25 @@
         <div id="login-panel-mfa" class="hidden">
           <div class="mb-6">
             <img src="assets/logo.png?v=2" alt="Love" class="h-9 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900" data-i18n="login.verificacaoDuasEtapas">Verificação em duas etapas</h3>
-            <p class="text-xs sm:text-sm text-slate-500 mt-2" data-i18n="login.verificacaoDuasEtapasDesc">Digite o código de 6 dígitos do seu app autenticador.</p>
+            <h3 class="text-2xl font-extrabold text-slate-900" data-love-i18n="login.verificacaoDuasEtapas">Verificação em duas etapas</h3>
+            <p class="text-xs sm:text-sm text-slate-500 mt-2" data-love-i18n="login.verificacaoDuasEtapasDesc">Digite o código de 6 dígitos do seu app autenticador.</p>
           </div>
 
           <form id="form-login-mfa" class="space-y-3.5 text-left">
             <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-i18n="login.codigo">Código</label>
+              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.codigo">Código</label>
               <input type="text" id="login-mfa-code-input" required inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" class="w-full text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800 tracking-[0.3em] text-center font-mono">
             </div>
 
             <p id="login-mfa-error" class="text-xs text-red-600 hidden"></p>
 
             <button type="submit" id="btn-do-mfa-login" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-              <span data-i18n="login.verificar">Verificar</span>
+              <span data-love-i18n="login.verificar">Verificar</span>
             </button>
           </form>
 
           <div class="pt-4 text-xs text-slate-500 flex items-center gap-1">
-            <button type="button" id="btn-mfa-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-i18n="login.voltarParaLogin">
+            <button type="button" id="btn-mfa-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-love-i18n="login.voltarParaLogin">
               ← Voltar para o login
             </button>
           </div>
@@ -735,7 +735,7 @@
     <header class="dashboard-top-navbar fixed top-0 left-0 md:left-[80px] right-0 z-40 px-4 sm:px-6 flex items-center justify-between">
       
       <!-- Celular: menu (abre a tela cheia) à esquerda e logo no meio -->
-      <button type="button" id="btn-menu-celular" class="menu-celular-botao" aria-label="Abrir menu" data-i18n-aria-label="dashboardChrome.abrirMenu" aria-expanded="false" aria-controls="menu-celular"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <button type="button" id="btn-menu-celular" class="menu-celular-botao" aria-label="Abrir menu" data-love-i18n-aria-label="dashboardChrome.abrirMenu" aria-expanded="false" aria-controls="menu-celular"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <a href="javascript:void(0)" class="btn-navigate-home logo-celular" aria-label="Love - início">
           <img class="logo-celular-icone logo-claro" src="assets/iconelove2.png?v=2" alt="" aria-hidden="true">
           <img class="logo-celular-icone logo-escuro" src="assets/icon-white1.png" alt="" aria-hidden="true">
@@ -760,7 +760,7 @@
 
           <!-- Dropdown Menu de Eventos -->
           <div id="dropdown-events-list" class="hidden absolute top-full left-0 mt-2 w-64 sm:w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-2.5 z-50 space-y-1">
-            <div class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400" data-i18n="dashboardChrome.seusEventos">
+            <div class="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400" data-love-i18n="dashboardChrome.seusEventos">
               Seus eventos
             </div>
             <div id="events-switcher-items" class="space-y-1">
@@ -769,7 +769,7 @@
             <div class="pt-2 border-t border-slate-100">
               <button id="btn-dropdown-create-new-event" class="w-full py-2.5 px-3 text-xs sm:text-sm font-bold text-[#183b54] hover:bg-blue-50 rounded-lg flex items-center gap-2 transition-all">
                 <span class="font-bold text-base leading-none text-zinc-500">+</span>
-                <span data-i18n="dashboardChrome.criarNovoEvento">Criar novo evento</span>
+                <span data-love-i18n="dashboardChrome.criarNovoEvento">Criar novo evento</span>
               </button>
             </div>
           </div>
@@ -786,7 +786,7 @@
         
         <!-- Notificações: abre a página própria /notificacoes (ver
              openNotificationsPage em app.js) em vez de um dropdown. -->
-        <button id="btn-notifications-menu" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Notificações" data-i18n-dica="dashboardChrome.notificacoes" aria-label="Notificações" data-i18n-aria-label="dashboardChrome.notificacoes">
+        <button id="btn-notifications-menu" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Notificações" data-love-i18n-dica="dashboardChrome.notificacoes" aria-label="Notificações" data-love-i18n-aria-label="dashboardChrome.notificacoes">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
           </svg>
@@ -795,13 +795,13 @@
 
         <!-- Botão Meu Perfil / Minha Conta (Ícone adaptativo ao tema, mesmo padrão de Chat/Notificações) -->
         <div class="relative">
-          <button id="btn-user-account-menu" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" title="Minha conta" data-i18n-title="dashboardChrome.minhaConta">
+          <button id="btn-user-account-menu" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" title="Minha conta" data-love-i18n-title="dashboardChrome.minhaConta">
             <!-- Foto da conta ou, sem foto, as iniciais do nome (preenchido pelo app.js) -->
             <span id="header-user-avatar" class="header-user-avatar love-avatar-box hidden" aria-hidden="true"></span>
             <svg id="header-user-icon" class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"></path>
             </svg>
-            <span class="sr-only" data-i18n="dashboardChrome.minhaConta">Minha conta</span>
+            <span class="sr-only" data-love-i18n="dashboardChrome.minhaConta">Minha conta</span>
           </button>
 
           <!-- Dropdown Menu de Minha Conta -->
@@ -821,7 +821,7 @@
               <svg class="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"></path>
               </svg>
-              <span data-i18n="dashboardChrome.verMeuSite">Ver meu site</span>
+              <span data-love-i18n="dashboardChrome.verMeuSite">Ver meu site</span>
             </button>
 
             <!-- 2. Financeiro -->
@@ -829,7 +829,7 @@
               <svg class="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5Zm0 0h-4a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h4M17 14h.01" />
               </svg>
-              <span data-i18n="dashboardChrome.financeiro">Financeiro</span>
+              <span data-love-i18n="dashboardChrome.financeiro">Financeiro</span>
             </button>
 
             <!-- 3. Configurações -->
@@ -838,7 +838,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.6 6.6 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
               </svg>
-              <span data-i18n="dashboardChrome.configuracoes">Configurações</span>
+              <span data-love-i18n="dashboardChrome.configuracoes">Configurações</span>
             </button>
 
             <div class="border-t border-slate-100 my-1"></div>
@@ -848,7 +848,7 @@
               <svg class="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.27Z"></path>
               </svg>
-              <span data-i18n="dashboardChrome.falarComSuporte">Falar com Suporte</span>
+              <span data-love-i18n="dashboardChrome.falarComSuporte">Falar com Suporte</span>
             </button>
 
             <!-- 5. Dúvidas -->
@@ -857,7 +857,7 @@
                 <circle cx="12" cy="12" r="9.25"></circle>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75a2.25 2.25 0 1 1 3.5 1.875c-.75.5-1.25 1.125-1.25 2.125m0 3h.01"></path>
               </svg>
-              <span data-i18n="dashboardChrome.centralDeAjuda">Central de ajuda</span>
+              <span data-love-i18n="dashboardChrome.centralDeAjuda">Central de ajuda</span>
             </button>
 
             <div class="border-t border-slate-100 my-1"></div>
@@ -867,7 +867,7 @@
               <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"></path>
               </svg>
-              <span data-i18n="dashboardChrome.sair">Sair</span>
+              <span data-love-i18n="dashboardChrome.sair">Sair</span>
             </button>
 
           </div>
@@ -889,7 +889,7 @@
           <img class="logo-celular-nome logo-claro" src="assets/love-dark-03.png?v=6" alt="Love">
           <img class="logo-celular-nome logo-escuro" src="assets/Love-white-03.png?v=6" alt="Love">
         </span>
-        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu" data-i18n-aria-label="dashboardChrome.fecharMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu" data-love-i18n-aria-label="dashboardChrome.fecharMenu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <nav class="menu-celular-nav" aria-label="Seções"></nav>
       <button type="button" class="menu-celular-conta" aria-haspopup="dialog">
@@ -902,9 +902,9 @@
       </button>
     </aside>
     <div class="menu-conta-fundo" aria-hidden="true"></div>
-    <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" data-i18n-aria-label="dashboardChrome.minhaConta" aria-hidden="true">
+    <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" data-love-i18n-aria-label="dashboardChrome.minhaConta" aria-hidden="true">
       <div class="menu-conta-alca" aria-hidden="true"></div>
-      <button type="button" class="menu-conta-fechar" aria-label="Fechar" data-i18n-aria-label="dashboardChrome.fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <button type="button" class="menu-conta-fechar" aria-label="Fechar" data-love-i18n-aria-label="dashboardChrome.fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div class="menu-conta-cabeca">
         <span class="menu-conta-avatar love-avatar-box" aria-hidden="true"></span>
         <p class="menu-conta-nome"></p>
@@ -913,15 +913,15 @@
       <div class="menu-conta-eventos">
         <button type="button" class="menu-celular-evento-atual" aria-expanded="false">
           <span class="menu-celular-evento-textos">
-            <span class="menu-celular-evento-rotulo" data-i18n="dashboardChrome.seusEventos">Seus eventos</span>
+            <span class="menu-celular-evento-rotulo" data-love-i18n="dashboardChrome.seusEventos">Seus eventos</span>
             <span class="menu-celular-evento-nome"></span>
           </span>
           <svg class="menu-celular-evento-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </button>
         <div class="menu-celular-eventos-lista" hidden></div>
       </div>
-      <nav class="menu-conta-itens" aria-label="Minha conta" data-i18n-aria-label="dashboardChrome.minhaConta"></nav>
-      <button type="button" class="menu-conta-sair" data-i18n="dashboardChrome.sair">Sair</button>
+      <nav class="menu-conta-itens" aria-label="Minha conta" data-love-i18n-aria-label="dashboardChrome.minhaConta"></nav>
+      <button type="button" class="menu-conta-sair" data-love-i18n="dashboardChrome.sair">Sair</button>
     </section>
 
     <!-- Backdrop para Drawer no Mobile -->
@@ -937,68 +937,68 @@
         
         <!-- Brand Icon: iconelove2 no topo (altura do header), antes dos ícones de menu -->
         <div class="sidebar-brand-top w-full h-[76px] hidden md:flex items-center justify-center flex-shrink-0 border-b border-zinc-200/80 bg-[#FAFAFA]">
-          <a href="javascript:void(0)" class="btn-navigate-home flex items-center justify-center cursor-pointer p-1.5 hover:scale-105 transition-transform" aria-label="Visão Geral / Home" data-i18n-aria-label="dashboardChrome.visaoGeralHome">
+          <a href="javascript:void(0)" class="btn-navigate-home flex items-center justify-center cursor-pointer p-1.5 hover:scale-105 transition-transform" aria-label="Visão Geral / Home" data-love-i18n-aria-label="dashboardChrome.visaoGeralHome">
             <img id="sidebar-brand-icon-light" src="assets/iconelove2.png?v=2" alt="Love" class="w-[42px] h-[42px] object-contain">
             <img id="sidebar-brand-icon-dark" src="assets/icon-white1.png" alt="Love" class="hidden w-[42px] h-[42px] object-contain">
           </a>
         </div>
 
         <!-- 1. ÍCONE HOME / VISÃO GERAL (🏠 - 1º no Desktop) -->
-        <button class="rail-icon-btn active hidden md:flex md:order-1" data-rail-tab="overview" aria-label="Visão Geral" data-i18n-aria-label="dashboardChrome.visaoGeral">
+        <button class="rail-icon-btn active hidden md:flex md:order-1" data-rail-tab="overview" aria-label="Visão Geral" data-love-i18n-aria-label="dashboardChrome.visaoGeral">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
           </svg>
-          <span class="rail-rotulo" data-i18n="dashboardChrome.inicio">Início</span>
+          <span class="rail-rotulo" data-love-i18n="dashboardChrome.inicio">Início</span>
         </button>
 
         <!-- 2. ÍCONE DE PERSONALIZAR (✏️ Pencil Square - 2º no Desktop) -->
-        <button class="rail-icon-btn mobile-center-edit order-3 md:order-4" data-rail-tab="edit-site" aria-label="Personalizar evento" data-i18n-aria-label="dashboardChrome.personalizarEvento">
+        <button class="rail-icon-btn mobile-center-edit order-3 md:order-4" data-rail-tab="edit-site" aria-label="Personalizar evento" data-love-i18n-aria-label="dashboardChrome.personalizarEvento">
           <svg class="w-[22px] h-[22px]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/>
           </svg>
-          <span class="rail-rotulo" data-i18n="dashboardChrome.convite">Convite</span>
+          <span class="rail-rotulo" data-love-i18n="dashboardChrome.convite">Convite</span>
         </button>
 
         <!-- 3. PRESENTE (🎁 - 3º no Desktop, 1º no Mobile) -->
-        <button class="rail-icon-btn order-1 md:order-3" data-rail-tab="gifts" aria-label="Lista de Presentes" data-i18n-aria-label="dashboardChrome.listaDePresentes">
+        <button class="rail-icon-btn order-1 md:order-3" data-rail-tab="gifts" aria-label="Lista de Presentes" data-love-i18n-aria-label="dashboardChrome.listaDePresentes">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
           </svg>
-          <span class="rail-rotulo" data-i18n="dashboardChrome.presentes">Presentes</span>
+          <span class="rail-rotulo" data-love-i18n="dashboardChrome.presentes">Presentes</span>
         </button>
 
         <!-- 4. CONVIDADOS (👥 - 4º no Desktop, 2º no Mobile) -->
-        <button class="rail-icon-btn order-2 md:order-2" data-rail-tab="rsvp" aria-label="Seus Convidados (RSVP)" data-i18n-aria-label="dashboardChrome.seusConvidadosRsvp">
+        <button class="rail-icon-btn order-2 md:order-2" data-rail-tab="rsvp" aria-label="Seus Convidados (RSVP)" data-love-i18n-aria-label="dashboardChrome.seusConvidadosRsvp">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
           </svg>
-          <span class="rail-rotulo" data-i18n="dashboardChrome.convidados">Convidados</span>
+          <span class="rail-rotulo" data-love-i18n="dashboardChrome.convidados">Convidados</span>
         </button>
 
         <!-- 5. CARTEIRA (👛 - 5º no Desktop, 4º no Mobile) -->
-        <button class="rail-icon-btn order-4 md:order-5" data-rail-tab="wallet" aria-label="Carteira" data-i18n-aria-label="dashboardChrome.carteira">
+        <button class="rail-icon-btn order-4 md:order-5" data-rail-tab="wallet" aria-label="Carteira" data-love-i18n-aria-label="dashboardChrome.carteira">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5Zm0 0h-4a2 2 0 0 0-2 2v0a2 2 0 0 0 2 2h4M17 14h.01" />
           </svg>
-          <span class="rail-rotulo" data-i18n="dashboardChrome.financeiro">Financeiro</span>
+          <span class="rail-rotulo" data-love-i18n="dashboardChrome.financeiro">Financeiro</span>
         </button>
 
         <!-- 5b. MENSAGENS (chat com fornecedores) — no lugar do Financeiro, que
              agora abre pelo menu do perfil. Mesmo id do antigo botão do topo. -->
-        <button id="btn-dash-header-chat" type="button" class="rail-icon-btn rail-chat-btn relative order-4 md:order-5" aria-label="Mensagens" data-i18n-aria-label="dashboardChrome.mensagens">
+        <button id="btn-dash-header-chat" type="button" class="rail-icon-btn rail-chat-btn relative order-4 md:order-5" aria-label="Mensagens" data-love-i18n-aria-label="dashboardChrome.mensagens">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/>
             </svg>
           <span class="badge-header-chat rail-chat-selo hidden">0</span>
-          <span class="rail-rotulo" data-i18n="dashboardChrome.mensagens">Mensagens</span>
+          <span class="rail-rotulo" data-love-i18n="dashboardChrome.mensagens">Mensagens</span>
         </button>
 
         <!-- 6. FORNECEDORES (👑 Coroa - 6º no Desktop, 5º no Mobile) -->
-        <button class="rail-icon-btn order-5 md:order-6" data-rail-tab="b2b" aria-label="Fornecedores" data-i18n-aria-label="dashboardChrome.fornecedores">
+        <button class="rail-icon-btn order-5 md:order-6" data-rail-tab="b2b" aria-label="Fornecedores" data-love-i18n-aria-label="dashboardChrome.fornecedores">
           <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
             <path d="M12 6l4 6l5-4-2 10H5L3 8l5 4 4-6z"/>
           </svg>
-          <span class="rail-rotulo" data-i18n="dashboardChrome.fornecedores">Fornecedores</span>
+          <span class="rail-rotulo" data-love-i18n="dashboardChrome.fornecedores">Fornecedores</span>
         </button>
 
       </div>

@@ -2482,10 +2482,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Novo evento sempre começa amanhã ao meio-dia (e termina no mesmo dia).
   // Se a data veio do /cadastro (pendente), respeita a que a pessoa escolheu.
+  // Criar novo evento: começa sempre amanhã ao meio-dia e termina amanhã às
+  // 23h30. A data escolhida no onboarding do /cadastro (quando há) é aplicada
+  // depois, por cima desta.
   function preencherInicioPadraoDoNovoEvento() {
-    let pendente = null;
-    try { pendente = localStorage.getItem('love-pending-event-date'); } catch (e) { /* sem armazenamento */ }
-    if (pendente) return;
     const amanha = new Date();
     amanha.setDate(amanha.getDate() + 1);
     const iso = `${amanha.getFullYear()}-${String(amanha.getMonth() + 1).padStart(2, '0')}-${String(amanha.getDate()).padStart(2, '0')}`;
@@ -2493,8 +2493,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const horaInicio = /** @type {HTMLInputElement|null} */ (document.getElementById('page-new-event-start-time'));
     const fim = /** @type {HTMLInputElement|null} */ (document.getElementById('page-new-event-end-date'));
     if (inicio) inicio.value = iso;
+    const horaFim = /** @type {HTMLInputElement|null} */ (document.getElementById('page-new-event-end-time'));
     if (horaInicio) horaInicio.value = '12:00';
     if (fim) fim.value = iso;
+    if (horaFim) horaFim.value = '23:30';
   }
 
   function openCreateEventPage(isFirstAccess = false, goToForm = false) {

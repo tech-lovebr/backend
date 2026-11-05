@@ -110,3 +110,24 @@ const B2B_DATA = {
     try { return JSON.parse(localStorage.getItem('b2b-site-forms') || '[]'); } catch (e) { return []; }
   })()
 };
+
+/* Categorias da empresa (as mesmas do cadastro em login.html) e as tags
+   sugeridas de cada uma. Usadas em Meus produtos (tags do produto) e no
+   onboarding da Home (js/onboarding-empresa.js). */
+const FORNECEDOR_CATEGORIAS = [
+  'Buffet e Gastronomia', 'Bar e Bebidas', 'Espaços para Locação', 'Staff e Mão de Obra',
+  'Mídia e Audiovisual', 'Música e Entretenimento', 'Decoração', 'Assessoria e Cerimonialista',
+  'Aluguel de Trajes', 'Beleza e Estilo', 'Aluguel de Carros'
+];
+const TAGS_POR_CATEGORIA = {
+  'Buffet e Gastronomia': ['Buffet completo', 'Coquetel', 'Finger food', 'Churrasco', 'Comida de boteco', 'Massas', 'Comida japonesa', 'Mesa de frios', 'Doces finos', 'Bolo', 'Vegano', 'Vegetariano', 'Sem glúten', 'Café da manhã', 'Brunch', 'Food truck', 'Buffet infantil', 'Jantar servido à francesa'],
+  'Bar e Bebidas': ['Open bar', 'Drinks autorais', 'Bartender', 'Chopp', 'Cervejas artesanais', 'Vinhos', 'Espumantes', 'Drinks sem álcool', 'Coquetelaria clássica', 'Bar móvel', 'Gin tônica', 'Caipirinhas', 'Café e barista', 'Bar infantil'],
+  'Espaços para Locação': ['Ao ar livre', 'Salão fechado', 'Com piscina', 'Jardim', 'Vista para o mar', 'Campo', 'Rústico', 'Industrial', 'Clássico', 'Estacionamento', 'Acessível', 'Hospedagem no local', 'Até 100 convidados', 'Mais de 300 convidados', 'Cerimônia no local'],
+  'Staff e Mão de Obra': ['Garçons', 'Recepcionistas', 'Seguranças', 'Bartenders', 'Copeiras', 'Manobristas', 'Limpeza', 'Montagem', 'Coordenação de equipe', 'Bilíngue', 'Uniformizado'],
+  'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Making of', 'Ensaio pré-wedding', 'Álbum impresso', 'Cabine de fotos', 'Transmissão ao vivo', 'Edição em 4K', 'Same day edit', 'Estilo documental', 'Estilo editorial', 'Fotos instantâneas'],
+  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Voz e violão', 'Quarteto de cordas', 'Samba e pagode', 'Sertanejo', 'Música eletrônica', 'MPB', 'Cerimônia musical', 'Mestre de cerimônias', 'Animação infantil', 'Pista de dança', 'Iluminação cênica', 'Efeitos especiais'],
+  'Decoração': ['Clássica', 'Rústica', 'Boho', 'Minimalista', 'Moderna', 'Tropical', 'Romântica', 'Arranjos florais', 'Flores naturais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Painel instagramável', 'Mesa posta', 'Balões'],
+  'Assessoria e Cerimonialista': ['Assessoria completa', 'Assessoria do dia', 'Cerimonial', 'Planejamento', 'Destination wedding', 'Celebrante', 'Casamento civil', 'Bilíngue', 'Roteiro do evento', 'Gestão de fornecedores'],
+  'Aluguel de Trajes': ['Vestido de noiva', 'Traje masculino', 'Aluguel', 'Sob medida', 'Madrinhas', 'Daminhas e pajens', 'Acessórios'],
+  'Beleza e Estilo': ['Maquiagem', 'Penteado', 'Dia da noiva', 'Dia do noivo', 'Atendimento em domicílio']
+};

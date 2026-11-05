@@ -12949,3 +12949,46 @@ html body .settings-so-celular-inline:not(#love-h-a) { display: none; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body .settings-so-celular-inline:not(#love-h-a):not(#love-h-b) { display: inline; }
 }
+
+/* ===== Onboarding da empresa (js/onboarding-empresa.js) =====
+   Tela inteira na Home para quem ainda não tem categoria (conta criada pelo
+   Google): 1) categoria; 2) tags do que oferece. Depois, as boas-vindas. */
+html body .onb-tela:not(#love-h-a) { position: fixed; inset: 0; z-index: 200; overflow-y: auto; background: #F4F6F7; display: flex; flex-direction: column; align-items: center; padding: 0 16px 48px; }
+html body.onb-aberto:not(#love-h-a) { overflow: hidden; }
+html body .onb-topo:not(#love-h-a) { width: 100%; max-width: 560px; display: flex; align-items: center; height: 72px; flex-shrink: 0; }
+html body .onb-logo:not(#love-h-a) { height: 32px; width: auto; display: block; }
+html body .onb-caixa:not(#love-h-a) { width: 100%; max-width: 560px; padding: 32px; background: #FFFFFF; border: 1px solid var(--borda-suave, #E4E4E7); border-radius: 10px; }
+html body .onb-passo:not(#love-h-a) { margin: 0 0 8px; font-size: 11px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase; color: #A1A1AA; }
+html body .onb-titulo:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 24px; line-height: 1.25; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+html body .onb-sub:not(#love-h-a) { margin: 8px 0 24px; font-size: 14px; line-height: 1.55; color: #71717A; }
+html body .onb-opcoes:not(#love-h-a) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+html body .onb-opcao:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 10px 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font: 500 14px/1.3 Inter, sans-serif; color: #3F3F46; text-align: left; cursor: pointer; }
+html body .onb-opcao:hover:not(#love-h-a) { border-color: #181D24; color: #181D24; }
+html body .onb-opcao svg:not(#love-h-a) { width: 18px; height: 18px; flex-shrink: 0; opacity: 0; color: #183b54; }
+html body .onb-opcao.is-marcada:not(#love-h-a) { border-color: #183b54; color: #183b54; box-shadow: inset 0 0 0 1px #183b54; }
+html body .onb-opcao.is-marcada svg:not(#love-h-a) { opacity: 1; }
+html body .onb-tags:not(#love-h-a) { margin-bottom: 4px; }
+html body .onb-erro:not(#love-h-a) { margin: 16px 0 0; font-size: 13px; color: #B91C1C; }
+html body .onb-erro[hidden]:not(#love-h-a) { display: none; }
+html body .onb-acoes:not(#love-h-a) { display: flex; align-items: center; justify-content: flex-end; gap: 16px; margin-top: 24px; }
+html body .onb-continuar:not(#love-h-a) { min-width: 140px; height: 44px; justify-content: center; }
+html body .onb-continuar:disabled:not(#love-h-a) { opacity: .45; cursor: not-allowed; }
+html body .onb-voltar:not(#love-h-a) { margin-right: auto; padding: 0; background: none; border: 0; font: 600 14px Inter, sans-serif; color: #52525B; cursor: pointer; }
+html body .onb-voltar:hover:not(#love-h-a) { color: #181D24; }
+/* Boas-vindas na frente; o "Adicione seus serviços" espera ela fechar. */
+html body #onboarding-modal.show ~ #first-product-modal.show:not(#love-h-a) { display: none; }
+body[data-theme="dark"] .onb-tela { background: #171717 !important; }
+body[data-theme="dark"] .onb-caixa { background: #1F1F1F !important; border-color: #333333 !important; }
+body[data-theme="dark"] .onb-titulo { color: #FFFFFF !important; }
+body[data-theme="dark"] .onb-opcao { background: #252525 !important; border-color: #404040 !important; color: #D4D4D8 !important; }
+body[data-theme="dark"] .onb-opcao.is-marcada { border-color: #FFFFFF !important; color: #FFFFFF !important; box-shadow: inset 0 0 0 1px #FFFFFF !important; }
+body[data-theme="dark"] .onb-opcao.is-marcada svg { color: #FFFFFF !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .onb-tela:not(#love-h-a) { background: #FFFFFF; padding: 0 16px 32px; }
+  html body .onb-caixa:not(#love-h-a) { padding: 8px 0 0; border: 0; border-radius: 0; background: transparent; }
+  html body .onb-titulo:not(#love-h-a) { font-size: 22px; }
+  html body .onb-opcoes:not(#love-h-a) { grid-template-columns: minmax(0, 1fr); }
+  html body .onb-acoes:not(#love-h-a) { position: sticky; bottom: 0; padding: 16px 0 calc(16px + env(safe-area-inset-bottom, 0px)); margin-top: 16px; background: #FFFFFF; }
+  html body .onb-continuar:not(#love-h-a) { flex: 1; }
+  body[data-theme="dark"] .onb-tela, body[data-theme="dark"] .onb-acoes { background: #171717 !important; }
+}

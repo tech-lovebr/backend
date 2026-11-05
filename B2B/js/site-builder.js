@@ -4326,8 +4326,11 @@ function renderAdvancedTab(el) {
 const AVISO_CONSTRUTOR_CELULAR = 'Atenção, para usar todos os recursos de edição, acesse o construtor pelo computador (desktop).';
 let timerSalvarNoCelular = null;
 
+// O construtor não abre no celular: lá aparece só o aviso para editar pelo
+// computador (.construtor-celular-aviso em paginas-site.html). O modo de
+// edição no celular fica desligado.
 function construtorNoCelular() {
-  return typeof hubNoCelular === 'function' && hubNoCelular() && !!document.getElementById('site-builder-root');
+  return false;
 }
 
 function siteJaPublicado() {

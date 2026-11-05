@@ -224,7 +224,7 @@ const ContaDrawer = (() => {
     const cad = c.origem === 'b2b'
       ? (DADOS?.fornecedores || []).find(x => x.id === c.id)
       : (DADOS?.clientes || []).find(x => x.id === c.id);
-    const valor = String(cad?.birthday || '').trim();
+    const valor = String(cad?.birthday || cad?.data_nascimento || '').trim();
     if (!valor) return null;
     const iso = valor.match(/^(\d{4})-(\d{2})-(\d{2})/);
     return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : valor;
@@ -273,6 +273,8 @@ const ContaDrawer = (() => {
     if (c.origem !== 'b2b') return '';
     const f = fornecedorDe(c.id);
     if (!f) return '';
+    // Fora da edição, razão social, documento etc. ficam em "Informações da empresa".
+    if (!EDITANDO) return linha('Nome', escapeHtml(f.company_name || c.nome || '—'));
     if (EDITANDO) {
       return CAMPOS_EDITAVEIS.map(campo => linha(campo.rotulo, campo.tipo === 'categoria'
         ? campoCategoria(f.category)
@@ -379,7 +381,7 @@ const ContaDrawer = (() => {
         <div class="lista-dados">
           ${identidadeDoFornecedor(c, linha) || linha('Nome', escapeHtml(c.nome || '—'))}
           ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}
-          ${linha('Data de nascimento', EDITANDO && c.origem === 'b2b'
+          ${c.origem === 'b2b' && !EDITANDO && fornecedorDe(c.id) ? '' : linha('Data de nascimento', EDITANDO && c.origem === 'b2b'
             ? campoTexto('birthday', fornecedorDe(c.id)?.birthday, '', 'date')
             : escapeHtml(nascimento || 'Não informada'))}
           ${mostrarCanal ? linha('Canal', escapeHtml(origem.rotulo)) : ''}
@@ -575,6 +577,19 @@ const ContaDrawer = (() => {
       linhaOpcional('Chave Pix', f.pix_key)
     ].join('');
 
+    if (!EDITANDO) return `
+      ${secoesDoCadastroHub(f, id)}
+
+      ${acoesDoPlano(f)}
+
+      <p class="drawer-section-title">Operação</p>
+      <div class="lista-dados">
+        ${linhaOpcional('Contratos', `${formatNumber(ativos.length)} ativos de ${formatNumber(contratos.length)}`)}
+        ${linhaOpcional('Entradas na carteira', formatCurrency(entradas))}
+      </div>
+
+      ${blocoDeProdutos(id)}`;
+
     return `
       <p class="drawer-section-title">Cadastro do fornecedor</p>
       ${cadastro
@@ -590,6 +605,105 @@ const ContaDrawer = (() => {
       </div>
 
       ${blocoDeProdutos(id)}`;
+  }
+
+  /* ------------------------------- Tudo o que o fornecedor preenche no Hub
+
+     Mesmas seções de Configurações do Hub: informações pessoais, da empresa,
+     atendimento e pagamento. Campo vazio aparece como "Não informado", para
+     o Admin ver o que falta, e não só o que existe. */
+  const TIPO_EMPRESA = { MEI: 'MEI', LIMITED: 'Sociedade limitada (Ltda)', INDIVIDUAL: 'Empresário individual', ASSOCIATION: 'Associação' };
+  const FATURAMENTO = { 5000: 'Até R$ 5 mil', 10000: 'R$ 5 mil a R$ 10 mil', 20000: 'R$ 10 mil a R$ 20 mil', 50000: 'R$ 20 mil a R$ 50 mil', 100000: 'R$ 50 mil a R$ 100 mil', 200000: 'Acima de R$ 100 mil' };
+  const REDES = { instagram: 'Instagram', linkedin: 'LinkedIn', tiktok: 'TikTok', facebook: 'Facebook', youtube: 'YouTube' };
+
+  const soDigitos = v => String(v ?? '').replace(/\D/g, '');
+  function formatarCpf(v) {
+    const d = soDigitos(v);
+    return d.length === 11 ? d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : String(v ?? '');
+  }
+  function formatarCnpj(v) {
+    const d = soDigitos(v);
+    if (d.length === 14) return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    if (d.length === 11) return formatarCpf(d);
+    return String(v ?? '');
+  }
+  function formatarCep(v) {
+    const d = soDigitos(v);
+    return d.length === 8 ? d.replace(/(\d{5})(\d{3})/, '$1-$2') : String(v ?? '');
+  }
+  const simOuNao = v => v == null ? '' : (v ? 'Sim' : 'Não');
+
+  function linhaCadastro(rotulo, valor) {
+    const texto = String(valor ?? '').trim();
+    return linhaFixa(rotulo, texto ? escapeHtml(texto) : '<span class="cell-muted">Não informado</span>');
+  }
+
+  function secoesDoCadastroHub(f, id) {
+    const doc = String(f.document_type || 'cnpj').toLowerCase() === 'cpf' ? 'CPF da empresa' : 'CNPJ';
+    const cidadeUf = (cidade, uf) => [cidade, uf].filter(Boolean).join(' / ');
+    const enderecoCom = (rua, numero) => [rua, numero].filter(Boolean).join(', ');
+
+    const mesmoEndereco = f.usa_endereco_perfil !== false
+      && !f.business_address && !f.business_cep && !f.business_city;
+    const raio = f.service_radius_km == null ? '' : (Number(f.service_radius_km) === 0 ? 'Qualquer distância' : `${f.service_radius_km} km`);
+    const parcelas = f.max_installments_no_interest == null ? ''
+      : (Number(f.max_installments_no_interest) > 1 ? `Até ${f.max_installments_no_interest}x sem juros` : 'À vista');
+    const redes = Object.entries(f.social_links || {})
+      .filter(([, url]) => String(url || '').trim())
+      .map(([rede, url]) => linhaFixa(REDES[rede] || rede,
+        `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`)).join('');
+
+    return `
+      <p class="drawer-section-title">Informações pessoais</p>
+      <div class="lista-dados">
+        ${linhaCadastro('Nome do responsável', f.contact_name)}
+        ${linhaCadastro('CPF', formatarCpf(f.responsavel_cpf))}
+        ${linhaCadastro('Data de nascimento', dataDeNascimento({ origem: 'b2b', id }))}
+        ${linhaCadastro('Celular', f.phone)}
+      </div>
+
+      <p class="drawer-section-title">Informações da empresa</p>
+      <div class="lista-dados">
+        ${linhaCadastro('Razão social', f.razao_social)}
+        ${linhaCadastro('Nome fantasia', f.company_name)}
+        ${linhaCadastro(doc, formatarCnpj(f.cnpj))}
+        ${linhaCadastro('Tipo de empresa', TIPO_EMPRESA[f.tipo_empresa] || f.tipo_empresa)}
+        ${linhaCadastro('Faturamento mensal', FATURAMENTO[Math.round(Number(f.faturamento_mensal))] || (f.faturamento_mensal != null ? formatCurrency(f.faturamento_mensal) : ''))}
+        ${linhaCadastro('Categoria', f.category)}
+        ${linhaCadastro('CEP', formatarCep(f.cep))}
+        ${linhaCadastro('Endereço', enderecoCom(f.address, f.endereco_numero))}
+        ${linhaCadastro('Complemento', f.endereco_complemento)}
+        ${linhaCadastro('Bairro', f.bairro)}
+        ${linhaCadastro('Cidade', cidadeUf(f.city, f.state))}
+        ${linhaCadastro('Descrição', f.description)}
+      </div>
+
+      <p class="drawer-section-title">Atendimento</p>
+      <div class="lista-dados">
+        ${mesmoEndereco
+          ? linhaCadastro('Endereço de atendimento', 'O mesmo da empresa')
+          : [
+              linhaCadastro('Endereço de atendimento', enderecoCom(f.business_address, f.business_numero)),
+              linhaCadastro('Complemento', f.business_complemento),
+              linhaCadastro('CEP', formatarCep(f.business_cep)),
+              linhaCadastro('Bairro', f.business_bairro),
+              linhaCadastro('Cidade', cidadeUf(f.business_city, f.business_state))
+            ].join('')}
+        ${linhaCadastro('Raio de atendimento', raio)}
+        ${linhaCadastro('Aceita visitas', simOuNao(f.aceita_visitas))}
+        ${linhaCadastro('Oferece amostra', simOuNao(f.oferece_amostra))}
+        ${redes || linhaCadastro('Redes sociais', '')}
+      </div>
+
+      <p class="drawer-section-title">Pagamento</p>
+      <div class="lista-dados">
+        ${linhaCadastro('Parcelamento', parcelas)}
+        ${linhaCadastro('Quitar tudo até o evento', simOuNao(f.requires_full_payment_by_event))}
+        ${linhaCadastro('Sinal para reservar a data', f.deposit_percent != null ? `${f.deposit_percent}%` : '')}
+        ${linhaCadastro('Prazo para quitar o restante', f.deposit_deadline_days != null ? `${f.deposit_deadline_days} dias antes do evento` : '')}
+        ${linhaCadastro('Chave Pix', f.pix_key)}
+        ${blocoDoPlano(f)}
+      </div>`;
   }
 
   /* ----------------------------------------------- Produtos e serviços

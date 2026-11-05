@@ -878,61 +878,6 @@ const MODELOS_DE_CONVITE = {
 };
 
 /**
- * Convite inicial (no código) de um tipo de evento, ou null se o tipo não tem.
- * @param {string} typeKey
- * @returns {any|null}
- */
-function modeloDeConviteEmCodigo(typeKey) {
-  const m = MODELOS_DE_CONVITE[typeKey];
-  if (!m) return null;
-  const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
-  const LORA = "'Lora', Georgia, serif";
-  /** @param {string} tipo @param {object} props @param {object} [mobile] */
-  const el = (tipo, props, mobile) => {
-    const novo = Object.assign(createElement(tipo), props || {});
-    if (mobile) novo.styles.mobile = Object.assign({}, novo.styles.mobile || {}, mobile);
-    if (novo.styles && novo.styles.desktop) novo.styles.desktop.textAlign = 'center';
-    return novo;
-  };
-  const tituloDeSecao = (texto) => el('titulo', { content: texto }, { fontSize: '20px', fontFamily: LORA, fontWeight: '400', lineHeight: '1' });
-
-  const capa = createSection();
-  capa.bgImage = tmpl.coverImage;
-
-  const principal = createSection();
-  principal.bg = m.fundo;
-  principal.columns[0].elements = [
-    el('texto', { content: m.abertura }, { fontSize: '15px', fontStyle: 'italic', fontFamily: LORA }),
-    el('texto', { content: m.convite }, { fontSize: '15px', fontStyle: 'italic', fontFamily: LORA }),
-    el('titulo', { content: '' }),
-    el('texto', { content: 'A realizar-se' }, { color: m.destaque, fontSize: '17px', fontFamily: LORA }),
-    el('data', { showLines: true, textColor: m.destaque, fontFamily: LORA }),
-    tituloDeSecao(m.sobre),
-    el('texto', { content: '' }),
-    tituloDeSecao('Contagem Regressiva'),
-    el('contagem', { label: '', showBox: true, textColor: m.destaque, boxBgColor: m.caixa, fontFamily: LORA })
-  ];
-
-  const botoes = defaultQuickNavSection();
-  botoes.buttonBgColor = m.caixa;
-  botoes.iconStyle = 'moderno';
-  botoes.textColor = '#18181B';
-  botoes.iconColor = '#18181B';
-
-  const fim = createSection();
-  fim.bg = m.fundo;
-  fim.columns[0].elements = [
-    el('titulo', { content: 'Com carinho,' }, { fontFamily: LORA }),
-    el('texto', { content: '' })
-  ];
-
-  const state = defaultPageState();
-  state.globalStyle.primaryColor = tmpl.primaryColor;
-  state.sections = [capa, principal, botoes, fim];
-  return state;
-}
-
-/**
  * Põe o nome no primeiro título vazio do convite (o "Insira um título" do
  * modelo). "Aniversário de Victor" vira "Victor", porque o texto de cima já
  * diz "…para o aniversário de".
@@ -952,20 +897,12 @@ function preencherTituloDoTemplate(state, nomeDoEvento) {
 async function seedConviteDigitalForEvent(eventoId, typeKey, quando) {
   if (typeof supabaseClient === 'undefined') return;
   // Com template padrão do tipo (ex.: casamento), o evento já nasce com ele.
-  // Sem template salvo no banco: modelo pronto do código (chás e bodas) ou o
-  // primeiro dos modelos prontos do tipo (ex.: aniversário, "Festa").
-  let state = (await templatePadraoDoTipo(typeKey)) || modeloDeConviteEmCodigo(typeKey)
-    || (VARIACOES_DOS_MODELOS[typeKey] ? conviteDoModelo(typeKey, VARIACOES_DOS_MODELOS[typeKey][0]) : null);
-  if (state) {
-    ajustarDatasDoTemplate(state, quando);
-    preencherTituloDoTemplate(state, quando && quando.nome);
-  } else {
-    const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[typeKey] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
-    state = defaultPageState();
-    state.globalStyle.primaryColor = tmpl.primaryColor;
-    const firstSection = state.sections.find(s => !s.isQuickNav && !s.isGiftsBlock);
-    if (firstSection) firstSection.bgImage = tmpl.coverImage;
-  }
+  // Sem template salvo no banco: o primeiro dos modelos prontos do tipo, o
+  // mesmo do celular (aniversário "Festa", chás e bodas "Suave"; tipos
+  // digitados em "Outro" com textos gerais).
+  const state = (await templatePadraoDoTipo(typeKey)) || conviteDoModelo(typeKey, variacoesDoTipo(typeKey)[0]);
+  ajustarDatasDoTemplate(state, quando);
+  preencherTituloDoTemplate(state, quando && quando.nome);
   const { error } = await supabaseClient
     .from('convite_digital_pages')
     .upsert({ evento_id: eventoId, page_key: 'convite', state }, { onConflict: 'evento_id,page_key' });
@@ -6043,7 +5980,9 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
 // Textos de cada tipo de evento (o resto vem do MODELOS_DE_CONVITE).
 const TEXTOS_DOS_MODELOS = {
   wedding: { abertura: 'É com imensa alegria,', convite: 'que convidamos você para celebrar o casamento de', sobre: 'Sobre a Cerimônia' },
-  birthday: { abertura: 'Vamos celebrar juntos!', convite: 'Você está convidado(a) para o aniversário de', sobre: 'Sobre a festa' }
+  birthday: { abertura: 'Vamos celebrar juntos!', convite: 'Você está convidado(a) para o aniversário de', sobre: 'Sobre a festa' },
+  // Tipos digitados em "Outro" (batizado, formatura, 15 anos…).
+  custom: { abertura: 'Com muita alegria,', convite: 'Convidamos você para celebrar com', sobre: 'Sobre o evento' }
 };
 // Três modelos por tipo: paleta, fonte e fotos. No casamento, o primeiro é o
 // modelo padrão salvo no banco (o mesmo do desktop).
@@ -6064,7 +6003,8 @@ const VARIACOES_DOS_MODELOS = {
 function variacoesDoTipo(tipo) {
   if (VARIACOES_DOS_MODELOS[tipo]) return VARIACOES_DOS_MODELOS[tipo];
   const base = MODELOS_DE_CONVITE[tipo] || { fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4' };
-  const capa = (EVENT_TYPE_BUILDER_TEMPLATES[tipo] || EVENT_TYPE_BUILDER_TEMPLATES.wedding).coverImage;
+  // Tipos de "Outro" sem foto própria: a foto da abertura da landing.
+  const capa = (EVENT_TYPE_BUILDER_TEMPLATES[tipo] || { coverImage: 'assets/landing/heroi.jpg' }).coverImage;
   return [
     { id: 'suave', nome: 'Suave', adicionado: '2026-08-12', fundo: base.fundo, destaque: base.destaque, caixa: base.caixa, fonte: "'Lora', Georgia, serif", capa, imagem: 'assets/bouquet_roses.jpg' },
     { id: 'classico', nome: 'Clássico', adicionado: '2026-09-05', fundo: '#f6f3ee', destaque: '#7a6a55', caixa: '#e9e1d4', fonte: "'Marcellus', Georgia, serif", capa, imagem: 'assets/presentes/champanhe.jpg' },
@@ -6078,7 +6018,7 @@ function variacoesDoTipo(tipo) {
  * @param {string} tipo @param {any} v
  */
 function conviteDoModelo(tipo, v) {
-  const t = TEXTOS_DOS_MODELOS[tipo] || MODELOS_DE_CONVITE[tipo] || TEXTOS_DOS_MODELOS.wedding;
+  const t = TEXTOS_DOS_MODELOS[tipo] || MODELOS_DE_CONVITE[tipo] || TEXTOS_DOS_MODELOS.custom;
   const tmpl = EVENT_TYPE_BUILDER_TEMPLATES[tipo] || EVENT_TYPE_BUILDER_TEMPLATES.wedding;
   /** @param {string} tipoEl @param {object} props @param {object} [mobile] */
   const el = (tipoEl, props, mobile) => {

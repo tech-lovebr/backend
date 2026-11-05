@@ -243,10 +243,11 @@
 
                   <div id="pricing-fixed-fields" class="flex flex-col gap-4 mt-4" hidden>
                     <div>
-                      <label for="pricing-fixed-price" class="field-label">Valor total do pacote/diária</label>
+                      <label for="pricing-fixed-price" class="field-label">Valor total</label>
                       <input id="pricing-fixed-price" type="text" inputmode="numeric" class="field-input" placeholder="0,00">
                     </div>
-                    <div>
+                    <!-- Buffet e Gastronomia não tem duração (js/produtos.js esconde) -->
+                    <div id="pricing-fixed-duration-wrap">
                       <label for="pricing-fixed-duration-value" class="field-label">Duração/Permanência</label>
                       <div class="flex gap-2">
                         <input id="pricing-fixed-duration-value" type="number" min="0" step="1" class="field-input" placeholder="Ex: 6" style="flex:1;">
@@ -619,6 +620,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=77"></script>
-  <script src="js/produtos.js?v=70"></script>
+  <script src="js/produtos.js?v=71"></script>
 </body>
 </html>

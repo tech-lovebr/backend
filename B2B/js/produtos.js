@@ -1087,6 +1087,8 @@ function updateCategoryFieldsVisibility() {
   setPanelHidden('product-scope-lists', isVenue);
   setPanelHidden('product-venue-details', !isVenue);
   setPanelHidden('product-food-fields', !isFood);
+  // Valor fixo de Buffet e Gastronomia (ex.: bolo) não tem duração/permanência.
+  setPanelHidden('pricing-fixed-duration-wrap', isFood);
   setPanelHidden('product-tasting-field', !(isFood || categoryGroups(category).isBar));
   setPanelHidden('product-staff-fields', !isStaff);
   setPanelHidden('product-audiovisual-fields', !isAV);
@@ -1699,7 +1701,7 @@ function initProductDrawer() {
       } else if (currentPricingType === 'VALOR_FIXO') {
         pricing.fixed = {
           price: currencyMaskValue(document.getElementById('pricing-fixed-price')),
-          durationValue: Number(document.getElementById('pricing-fixed-duration-value').value) || 0,
+          durationValue: isFood ? 0 : (Number(document.getElementById('pricing-fixed-duration-value').value) || 0),
           durationUnit: document.getElementById('pricing-fixed-duration-unit').value || 'horas'
         };
       } else if (currentPricingType === 'SOB_CONSULTA') {

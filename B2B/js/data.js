@@ -120,7 +120,7 @@ const FORNECEDOR_CATEGORIAS = [
   'Aluguel de Trajes', 'Beleza e Estilo', 'Aluguel de Carros'
 ];
 const TAGS_POR_CATEGORIA = {
-  'Buffet e Gastronomia': ['Buffet completo', 'Coquetel', 'Finger food', 'Churrasco', 'Comida de boteco', 'Massas', 'Comida japonesa', 'Mesa de frios', 'Doces finos', 'Bolo', 'Vegano', 'Vegetariano', 'Sem glúten', 'Café da manhã', 'Brunch', 'Food truck', 'Buffet infantil', 'Jantar servido à francesa'],
+  'Buffet e Gastronomia': ['Buffet completo', 'Bolo', 'Doces finos', 'Bem-casados', 'Brigadeiros gourmet', 'Docinhos de festa', 'Mesa de doces', 'Cupcakes', 'Salgados de festa', 'Coquetel', 'Finger food', 'Jantar servido à francesa', 'Mesa de frios', 'Buffet infantil', 'Churrasco', 'Massas', 'Café da manhã', 'Brunch', 'Food truck', 'Comida de boteco', 'Comida japonesa', 'Vegano', 'Vegetariano', 'Sem glúten'],
   'Bar e Bebidas': ['Open bar', 'Drinks autorais', 'Bartender', 'Chopp', 'Cervejas artesanais', 'Vinhos', 'Espumantes', 'Drinks sem álcool', 'Coquetelaria clássica', 'Bar móvel', 'Gin tônica', 'Caipirinhas', 'Café e barista', 'Bar infantil'],
   'Espaços para Locação': ['Ao ar livre', 'Salão fechado', 'Com piscina', 'Jardim', 'Vista para o mar', 'Campo', 'Rústico', 'Industrial', 'Clássico', 'Estacionamento', 'Acessível', 'Hospedagem no local', 'Até 100 convidados', 'Mais de 300 convidados', 'Cerimônia no local'],
   'Staff e Mão de Obra': ['Garçons', 'Recepcionistas', 'Seguranças', 'Bartenders', 'Copeiras', 'Manobristas', 'Limpeza', 'Montagem', 'Coordenação de equipe', 'Bilíngue', 'Uniformizado'],

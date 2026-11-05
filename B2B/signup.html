@@ -33,9 +33,12 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=878">
+  <link rel="stylesheet" href="css/styles.css?v=879">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
+  <style>
+    body.auth-completar .sem-completar { display: none !important; }
+  </style>
 </head>
 <body class="font-sans bg-white" data-auth-view="signup">
 
@@ -105,12 +108,16 @@
         <div id="auth-view-signup">
           <div class="mb-6">
             <img src="assets/logo.png" alt="Love" class="h-9 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900">Crie sua conta</h3>
-            <p class="text-xs text-slate-500 mt-1">100% gratuito. Sem necessidade de cartão de crédito.</p>
+            <h3 class="text-2xl font-extrabold text-slate-900" id="signup-titulo">Crie sua conta</h3>
+            <p class="text-xs text-slate-500 mt-1" id="signup-subtitulo">100% gratuito. Sem necessidade de cartão de crédito.</p>
           </div>
 
           <form id="signup-email-form" class="space-y-3.5 text-left">
-            <div>
+            <div class="so-completar" hidden>
+              <label for="signup-empresa" class="block text-xs font-bold text-slate-700 mb-1">Nome da empresa</label>
+              <input type="text" id="signup-empresa" maxlength="80" autocomplete="organization" placeholder="Como os clientes conhecem a sua empresa" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+            </div>
+            <div class="sem-completar">
               <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
               <input type="email" id="signup-email" required autocomplete="email" placeholder="nome@empresa.com" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
             </div>
@@ -138,7 +145,7 @@
                 </div>
               </div>
             </div>
-            <div>
+            <div class="sem-completar">
               <label class="block text-xs font-bold text-slate-700 mb-1">Senha</label>
               <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" placeholder="Crie uma senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
             </div>
@@ -146,13 +153,13 @@
             <p id="signup-error" class="text-xs text-red-600 hidden"></p>
 
             <button type="submit" id="signup-email-btn" class="auth-entrar w-full py-3.5 rounded-xl text-sm font-bold cursor-pointer mt-2">
-              <span>Criar conta</span>
+              <span id="signup-email-btn-texto">Criar conta</span>
             </button>
           </form>
 
-          <div class="auth-ou"><span>ou</span></div>
+          <div class="auth-ou sem-completar"><span>ou</span></div>
 
-          <button type="button" id="google-signup-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all cursor-pointer">
+          <button type="button" id="google-signup-btn" class="sem-completar w-full py-3 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all cursor-pointer">
             <svg class="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -162,7 +169,7 @@
             <span>Continuar com o Google</span>
           </button>
 
-          <div class="auth-trocar">
+          <div class="auth-trocar sem-completar">
             <span>Já tem uma conta?</span>
             <a href="login" id="go-to-login">Entrar</a>
           </div>
@@ -354,8 +361,70 @@
       entrarComGoogleHub(window.location.origin + window.location.pathname.replace(/(login|signup)$/, 'dashboard'));
     });
 
+    /* Conta criada agora pelo Google (js/shell.js manda para signup?completar=1):
+       já está logada, então some e-mail, senha e Google, e a página pede só o
+       nome da empresa e a categoria. Depois segue para o painel. */
+    let completando = false;
+    (async function () {
+      if (new URLSearchParams(location.search).get('completar') !== '1') return;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { history.replaceState(null, '', location.pathname); return; }
+      completando = true;
+      showAuthView('signup');
+      document.body.classList.add('auth-completar');
+      document.querySelectorAll('.so-completar').forEach(el => { el.hidden = false; });
+      document.querySelectorAll('.sem-completar input').forEach(el => { el.disabled = true; el.required = false; });
+      document.getElementById('signup-titulo').textContent = 'Complete seu cadastro';
+      document.getElementById('signup-subtitulo').textContent = 'Falta pouco. Conte o nome e a categoria da sua empresa.';
+      document.getElementById('signup-email-btn-texto').textContent = 'Continuar';
+      const meta = session.user.user_metadata || {};
+      const { data: f } = await supabaseClient.from('fornecedores').select('company_name, category').eq('id', session.user.id).maybeSingle();
+      const nome = document.getElementById('signup-empresa');
+      nome.required = true;
+      nome.value = (f && f.company_name) || meta.full_name || meta.name || '';
+      if (f && f.category) {
+        const linha = document.querySelector('#signup-category-tree [data-category-value="' + CSS.escape(f.category) + '"]');
+        if (linha) linha.click();
+      }
+    })();
+
+    async function completarCadastro(errorEl, submitBtn) {
+      const nome = document.getElementById('signup-empresa').value.replace(/\s+/g, ' ').trim();
+      if (!nome) {
+        errorEl.textContent = 'Escreva o nome da sua empresa.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (!signupCategoryValue) {
+        errorEl.textContent = 'Escolha a categoria da sua empresa.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      submitBtn.disabled = true;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const { error } = session
+        ? await supabaseClient.from('fornecedores').update({ company_name: nome, category: signupCategoryValue }).eq('id', session.user.id)
+        : { error: new Error('sem sessão') };
+      if (error) {
+        submitBtn.disabled = false;
+        errorEl.textContent = 'Não foi possível salvar agora. Tente de novo.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      try {
+        localStorage.removeItem('b2b-onboarding-empresa');
+        localStorage.setItem('b2b-onboarding-pending', '1');
+      } catch (e) { /* sem armazenamento */ }
+      window.location.replace('dashboard');
+    }
+
     document.getElementById('signup-email-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (completando) {
+        const errorElC = document.getElementById('signup-error');
+        errorElC.classList.add('hidden');
+        return completarCadastro(errorElC, document.getElementById('signup-email-btn'));
+      }
       const email = document.getElementById('signup-email').value.trim();
       const password = document.getElementById('signup-password').value;
       const errorEl = document.getElementById('signup-error');

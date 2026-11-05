@@ -112,8 +112,7 @@ const B2B_DATA = {
 };
 
 /* Categorias da empresa (as mesmas do cadastro em login.html) e as tags
-   sugeridas de cada uma. Usadas em Meus produtos (tags do produto) e no
-   onboarding da Home (js/onboarding-empresa.js). */
+   sugeridas de cada uma. Usadas em Meus produtos (tags do produto). */
 const FORNECEDOR_CATEGORIAS = [
   'Buffet e Gastronomia', 'Bar e Bebidas', 'Espaços para Locação', 'Staff e Mão de Obra',
   'Mídia e Audiovisual', 'Música e Entretenimento', 'Decoração', 'Assessoria e Cerimonialista',

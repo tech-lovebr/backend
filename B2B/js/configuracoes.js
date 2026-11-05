@@ -1531,7 +1531,10 @@ async function initUrlsDoSite() {
   const exibido = pro ? `${slug}.love.com.br` : slug;
   const link = pro ? `https://${slug}.love.com.br` : `https://hub.love.com.br/site/${slug}`;
   setText('settings-url-base', base);
-  slugEl.textContent = slug ? exibido : '—';
+  // Celular: o "https://" fica à esquerda do campo, que mostra o resto do endereço.
+  const mostrarSlug = () => { slugEl.textContent = slug ? (SETTINGS_CELULAR.matches ? link.replace(/^https:\/\//, '') : exibido) : '—'; };
+  mostrarSlug();
+  SETTINGS_CELULAR.addEventListener?.('change', mostrarSlug);
   const proBox = document.getElementById('settings-url-pro');
   if (proBox) proBox.hidden = pro;
 

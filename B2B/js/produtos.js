@@ -336,11 +336,13 @@ function renderProducts() {
     }
     grid.innerHTML = `
       <div class="produtos-vazio" style="grid-column:1/-1;">
+        <div class="produtos-vazio-topo">
+          <h3 class="produtos-vazio-titulo">Cadastrar novo produto</h3>
+          <p class="produtos-vazio-sub">Cadastre seu primeiro produto/serviço para começar a encontrar clientes na Love.</p>
+        </div>
         <div class="produtos-vazio-cards">
-          <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar>
+          <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar aria-label="Cadastrar novo produto">
             <dotlottie-wc class="produtos-vazio-lottie" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
-            <strong>Cadastrar novo produto</strong>
-            <span class="produtos-vazio-criar-sub">Cadastre seu primeiro produto/serviço para começar a encontrar clientes na Love.</span>
           </button>
         </div>
       </div>`;

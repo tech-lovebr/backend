@@ -1,7 +1,8 @@
 /* ==========================================================================
    LOVE B2B — Onboarding da empresa (primeiro passo depois de criar a conta)
    Quem cria a conta pelo Google chega sem categoria (o cadastro por e-mail
-   já pede). Na Home, a empresa sem categoria vê uma tela em dois passos:
+   já pede). Na Home, a conta recém-criada pelo Google (js/shell.js marca
+   em localStorage b2b-onboarding-empresa) e ainda sem categoria vê uma tela em dois passos:
    1) a categoria da empresa; 2) as tags do que ela oferece (as mesmas
    sugestões de Meus produtos, TAGS_POR_CATEGORIA em js/data.js).
    Salva em fornecedores.category e fornecedores.tags (migration 122). Sem a
@@ -102,6 +103,7 @@
     }
     if (typeof B2B_DATA !== 'undefined') Object.assign(B2B_DATA.professional, { category: categoria, tags: tags.slice() });
     fechar();
+    try { localStorage.removeItem('b2b-onboarding-empresa'); } catch (e) { /* sem armazenamento */ }
     // Segue para as boas-vindas (js/dashboard.js).
     try { localStorage.setItem('b2b-onboarding-pending', '1'); } catch (e) { /* sem armazenamento */ }
     if (typeof window.initOnboardingModal === 'function') window.initOnboardingModal();
@@ -167,9 +169,13 @@
     if (window.b2bAuthReady && !(await window.b2bAuthReady)) return;
     const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
     if (!session) return;
+    // Só para conta criada agora pelo Google (marcada em js/shell.js).
+    let marcada = null;
+    try { marcada = localStorage.getItem('b2b-onboarding-empresa'); } catch (e) { /* sem armazenamento */ }
+    if (marcada !== session.user.id) return;
     const { data, error } = await supabaseClient.from('fornecedores').select('category').eq('id', empresaId(session)).maybeSingle();
     if (error || !data) return;
-    if (String(data.category || '').trim()) return;
+    if (String(data.category || '').trim()) { try { localStorage.removeItem('b2b-onboarding-empresa'); } catch (e) { /* sem armazenamento */ } return; }
     abrir();
   }
 

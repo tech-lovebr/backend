@@ -333,6 +333,9 @@ async function initAuthGuard() {
       .select('id, company_name, razao_social, email, avatar_url, logo_url, company_alterado_em, documento_alterado_em, plan, plan_origem, plan_expira_em, pix_key, pix_key_type, status, contact_name, document_type, cnpj, phone, address, city, state, description, business_address, business_city, business_state, usa_endereco_perfil, service_radius_km, delivery_time, deposit_percent, deposit_deadline_days, cancellation_policy, max_installments_no_interest, requires_full_payment_by_event, portfolio_images, depoimentos, social_links')
       .maybeSingle();
     fornecedor = created;
+    // Conta nova pelo Google: só ela passa pelo onboarding da empresa
+    // (categoria e tags, js/onboarding-empresa.js). Conta que já existia, não.
+    if (created) { try { localStorage.setItem('b2b-onboarding-empresa', session.user.id); } catch (e) { /* sem armazenamento */ } }
   }
 
   if (fornecedor && fornecedor.status === 'bloqueado') {

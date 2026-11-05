@@ -11,6 +11,17 @@ let leadsPaginacao = null;
 // Leads marcados nas caixinhas (exclusão em massa).
 const leadsSelecionados = new Set();
 let crmLeads = [];
+
+// Plano Gratuito: no máximo LIMITE_GRATUITO leads (js/shell.js). Devolve
+// true quando cabem mais "quantos" leads; senão avisa e devolve false.
+function cabemLeadsNoPlano(quantos) {
+  if (typeof isProPlan === 'function' && isProPlan()) return true;
+  const limite = typeof LIMITE_GRATUITO === 'number' ? LIMITE_GRATUITO : 10;
+  if (crmLeads.length + quantos <= limite) return true;
+  const sobra = Math.max(0, limite - crmLeads.length);
+  avisarLimiteGratuito('Limite de leads atingido', `O plano Gratuito permite até ${limite} leads no CRM.${sobra ? ` Você ainda pode adicionar ${sobra}.` : ''}`);
+  return false;
+}
 let crmProducts = [];
 let leadMatchedClienteId = null;
 
@@ -469,6 +480,9 @@ function initLeadDrawer() {
       showToast('Preencha o nome do lead.', true);
       return;
     }
+    if (!form.dataset.editId && !cabemLeadsNoPlano(1)) {
+      return;
+    }
 
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return;
@@ -758,6 +772,7 @@ function initLeadImport() {
     }).filter(l => l.name);
 
     if (!leads.length) return mostrar('Nenhuma linha com nome para importar.');
+    if (!cabemLeadsNoPlano(leads.length)) return;
 
     mostrar(`Importando ${leads.length} ${leads.length === 1 ? 'lead' : 'leads'}…`);
     let { error } = await supabaseClient.from('leads').insert(leads);
@@ -877,6 +892,7 @@ async function importarContatosComoClientes() {
     if (tel) lead.whatsapp = formatPhoneDigits(tel);
     return lead;
   });
+  if (!cabemLeadsNoPlano(leads.length)) return;
   let { error } = await supabaseClient.from('leads').insert(leads);
   if (error && /column|schema cache/i.test(error.message || '')) {
     ({ error } = await supabaseClient.from('leads').insert(leads.map(({ whatsapp, ...resto }) => resto)));

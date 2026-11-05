@@ -724,6 +724,24 @@ function setupChatEvents() {
   const attachBtn = document.getElementById('chat-attach-btn');
   const fileInput = document.getElementById('chat-file-input');
 
+  /* Plano Gratuito: no máximo LIMITE_GRATUITO contatos por mês (conversas
+     em que a empresa mandou mensagem no mês). Responder quem já entrou na
+     conta do mês continua liberado. */
+  async function cabeConversaNoPlano(convId) {
+    if (typeof isProPlan === 'function' && isProPlan()) return true;
+    const limite = typeof LIMITE_GRATUITO === 'number' ? LIMITE_GRATUITO : 10;
+    const ids = (typeof b2bConversations !== 'undefined' ? b2bConversations : []).map(c => c.id).filter(id => id && id !== SUPORTE_CONV_ID);
+    if (!ids.length) return true;
+    const inicioMes = new Date(); inicioMes.setDate(1); inicioMes.setHours(0, 0, 0, 0);
+    const { data, error } = await supabaseClient.from('messages').select('conversation_id')
+      .in('conversation_id', ids).eq('sender_role', 'fornecedor').gte('created_at', inicioMes.toISOString());
+    if (error || !data) return true;
+    const doMes = new Set(data.map(m => m.conversation_id));
+    if (doMes.has(convId) || doMes.size < limite) return true;
+    avisarLimiteGratuito('Limite de contatos do mês', `O plano Gratuito permite conversar com até ${limite} contatos por mês.`);
+    return false;
+  }
+
   /* Envia e devolve true (enviou) ou false (erro). Quem chama pelo campo
      usa enviarDoCampo(), que trava Enter repetido. */
   async function sendMessage(text, attachment = null) {
@@ -741,6 +759,7 @@ function setupChatEvents() {
 
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return false;
+    if (!(await cabeConversaNoPlano(activeConvId))) return false;
 
     const { error } = await supabaseClient.from('messages').insert({
       conversation_id: activeConvId,

@@ -674,6 +674,19 @@ function isProPlan() {
   return typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.plan === 'Pro';
 }
 
+/* Plano Gratuito: até 10 leads no CRM, 10 propostas por mês (também na RPC
+   enviar_proposta, migration 124) e 10 contatos por mês no chat. */
+const LIMITE_GRATUITO = 10;
+
+// Aviso de limite do plano, com o caminho para o Pro.
+function avisarLimiteGratuito(titulo, texto) {
+  if (typeof confirmarNoHub === 'function') {
+    confirmarNoHub({ titulo, texto: texto + ' Com o plano Pro, o limite é bem maior.', botao: 'Conhecer o plano Pro', aoConfirmar: () => { window.location.href = 'planos'; } });
+  } else if (typeof showToast === 'function') {
+    showToast(texto, true);
+  }
+}
+
 function renderUpgradeCard() {
   const pro = isProPlan();
   document.getElementById('sidebar-upgrade-card')?.classList.toggle('is-pro', pro);

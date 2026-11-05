@@ -51,7 +51,7 @@ const OP_CATEGORIA_ANTIGA = {
 };
 const opCategoriasDoProduto = cat => OP_CATEGORIA_DO_HUB[OP_CATEGORIA_ANTIGA[cat] || cat] || [];
 // Limite de propostas por mês: Gratuito 3, Pro 100 (o banco confere o mesmo — migration 079).
-const opLimiteDoPlano = () => (typeof isProPlan === 'function' && isProPlan()) ? 100 : 3;
+const opLimiteDoPlano = () => (typeof isProPlan === 'function' && isProPlan()) ? 100 : LIMITE_GRATUITO;
 
 let opEmpresaId = null;
 let opMinhasCategorias = [];

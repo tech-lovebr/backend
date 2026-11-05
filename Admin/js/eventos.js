@@ -112,7 +112,8 @@ function filtrar() {
   return EVENTOS.filter(e => {
     if (tipo && e.tipo !== tipo) return false;
     if (situacao === 'excluidos' && !e.deleted_at) return false;
-    if (situacao === 'ativos' && e.deleted_at) return false;
+    // Padrão (Status) = só os ativos; excluídos só no filtro Excluídos.
+    if (situacao !== 'excluidos' && e.deleted_at) return false;
     if (!termo) return true;
     const cliente = CLIENTES.get(e.cliente_id);
     return [e.titulo, e.host_name, e.slug, e.theme, cliente?.couple_name, cliente?.email]
@@ -153,7 +154,6 @@ function render() {
             ? badge('suspenso', 'badge-danger')
             : badge(e.status || 'ativo', e.status === 'ativo' ? 'badge-success' : e.status === 'encerrado' ? 'badge' : 'badge-warning')}</td>
         <td class="col-acoes">
-          ${e.deleted_at ? `<button type="button" class="btn btn-ghost btn-sm" data-restaurar="${e.id}">Restaurar</button>` : ''}
           ${botaoVerMais(e.id)}
         </td>
       </tr>`;
@@ -162,10 +162,6 @@ function render() {
   // A linha não abre o drawer (dá para marcar as caixinhas); quem abre são
   // as três bolinhas no fim.
   ligarAcoesDaLinha(tbody, abrirDetalhe);
-
-  tbody.querySelectorAll('[data-restaurar]').forEach(btn => {
-    btn.addEventListener('click', () => restaurarEvento(EVENTOS.find(ev => ev.id === btn.dataset.restaurar), render));
-  });
 
   tbody.querySelectorAll('[data-selecionar]').forEach(caixa => {
     caixa.addEventListener('change', () => {

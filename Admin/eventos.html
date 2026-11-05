@@ -30,7 +30,7 @@
   <script src="js/carregamento.js?v=1"></script>
   <script src="js/supabase-init.js"></script>
   <script src="js/utils.js?v=10"></script>
-  <script src="js/shell.js?v=41"></script>
+  <script src="js/shell.js?v=42"></script>
 </head>
 <body data-page="eventos" data-title="Eventos">
 
@@ -54,9 +54,9 @@
             <option value="corporate">Corporativo</option>
             <option value="other">Outro</option>
           </select>
-          <select class="field-select" id="filtro-situacao" aria-label="Situação">
-            <option value="">Todos os eventos</option>
-            <option value="ativos">Não excluídos</option>
+          <select class="field-select" id="filtro-situacao" aria-label="Status">
+            <option value="" selected hidden>Status</option>
+            <option value="ativos">Ativos</option>
             <option value="excluidos">Excluídos</option>
           </select>
         </div>
@@ -83,6 +83,6 @@
     </div>
   </div>
 
-  <script src="js/eventos.js?v=5"></script>
+  <script src="js/eventos.js?v=6"></script>
 </body>
 </html>

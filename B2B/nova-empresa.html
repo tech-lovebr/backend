@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -29,7 +28,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=873">
+  <link rel="stylesheet" href="css/styles.css?v=874">
 </head>
 <body class="font-sans" data-page="nova-empresa">
 
@@ -43,16 +42,11 @@
           <h2 class="text-xl font-bold text-zinc-900">Cadastrar nova conta</h2>
         </div>
 
-        <!-- Plano sem vaga para mais uma empresa (Gratuito: 1; Pro: até 3). -->
         <div class="dash-card nova-empresa-card" id="nova-empresa-limite" hidden>
           <p class="nova-empresa-limite-texto" id="nova-empresa-limite-texto"></p>
           <a href="planos" class="btn-primary nova-empresa-limite-btn" id="nova-empresa-limite-btn">Ver planos</a>
         </div>
 
-        <!-- Nova empresa no mesmo login, em 3 etapas: dados, categoria e
-             imagens. Ao concluir, o Hub abre direto na nova empresa. -->
-        <!-- Etapas como as abas de Meus convidados (love.com.br): logo acima da
-             caixa, na largura dela, com fundo transparente, com a linha embaixo e a atual sublinhada. -->
         <div class="nova-empresa-etapas" id="nova-empresa-etapas" aria-label="Etapas" hidden>
           <span class="nova-empresa-etapa is-ativa" data-etapa-indicador="1"><b>1</b> Dados da empresa</span>
           <svg class="nova-empresa-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m9 6 6 6-6 6"/></svg>
@@ -62,7 +56,6 @@
         </div>
 
         <form class="dash-card nova-empresa-card" id="nova-empresa-form" novalidate hidden>
-          <!-- Etapa 1: dados -->
           <section class="nova-empresa-passo" data-etapa="1">
             <div class="nova-empresa-campos">
 
@@ -80,7 +73,6 @@
                 <input id="nova-empresa-cnpj" type="text" inputmode="numeric" class="field-input" placeholder="00.000.000/0000-00" autocomplete="off">
               </div>
 
-              <!-- CNPJ igual: "Nome fantasia"; CNPJ diferente: "Nome da empresa". -->
               <div>
                 <label for="nova-empresa-nome" class="field-label"><span id="nova-empresa-nome-rotulo">Nome da empresa</span> <span style="color:#DC2626;">*</span></label>
                 <input id="nova-empresa-nome" type="text" class="field-input" autocomplete="organization">
@@ -96,13 +88,11 @@
             </div>
           </section>
 
-          <!-- Etapa 2: categoria principal (as mesmas de Meus produtos, sem subcategorias) -->
           <section class="nova-empresa-passo" data-etapa="2" hidden>
             <p class="field-label">Qual é a categoria da empresa? <span style="color:#DC2626;">*</span></p>
             <div class="nova-empresa-categorias" id="nova-empresa-categorias" role="radiogroup"></div>
           </section>
 
-          <!-- Etapa 3: imagens -->
           <section class="nova-empresa-passo" data-etapa="3" hidden>
             <div class="nova-empresa-imagens">
               <div>

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -22,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=873">
+  <link rel="stylesheet" href="css/styles.css?v=874">
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -32,14 +31,9 @@
       <main class="b2b-content">
         <div class="b2b-header-bar">
           <h2 class="text-xl font-bold text-zinc-900" id="settings-titulo-pagina">Suas informações</h2>
-          <!-- Salvar também no cabeçalho, em Suas informações e Dados da empresa
-               (js/configuracoes.js troca o form="" conforme a aba ativa). Vira
-               "Salvar alterações" assim que algo é mexido no formulário da aba. -->
           <button type="submit" form="profile-form" class="btn-secondary builder-toolbar-btn header-btn-light settings-salvar-topo" id="settings-salvar-topo">Salvar</button>
         </div>
 
-        <!-- Menu de abas na lateral (como o Account settings da Zola) e o
-             conteúdo da aba à direita. -->
         <div class="settings-shell settings-shell--lateral">
         <nav class="category-tabs-bar" id="settings-tabs" aria-label="Configurações">
           <p class="settings-nav-titulo">Configurações</p>
@@ -54,10 +48,6 @@
         </nav>
 
         <div data-settings-panel="perfil">
-          <!-- Modelo Account settings da Zola: título fora da caixa e os campos
-               um embaixo do outro. -->
-          <!-- Imagem de perfil e capa, acima da caixa e na largura dela
-               (a capa mais larga). Salvam com o "Salvar alterações" abaixo. -->
           <div class="settings-imagens">
             <div class="settings-imagens-perfil">
               <div id="profile-avatar-wrap"></div>
@@ -69,10 +59,6 @@
             </div>
           </div>
 
-          <!-- Informações da empresa × Informações pessoais (abas como em
-               "Criar solicitação | Minhas solicitações" do love.com.br). São
-               os dados que abrem a conta digital da empresa no Asaas, para
-               receber os contratos e sacar (migration 110). -->
           <div class="settings-info-abas" role="tablist">
             <button type="button" class="settings-info-aba is-ativa" data-info-aba="empresa" role="tab" aria-selected="true">Informações da empresa</button>
             <button type="button" class="settings-info-aba" data-info-aba="pessoal" role="tab" aria-selected="false">Informações pessoais</button>
@@ -80,14 +66,8 @@
 
           <div class="dash-card settings-zola-card settings-info-caixa">
             <form id="profile-form" class="settings-zola-form">
-              <!-- Empresa -->
               <div class="settings-info-painel" data-info-painel="empresa">
                 <p class="settings-info-dica"><span style="color:#DC2626;">*</span> indica campo obrigatório</p>
-                <!-- Razão social e CNPJ, depois de preenchidos, ficam travados; o
-                     "Alterar" ao lado destrava a cada 7 dias (migration 121).
-                     O nome fantasia (o que os clientes veem) muda à vontade.
-                     Celular: os dados da conta digital (settings-conta-digital)
-                     saem daqui e são pedidos em Contas bancárias. -->
                 <div class="settings-conta-digital">
                   <label for="profile-razao-social" class="field-label">Razão social <span style="color:#DC2626;">*</span></label>
                   <div class="field-with-inline-link">
@@ -182,10 +162,8 @@
                 </div>
               </div>
 
-              <!-- Pessoal (responsável pela conta) -->
               <div class="settings-info-painel" data-info-painel="pessoal" hidden>
                 <p class="settings-info-dica settings-conta-digital">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
-                <!-- Celular: nome do responsável num campo só (no computador, primeiro nome e sobrenome). -->
                 <div class="settings-so-celular">
                   <label for="profile-responsavel" class="field-label">Nome do responsável <span style="color:#DC2626;">*</span></label>
                   <input id="profile-responsavel" type="text" class="field-input" autocomplete="name">
@@ -214,8 +192,6 @@
                 </div>
               </div>
 
-              <!-- Campos que saíram desta tela: ficam escondidos só para não
-                   perder o que já foi salvo (o formulário continua mandando). -->
               <div hidden>
                 <input id="profile-name" type="text">
                 <textarea id="profile-description" maxlength="650"></textarea>
@@ -228,8 +204,6 @@
             </form>
           </div>
 
-          <!-- Contas conectadas: o login com o Google. No celular o invólucro vai
-               para Preferências (js/configuracoes.js, arrumarAbasNoCelular). -->
           <div id="settings-contas-conectadas" class="settings-contas-conectadas">
           <div class="settings-zola-bloco">
             <h3 class="settings-secao-titulo settings-secao-titulo--painel">Contas conectadas</h3>
@@ -248,7 +222,6 @@
                 <p class="settings-login-data" id="settings-login-google-data"></p>
               </div>
             </div>
-            <!-- Desconectar: clicou, desconecta; depois o login passa a ser só pelo e-mail. -->
             <div class="settings-google-acoes" id="settings-google-acoes" hidden>
               <button type="button" class="settings-google-desconectar" id="settings-google-desconectar">Desconectar do Google</button>
             </div>
@@ -266,15 +239,10 @@
           <div class="settings-zola-bloco settings-so-celular">
             <h3 class="settings-secao-titulo settings-secao-titulo--painel">Dados da empresa</h3>
           </div>
-          <!-- Dados da empresa em caixas separadas (como Suas informações):
-               1) endereço, descrição e raio; 2) forma e condições de pagamento. -->
           <form id="company-form" class="settings-zola-forms">
 
             <div class="dash-card settings-zola-card">
               <div class="settings-zola-form">
-                <!-- Campos que saíram da tela (escondidos só para não perder o que
-                     já foi salvo): endereço de atendimento próprio, visitas, amostra
-                     (esta última já existe por produto, em Meus produtos). -->
                 <div hidden>
                   <label class="settings-check">
                     <input type="checkbox" id="company-same-address" checked>
@@ -335,8 +303,6 @@
               </div>
             </div>
 
-            <!-- Portfólio saiu da tela de novo (escondido só para o JS e as fotos
-                 já salvas continuarem). -->
             <div hidden>
               <div class="settings-zola-bloco">
                 <h3 class="settings-secao-titulo settings-secao-titulo--painel">Portfólio</h3>
@@ -390,8 +356,6 @@
               </div>
             </div>
 
-            <!-- Celular: sem Forma e condições de pagamento (fica no produto);
-                 o Salvar vem logo depois de Redes sociais. -->
             <div class="settings-so-celular">
               <button type="submit" class="informacoes-salvar-rodape settings-zola-salvar">Salvar alterações</button>
             </div>
@@ -400,9 +364,6 @@
             </div>
             <div class="dash-card settings-zola-card settings-so-desktop">
               <div class="settings-zola-form">
-                <!-- Parcelamento em duas etapas (revelação progressiva): 1) quem paga
-                     os juros; 2) só se o fornecedor assumir, até quantas vezes sem
-                     juros. Grava em max_installments_no_interest (0 = repassa ao cliente). -->
                 <div class="parcelas-bloco">
                   <div class="parcelas-opcoes" role="radiogroup" aria-label="Juros do parcelamento">
                     <label class="parcelas-card">
@@ -430,7 +391,6 @@
                     <p class="parcelas-alerta" id="parcelas-alerta" aria-live="polite"></p>
                   </div>
 
-                  <!-- Valor que vai para o banco (o JS mantém em sincronia). -->
                   <select id="company-max-installments" hidden></select>
                 </div>
 
@@ -457,7 +417,6 @@
                   </div>
                 </div>
 
-                <!-- Campos que saíram da tela (escondidos só para não perder o que já foi salvo). -->
                 <div hidden>
                   <input id="company-delivery-time" type="text">
                   <textarea id="company-cancellation-policy"></textarea>
@@ -471,9 +430,7 @@
           </form>
         </div>
 
-        <!-- Preferências: só as preferências de e-mail. -->
         <div data-settings-panel="preferencias" style="display:none;">
-          <!-- Salva ao clicar no toggle (fornecedores.preferencias_email). -->
           <div class="dash-card mb-6 prefs-email-card settings-zola-card" id="prefs-email-card">
             <h2 class="prefs-email-titulo">Preferências de e-mail</h2>
             <p class="prefs-email-sub">Escolha quais e-mails você recebe da Love.</p>
@@ -481,11 +438,7 @@
           </div>
         </div>
 
-        <!-- Privacidade: senha (só conta de e-mail), 2FA, verificação,
-             assinatura e, por último, desativar a conta. -->
         <div data-settings-panel="seguranca" style="display:none;">
-          <!-- Criou a conta com e-mail e senha: Alterar senha. Quem entra com
-               o Google não vê esta caixa (a senha é do Google). -->
           <div class="dash-card settings-zola-card" id="settings-login-senha" hidden>
             <h2 class="prefs-email-titulo">Senha</h2>
             <p class="prefs-email-sub">Para trocar, digite a senha atual e a nova duas vezes.</p>
@@ -541,7 +494,6 @@
             </div>
           </div>
 
-          <!-- Verificação de conta: abre ao lado ao clicar em "Verificar". -->
           <div class="dash-card verif-card" id="verificacao-conta-card" hidden>
             <h3 class="settings-secao-titulo">Verificação de conta</h3>
             <p class="verif-intro">Contas verificadas aumentam a reputação com os clientes e ficam mais bem posicionadas na vitrine.</p>
@@ -580,11 +532,9 @@
             </div>
           </div>
 
-          <!-- Mais informações sobre privacidade na Central de ajuda. -->
           <p class="settings-privacidade-ajuda settings-so-desktop">Para mais informações sobre privacidade, acesse a <a href="central-de-ajuda?categoria=privacidade">Central de ajuda</a>.</p>
         </div>
 
-        <!-- URLs: o endereço do site publicado (o mesmo de Construtor › Ajustes). -->
         <div data-settings-panel="urls" style="display:none;">
           <div class="settings-zola-bloco settings-so-celular">
             <h3 class="settings-secao-titulo settings-secao-titulo--painel">URL do site</h3>
@@ -601,18 +551,13 @@
             </div>
             <p class="settings-url-aviso" id="settings-url-aviso" aria-live="polite"></p>
           </div>
-          <!-- Faixa cinza embaixo da caixa (modelo Zola): editar a página. -->
           <div class="settings-url-pro settings-url-editar-site">
             <p>Crie e edite uma página para a sua empresa. <a href="guias" class="settings-url-saiba">Saiba mais</a></p>
             <a href="paginas-site?tab=editar" class="settings-url-editar-btn">Editar meu site</a>
           </div>
         </div>
 
-        <!-- Dados bancários: a chave Pix que recebe os saques (modelo Bank
-             account info da Zola). -->
         <div data-settings-panel="banco" style="display:none;">
-          <!-- Mesmo fluxo de Financeiro › Contas bancárias (js/contas-bancarias.js):
-               editar aqui ou lá salva no mesmo lugar. -->
           <div id="carteira-raiz"></div>
         </div>
         </div>
@@ -620,7 +565,6 @@
     </div>
   </div>
 
-  <!-- Modal ajustar foto de perfil -->
   <div class="modal-backdrop" id="profile-avatar-adjust-modal">
     <div class="modal-card logo-adjust-modal-card">
       <button type="button" class="logo-adjust-modal-close" data-profile-avatar-adjust-close aria-label="Fechar">
@@ -641,7 +585,6 @@
     </div>
   </div>
 
-  <!-- Modal ajustar logotipo -->
   <div class="modal-backdrop" id="profile-logo-adjust-modal">
     <div class="modal-card logo-adjust-modal-card">
       <button type="button" class="logo-adjust-modal-close" data-profile-logo-adjust-close aria-label="Fechar">
@@ -662,7 +605,6 @@
     </div>
   </div>
 
-  <!-- Modal assinatura -->
   <div class="modal-backdrop" id="subscription-modal">
     <div class="modal-card" style="max-width:420px;">
       <div class="flex items-center justify-between mb-5">
@@ -675,7 +617,6 @@
     </div>
   </div>
 
-  <!-- Autenticação de dois fatores: QR code + chave + código de 6 dígitos. -->
   <div class="modal-backdrop" id="mfa-modal" aria-hidden="true">
     <div class="modal-card mfa-modal-card" role="dialog" aria-modal="true" aria-labelledby="mfa-modal-titulo">
       <button type="button" class="mfa-modal-fechar" id="mfa-modal-fechar" aria-label="Fechar">

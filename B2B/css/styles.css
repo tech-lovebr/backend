@@ -12992,3 +12992,8 @@ body[data-theme="dark"] .onb-opcao.is-marcada svg { color: #FFFFFF !important; }
   html body .onb-continuar:not(#love-h-a) { flex: 1; }
   body[data-theme="dark"] .onb-tela, body[data-theme="dark"] .onb-acoes { background: #171717 !important; }
 }
+/* Home (celular): a linha do meio um pouco para a direita, dando mais
+   espaço ao Saldo disponível. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="dashboard"] .dash-saldo-celular-colunas:not(#love-h-a):not(#love-h-b) { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+}

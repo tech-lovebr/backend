@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -29,7 +28,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=873">
+  <link rel="stylesheet" href="css/styles.css?v=874">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -54,8 +53,6 @@
             </button>
           </div>
         </div>
-        <!-- Barra de Meus produtos (modelo da barra de Meus presentes do love.com.br):
-             busca por nome ou SKU à esquerda e a quantidade de produtos à direita. -->
         <div class="dash-card produtos-barra-caixa" id="produtos-barra-caixa">
           <label class="tabela-busca produtos-busca">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
@@ -66,16 +63,10 @@
 
         <div id="products-grid" class="grid grid-cols-3 gap-4"></div>
 
-        <!-- Adicionar/editar produto na própria página (sem gaveta): a vitrine
-             some, o título vira "Adicionar novo produto" com "Voltar" à esquerda
-             e as etapas ficam no topo, como em Cadastrar nova conta. -->
         <aside class="form-drawer" id="product-drawer" aria-label="Produto ou serviço">
           <div class="form-drawer-header">
             <div class="form-drawer-header-main">
               <h2 class="task-drawer-title" id="product-drawer-title">Adicionar produto/serviço</h2>
-              <!-- Abas clicáveis (não mais etapas): dá pra ir direto em Mídia, por
-                   exemplo, sem passar pelas outras. Salvar valida Categoria e Preço
-                   e leva pra aba que faltar. -->
               <div class="product-wizard-tabs" id="product-wizard-steps" role="tablist">
                 <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="1">Título e categoria</button>
                 <button type="button" class="product-wizard-tab" role="tab" data-step-indicator="2">Detalhes</button>
@@ -92,11 +83,9 @@
             <p class="produto-etapa-sub" id="produto-etapa-sub"></p>
           </div>
           <div class="form-drawer-body">
-            <!-- Serviço suspenso pelo Admin (migration 059). -->
             <div class="produto-suspenso-drawer" id="product-suspenso-aviso" hidden></div>
             <form id="product-form" class="flex flex-col gap-4">
 
-              <!-- ETAPA 1: Identificação & Taxonomia -->
               <div class="product-wizard-panel product-wizard-panel-spaced" data-step="1">
                 <div>
                   <label for="product-name" class="field-label product-title-label">Título do anúncio</label>
@@ -112,7 +101,7 @@
                       <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <div class="category-select-panel" id="product-category-panel" hidden>
-                      <div class="relative" style="padding:0.5rem 0.5rem 0;" hidden><!-- busca de categoria escondida (o JS ainda usa o campo) -->
+                      <div class="relative" style="padding:0.5rem 0.5rem 0;" hidden>
                         <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-zinc-400">
                           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         </div>
@@ -137,10 +126,7 @@
                   </select>
                 </div>
 
-                <!-- Preço (antiga aba "Detalhes"): SKU, unidade de cobrança e valores. -->
 
-                <!-- Código (SKU) — interno do fornecedor, nunca aparece na vitrine — e
-                     a unidade de cobrança (drop-down) lado a lado. -->
                 <div class="grid grid-cols-2 gap-4 mb-2" id="product-sku-linha">
                   <div>
                     <label for="product-sku" class="field-label product-title-label product-label-com-info">Código (SKU)
@@ -163,13 +149,9 @@
                   </div>
                 </div>
 
-                <!-- Tags do produto: sugeridas pela categoria (clicar marca/desmarca) e
-                     também escritas pela pessoa. Ajudam a Love a escolher quem
-                     aparece na vitrine para cada busca. Salvas em extra.tags. -->
                 <div class="produto-tags" id="product-tags-wrap" hidden>
                   <p class="field-label product-title-label">Tags</p>
                   <div class="produto-tags-lista" id="product-tags-lista"></div>
-                  <!-- Só aparece depois de clicar em "Outro" (último item da lista). -->
                   <div class="produto-tags-nova" id="product-tag-nova" hidden>
                     <input type="text" id="product-tag-input" class="field-input" maxlength="40" placeholder="Escreva outra tag e aperte Enter" autocomplete="off">
                   </div>
@@ -237,7 +219,6 @@
                   </div>
                 </div>
 
-                <!-- Espaços para locação: detalhes do local antes do valor. -->
                 <div id="product-venue-details" class="mb-6" hidden>
                   <label class="field-label product-title-label">Detalhes do local</label>
                   <div class="flex flex-col gap-4">
@@ -282,11 +263,8 @@
 
               </div>
 
-              <!-- ETAPA 2: Detalhes (escopo do serviço & atributos) -->
               <div class="product-wizard-panel" data-step="2">
 
-                <!-- Incluso / não incluso: some em Espaços para locação (lá o escopo
-                     começa direto pelas áreas comuns). -->
                 <div id="product-scope-lists">
                 <div class="form-section-header">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
@@ -398,7 +376,6 @@
                   </div>
                 </div>
 
-                <!-- Buffet e Gastronomia / Bar e Bebidas: degustação é só sim ou não. -->
                 <div id="product-tasting-field" class="mt-2" hidden>
                   <label class="checkbox-row"><input type="checkbox" id="product-tasting-allowed"> Permitido agendar degustação</label>
                 </div>
@@ -453,9 +430,6 @@
                   </div>
                 </div>
 
-                <!-- Pacotes (variações do mesmo serviço, cada uma com o seu preço) e
-                     adicionais opcionais (somam ao valor). Evita criar um anúncio
-                     só para cada tamanho do mesmo serviço. -->
                 <div class="product-pacotes">
                   <label class="field-label product-title-label">Pacotes</label>
                   <p class="field-hint">Variações do mesmo serviço, cada uma com o seu preço.</p>
@@ -476,11 +450,8 @@
                 </div>
               </div>
 
-              <!-- ETAPA 3: Mídia -->
               <div class="product-wizard-panel" data-step="3">
 
-                <!-- Títulos "Imagem de capa" e "Adicionar imagens" no tamanho de
-                     seção (sem ícone), cada um com o conteúdo logo abaixo. -->
                 <div>
                   <div class="form-section-header product-media-title">
                     <span>Imagem de capa</span>
@@ -495,9 +466,6 @@
                     <label for="product-gallery-input" class="product-gallery-nova" id="product-gallery-nova"><span aria-hidden="true">+</span> Adicionar nova</label>
                   </div>
                   <p class="field-hint" id="product-gallery-hint">Adicione imagens sobre o seu serviço.</p>
-                  <!-- Carrossel de quadradinhos (até 6), do jeito que aparecem na
-                       galeria do fornecedor — ver renderGalleryImages em
-                       js/produtos.js. -->
                   <div id="product-gallery-list" class="product-gallery-strip"></div>
                 </div>
 
@@ -509,7 +477,6 @@
                   <input id="product-video-url" type="url" class="field-input" autocomplete="off">
                 </div>
 
-                <!-- Redes sociais: clicar no ícone abre o campo do link daquela rede. -->
                 <div>
                   <div class="form-section-header product-media-title">
                     <span>Redes sociais</span>
@@ -535,9 +502,6 @@
                   </div>
                 </div>
 
-                <!-- Logística (cidade sede / raio, montagem) e Política de cancelamento
-                     saíram da tela. Os campos ficam escondidos só para os itens já
-                     salvos não perderem esses dados ao serem editados. -->
                 <div id="product-logistics-hidden" hidden>
                 <div class="form-section-header mt-2">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
@@ -593,7 +557,6 @@
 
           <div class="form-drawer-footer product-wizard-footer">
             <div id="product-wizard-footer-default" class="product-wizard-footer-row">
-              <!-- Só ao editar: texto pequeno à esquerda; abre o pop-up de confirmação. -->
               <button type="button" id="produto-deletar-link" class="produto-deletar-link">Deletar produto</button>
               <button type="button" id="product-drawer-delete-btn" class="btn-secondary" aria-label="Remover" title="Remover" hidden>
                 <svg stroke-linejoin="round" stroke-linecap="round" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5h16"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path stroke-linecap="round" stroke-linejoin="round" d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 11v5.5M13.5 11v5.5"/></svg>
@@ -615,10 +578,8 @@
     </div>
   </div>
 
-  <!-- Produto: abre na própria página (ver o editor dentro do <main>). -->
   <div class="drawer-backdrop" id="product-drawer-backdrop"></div>
 
-  <!-- Modal: finalize seu cadastro -->
   <div class="modal-backdrop" id="complete-profile-modal">
     <div class="modal-card" style="max-width:400px; text-align:center;">
       <div class="onboarding-icon">📝</div>
@@ -629,8 +590,6 @@
     </div>
   </div>
 
-  <!-- Modal: cortar a imagem de capa no tamanho da capa (ver
-       openProductCoverCropModal em js/produtos.js) -->
   <div class="modal-backdrop" id="product-cover-crop-modal">
     <div class="modal-card logo-adjust-modal-card">
       <button type="button" class="logo-adjust-modal-close" data-cover-crop-close aria-label="Fechar">

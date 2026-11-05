@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -22,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=873">
+  <link rel="stylesheet" href="css/styles.css?v=874">
 </head>
 <body class="font-sans" data-page="agenda">
   <div class="b2b-shell">
@@ -142,7 +141,6 @@
     </div>
   </aside>
 
-  <!-- Modal compartilhar agenda -->
   <div class="modal-backdrop" id="share-board-modal">
     <div class="modal-card" style="max-width:520px;">
       <div class="flex items-center justify-between mb-5">
@@ -188,9 +186,6 @@
     </div>
   </div>
 
-  <!-- Drawer evento da agenda -->
-  <!-- Evento da agenda: pop-up (clicar num horário da linha do tempo abre
-       aqui, já com o horário). Mesmos ids do drawer antigo. -->
   <div class="agenda-evento-fundo" id="event-drawer-backdrop"></div>
   <div class="agenda-evento-popup" id="event-drawer" role="dialog" aria-modal="true" aria-label="Evento da agenda">
     <div class="agenda-evento-topo">
@@ -203,7 +198,6 @@
     <form id="event-form" class="agenda-evento-form">
       <input type="text" id="event-title" class="agenda-evento-titulo" placeholder="Adicionar título" autocomplete="off">
 
-      <!-- Tipo continua salvo (padrão: Reunião), mas sai da tela. -->
       <div hidden>
         <select id="event-type">
           <option value="reuniao">Reunião</option>
@@ -261,7 +255,6 @@
     </form>
   </div>
 
-  <!-- Modal: avisar convidados -->
   <div class="modal-backdrop" id="event-guest-notify-modal">
     <div class="modal-card" style="max-width:420px; text-align:center;">
       <h3 class="text-base font-bold text-zinc-900 mb-2">Avisar convidados</h3>

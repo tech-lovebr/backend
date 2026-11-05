@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -22,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=873">
+  <link rel="stylesheet" href="css/styles.css?v=874">
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -37,13 +36,11 @@
             </button>
             <h2 class="text-xl font-bold text-zinc-900" id="leads-titulo-pagina">Oportunidades</h2>
           </div>
-          <!-- Busca de Buscar eventos no cabeçalho (como em Meus produtos). -->
           <div class="produtos-header-acoes op-header-acoes" id="op-header-acoes">
             <label class="tabela-busca produtos-busca op-busca">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.2-5.2m0 0A7.5 7.5 0 1 0 5.2 5.2a7.5 7.5 0 0 0 10.6 10.6Z"/></svg>
               <input type="search" id="op-busca" placeholder="Pesquisar por evento, categoria ou cidade" autocomplete="off">
             </label>
-            <!-- Filtrar por: categoria, cidade e orçamento num menu. -->
             <div class="op-filtrar" id="op-filtrar">
               <button type="button" class="btn-secondary op-filtrar-btn" id="op-filtrar-btn" aria-haspopup="true" aria-expanded="false">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
@@ -69,16 +66,12 @@
               </div>
             </div>
           </div>
-          <!-- Propostas enviadas: "+" abre o novo orçamento; salvo, ele aparece na lista. -->
           <a href="vendas?novo=orcamento" class="op-propostas-novo" id="op-propostas-novo" aria-label="Novo orçamento" data-dica="Novo orçamento" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></a>
-          <!-- Celular, Clientes: "+" abre a gaveta Manualmente / Importar contatos. -->
           <button type="button" class="so-celular-clientes" id="lead-add-celular" aria-label="Adicionar cliente"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
           <button type="button" id="lead-add-btn" hidden aria-hidden="true" tabindex="-1"></button>
         </div>
 
 
-        <!-- Primeiro a empresa encontra o evento, manda a proposta e depois a
-             pessoa vira lead: Buscar eventos › Propostas enviadas › Clientes. -->
         <div class="category-tabs-bar" id="leads-abas">
           <button type="button" class="category-tab active" data-leads-aba="eventos">Oportunidades</button>
           <button type="button" class="category-tab" data-leads-aba="propostas">Propostas enviadas</button>
@@ -99,10 +92,7 @@
         <p class="crm-footer-count" id="leads-count-label"></p>
         </div>
 
-        <!-- Buscar eventos: no modelo do Explorar do love.com.br. Só os pedidos
-             da categoria da empresa; busca + chips de cidade e os cards. -->
         <div data-leads-painel="eventos">
-          <!-- Sem produto cadastrado, não dá para buscar eventos pela categoria. -->
           <div class="op-vazio op-sem-produtos" id="op-sem-produtos" hidden>
             <p>Cadastre um produto para encontrar clientes por seus serviços.</p>
             <div class="produtos-vazio-cards">
@@ -114,17 +104,12 @@
             </div>
           </div>
           <div id="op-conteudo">
-            <!-- Filtros rápidos: categoria, cidade, orçamento e os atalhos
-                 "Apenas não respondidas" e "Salvas". -->
             <div class="op-filtros" id="op-filtros">
               <button type="button" class="op-chip" data-op-nao-respondidas aria-pressed="false">Apenas não respondidas</button>
               <button type="button" class="op-chip op-chip-salvas" data-op-salvas aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/></svg>Salvas<span id="op-salvas-qtd"></span></button>
               <select id="op-filtro-uf" hidden aria-hidden="true"><option value=""></option></select>
             </div>
             <p class="op-aviso" id="op-aviso" hidden></p>
-            <!-- Lista no modelo de "Minhas solicitações" do love.com.br: uma
-                 linha por oportunidade e, no rodapé da caixa, "Mostrar 15 ·
-                 Página 1 de 1". -->
             <div class="dash-card op-caixa" id="op-caixa">
               <div class="op-posts" id="op-grade"></div>
               <div class="op-vazio op-vazio-caixa" id="op-vazio" hidden>Nenhum evento procurando a sua categoria agora. Avisaremos quando chegar um novo.</div>
@@ -143,9 +128,6 @@
           </div>
         </div>
 
-        <!-- Ver pedido: tela cheia, com a caixa centralizada (como Configurações).
-             Abre pelo card; ?pedido=id mantém o pedido aberto no F5. -->
-        <!-- Página do cliente (Clientes › nome): contrato, pagamentos, progresso. -->
         <section class="op-pedido-pagina cli-pagina" id="cli-pagina" hidden>
           <div class="op-pedido-caixa" id="cli-corpo"></div>
         </section>
@@ -154,9 +136,7 @@
           <div class="op-pedido-caixa" id="op-detalhe-corpo"></div>
         </section>
 
-        <!-- Minhas propostas: as propostas enviadas pelos pedidos de Buscar eventos. -->
         <div data-leads-painel="propostas" hidden>
-          <!-- Sem produto cadastrado (e sem propostas): o mesmo aviso de Oportunidades. -->
           <div class="op-vazio op-sem-produtos" id="op-propostas-sem-produtos" hidden>
             <p>Cadastre um produto para encontrar clientes por seus serviços.</p>
             <div class="produtos-vazio-cards">
@@ -182,7 +162,6 @@
     </div>
   </div>
 
-  <!-- Importar lista de leads (CSV, ex.: exportado do Excel ou Google Planilhas) -->
   <div class="modal-backdrop" id="lead-import-modal">
     <div class="modal-card lead-import-card">
       <div class="flex items-start justify-between gap-3 mb-3">
@@ -191,7 +170,6 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
         </button>
       </div>
-      <!-- Passo a passo curto da importação -->
       <ol class="lead-import-steps">
         <li><span class="lead-import-step-num">1</span><div><strong>Baixe o modelo</strong> e preencha um lead por linha.</div></li>
         <li><span class="lead-import-step-num">2</span><div><strong>Salve em CSV</strong> (Arquivo › Salvar como ou Fazer download).</div></li>
@@ -208,7 +186,6 @@
     </div>
   </div>
 
-  <!-- Drawer lead -->
   <div class="drawer-backdrop" id="lead-drawer-backdrop"></div>
   <aside class="form-drawer" id="lead-drawer" aria-label="Lead">
     <div class="form-drawer-header">
@@ -222,7 +199,6 @@
 
     <div class="form-drawer-body">
       <p class="text-sm text-zinc-500 -mt-2 mb-4" id="lead-drawer-subtitle">Adicione um novo lead para a sua base de leads</p>
-      <!-- Lead criado por um pedido de orçamento do love.com.br. -->
       <div class="lead-origem" id="lead-origem" hidden>
         <div>
           <p class="lead-origem-rotulo">Origem</p>
@@ -250,8 +226,6 @@
           </div>
           <div>
             <label for="lead-whatsapp" class="field-label">WhatsApp</label>
-            <!-- Ícone do WhatsApp no começo, como no WhatsApp / Celular do love.com.br.
-                 Com o número completo, clicar no ícone abre a conversa. -->
             <div class="lead-whatsapp-field">
               <a class="lead-whatsapp-icon" id="lead-whatsapp-link" target="_blank" rel="noopener noreferrer" aria-label="Abrir conversa no WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg></a>
               <input id="lead-whatsapp" type="tel" class="field-input" inputmode="numeric" maxlength="15">
@@ -323,8 +297,6 @@
     </div>
   </aside>
 
-  <!-- Enviar proposta: pop-up no mesmo formato da caixa da solicitação,
-       em 3 etapas — Produto, Valor e desconto, Detalhes. -->
   <div class="modal-backdrop" id="op-proposta-modal" aria-hidden="true">
     <div class="modal-card op-prop" role="dialog" aria-modal="true" aria-labelledby="op-proposta-titulo">
       <header class="op-prop-cabeca">
@@ -404,7 +376,6 @@
     </div>
   </div>
 
-  <!-- Foto de referência ampliada -->
   <div class="modal-backdrop op-foto-modal" id="op-foto-modal">
     <img alt="Foto de referência" id="op-foto-grande">
   </div>

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="scroll-smooth">
 <head>
-  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -34,7 +33,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=873">
+  <link rel="stylesheet" href="css/styles.css?v=874">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
 </head>
@@ -43,11 +42,9 @@
   <div class="auth-tela min-h-screen w-full flex">
 
 
-    <!-- Esquerda: formulário -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
       <div class="w-full max-w-md">
 
-        <!-- VIEW: LOGIN (logo no meio, Google em cima, "ou" e depois e-mail/senha) -->
         <div id="auth-view-login">
           <div class="auth-logo">
             <img src="assets/logo.png" alt="Love Hub" class="h-12 w-auto object-contain">
@@ -75,7 +72,6 @@
             <div>
               <label for="login-password" class="block text-xs font-bold text-slate-700 mb-1">Senha</label>
               <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder="Sua senha secreta" class="w-full text-xs sm:text-sm p-3 rounded-xl text-slate-800">
-              <!-- Esqueceu a senha: embaixo da senha, à direita, em cinza -->
               <div class="flex justify-end mt-1.5">
                 <a href="esqueci-senha" class="auth-esqueceu-senha">Esqueceu a senha?</a>
               </div>
@@ -99,7 +95,6 @@
           </p>
         </div>
 
-        <!-- VIEW: CADASTRO -->
         <div id="auth-view-signup" class="hidden">
           <div class="mb-6">
             <img src="assets/logo.png" alt="Love" class="h-9 w-auto mb-6 object-contain">
@@ -171,8 +166,6 @@
       </div>
     </div>
 
-    <!-- Direita: carrossel automático (sem setas; troca a cada 5s) com uma
-         frase para cada foto -->
     <div class="login-imagem hidden lg:flex w-1/2 relative overflow-hidden">
       <div class="login-carrossel" aria-hidden="true">
         <img src="assets/login/confeiteira.jpg" alt="" data-frase="Mais eventos|na sua agenda" style="object-position:48% 50%" class="login-carrossel-foto is-ativa">

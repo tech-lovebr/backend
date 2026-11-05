@@ -704,25 +704,39 @@ function desenharSaldoCelular() {
     olho.dataset.dica = dica;
   }
 }
-/* Saldo disponível e Contratos ativos sempre inteiros: começam em 28px e, se
-   um deles não couber na coluna, os dois diminuem juntos até caber. */
+/* Saldo disponível e Contratos ativos sempre inteiros, com o "R$" e uma
+   folga até a linha do meio: começam em 28px e, se um deles não couber na
+   coluna, os dois diminuem juntos até caber. Mede de novo quando a fonte
+   carrega e quando a caixa muda de largura. */
 function ajustarFonteSaldoCelular() {
   const els = ['dash-saldo-celular-saldo', 'dash-saldo-celular-contratos'].map(id => document.getElementById(id)).filter(Boolean);
   if (!els.length) return;
-  const MAX = 28, MIN = 12;
-  els.forEach(el => { el.style.fontSize = MAX + 'px'; });
-  let escala = 1;
-  els.forEach(el => {
+  const MAX = 28, MIN = 10, FOLGA = 8;
+  let tam = MAX;
+  const cabe = () => els.every(el => {
     const col = el.parentElement;
-    if (!col || !col.clientWidth) return;
+    if (!col || !col.clientWidth) return true;
     const cs = getComputedStyle(col);
-    const livre = col.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-    if (el.scrollWidth > livre) escala = Math.min(escala, livre / el.scrollWidth);
+    const livre = col.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - FOLGA;
+    return el.getBoundingClientRect().width <= livre;
   });
-  const tam = Math.max(MIN, Math.floor(MAX * escala * 10) / 10);
   els.forEach(el => { el.style.fontSize = tam + 'px'; });
+  while (tam > MIN && !cabe()) {
+    tam = Math.max(MIN, tam - 0.5);
+    els.forEach(el => { el.style.fontSize = tam + 'px'; });
+  }
 }
 window.addEventListener('resize', () => ajustarFonteSaldoCelular());
+document.fonts?.ready?.then(() => ajustarFonteSaldoCelular());
+(function vigiarCaixaDoSaldo() {
+  const caixa = document.querySelector('.dash-saldo-celular-colunas');
+  if (!caixa || typeof ResizeObserver === 'undefined') return;
+  let largura = 0;
+  new ResizeObserver(([e]) => {
+    const w = Math.round(e.contentRect.width);
+    if (w && w !== largura) { largura = w; ajustarFonteSaldoCelular(); }
+  }).observe(caixa);
+})();
 
 function ligarSaldoCelular() {
   const caixa = document.querySelector('.dash-saldo-celular');

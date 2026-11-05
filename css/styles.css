@@ -15445,3 +15445,13 @@ html body #view-login .login-barra-previa .login-barra-inicio:not(#love-h-a) { p
 @media (min-width: 1024px) {
   html body #view-login .login-imagem:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-radius: 24px; }
 }
+
+/* Criar novo evento: cartões de tipo (Casamento, Chá de bebê…). No hover o
+   fundo vai do cinza clarinho para o azul-claro das bolinhas da Home
+   (#EAF0F5), sem contorno; o texto continua preto. */
+html body .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover {
+  background: #EAF0F5 !important; border-color: #EAF0F5 !important; box-shadow: none !important; outline: none !important;
+}
+html body .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover span { color: #18181B !important; }
+body[data-theme="dark"] .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover { background: #2A2F36 !important; border-color: #2A2F36 !important; }
+body[data-theme="dark"] .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover span { color: #FFFFFF !important; }

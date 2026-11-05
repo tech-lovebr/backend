@@ -438,7 +438,19 @@
   document.addEventListener('input', e => {
     const el = e.target;
     if (el && el.matches && el.matches('#carteira-raiz [data-cb-campo="cnpj"]')) el.value = mascaraCnpj(el.value);
-    if (el && el.matches && el.matches('#carteira-raiz [data-cd="cep"]')) el.value = mascaraCep(el.value);
+    if (el && el.matches && el.matches('#carteira-raiz [data-cd="cep"]')) {
+      el.value = mascaraCep(el.value);
+      // CEP completo: rua, bairro, estado e cidade pela consulta pública (js/utils.js).
+      const raiz = el.closest('#carteira-raiz');
+      const c = n => raiz.querySelector('[data-cd="' + n + '"]');
+      if (typeof buscarEnderecoPorCep === 'function') buscarEnderecoPorCep(el.value).then(end => {
+        if (!end || el.dataset.cepPreenchido === soDigitosCb(el.value)) return;
+        el.dataset.cepPreenchido = soDigitosCb(el.value);
+        [['state', end.estado], ['city', end.cidade], ['bairro', end.bairro], ['address', end.endereco]].forEach(([n, v]) => { const f = c(n); if (f && v) f.value = v; });
+        const num = c('endereco_numero');
+        if (num && !num.value) num.focus();
+      });
+    }
     if (el && el.matches && el.matches('#carteira-raiz [data-cd="responsavel_cpf"]')) el.value = mascaraCpf(el.value);
   });
   document.addEventListener('change', e => {

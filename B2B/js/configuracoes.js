@@ -312,6 +312,9 @@ function initAbasDeInformacoes() {
   }));
   const cep = document.getElementById('profile-cep');
   cep?.addEventListener('input', () => { const d = cep.value.replace(/\D/g, '').slice(0, 8); cep.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; });
+  // Com o CEP completo, rua, bairro, estado e cidade vêm sozinhos (js/utils.js).
+  const campo = id => document.getElementById(id);
+  if (typeof ligarCepAutomatico === 'function') ligarCepAutomatico(cep, { endereco: campo('profile-address'), bairro: campo('profile-bairro'), estado: campo('profile-state'), cidade: campo('profile-city'), numero: campo('profile-numero') });
   const cpf = document.getElementById('profile-resp-cpf');
   cpf?.addEventListener('input', () => {
     const d = cpf.value.replace(/\D/g, '').slice(0, 11);
@@ -554,6 +557,7 @@ function initCompanyForm() {
   carregarExtrasDaEmpresa();
   const cepEmpresa = document.getElementById('company-cep');
   cepEmpresa?.addEventListener('input', () => { const d = cepEmpresa.value.replace(/\D/g, '').slice(0, 8); cepEmpresa.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; });
+  if (typeof ligarCepAutomatico === 'function') ligarCepAutomatico(cepEmpresa, { endereco: addressInput, bairro: document.getElementById('company-bairro'), estado: stateSelect, cidade: cityInput, numero: document.getElementById('company-numero') });
 
   /* -------- Descrição da empresa (cresce com o texto, até 650) -------- */
   const descricaoInput = document.getElementById('company-description');

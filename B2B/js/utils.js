@@ -1872,3 +1872,46 @@ function fichaNaPaginaNoDesktop(janelaId, opts) {
     if (hubNoCelular()) devolver(); else if (janela.classList.contains('show')) levar();
   });
 }
+
+/* -------------------- Endereço pelo CEP (ViaCEP, consulta pública) --------------------
+   Com os 8 números do CEP, preenche rua, bairro, estado e cidade e leva o
+   cursor para o Número (o CEP não traz o número). Campos: elementos (ou
+   null) { endereco, bairro, estado, cidade, numero }. */
+const cepsBuscados = new Map();
+async function buscarEnderecoPorCep(cep) {
+  const d = String(cep || '').replace(/\D/g, '');
+  if (d.length !== 8) return null;
+  if (!cepsBuscados.has(d)) {
+    cepsBuscados.set(d, fetch('https://viacep.com.br/ws/' + d + '/json/')
+      .then(r => r.json())
+      .then(j => (j && !j.erro) ? { endereco: j.logradouro || '', bairro: j.bairro || '', cidade: j.localidade || '', estado: j.uf || '' } : null)
+      .catch(() => { cepsBuscados.delete(d); return null; }));
+  }
+  return cepsBuscados.get(d);
+}
+
+function ligarCepAutomatico(cepEl, campos) {
+  if (!cepEl || cepEl.dataset.cepAutomatico) return;
+  cepEl.dataset.cepAutomatico = '1';
+  let ultimo = '';
+  cepEl.addEventListener('input', async () => {
+    const d = cepEl.value.replace(/\D/g, '');
+    if (d.length !== 8 || d === ultimo) return;
+    ultimo = d;
+    const end = await buscarEnderecoPorCep(d);
+    if (!end || cepEl.value.replace(/\D/g, '') !== d) return;
+    const c = typeof campos === 'function' ? campos() : campos;
+    const por = (el, v) => {
+      if (!el || !v) return;
+      el.value = v;
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    // Estado antes da cidade: trocar o estado recarrega a lista de cidades.
+    por(c.estado, end.estado);
+    por(c.cidade, end.cidade);
+    por(c.bairro, end.bairro);
+    por(c.endereco, end.endereco);
+    if (c.numero && !c.numero.value) c.numero.focus();
+  });
+}

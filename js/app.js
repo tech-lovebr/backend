@@ -18161,6 +18161,8 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('love-pending-event-type-slug');
       localStorage.removeItem('love-pending-event-name');
       localStorage.removeItem('love-pending-event-date');
+      // Onboarding de conta nova (Google pela tela de login) terminou.
+      localStorage.removeItem('love-onboarding-conta-nova');
 
       newEvt.id = createdEvento.id;
       newEvt.giftList = [];
@@ -23941,20 +23943,19 @@ document.addEventListener('DOMContentLoaded', () => {
       (session.user.app_metadata.providers || []).includes('google')));
     let modoGoogle = null;
     try { modoGoogle = localStorage.getItem('love-google-modo'); localStorage.removeItem('love-google-modo'); } catch (e) {}
-    if (!cliente && veioDoGoogle && modoGoogle === 'entrar') {
-      // Veio de "Fazer login com o Google" com um e-mail sem cadastro: não
-      // cria conta (igual ao login com e-mail) — avisa na tela de login.
-      await supabaseClient.auth.signOut();
-      switchView('login');
-      showLoginError('Esse e-mail não está cadastrado como anfitrião. <a href="/cadastro" class="font-bold text-[#537bae] hover:text-[#416799] hover:underline">Cadastre-se</a>');
-      return;
-    }
+    // "Fazer login com o Google" com e-mail sem cadastro não é mais barrado:
+    // a conta é criada logo abaixo e a pessoa segue o onboarding de conta nova.
+    void modoGoogle;
     let motivoSemCadastro = '';
     if (!cliente && veioDoGoogle) {
       const { data: criado, error: erroCriar } = await supabaseClient.rpc('garantir_cliente_google');
       if (erroCriar) console.error('Erro ao criar cadastro pelo Google:', erroCriar);
       if (criado) {
         ({ data: cliente } = await supabaseClient.from('clientes').select('*').eq('id', session.user.id).maybeSingle());
+        // Conta criada agora: marca para abrir o onboarding de conta nova
+        // (tipo, nome e data no /cadastro e depois "Crie seu primeiro evento").
+        // Só quem nasce aqui recebe a marca; conta antiga nunca vê o onboarding.
+        if (cliente) { try { localStorage.setItem('love-onboarding-conta-nova', session.user.id); } catch (e) {} }
       }
       // A função recusa (false) quando o e-mail já é de uma conta de
       // fornecedor do Hub B2B — cada conta é de anfitrião OU de fornecedor.
@@ -24017,6 +24018,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Eventos próprios + os em que esta conta é organizadora.
     const events = (cliente ? await loadEventsFromSupabase(session.user.id) : []).concat(eventosOrganizados);
+
+    // Conta nova criada pelo Google na tela de login: ainda não passou pelo
+    // onboarding (tipo de evento, nome e data) — leva para o /cadastro, que
+    // pula a etapa de e-mail e senha e volta para "Crie seu primeiro evento".
+    let marcaContaNova = null;
+    try { marcaContaNova = localStorage.getItem('love-onboarding-conta-nova'); } catch (e) {}
+    if (marcaContaNova && (marcaContaNova !== session.user.id || events.length)) {
+      try { localStorage.removeItem('love-onboarding-conta-nova'); } catch (e) {}
+      marcaContaNova = null;
+    }
+    if (marcaContaNova && !pendingType) {
+      window.location.replace('/cadastro?conta-nova=1');
+      return;
+    }
 
     // Quem já tem evento entra sempre no painel. Um tipo pendente que sobrou
     // do /cadastro (ex.: cadastro pelo Google, ou um evento criado por outro

@@ -29,7 +29,7 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261022_aparelho"></script>
+  <script src="js/supabase-init.js?v=20261105_googlecontanova"></script>
   <script src="js/i18n.js?v=20261105_atributo"></script>
   <script src="js/tipos-evento.js?v=20261031_cadastro"></script>
   <style>
@@ -408,7 +408,53 @@
     }
 
     btnNext1.addEventListener('click', () => goToStep(2));
-    btnNext2.addEventListener('click', () => goToStep(3));
+    btnNext2.addEventListener('click', () => { if (contaNova) concluirContaNova(); else goToStep(3); });
+
+    // Conta criada agora pelo Google na tela de login (/cadastro?conta-nova=1):
+    // a pessoa já está logada, então faz só tipo de evento, nome e data e
+    // volta para a plataforma, que abre "Crie seu primeiro evento".
+    let contaNova = false;
+    (async function iniciarContaNova() {
+      if (!/[?&]conta-nova=1(&|$)/.test(location.search)) return;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { history.replaceState(null, '', '/cadastro'); return; }
+      contaNova = true;
+      const ultimo = document.querySelector('[data-step-indicator="3"]');
+      if (ultimo) { ultimo.hidden = true; const linha = ultimo.previousElementSibling; if (linha) linha.hidden = true; }
+      const meta = session.user.user_metadata || {};
+      const partes = String(meta.full_name || meta.name || '').trim().split(/\s+/).filter(Boolean);
+      const nome = document.getElementById('onboard-firstname-input');
+      const sobrenome = document.getElementById('onboard-lastname-input');
+      if (nome && !nome.value) nome.value = meta.given_name || partes[0] || '';
+      if (sobrenome && !sobrenome.value) sobrenome.value = meta.family_name || partes.slice(1).join(' ');
+    })();
+
+    async function concluirContaNova() {
+      btnNext2.disabled = true;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { window.location.replace('/login'); return; }
+      const { first_name, last_name, full_name } = montarNomeCliente(
+        document.getElementById('onboard-firstname-input').value,
+        document.getElementById('onboard-lastname-input').value
+      );
+      const birthday = document.getElementById('onboard-birthday-input').value;
+      const eventDate = document.getElementById('onboard-eventdate-input').value;
+      const dados = {};
+      if (first_name) Object.assign(dados, { first_name, last_name, full_name });
+      if (birthday) dados.birthday = birthday;
+      if (Object.keys(dados).length) {
+        const { error } = await supabaseClient.from('clientes').update(dados).eq('id', session.user.id);
+        if (error) console.error('Erro ao salvar nome/nascimento da conta nova:', error);
+      }
+      if (onboardType) {
+        localStorage.setItem('love-pending-event-type', onboardType);
+        localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
+        localStorage.setItem('love-pending-event-type-slug', onboardTypeSlug || '');
+      }
+      if (full_name) localStorage.setItem('love-pending-event-name', full_name);
+      if (eventDate) localStorage.setItem('love-pending-event-date', eventDate); else localStorage.removeItem('love-pending-event-date');
+      window.location.replace('/');
+    }
     document.querySelectorAll('.btn-onboard-back').forEach(btn => {
       btn.addEventListener('click', () => {
         const current = Number(document.querySelector('.onboard-step.is-active').dataset.step);

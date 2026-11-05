@@ -349,17 +349,13 @@ async function iniciarGoogleIdentityUmaVez() {
     callback: async (resposta) => {
       // ANTES de entrar, confere no banco de que tipo é a conta desse e-mail
       // (migration 050): e-mail de fornecedor do Hub B2B não entra nem vira
-      // anfitrião; no login, e-mail sem cadastro não cria conta (igual ao
-      // login com e-mail e senha) — criar conta é pelo cadastro.
+      // anfitrião. E-mail sem cadastro segue: a conta é criada na hora
+      // (garantir_cliente_google) e a pessoa passa pelo onboarding de conta nova.
       const email = emailDoTokenGoogle(resposta.credential);
       // /organizador: qualquer conta da Love (anfitrião ou fornecedor) entra.
       const tipoConta = googleQualquerContaAtual ? 'anfitriao' : await tipoDeContaDoEmail(email);
       if (tipoConta === 'fornecedor') {
         if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual({ codigo: 'fornecedor', email });
-        return;
-      }
-      if (googleSoEntrarAtual && tipoConta === null) {
-        if (typeof googleAoFalharAtual === 'function') googleAoFalharAtual({ codigo: 'nao-cadastrado', email });
         return;
       }
       const { error } = await supabaseClient.auth.signInWithIdToken({

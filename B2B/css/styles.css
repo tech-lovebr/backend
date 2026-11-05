@@ -13034,3 +13034,8 @@ html body .settings-url-editar-topo:not(#love-h-a):not(#love-h-b) { display: non
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body.produto-editor-aberto .b2b-header-bar:not(#love-h-a):not(#love-h-b) { top: 0; }
 }
+
+/* Adicionar produto: código (SKU), unidade de cobrança e preços no topo da
+   etapa 2, com o mesmo respiro das seções de baixo. */
+.produto-cobranca-etapa2:not([hidden]) { display: flex; flex-direction: column; margin-bottom: 24px; }
+.produto-cobranca-etapa2 #product-sku-linha { margin-bottom: 0 !important; }

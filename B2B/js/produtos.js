@@ -1098,6 +1098,7 @@ function updateCategoryFieldsVisibility() {
   setPanelHidden('pricing-standard-section', isVenue);
   setPanelHidden('pricing-type-wrap', isVenue);
   setPanelHidden('product-sku-linha', isVenue);
+  setPanelHidden('product-cobranca-etapa2', isVenue);
   setPanelHidden('product-addons-bloco', isVenue);
 }
 
@@ -1356,22 +1357,32 @@ function validateStep1() {
   return true;
 }
 
-function validateStep2() {
+// Endereço do local (Locação de espaço) continua na etapa 1.
+function validarLocal() {
   const category = document.getElementById('product-category').value;
-  if (categoryGroups(category).isVenue) {
-    const endereco = document.getElementById('product-venue-street');
-    if (!endereco.value.trim()) {
-      showToast('Preencha o endereço do local.', true);
-      endereco.focus();
-      return false;
-    }
-    return true;
+  if (!categoryGroups(category).isVenue) return true;
+  const endereco = document.getElementById('product-venue-street');
+  if (!endereco.value.trim()) {
+    showToast('Preencha o endereço do local.', true);
+    endereco.focus();
+    return false;
   }
+  return true;
+}
+
+// Código (SKU), unidade de cobrança e preços ficam na etapa 2.
+function validarCobranca() {
+  const category = document.getElementById('product-category').value;
+  if (categoryGroups(category).isVenue) return true;
   if (!currentPricingType) {
     showToast('Selecione a unidade de cobrança.', true);
     return false;
   }
   return true;
+}
+
+function validateStep2() {
+  return validarLocal() && validarCobranca();
 }
 
 function validateStep3() {
@@ -1635,7 +1646,7 @@ function initProductDrawer() {
   });
   document.getElementById('product-wizard-next-btn').addEventListener('click', () => {
     // Aba 1 (Categoria) também tem a unidade de cobrança.
-    const validators = { 1: () => validateStep1() && validateStep2(), 2: validateStep3 };
+    const validators = { 1: () => validateStep1() && validarLocal(), 2: () => validarCobranca() && validateStep3() };
     const validate = validators[currentStep];
     if (validate && !validate()) return;
     if (currentStep < 3) goToStep(currentStep + 1);
@@ -1664,7 +1675,8 @@ function initProductDrawer() {
       const active = true;
 
       if (!validateStep1()) { goToStep(1); return; }
-      if (!validateStep2()) { goToStep(1); return; }
+      if (!validarLocal()) { goToStep(1); return; }
+      if (!validarCobranca()) { goToStep(2); return; }
 
       const { isVenue, isEquipment, isFood, isStaff, isAV } = categoryGroups(category);
 

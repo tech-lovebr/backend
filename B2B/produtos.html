@@ -28,7 +28,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=878">
+  <link rel="stylesheet" href="css/styles.css?v=879">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -127,6 +127,62 @@
                 </div>
 
 
+                <div class="produto-tags" id="product-tags-wrap" hidden>
+                  <p class="field-label product-title-label">Tags</p>
+                  <div class="produto-tags-lista" id="product-tags-lista"></div>
+                  <div class="produto-tags-nova" id="product-tag-nova" hidden>
+                    <input type="text" id="product-tag-input" class="field-input" maxlength="40" placeholder="Escreva outra tag e aperte Enter" autocomplete="off">
+                  </div>
+                </div>
+
+                <div id="product-venue-details" class="mb-6" hidden>
+                  <label class="field-label product-title-label">Detalhes do local</label>
+                  <div class="flex flex-col gap-4">
+                    <div class="local-linha-endereco">
+                      <div>
+                        <label for="product-venue-street" class="field-label">Endereço <span class="campo-obrigatorio" aria-hidden="true">*</span></label>
+                        <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
+                      </div>
+                      <div>
+                        <label for="product-venue-number" class="field-label">Número</label>
+                        <input id="product-venue-number" type="text" class="field-input" autocomplete="off">
+                      </div>
+                    </div>
+
+                    <div class="local-linha-complemento">
+                      <div>
+                        <label for="product-venue-complement" class="field-label">Complemento</label>
+                        <input id="product-venue-complement" type="text" class="field-input" placeholder="Opcional" autocomplete="off">
+                      </div>
+                      <div>
+                        <label for="product-venue-state" class="field-label">Estado</label>
+                        <select id="product-venue-state" class="field-select">
+                          <option value="">UF</option>
+                        </select>
+                      </div>
+                      <div class="local-campo-cidade">
+                        <label for="product-venue-city" class="field-label">Cidade</label>
+                        <input id="product-venue-city" type="text" class="field-input" placeholder="Selecione o estado primeiro" disabled autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false">
+                        <div class="cidade-sugestoes" id="product-venue-city-sugestoes" role="listbox" hidden></div>
+                      </div>
+                    </div>
+
+                    <div class="local-campo-area">
+                      <label for="product-venue-size" class="field-label">Área útil</label>
+                      <div class="campo-com-unidade">
+                        <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" placeholder="m²" autocomplete="off">
+                        <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="product-wizard-panel" data-step="2">
+
+                <!-- Código (SKU), unidade de cobrança e preços: etapa 2 (antes ficavam na 1) -->
+                <div class="produto-cobranca-etapa2" id="product-cobranca-etapa2">
                 <div class="grid grid-cols-2 gap-4 mb-2" id="product-sku-linha">
                   <div>
                     <label for="product-sku" class="field-label product-title-label product-label-com-info">Código (SKU)
@@ -146,14 +202,6 @@
                       <option value="VALOR_FIXO">Valor fixo</option>
                       <option value="SOB_CONSULTA">Sob consulta</option>
                     </select>
-                  </div>
-                </div>
-
-                <div class="produto-tags" id="product-tags-wrap" hidden>
-                  <p class="field-label product-title-label">Tags</p>
-                  <div class="produto-tags-lista" id="product-tags-lista"></div>
-                  <div class="produto-tags-nova" id="product-tag-nova" hidden>
-                    <input type="text" id="product-tag-input" class="field-input" maxlength="40" placeholder="Escreva outra tag e aperte Enter" autocomplete="off">
                   </div>
                 </div>
 
@@ -218,52 +266,7 @@
                     </div>
                   </div>
                 </div>
-
-                <div id="product-venue-details" class="mb-6" hidden>
-                  <label class="field-label product-title-label">Detalhes do local</label>
-                  <div class="flex flex-col gap-4">
-                    <div class="local-linha-endereco">
-                      <div>
-                        <label for="product-venue-street" class="field-label">Endereço <span class="campo-obrigatorio" aria-hidden="true">*</span></label>
-                        <input id="product-venue-street" type="text" class="field-input" autocomplete="off">
-                      </div>
-                      <div>
-                        <label for="product-venue-number" class="field-label">Número</label>
-                        <input id="product-venue-number" type="text" class="field-input" autocomplete="off">
-                      </div>
-                    </div>
-
-                    <div class="local-linha-complemento">
-                      <div>
-                        <label for="product-venue-complement" class="field-label">Complemento</label>
-                        <input id="product-venue-complement" type="text" class="field-input" placeholder="Opcional" autocomplete="off">
-                      </div>
-                      <div>
-                        <label for="product-venue-state" class="field-label">Estado</label>
-                        <select id="product-venue-state" class="field-select">
-                          <option value="">UF</option>
-                        </select>
-                      </div>
-                      <div class="local-campo-cidade">
-                        <label for="product-venue-city" class="field-label">Cidade</label>
-                        <input id="product-venue-city" type="text" class="field-input" placeholder="Selecione o estado primeiro" disabled autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false">
-                        <div class="cidade-sugestoes" id="product-venue-city-sugestoes" role="listbox" hidden></div>
-                      </div>
-                    </div>
-
-                    <div class="local-campo-area">
-                      <label for="product-venue-size" class="field-label">Área útil</label>
-                      <div class="campo-com-unidade">
-                        <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" placeholder="m²" autocomplete="off">
-                        <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-
-              </div>
-
-              <div class="product-wizard-panel" data-step="2">
 
                 <div id="product-scope-lists">
                 <div class="form-section-header">
@@ -616,6 +619,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=77"></script>
-  <script src="js/produtos.js?v=69"></script>
+  <script src="js/produtos.js?v=70"></script>
 </body>
 </html>

@@ -13000,10 +13000,6 @@ html body .settings-url-editar-topo:not(#love-h-a):not(#love-h-b) { display: non
 .produto-cobranca-etapa2:not([hidden]) { display: flex; flex-direction: column; margin-bottom: 24px; }
 .produto-cobranca-etapa2 #product-sku-linha { margin-bottom: 0 !important; }
 
-/* Meus produtos sem produto: título e texto acima do cartão pontilhado. */
-html body .produtos-vazio-topo:not(#love-h-a) { margin: 0 auto 20px; max-width: 420px; text-align: center; }
-html body .produtos-vazio-titulo:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
-html body .produtos-vazio-sub:not(#love-h-a) { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: #71717A; }
-body[data-theme="dark"] .produtos-vazio-titulo { color: #FFFFFF !important; }
-body[data-theme="dark"] .produtos-vazio-sub { color: #A1A1AA !important; }
-html body #products-grid .produtos-vazio-criar .produtos-vazio-lottie:not(#love-h-a):not(#love-h-b) { margin-bottom: 0; }
+/* Meus produtos sem produto: só o cartão de cadastrar, com o título maior. */
+html body #products-grid .produtos-vazio-criar strong:not(#love-h-a):not(#love-h-b) { font-size: 20px; line-height: 1.3; letter-spacing: -0.025em; }
+html body #products-grid .produtos-vazio-criar-sub:not(#love-h-a):not(#love-h-b) { margin-top: 6px; max-width: 340px; font-size: 14px; line-height: 1.5; text-align: center; }

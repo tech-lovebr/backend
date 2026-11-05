@@ -372,7 +372,7 @@ h1, h2, h3, h4, h5, h6 { font-family: 'Inter', sans-serif; margin: 0; }
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 700;
-  color: #18181B;
+  color: #181D24;
 }
 
 /* O hambúrguer só existe no mobile. A especificidade de duas classes é
@@ -4509,3 +4509,5 @@ html.carregando-tudo .admin-main::after {
 }
 body[data-theme="dark"] .admin-main::after { border-color: rgba(255,255,255,.12); border-top-color: #fff; }
 @keyframes carregando-tudo-gira { to { transform: rotate(360deg); } }
+
+body[data-theme="dark"] .admin-header-bar h1 { color: #F4F4F5; }

@@ -138,8 +138,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const admin = await window.adminReady;
   if (!admin) return;
 
-  // Faixa azul em degradê no topo de todas as telas.
-  document.body.classList.add('com-faixa');
+  // Sem a faixa azul em degradê: fundo normal e títulos na cor da sidebar (#181D24).
   renderSidebar();
   renderTopbar(admin);
   renderHeaderBar();
@@ -451,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
      • MENOR    (1.0.1 → 1.1.0): função ou tela nova, sem quebrar o que existe;
      • MAIOR    (1.1.0 → 2.0.0): mudança que muda o jeito de usar o Admin.
    Ao subir MENOR, a CORREÇÃO volta a 0; ao subir MAIOR, as duas voltam a 0. */
-const VERSAO_ADMIN = '1.9.3';
+const VERSAO_ADMIN = '1.9.4';
 
 /* Rodapé igual ao do Hub e da plataforma: © Love Hub Ltda + "Feito com
    amor…" à esquerda e, no lugar de Privacidade/Termos, a versão do Admin. */

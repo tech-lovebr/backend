@@ -971,6 +971,7 @@ async function buscarEnderecoDaCoordenada() {
     const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
     set('product-venue-street', bairro && bairro !== rua ? `${rua}, ${bairro}` : rua);
     set('product-venue-number', a.house_number || '');
+    set('product-venue-cep', a.postcode || '');
     const estado = document.getElementById('product-venue-state');
     if (estado && uf && [...estado.options].some(o => o.value === uf)) {
       estado.value = uf;
@@ -984,7 +985,67 @@ async function buscarEnderecoDaCoordenada() {
   }
 }
 
+/* CEP do local: no Brasil vem pelo ViaCEP (rua, bairro, estado, cidade);
+   fora (zip code etc.) pelo OpenStreetMap. Nos dois casos as coordenadas
+   também se preenchem. */
+let cepLocalBusca = 0;
+async function buscarLocalPeloCep() {
+  const input = document.getElementById('product-venue-cep');
+  const coords = document.getElementById('product-venue-coords');
+  if (!input) return;
+  const bruto = input.value.trim();
+  const digitos = bruto.replace(/\D/g, '');
+  const brasil = /^\d{5}-?\d{3}$/.test(bruto);
+  if (brasil && bruto !== `${digitos.slice(0, 5)}-${digitos.slice(5)}`) input.value = `${digitos.slice(0, 5)}-${digitos.slice(5)}`;
+  if (!brasil && bruto.replace(/\s/g, '').length < 3) return;
+  const minha = ++cepLocalBusca;
+  const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
+  const porEstado = uf => {
+    const estado = document.getElementById('product-venue-state');
+    if (estado && uf && [...estado.options].some(o => o.value === uf)) { estado.value = uf; populateVenueCityOptions(uf); }
+  };
+  const pedir = url => fetch(url).then(r => r.json()).catch(() => null);
+  let busca = null;
+  if (brasil && typeof buscarEnderecoPorCep === 'function') {
+    const end = await buscarEnderecoPorCep(digitos);
+    if (minha !== cepLocalBusca) return;
+    if (end) {
+      set('product-venue-street', end.bairro && end.endereco ? `${end.endereco}, ${end.bairro}` : (end.endereco || end.bairro));
+      porEstado(end.estado);
+      set('product-venue-city', end.cidade);
+      const q = new URLSearchParams({ format: 'jsonv2', limit: '1', countrycodes: 'br', city: end.cidade, state: end.estado });
+      if (end.endereco) q.set('street', end.endereco);
+      busca = await pedir('https://nominatim.openstreetmap.org/search?' + q);
+      if (!busca || !busca.length) busca = await pedir(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=br&postalcode=${digitos}`);
+      // Sem a rua nem o CEP no mapa: pelo menos o centro da cidade.
+      if (!busca || !busca.length) busca = await pedir('https://nominatim.openstreetmap.org/search?' + new URLSearchParams({ format: 'jsonv2', limit: '1', countrycodes: 'br', city: end.cidade, state: end.estado }));
+    }
+  } else {
+    busca = await pedir(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&postalcode=${encodeURIComponent(bruto)}`);
+    const a = (busca && busca[0] && busca[0].address) || {};
+    if (minha !== cepLocalBusca) return;
+    porEstado(String(a['ISO3166-2-lvl4'] || '').replace(/^BR-/, ''));
+    set('product-venue-city', a.city || a.town || a.municipality || a.village || '');
+  }
+  if (minha !== cepLocalBusca) return;
+  const lugar = busca && busca[0];
+  if (lugar && coords) {
+    coords.value = `${Number(lugar.lat).toFixed(6)}, ${Number(lugar.lon).toFixed(6)}`;
+    const status = document.getElementById('product-venue-coords-status');
+    if (status) status.hidden = true;
+  }
+  document.getElementById('product-form')?.dispatchEvent(new Event('change'));
+}
+
 function initCoordenadasDoLocal() {
+  const cep = document.getElementById('product-venue-cep');
+  let timerCep = null;
+  cep?.addEventListener('input', () => {
+    clearTimeout(timerCep);
+    const d = cep.value.replace(/\D/g, '');
+    // CEP brasileiro completo busca na hora; outros códigos esperam a pessoa parar.
+    timerCep = setTimeout(buscarLocalPeloCep, /^\d{5}-?\d{3}$/.test(cep.value.trim()) && d.length === 8 ? 150 : 900);
+  });
   const input = document.getElementById('product-venue-coords');
   if (!input) return;
   let timer = null;
@@ -1538,6 +1599,7 @@ function montarLinhaDoProduto() {
       }
 
       const venue = isVenue ? {
+        cep: document.getElementById('product-venue-cep').value.trim(),
         street: document.getElementById('product-venue-street').value.trim(),
         number: document.getElementById('product-venue-number').value.trim(),
         complement: document.getElementById('product-venue-complement').value.trim(),
@@ -2067,6 +2129,7 @@ function openProductDrawer(id) {
 
   document.getElementById('product-venue-street').value = (p.venue && (p.venue.street !== undefined ? p.venue.street : p.venue.address)) || '';
   document.getElementById('product-venue-number').value = (p.venue && p.venue.number) || '';
+  document.getElementById('product-venue-cep').value = (p.venue && p.venue.cep) || '';
   document.getElementById('product-venue-complement').value = (p.venue && p.venue.complement) || '';
   const venueState = (p.venue && p.venue.state) || '';
   document.getElementById('product-venue-state').value = venueState;

@@ -299,14 +299,24 @@ function wirePixKeyMaskInput(input, getType) {
 }
 
 const PROFILE_REQUIRED_FIELDS = ['company', 'name', 'phone', 'documentNumber'];
+const PROFILE_REQUIRED_LABELS = { company: 'nome da empresa', name: 'nome do responsável', phone: 'número de celular', documentNumber: 'CNPJ' };
+
+/* Campos obrigatórios do perfil que ainda faltam (para criar produto). No
+   celular o CNPJ não é pedido em Informações (vai em Contas bancárias, na
+   hora do saque), então lá ele não conta. */
+function camposQueFaltamNoPerfil() {
+  const p = typeof B2B_DATA !== 'undefined' ? B2B_DATA.professional : null;
+  if (!p) return PROFILE_REQUIRED_FIELDS.slice();
+  const celular = typeof hubNoCelular === 'function' && hubNoCelular();
+  return PROFILE_REQUIRED_FIELDS.filter(key => {
+    if (key === 'documentNumber' && celular) return false;
+    const v = p[key];
+    return !(typeof v === 'string' ? v.trim().length > 0 : !!v);
+  });
+}
 
 function isProfileComplete() {
-  const p = typeof B2B_DATA !== 'undefined' ? B2B_DATA.professional : null;
-  if (!p) return false;
-  return PROFILE_REQUIRED_FIELDS.every(key => {
-    const v = p[key];
-    return typeof v === 'string' ? v.trim().length > 0 : !!v;
-  });
+  return camposQueFaltamNoPerfil().length === 0;
 }
 
 function initDatePicker(input, initialIso) {

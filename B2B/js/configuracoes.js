@@ -252,6 +252,11 @@ function initProfileForm() {
       showToast(pedeDocumento ? `Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.` : 'Preencha o nome da empresa e o nome do responsável para continuar.', true);
       return;
     }
+    if (phone.replace(/\D/g, '').length < 10) {
+      showToast('Preencha o número de celular para continuar.', true);
+      document.getElementById('profile-phone')?.focus();
+      return;
+    }
 
     p.company = company;
     p.razaoSocial = document.getElementById('profile-razao-social').value.trim();
@@ -263,6 +268,7 @@ function initProfileForm() {
     p.state = document.getElementById('profile-state').value;
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
+    colunasSemSalvar.clear();
     const erroBanco = await salvarPerfilNoBanco(p);
     const erroExtras = await salvarDadosDaContaDigital(birthdatePicker.getValue());
     // Razão social / documento só podem trocar a cada 7 dias (migration 121);
@@ -302,6 +308,11 @@ function initProfileForm() {
 
     lockConfiguredFields(p);
     resetSalvarTopoLabel();
+    // Salvou, mas o banco ainda não tem as colunas da conta digital (migration 110).
+    if (colunasSemSalvar.size) {
+      showToast('Perfil salvo, mas tipo de empresa, faturamento, CEP e endereço não foram gravados: falta rodar a migration 110 no Supabase.', true);
+      return;
+    }
     showToast('Perfil atualizado.');
   });
 }
@@ -331,6 +342,9 @@ function initAbasDeInformacoes() {
 /* Grava em fornecedores. Se o banco não tiver alguma coluna (migration
    ainda não rodada), tenta de novo sem ela, para o resto não se perder.
    Devolve o erro que sobrou (ou null). */
+// Colunas que o banco não tem e por isso ficaram sem salvar (ver o aviso no envio).
+const colunasSemSalvar = new Set();
+
 async function atualizarFornecedor(campos) {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return new Error('Sessão expirada. Entre de novo.');
@@ -344,6 +358,7 @@ async function atualizarFornecedor(campos) {
     const coluna = falta && (falta[1] || falta[2]);
     if (!coluna || !(coluna in dados)) return error;
     console.warn('Coluna ' + coluna + ' não existe em fornecedores; salvando sem ela.');
+    colunasSemSalvar.add(coluna);
     delete dados[coluna];
     if (!Object.keys(dados).length) return null;
   }

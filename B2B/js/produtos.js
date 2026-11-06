@@ -259,6 +259,13 @@ function openCompleteProfileModal() {
   const nome = String(p.company || p.name || '').trim() || 'Sua empresa';
   const nomeEl = document.getElementById('complete-profile-nome');
   if (nomeEl) nomeEl.textContent = nome;
+  const texto = modal.querySelector('.love-pop-texto');
+  const faltam = typeof camposQueFaltamNoPerfil === 'function' ? camposQueFaltamNoPerfil() : [];
+  if (texto && faltam.length) {
+    const nomes = faltam.map(k => PROFILE_REQUIRED_LABELS[k] || k);
+    const lista = nomes.length > 1 ? nomes.slice(0, -1).join(', ') + ' e ' + nomes[nomes.length - 1] : nomes[0];
+    texto.textContent = 'Para adicionar produtos ou serviços, preencha ' + lista + ' em Configurações.';
+  }
   const foto = document.getElementById('complete-profile-foto');
   if (foto) {
     foto.textContent = '';

@@ -252,6 +252,21 @@ function initProfileForm() {
         showToast(faltaDoc ? `Preencha o nome fantasia e o ${p.documentType === 'cpf' ? 'CPF' : 'CNPJ'} para continuar.` : 'Preencha o nome da empresa para continuar.', true);
         return;
       }
+      // Já grava a empresa: se a pessoa sair agora, só falta a parte pessoal.
+      p.company = document.getElementById('profile-company').value.trim();
+      p.razaoSocial = document.getElementById('profile-razao-social').value.trim();
+      p.documentNumber = document.getElementById('profile-document').value.trim();
+      p.address = document.getElementById('profile-address').value.trim();
+      p.city = document.getElementById('profile-city').value.trim();
+      p.state = document.getElementById('profile-state').value;
+      colunasSemSalvar.clear();
+      const erroEmpresa = (await salvarPerfilNoBanco(p)) || (await salvarDadosDaContaDigital(birthdatePicker.getValue()));
+      if (erroEmpresa) {
+        showToast(/ALTERACAO_BLOQUEADA/.test(erroEmpresa.message || '') ? 'A razão social e o CNPJ/CPF só podem ser alterados a cada 7 dias.' : 'Não foi possível salvar: ' + (erroEmpresa.message || 'tente de novo em instantes.'), true);
+        return;
+      }
+      guardarNoCache(PROFILE_STORAGE_KEY, p);
+      lockConfiguredFields(p);
       abrirAbaDeInformacoes('pessoal');
       document.querySelector('[data-info-painel="pessoal"] input:not([type=hidden])')?.focus();
       return;
@@ -362,7 +377,9 @@ function abrirAbaDeInformacoes(qual) {
 function initAbasDeInformacoes() {
   const abas = document.querySelectorAll('[data-info-aba]');
   abas.forEach(b => b.addEventListener('click', () => abrirAbaDeInformacoes(b.dataset.infoAba)));
-  atualizarBotaoDeInformacoes();
+  // configuracoes?info=pessoal (pop-up Complete seu cadastro): abre no que falta.
+  if (new URLSearchParams(location.search).get('info') === 'pessoal') abrirAbaDeInformacoes('pessoal');
+  else atualizarBotaoDeInformacoes();
   const cep = document.getElementById('profile-cep');
   cep?.addEventListener('input', () => { const d = cep.value.replace(/\D/g, '').slice(0, 8); cep.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; });
   // Com o CEP completo, rua, bairro, estado e cidade vêm sozinhos (js/utils.js).

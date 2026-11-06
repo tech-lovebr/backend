@@ -311,6 +311,8 @@ function camposQueFaltamNoPerfil() {
   return PROFILE_REQUIRED_FIELDS.filter(key => {
     if (key === 'documentNumber' && celular) return false;
     const v = p[key];
+    // O responsável é uma pessoa: o nome da empresa no lugar não vale.
+    if (key === 'name' && typeof v === 'string' && v.trim() && v.trim().toLowerCase() === String(p.company || '').trim().toLowerCase()) return true;
     return !(typeof v === 'string' ? v.trim().length > 0 : !!v);
   });
 }

@@ -266,6 +266,9 @@ function openCompleteProfileModal() {
     const lista = nomes.length > 1 ? nomes.slice(0, -1).join(', ') + ' e ' + nomes[nomes.length - 1] : nomes[0];
     texto.textContent = 'Para adicionar produtos ou serviços, preencha ' + lista + ' em Configurações.';
   }
+  const botao = modal.querySelector('.love-pop-botao');
+  const soPessoal = faltam.length && faltam.every(k => k === 'name' || k === 'phone');
+  if (botao) botao.setAttribute('href', soPessoal ? 'configuracoes?info=pessoal' : 'configuracoes');
   const foto = document.getElementById('complete-profile-foto');
   if (foto) {
     foto.textContent = '';

@@ -956,7 +956,7 @@ async function buscarEnderecoDaCoordenada() {
   const c = lerCoordenadas(input.value);
   if (!c) { mostrar('Coordenada não reconhecida. Use, por exemplo, 23°04\'17.5"S 47°09\'48.6"W ou -23.0715, -47.1635.', true); return; }
   const minha = ++coordenadasBusca;
-  mostrar('Procurando o endereço...');
+  mostrar('');
   try {
     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${c.lat}&lon=${c.lng}&accept-language=pt-BR&addressdetails=1&zoom=18`;
     const res = await fetch(url);
@@ -977,7 +977,7 @@ async function buscarEnderecoDaCoordenada() {
       populateVenueCityOptions(uf);
     }
     set('product-venue-city', cidade);
-    mostrar([rua, cidade, uf].filter(Boolean).join(', ') ? `Endereço encontrado: ${[rua, cidade, uf].filter(Boolean).join(', ')}. Confira e ajuste se precisar.` : 'Endereço encontrado. Confira os campos acima.');
+    mostrar(''); // achou: os campos já mostram o endereço, sem texto embaixo
     document.getElementById('product-form')?.dispatchEvent(new Event('change'));
   } catch (e) {
     if (minha === coordenadasBusca) mostrar('Não foi possível buscar o endereço agora. Preencha o endereço acima.', true);

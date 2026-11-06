@@ -1538,6 +1538,14 @@ function listaNoCelular(card, cfg) {
    ========================================================================== */
 const ICONE_VAZIO_DOCUMENTO = '<svg class="vazio-celular-icone" viewBox="0 0 64 64" fill="none" stroke="#D4D4D8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8h20l10 10v36a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2Z"/><path d="M38 8v10h10M24 30h16M24 38h16M24 46h10"/></svg>';
 
+/* Ícones animados (dotlottie-wc): medem o tamanho uma vez só. Com
+   renderconfig autoResize eles se reajustam; ao voltar pelo histórico
+   (página restaurada do cache do navegador) redesenha no tamanho certo. */
+window.addEventListener('pageshow', e => {
+  if (!e.persisted) return;
+  document.querySelectorAll('dotlottie-wc').forEach(el => { try { el.dotLottie?.resize?.(); } catch (_) {} });
+});
+
 function carregarPlayerLottieHub() {
   if (window.customElements?.get('dotlottie-wc') || document.getElementById('love-dotlottie-wc')) return;
   const s = document.createElement('script');
@@ -1570,7 +1578,7 @@ function desenharVazioNoCelular(card, cfg, n) {
     return;
   }
   const arte = v.lottie
-    ? `<dotlottie-wc class="vazio-celular-lottie" src="assets/lottie/${escapeHtml(v.lottie)}.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>`
+    ? `<dotlottie-wc class="vazio-celular-lottie" renderconfig="{&quot;autoResize&quot;:true}" src="assets/lottie/${escapeHtml(v.lottie)}.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>`
     : (v.icone || ICONE_VAZIO_DOCUMENTO);
   const podeAbrir = v.abrirSel && document.querySelector(v.abrirSel);
   caixa.innerHTML = `${arte}

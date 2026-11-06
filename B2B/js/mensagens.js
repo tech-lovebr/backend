@@ -456,7 +456,7 @@ function renderContactsList(searchQuery = '') {
 
   if (!b2bConversations.length) {
     if (typeof hubNoCelular === 'function' && hubNoCelular()) {
-      listEl.innerHTML = '<div class="vazio-celular"><dotlottie-wc class="vazio-celular-lottie" src="assets/lottie/conversas-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc><p class="vazio-celular-titulo">Nenhuma conversa ainda</p><p class="vazio-celular-texto">Quando um cliente falar com você, a conversa aparece aqui.</p></div>';
+      listEl.innerHTML = '<div class="vazio-celular"><dotlottie-wc class="vazio-celular-lottie" renderconfig="{&quot;autoResize&quot;:true}" src="assets/lottie/conversas-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc><p class="vazio-celular-titulo">Nenhuma conversa ainda</p><p class="vazio-celular-texto">Quando um cliente falar com você, a conversa aparece aqui.</p></div>';
       carregarPlayerLottieHub();
     } else {
       listEl.innerHTML = '<div class="p-6 text-center text-xs text-zinc-400">Nenhuma conversa ainda. Quando um cliente falar com você, ela aparece aqui.</div>';

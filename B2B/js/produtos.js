@@ -366,7 +366,7 @@ function renderProducts() {
       <div class="produtos-vazio" style="grid-column:1/-1;">
         <div class="produtos-vazio-cards">
           <button type="button" class="produtos-vazio-criar" data-produto-vazio-criar>
-            <dotlottie-wc class="produtos-vazio-lottie" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
+            <dotlottie-wc class="produtos-vazio-lottie" renderconfig="{&quot;autoResize&quot;:true}" src="assets/lottie/produtos-vazio.lottie?v=1" autoplay loop aria-hidden="true"></dotlottie-wc>
             <strong>Cadastrar novo produto</strong>
             <span class="produtos-vazio-criar-sub">Cadastre seu primeiro produto/serviço para começar a encontrar clientes na Love.</span>
           </button>

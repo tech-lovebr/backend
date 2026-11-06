@@ -949,7 +949,7 @@ function leadsMostrarAba(aba) {
   const busca = document.getElementById('op-header-acoes');
   if (busca) busca.hidden = aba !== 'eventos';
   const titulo = document.getElementById('leads-titulo-pagina');
-  if (titulo) titulo.textContent = aba === 'eventos' ? 'Oportunidades' : (aba === 'propostas' ? 'Propostas enviadas' : 'Meus clientes');
+  if (titulo) titulo.textContent = aba === 'eventos' ? 'Oportunidades' : (aba === 'propostas' ? 'Orçamentos' : 'Meus clientes');
   const acoes = document.getElementById('leads-acoes-topo');
   if (acoes) acoes.hidden = aba !== 'leads';
   const novoOrcamento = document.getElementById('op-propostas-novo');

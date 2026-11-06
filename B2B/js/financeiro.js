@@ -483,7 +483,16 @@ function initOrcamentosLista() {
 
 /* -------------------- Telas: lista × proposta -------------------- */
 
+// Orçamento aberto: o topo vira "Novo orçamento" (ou "Orçamento"), sem a
+// descrição de contratos, sem as abas e sem o botão +.
+function marcarPaginaDeOrcamento(titulo) {
+  document.body.classList.toggle('vendas-com-orcamento', !!titulo);
+  const h = document.getElementById('vendas-titulo');
+  if (h) h.textContent = titulo || 'Contratos';
+}
+
 function mostrarListaOrcamentos() {
+  marcarPaginaDeOrcamento('');
   document.getElementById('orcamentos-form-view').hidden = true;
   document.getElementById('orcamentos-lista-view').hidden = false;
   renderOrcamentos();
@@ -504,6 +513,7 @@ function mostrarFormularioProposta(titulo) {
   if (aba && !aba.classList.contains('active')) aba.click();
   document.getElementById('orcamentos-lista-view').hidden = true;
   document.getElementById('orcamentos-form-view').hidden = false;
+  marcarPaginaDeOrcamento(titulo === 'Nova proposta' ? 'Novo orçamento' : 'Orçamento');
   document.getElementById('proposal-titulo').textContent = titulo;
   document.getElementById('proposal-titulo-atual').textContent = titulo;
   window.scrollTo({ top: 0, behavior: 'smooth' });

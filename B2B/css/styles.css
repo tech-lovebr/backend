@@ -7872,6 +7872,9 @@ body[data-theme="dark"] .comandos-vazio-icone { background: #1F1F1F !important; 
 .local-campo-area { max-width: none; display: grid; grid-template-columns: minmax(0, 1fr) 80px minmax(0, 1.3fr); column-gap: 0.75rem; }
 .local-campo-area > * { grid-column: 1; }
 #product-venue-size::placeholder, #product-venue-complement::placeholder { color: #A1A1AA; opacity: 1; }
+/* Contratos › orçamento aberto: só o formulário (sem descrição, abas e +). */
+body.vendas-com-orcamento .vendas-sub, body.vendas-com-orcamento #sales-view-tabs, body.vendas-com-orcamento #orcamento-novo-btn { display: none !important; }
+
 /* Área útil e Coordenadas na mesma linha (coordenadas ocupam Estado + Cidade). */
 .local-linha-area { display: grid; grid-template-columns: minmax(0, 1fr) 80px minmax(0, 1.3fr); gap: 0.75rem; }
 .local-linha-area .local-campo-area { display: block; max-width: none; grid-column: 1; }

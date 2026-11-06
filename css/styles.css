@@ -12741,7 +12741,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   }
   .menu-celular.is-aberta { transform: translateX(0); visibility: visible; transition: transform .26s cubic-bezier(.2, .8, .2, 1); }
   .menu-celular button, .menu-conta button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .menu-celular-topo { display: flex; align-items: center; justify-content: space-between; height: 68px; padding: 0 12px 0 20px; flex-shrink: 0; }
+  .menu-celular-topo { display: flex; align-items: center; justify-content: flex-end; height: 68px; padding: 0 12px 0 20px; flex-shrink: 0; }
   .menu-celular-topo .logo-celular { display: flex; gap: 8px; }
   .menu-celular-topo .logo-celular-icone { height: 28px; }
   .menu-celular-topo .logo-celular-nome { height: 21px; }

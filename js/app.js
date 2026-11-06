@@ -2973,7 +2973,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     listEl.innerHTML = quickStartTasksData.map((task) => {
       const isDone = isQuickStartTaskAchieved(task.id, activeEvent);
-      const clickAction = isDone
+      // Fornecedores, presentes e convidados levam à página mesmo já riscados.
+      const linkFixo = {
+        vendors: 'onclick="navigateToExplorarFornecedores()"',
+        registry: `onclick="window.loveIrPara && window.loveIrPara('gifts', 'my-gifts')"`,
+        guests: `onclick="window.loveIrPara && window.loveIrPara('rsvp', 'all')"`,
+      }[task.id];
+      const clickAction = linkFixo
+        ? linkFixo
+        : isDone
         ? ''
         : (task.id === 'budget'
             ? 'onclick="navigateToBudget()"'
@@ -2985,7 +2993,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? 'onclick="navigateToExplorarFornecedores()"'
             : `onclick="switchRailTab('${task.tab}')"`);
       return `
-        <div class="group py-4 px-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : 'cursor-pointer'}" ${clickAction} title="${isDone ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
+        <div class="group py-4 px-2.5 rounded-xl hover:bg-zinc-50 transition-all flex items-center justify-between ${isDone ? 'opacity-85' : ''} ${clickAction ? 'cursor-pointer' : ''}" ${clickAction} title="${isDone && !linkFixo ? 'Tarefa alcançada pela plataforma' : 'Ir para ' + task.title}">
           <div class="flex items-center gap-3 min-w-0">
             <!-- Ícone da Categoria (sem fundo — mesmo tamanho/traço dos ícones do sidebar) -->
             <div class="flex items-center justify-center flex-shrink-0">
@@ -16405,9 +16413,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Guia de primeiros passos › "Favoritar primeiros fornecedores": Fornecedores › Explorar.
   window.navigateToExplorarFornecedores = function() {
-    if (state.currentTab === 'b2b') { abrirSubItem('b2b', 'explore'); return; }
-    pendingSubItemId = 'explore';
-    switchRailTab('b2b');
+    window.loveIrPara('b2b', 'explore');
   };
 
   window.navigateToTables = function() {

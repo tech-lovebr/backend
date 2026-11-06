@@ -9433,8 +9433,9 @@ html body #account-dropdown-email:not(#love-h-a) { display: none !important; }
 
 /* Dica dos botões só com ícone (data-dica): caixinha branca com borda fina e
    sombra de overlay, no lugar da caixinha preta do navegador. */
-.love-dica { position: fixed; z-index: 10000; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #18181B; white-space: nowrap; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
+.love-dica { position: fixed; z-index: 10000; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.35; color: #18181B; white-space: pre-line; max-width: 320px; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
 .love-dica.is-visivel { opacity: 1; visibility: visible; }
+body[data-theme="dark"] .love-dica { background: #1F2329; border-color: rgba(255, 255, 255, 0.1); color: #F4F4F5; }
 /* Encontrar fornecedor › campo "Em [cidade]": a cidade um pouco mais longe do "Em". */
 html body #b2b-location-input:not(#love-h-a) { padding-left: 37px !important; }
 /* Mapa do evento › lista de convidados: um respiro de 4px entre um convidado e

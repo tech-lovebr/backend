@@ -165,15 +165,51 @@ document.addEventListener('DOMContentLoaded', async () => {
   revealAppIfReady();
 });
 
-/* Dica dos ícones do topo (data-dica="Texto"): caixinha branca da Love no
-   lugar da caixinha preta do navegador — igual ao love.com.br. Aparece em
-   cima do ícone; se não couber (topo da tela), embaixo. */
+// Dicas ao passar o mouse: sempre a caixinha branca da Love, nunca a do
+// navegador. Vale para title, <title> dentro de SVG (gráficos) e data-dica.
+// Na primeira passada o title vira data-dica e aria-label e sai do elemento.
+// Aparece em cima; se não couber, embaixo. Some ao clicar, rolar ou sair.
 (function ligarDicasDosIcones() {
   let dica = null;
-  const esconder = () => { if (dica) dica.classList.remove('is-visivel'); };
-  const mostrar = (alvo) => {
-    const texto = alvo.dataset.dica;
+  let alvoAtual = null;
+
+  function textoDe(el) {
+    const ds = el.dataset;
+    if (ds && ds.dica) return ds.dica;
+    const t = el.getAttribute('title');
+    if (t) {
+      el.removeAttribute('title');
+      if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', t);
+      el.setAttribute('data-dica', t);
+      return t;
+    }
+    const filho = Array.from(el.children || []).find(c => c.tagName && c.tagName.toLowerCase() === 'title');
+    if (filho) {
+      const texto = (filho.textContent || '').trim();
+      filho.remove();
+      if (texto) el.setAttribute('data-dica', texto);
+      return texto;
+    }
+    return '';
+  }
+
+  function alvoDe(no) {
+    for (let el = no instanceof Element ? no : null; el && el !== document.body; el = el.parentElement) {
+      if (el.hasAttribute('data-dica') || el.hasAttribute('title')) return el;
+      if (Array.from(el.children).some(c => c.tagName.toLowerCase() === 'title')) return el;
+    }
+    return null;
+  }
+
+  function esconder() {
+    alvoAtual = null;
+    if (dica) dica.classList.remove('is-visivel');
+  }
+
+  function mostrar(alvo) {
+    const texto = textoDe(alvo);
     if (!texto) return;
+    alvoAtual = alvo;
     if (!dica) {
       dica = document.createElement('div');
       dica.className = 'love-dica';
@@ -189,19 +225,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const left = Math.max(8, Math.min(r.left + r.width / 2 - d.width / 2, window.innerWidth - d.width - 8));
     dica.style.top = `${top}px`;
     dica.style.left = `${left}px`;
-  };
-  document.addEventListener('mouseover', (e) => {
-    const alvo = e.target instanceof Element ? e.target.closest('[data-dica]') : null;
-    if (alvo) mostrar(alvo);
+  }
+
+  document.addEventListener('mouseover', e => {
+    const alvo = alvoDe(e.target);
+    if (alvo && alvo !== alvoAtual) mostrar(alvo);
+    else if (!alvo && alvoAtual) esconder();
   });
-  document.addEventListener('mouseout', (e) => {
-    const de = e.target instanceof Element ? e.target.closest('[data-dica]') : null;
-    const para = e.relatedTarget instanceof Element ? e.relatedTarget.closest('[data-dica]') : null;
-    if (de && de !== para) esconder();
+  document.addEventListener('mouseout', e => {
+    if (!alvoAtual) return;
+    const para = e.relatedTarget instanceof Node ? e.relatedTarget : null;
+    if (!para || !alvoAtual.contains(para)) esconder();
   });
-  document.addEventListener('focusin', (e) => {
-    const alvo = e.target instanceof Element ? e.target.closest('[data-dica]') : null;
-    if (alvo && alvo.matches(':focus-visible')) mostrar(alvo);
+  document.addEventListener('focusin', e => {
+    const alvo = alvoDe(e.target);
+    if (alvo && e.target instanceof Element && e.target.matches(':focus-visible')) mostrar(alvo);
   });
   document.addEventListener('focusout', esconder);
   document.addEventListener('click', esconder, true);

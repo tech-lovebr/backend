@@ -4,18 +4,56 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Dica dos botões só com ícone (Mensagens, Notificações, lista/grid em
-  // Encontrar fornecedor): caixinha branca da Love no lugar da caixinha preta
-  // do navegador. Basta o botão ter data-dica="Texto". Aparece em cima do
-  // botão; se não couber (ex.: topo da tela), embaixo.
+  // Dicas ao passar o mouse: sempre a caixinha branca da Love, nunca a do
+  // navegador. Vale para title, <title> dentro de SVG (gráficos) e data-dica.
+  // Na primeira passada o title vira data-dica e aria-label e sai do elemento.
+  // Aparece em cima; se não couber, embaixo. Some ao clicar, rolar ou sair.
   (function ligarDicasDosIcones() {
     /** @type {HTMLDivElement|null} */
     let dica = null;
-    const esconder = () => { if (dica) dica.classList.remove('is-visivel'); };
-    /** @param {HTMLElement} alvo */
-    const mostrar = (alvo) => {
-      const texto = alvo.dataset.dica;
+    /** @type {Element|null} */
+    let alvoAtual = null;
+
+    /** @param {Element} el */
+    function textoDe(el) {
+      const ds = /** @type {HTMLElement} */ (el).dataset;
+      if (ds && ds.dica) return ds.dica;
+      const t = el.getAttribute('title');
+      if (t) {
+        el.removeAttribute('title');
+        if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', t);
+        el.setAttribute('data-dica', t);
+        return t;
+      }
+      const filho = Array.from(el.children || []).find(c => c.tagName && c.tagName.toLowerCase() === 'title');
+      if (filho) {
+        const texto = (filho.textContent || '').trim();
+        filho.remove();
+        if (texto) el.setAttribute('data-dica', texto);
+        return texto;
+      }
+      return '';
+    }
+
+    /** @param {EventTarget|null} no */
+    function alvoDe(no) {
+      for (let el = no instanceof Element ? no : null; el && el !== document.body; el = el.parentElement) {
+        if (el.hasAttribute('data-dica') || el.hasAttribute('title')) return el;
+        if (Array.from(el.children).some(c => c.tagName.toLowerCase() === 'title')) return el;
+      }
+      return null;
+    }
+
+    function esconder() {
+      alvoAtual = null;
+      if (dica) dica.classList.remove('is-visivel');
+    }
+
+    /** @param {Element} alvo */
+    function mostrar(alvo) {
+      const texto = textoDe(alvo);
       if (!texto) return;
+      alvoAtual = alvo;
       if (!dica) {
         dica = document.createElement('div');
         dica.className = 'love-dica';
@@ -31,49 +69,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const left = Math.max(8, Math.min(r.left + r.width / 2 - d.width / 2, window.innerWidth - d.width - 8));
       dica.style.top = `${top}px`;
       dica.style.left = `${left}px`;
-    };
-    document.addEventListener('mouseover', (e) => {
-      const alvo = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-dica]')) : null;
-      if (alvo) mostrar(alvo);
+    }
+
+    document.addEventListener('mouseover', e => {
+      const alvo = alvoDe(e.target);
+      if (alvo && alvo !== alvoAtual) mostrar(alvo);
+      else if (!alvo && alvoAtual) esconder();
     });
-    document.addEventListener('mouseout', (e) => {
-      const de = e.target instanceof Element ? e.target.closest('[data-dica]') : null;
-      const para = e.relatedTarget instanceof Element ? e.relatedTarget.closest('[data-dica]') : null;
-      if (de && de !== para) esconder();
+    document.addEventListener('mouseout', e => {
+      if (!alvoAtual) return;
+      const para = e.relatedTarget instanceof Node ? e.relatedTarget : null;
+      if (!para || !alvoAtual.contains(para)) esconder();
     });
-    document.addEventListener('focusin', (e) => {
-      const alvo = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-dica]')) : null;
-      if (alvo && alvo.matches(':focus-visible')) mostrar(alvo);
+    document.addEventListener('focusin', e => {
+      const alvo = alvoDe(e.target);
+      if (alvo && e.target instanceof Element && e.target.matches(':focus-visible')) mostrar(alvo);
     });
     document.addEventListener('focusout', esconder);
     document.addEventListener('click', esconder, true);
     window.addEventListener('scroll', esconder, true);
-  })();
-
-  // Personalizar evento (Convite digital, Aparência, Informações...): sem a
-  // caixinha do navegador nos ícones. O texto do title vira aria-label (para
-  // leitores de tela); onde precisa de dica, o botão usa data-dica.
-  (function semDicaDoNavegadorNoEditor() {
-    const raiz = document.getElementById('tab-edit-site');
-    if (!raiz) return;
-    /** @param {Element} el */
-    const limpar = (el) => {
-      const t = el.getAttribute('title');
-      if (t === null) return;
-      if (t && !el.hasAttribute('aria-label')) el.setAttribute('aria-label', t);
-      el.removeAttribute('title');
-    };
-    /** @param {Node} n */
-    const varrer = (n) => {
-      if (!(n instanceof Element)) return;
-      if (n.hasAttribute('title')) limpar(n);
-      n.querySelectorAll('[title]').forEach(limpar);
-    };
-    varrer(raiz);
-    new MutationObserver(ms => ms.forEach(m => {
-      if (m.type === 'attributes') limpar(/** @type {Element} */ (m.target));
-      else m.addedNodes.forEach(varrer);
-    })).observe(raiz, { subtree: true, childList: true, attributes: true, attributeFilter: ['title'] });
   })();
 
   // Campos de data e horário: o ícone do navegador (com a dica "Mostrar seletor

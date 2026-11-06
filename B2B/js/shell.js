@@ -1110,17 +1110,12 @@ function ligarBarraDeBaixo() {
 function montarMenuDoCelular() {
   const abrirBtn = document.getElementById('btn-menu-celular');
   if (!abrirBtn || document.getElementById('menu-celular')) return;
-  const logo = `<span class="logo-celular">
-      <img class="logo-celular-icone logo-claro" src="assets/iconelove2.png?v=5" alt="" aria-hidden="true">
-      <img class="logo-celular-icone logo-escuro" src="assets/icon-white1.png?v=5" alt="" aria-hidden="true">
-      <img class="logo-celular-nome logo-claro" src="assets/Love-dark-03.png" alt="Love">
-      <img class="logo-celular-nome logo-escuro" src="assets/Love-white-03.png" alt="Love">
-    </span>`;
+  // Topo do menu só com o X (igual ao index), sem a logo.
+
   document.body.insertAdjacentHTML('beforeend', `
     <div class="menu-celular-fundo" aria-hidden="true"></div>
     <aside id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
       <div class="menu-celular-topo">
-        ${logo}
         <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       </div>
       <nav class="menu-celular-nav" aria-label="Seções"></nav>

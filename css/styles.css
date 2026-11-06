@@ -12734,10 +12734,10 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   .menu-conta-fundo { z-index: 92; background: rgba(0, 0, 0, 0.2); }
   .menu-celular-fundo.is-aberta, .menu-conta-fundo.is-aberta { opacity: 1; pointer-events: auto; }
   .menu-celular {
-    display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 90;
+    display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; right: 0; z-index: 90;
     width: min(80vw, 330px); background: #FFFFFF; font-family: Inter, sans-serif;
     padding-top: env(safe-area-inset-top, 0px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    transform: translateX(-100%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .26s;
+    transform: translateX(100%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .26s;
   }
   .menu-celular.is-aberta { transform: translateX(0); visibility: visible; transition: transform .26s cubic-bezier(.2, .8, .2, 1); }
   .menu-celular button, .menu-conta button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }

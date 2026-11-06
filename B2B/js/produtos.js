@@ -398,7 +398,7 @@ function renderProducts() {
         ${p.suspenso ? `<p class="produto-suspenso-aviso"><strong>Suspenso pela Love</strong>${p.suspensoMotivo ? ' — ' + escapeHtml(p.suspensoMotivo) : ''}</p>` : ''}
         <p class="text-base font-bold text-zinc-900 mt-auto">${productPriceLabel(p)}</p>
         <div class="flex items-center gap-2 mt-1">
-          <button class="btn-secondary flex-1 justify-center text-xs py-2" data-edit-product="${p.id}">Editar</button>
+          <button class="btn-secondary flex-1 justify-center text-xs py-2" data-edit-product="${p.id}">${p.rascunho && !p.active ? 'Finalizar rascunho' : 'Editar'}</button>
           <button type="button" class="btn-secondary product-duplicar-btn" data-duplicate-product="${p.id}" title="Duplicar anúncio" aria-label="Duplicar anúncio"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
         </div>
       </div>
@@ -1423,293 +1423,14 @@ function validateStep3() {
 
 /* -------------------- Drawer: novo / editar produto -------------------- */
 
-function initProductDrawer() {
-  const addBtn = document.getElementById('product-add-btn');
-  const drawer = document.getElementById('product-drawer');
-  const backdrop = document.getElementById('product-drawer-backdrop');
-  const closeBtn = document.getElementById('product-drawer-close');
-  const cancelBtn = document.getElementById('product-drawer-cancel');
-  const form = document.getElementById('product-form');
+/* -------------------- Linha do produto (salvar e rascunho) -------------------- */
 
-  const showDeleteConfirm = (show) => {
-    setPanelHidden('product-wizard-footer-default', show);
-    setPanelHidden('product-wizard-footer-confirm-delete', !show);
-  };
-
-  const open = () => { drawer.classList.add('show'); backdrop.classList.add('show'); };
-  const close = () => {
-    drawer.classList.remove('show');
-    backdrop.classList.remove('show');
-    form.reset();
-    delete form.dataset.editId;
-    currentProductTags = [];
-    showDeleteConfirm(false);
-  };
-
-  // Campos de moeda do motor de precificação (texto mascarado, como já é
-  // usado em pagamentos.html/configuracoes.html — não o type="number" cru
-  // que o campo único de preço antigo usava).
-  ['pricing-per-person-price', 'pricing-per-hour-price', 'pricing-per-hour-extra',
-   'pricing-fixed-price', 'pricing-on-request-price',
-   'product-venue-price-weekday', 'product-venue-price-saturday', 'product-venue-price-sunday', 'product-venue-price-holiday',
-   'product-venue-cleaning-fee', 'product-service-extra-km-fee'
-  ].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { wireCurrencyMaskInput(el); wireMoneyPrefix(el); }
-  });
-
-  populateVenueStateOptions();
-  initPacotes();
-  initRedesSociais();
-  const skuInput = document.getElementById('product-sku');
-  skuInput?.addEventListener('input', () => {
-    const limpo = limparSku(skuInput.value);
-    if (limpo !== skuInput.value) skuInput.value = limpo;
-    document.querySelectorAll('#product-packages-list [data-campo="sku"]').forEach(el => { el.placeholder = limpo || ''; });
-  });
-  document.getElementById('products-search')?.addEventListener('input', (e) => {
-    produtosBusca = e.target.value;
-    renderProducts();
-  });
-  initVenueCommonAreaOutro();
-  initVenueCityBusca();
-  initVenueArea();
-  document.getElementById('product-venue-state').addEventListener('change', (e) => {
-    populateVenueCityOptions(e.target.value);
-  });
-
-  const resetDrawerState = () => {
-    categoriaEscolhidaManualmente = false;
-    currentCoverImage = null;
-    currentCoverMeta = null;
-    currentGalleryImages = [];
-    currentOpenDays = defaultOpenDays();
-    currentDishes = [];
-    currentVenueCommonAreas = [];
-    const outroBox = document.getElementById('product-venue-common-area-outro');
-    if (outroBox) outroBox.hidden = true;
-    currentSubcategory = null;
-    currentCategoryExpanded = null;
-    currentPricingType = null;
-    currentServiceAreaType = 'city_only';
-    currentScopeIncluded = [];
-    currentScopeExcluded = [];
-    currentPackages = [];
-    currentAddons = [];
-    preencherRedesSociais({});
-    renderPacotesLista('packages');
-    renderPacotesLista('addons');
-
-    renderCoverImagePicker();
-    renderGalleryImages();
-    renderWeekdayChips();
-    renderDishes();
-    renderVenueCommonAreas();
-    document.getElementById('product-venue-state').value = '';
-    populateVenueCityOptions('');
-    atualizarUnidadeArea();
-    closeCategoryPanel();
-    updateCategoryTriggerLabel();
-    renderScopeList('included');
-    renderScopeList('excluded');
-    ['included', 'excluded'].forEach(k => { const el = document.getElementById(`product-scope-${k}-input`); if (el) el.value = ''; });
-    renderPricingTypeFields();
-    updateCategoryFieldsVisibility();
-    document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
-
-    document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b.dataset.serviceArea === currentServiceAreaType));
-    setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
-    document.getElementById('product-cancellation-policy').value = 'flexivel';
-    document.getElementById('product-video-url').value = '';
-    document.getElementById('product-setup-minutes').value = '';
-    document.getElementById('product-teardown-minutes').value = '';
-    setPanelHidden('product-drawer-delete-btn', true);
-    setPanelHidden('product-drawer-duplicate-btn', true);
-    showDeleteConfirm(false);
-
-    goToStep(1);
-  };
-
-  if (addBtn) addBtn.addEventListener('click', () => {
-    if (!isProfileComplete()) {
-      openCompleteProfileModal();
-      return;
-    }
-    form.reset();
-    delete form.dataset.editId;
-    currentProductTags = [];
-    document.getElementById('product-drawer-title').textContent = 'Adicionar produto/serviço';
-    const avisoSuspensoNovo = document.getElementById('product-suspenso-aviso');
-    if (avisoSuspensoNovo) avisoSuspensoNovo.hidden = true;
-    resetDrawerState();
-    open();
-  });
-  if (closeBtn) closeBtn.addEventListener('click', close);
-  if (cancelBtn) cancelBtn.addEventListener('click', close);
-  if (backdrop) backdrop.addEventListener('click', close);
-
-  const deleteBtn = document.getElementById('product-drawer-delete-btn');
-  if (deleteBtn) deleteBtn.addEventListener('click', () => showDeleteConfirm(true));
-
-  document.getElementById('product-drawer-duplicate-btn')?.addEventListener('click', async (e) => {
-    const id = form.dataset.editId;
-    if (!id) return;
-    const btn = e.currentTarget;
-    btn.disabled = true;
-    try { await duplicarProduto(id); } finally { btn.disabled = false; }
-  });
-
-  const deleteNoBtn = document.getElementById('product-drawer-delete-no-btn');
-  if (deleteNoBtn) deleteNoBtn.addEventListener('click', () => showDeleteConfirm(false));
-
-  // "Deletar produto" (rodapé, ao editar): pop-up de confirmação da Love.
-  document.getElementById('produto-deletar-link')?.addEventListener('click', () => {
-    const id = form.dataset.editId;
-    if (!id) return;
-    confirmarNoHub({
-      titulo: 'Tem certeza que deseja deletar esse produto?',
-      texto: 'Esta ação é permanente. O produto será removido da sua vitrine.',
-      botao: 'Sim, deletar',
-      perigo: false,
-      aoConfirmar: async () => {
-        const { error } = await supabaseClient.from('products').delete().eq('id', id);
-        if (error) throw new Error('Não foi possível deletar o produto. Tente de novo.');
-        close();
-        await loadProducts();
-        renderCategoryTabs();
-        renderProducts();
-        showToast('Produto deletado.');
-      }
-    });
-    // Cancelar como texto simples, fora de caixa.
-    document.querySelector('.hub-confirmar:last-of-type')?.classList.add('hub-confirmar--cancelar-texto');
-  });
-
-  const deleteYesBtn = document.getElementById('product-drawer-delete-yes-btn');
-  if (deleteYesBtn) deleteYesBtn.addEventListener('click', async () => {
-    const id = form.dataset.editId;
-    if (!id) return;
-    const { error } = await supabaseClient.from('products').delete().eq('id', id);
-    if (error) { showToast('Não foi possível remover o item.', true); return; }
-    close();
-    await loadProducts();
-    renderCategoryTabs();
-    renderProducts();
-    showToast('Item removido da vitrine.');
-  });
-
-  document.getElementById('product-category').addEventListener('change', () => {
-    const category = document.getElementById('product-category').value;
-    updateCategoryTriggerLabel();
-    updateCategoryFieldsVisibility();
-    document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
-    updateWizardNextButtonState();
-  });
-
-  document.getElementById('product-category-search').addEventListener('input', (e) => {
-    renderCategoryTree(e.target.value);
-  });
-
-  document.getElementById('product-category-trigger').addEventListener('click', () => {
-    if (isCategoryPanelOpen()) closeCategoryPanel();
-    else openCategoryPanel();
-  });
-
-  // Clica fora do seletor de categoria (em qualquer lugar do drawer) fecha
-  // o painel, igual um combobox normal.
-  document.addEventListener('click', (e) => {
-    const wrap = document.getElementById('product-category-select');
-    if (wrap && isCategoryPanelOpen() && !wrap.contains(e.target)) closeCategoryPanel();
-  });
-
-  document.getElementById('product-name').addEventListener('input', updateWizardNextButtonState);
-
-  // Sugere a categoria enquanto a pessoa digita o título — só até ela
-  // escolher a categoria com a mão (ver categoriaEscolhidaManualmente).
-  document.getElementById('product-name').addEventListener('input', (e) => {
-    if (categoriaEscolhidaManualmente || document.getElementById('product-category').value) return;
-    const categoria = detectCategoryFromTitle(e.target.value);
-    const select = document.getElementById('product-category');
-    if (categoria && select.value !== categoria) {
-      select.value = categoria;
-      currentSubcategory = null;
-      currentCategoryExpanded = null;
-      select.dispatchEvent(new Event('change'));
-    }
-  });
-
-  document.getElementById('pricing-type-select')?.addEventListener('change', (e) => {
-    currentPricingType = e.target.value || null;
-    renderPricingTypeFields();
-  });
-
-  document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentServiceAreaType = btn.dataset.serviceArea;
-      document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b === btn));
-      setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
-    });
-  });
-
-  ['included', 'excluded'].forEach(kind => {
-    const input = document.getElementById(`product-scope-${kind}-input`);
-    document.getElementById(`product-scope-${kind}-add-btn`).addEventListener('click', () => {
-      addScopeItemFromInput(kind);
-      input.focus();
-    });
-    // Enter adiciona o item (e não envia o formulário).
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addScopeItemFromInput(kind); }
-    });
-  });
-
-  document.getElementById('product-wizard-cancel-btn')?.addEventListener('click', () => {
-    document.getElementById('product-drawer-close')?.click();
-  });
-  document.getElementById('product-wizard-back-btn').addEventListener('click', () => {
-    if (currentStep > 1) goToStep(currentStep - 1);
-  });
-  document.querySelectorAll('#product-wizard-steps [data-step-indicator]').forEach(tab => {
-    tab.addEventListener('click', () => {
-      // Criando, as etapas vão em sequência (Continuar); só editando dá para pular.
-      if (!document.getElementById('product-form')?.dataset.editId) return;
-      goToStep(Number(tab.dataset.stepIndicator));
-    });
-  });
-  document.getElementById('product-wizard-next-btn').addEventListener('click', () => {
-    // Aba 1 (Categoria) também tem a unidade de cobrança.
-    const validators = { 1: () => validateStep1() && validarLocal(), 2: () => validarCobranca() && validateStep3() };
-    const validate = validators[currentStep];
-    if (validate && !validate()) return;
-    if (currentStep < 3) goToStep(currentStep + 1);
-  });
-
-
-  // "Adicionar prato" saiu do drawer; pratos já salvos continuam no item.
-  const dishAddBtn = document.getElementById('product-dish-add-btn');
-  if (dishAddBtn) dishAddBtn.addEventListener('click', () => {
-    currentDishes.push({ id: 'd' + Date.now() + '-' + Math.round(Math.random() * 999), name: '', price: 0, quantity: 0 });
-    renderDishes();
-  });
-
-  if (form) {
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
-      // Clique repetido (ou Enter) enquanto o primeiro envio ainda está
-      // salvando criava o mesmo item várias vezes.
-      if (form.dataset.saving) return;
-      // Texto escrito no escopo sem apertar Enter também entra na lista.
-      addScopeItemFromInput('included');
-      addScopeItemFromInput('excluded');
+// Lê o formulário inteiro e devolve a linha de products, pronta para gravar.
+function montarLinhaDoProduto() {
       const name = document.getElementById('product-name').value.trim();
       const category = document.getElementById('product-category').value;
       const description = document.getElementById('product-description').value.trim();
       const active = true;
-
-      if (!validateStep1()) { goToStep(1); return; }
-      if (!validarLocal()) { goToStep(1); return; }
-      if (!validarCobranca()) { goToStep(2); return; }
-
       const { isVenue, isEquipment, isFood, isStaff, isAV } = categoryGroups(category);
 
       const pricing = {
@@ -1836,18 +1557,376 @@ function initProductDrawer() {
         }
       };
 
+      return row;
+}
+
+/* -------------------- Rascunho --------------------
+   Começou a criar e saiu: o produto fica em Meus produtos como Rascunho
+   (fora do Explorar). Grava sozinho enquanto a pessoa preenche e ao fechar;
+   "Finalizar rascunho" no card reabre, e Salvar publica. */
+
+let rascunhoAtual = null; // { id } do rascunho aberto no editor (null = não é rascunho)
+let rascunhoFila = Promise.resolve();
+let rascunhoTimer = null;
+
+function salvarRascunho({ recarregar = false } = {}) {
+  clearTimeout(rascunhoTimer);
+  const form = document.getElementById('product-form');
+  const alvo = rascunhoAtual;
+  if (!form || !alvo || form.dataset.saving) return rascunhoFila;
+  // Sem categoria ainda (é o primeiro campo) não tem o que guardar.
+  if (!document.getElementById('product-category').value) return rascunhoFila;
+  let row;
+  try { row = montarLinhaDoProduto(); } catch (e) { console.warn('Rascunho não montado.', e); return rascunhoFila; }
+  row.active = false;
+  row.name = row.name || 'Rascunho sem título';
+  row.extra = { ...row.extra, rascunho: true };
+  rascunhoFila = rascunhoFila.then(async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+    if (alvo.id) {
+      const { error } = await supabaseClient.from('products').update(row).eq('id', alvo.id);
+      if (error) console.warn('Rascunho não salvo.', error);
+    } else {
+      const { data, error } = await supabaseClient.from('products').insert({ fornecedor_id: empresaId(session), ...row }).select('id').single();
+      if (error || !data) { console.warn('Rascunho não criado.', error); return; }
+      alvo.id = data.id;
+    }
+    if (recarregar) {
+      await loadProducts();
+      renderCategoryTabs();
+      renderProducts();
+      showToast('Salvo como rascunho. Para publicar, clique em Finalizar rascunho.');
+    }
+  }).catch(e => console.warn('Rascunho não salvo.', e));
+  return rascunhoFila;
+}
+
+function agendarRascunho() {
+  if (!rascunhoAtual) return;
+  clearTimeout(rascunhoTimer);
+  rascunhoTimer = setTimeout(() => salvarRascunho(), 1500);
+}
+
+function initProductDrawer() {
+  const addBtn = document.getElementById('product-add-btn');
+  const drawer = document.getElementById('product-drawer');
+  const backdrop = document.getElementById('product-drawer-backdrop');
+  const closeBtn = document.getElementById('product-drawer-close');
+  const cancelBtn = document.getElementById('product-drawer-cancel');
+  const form = document.getElementById('product-form');
+
+  const showDeleteConfirm = (show) => {
+    setPanelHidden('product-wizard-footer-default', show);
+    setPanelHidden('product-wizard-footer-confirm-delete', !show);
+  };
+
+  const open = () => { drawer.classList.add('show'); backdrop.classList.add('show'); };
+  const close = () => {
+    if (rascunhoAtual && !form.dataset.saving) salvarRascunho({ recarregar: true });
+    rascunhoAtual = null;
+    clearTimeout(rascunhoTimer);
+    drawer.classList.remove('show');
+    backdrop.classList.remove('show');
+    form.reset();
+    delete form.dataset.editId;
+    currentProductTags = [];
+    showDeleteConfirm(false);
+  };
+
+  // Campos de moeda do motor de precificação (texto mascarado, como já é
+  // usado em pagamentos.html/configuracoes.html — não o type="number" cru
+  // que o campo único de preço antigo usava).
+  ['pricing-per-person-price', 'pricing-per-hour-price', 'pricing-per-hour-extra',
+   'pricing-fixed-price', 'pricing-on-request-price',
+   'product-venue-price-weekday', 'product-venue-price-saturday', 'product-venue-price-sunday', 'product-venue-price-holiday',
+   'product-venue-cleaning-fee', 'product-service-extra-km-fee'
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { wireCurrencyMaskInput(el); wireMoneyPrefix(el); }
+  });
+
+  populateVenueStateOptions();
+  initPacotes();
+  initRedesSociais();
+  const skuInput = document.getElementById('product-sku');
+  skuInput?.addEventListener('input', () => {
+    const limpo = limparSku(skuInput.value);
+    if (limpo !== skuInput.value) skuInput.value = limpo;
+    document.querySelectorAll('#product-packages-list [data-campo="sku"]').forEach(el => { el.placeholder = limpo || ''; });
+  });
+  document.getElementById('products-search')?.addEventListener('input', (e) => {
+    produtosBusca = e.target.value;
+    renderProducts();
+  });
+  initVenueCommonAreaOutro();
+  initVenueCityBusca();
+  initVenueArea();
+  document.getElementById('product-venue-state').addEventListener('change', (e) => {
+    populateVenueCityOptions(e.target.value);
+  });
+
+  const resetDrawerState = () => {
+    categoriaEscolhidaManualmente = false;
+    currentCoverImage = null;
+    currentCoverMeta = null;
+    currentGalleryImages = [];
+    currentOpenDays = defaultOpenDays();
+    currentDishes = [];
+    currentVenueCommonAreas = [];
+    const outroBox = document.getElementById('product-venue-common-area-outro');
+    if (outroBox) outroBox.hidden = true;
+    currentSubcategory = null;
+    currentCategoryExpanded = null;
+    currentPricingType = null;
+    currentServiceAreaType = 'city_only';
+    currentScopeIncluded = [];
+    currentScopeExcluded = [];
+    currentPackages = [];
+    currentAddons = [];
+    preencherRedesSociais({});
+    renderPacotesLista('packages');
+    renderPacotesLista('addons');
+
+    renderCoverImagePicker();
+    renderGalleryImages();
+    renderWeekdayChips();
+    renderDishes();
+    renderVenueCommonAreas();
+    document.getElementById('product-venue-state').value = '';
+    populateVenueCityOptions('');
+    atualizarUnidadeArea();
+    closeCategoryPanel();
+    updateCategoryTriggerLabel();
+    renderScopeList('included');
+    renderScopeList('excluded');
+    ['included', 'excluded'].forEach(k => { const el = document.getElementById(`product-scope-${k}-input`); if (el) el.value = ''; });
+    renderPricingTypeFields();
+    updateCategoryFieldsVisibility();
+    document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
+
+    document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b.dataset.serviceArea === currentServiceAreaType));
+    setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
+    document.getElementById('product-cancellation-policy').value = 'flexivel';
+    document.getElementById('product-video-url').value = '';
+    document.getElementById('product-setup-minutes').value = '';
+    document.getElementById('product-teardown-minutes').value = '';
+    setPanelHidden('product-drawer-delete-btn', true);
+    setPanelHidden('product-drawer-duplicate-btn', true);
+    showDeleteConfirm(false);
+
+    goToStep(1);
+  };
+
+  if (addBtn) addBtn.addEventListener('click', () => {
+    if (!isProfileComplete()) {
+      openCompleteProfileModal();
+      return;
+    }
+    form.reset();
+    delete form.dataset.editId;
+    currentProductTags = [];
+    document.getElementById('product-drawer-title').textContent = 'Adicionar produto/serviço';
+    rascunhoAtual = { id: null };
+    const avisoSuspensoNovo = document.getElementById('product-suspenso-aviso');
+    if (avisoSuspensoNovo) avisoSuspensoNovo.hidden = true;
+    resetDrawerState();
+    open();
+  });
+  form.addEventListener('input', agendarRascunho);
+  form.addEventListener('change', agendarRascunho);
+  // Saiu da página pelo menu ou fechou a aba: grava o que tiver.
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') salvarRascunho(); });
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  if (cancelBtn) cancelBtn.addEventListener('click', close);
+  if (backdrop) backdrop.addEventListener('click', close);
+
+  const deleteBtn = document.getElementById('product-drawer-delete-btn');
+  if (deleteBtn) deleteBtn.addEventListener('click', () => showDeleteConfirm(true));
+
+  document.getElementById('product-drawer-duplicate-btn')?.addEventListener('click', async (e) => {
+    const id = form.dataset.editId;
+    if (!id) return;
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    try { await duplicarProduto(id); } finally { btn.disabled = false; }
+  });
+
+  const deleteNoBtn = document.getElementById('product-drawer-delete-no-btn');
+  if (deleteNoBtn) deleteNoBtn.addEventListener('click', () => showDeleteConfirm(false));
+
+  // "Deletar produto" (rodapé, ao editar): pop-up de confirmação da Love.
+  document.getElementById('produto-deletar-link')?.addEventListener('click', () => {
+    const id = form.dataset.editId;
+    if (!id) return;
+    confirmarNoHub({
+      titulo: 'Tem certeza que deseja deletar esse produto?',
+      texto: 'Esta ação é permanente. O produto será removido da sua vitrine.',
+      botao: 'Sim, deletar',
+      perigo: false,
+      aoConfirmar: async () => {
+        const { error } = await supabaseClient.from('products').delete().eq('id', id);
+        if (error) throw new Error('Não foi possível deletar o produto. Tente de novo.');
+        rascunhoAtual = null;
+        close();
+        await loadProducts();
+        renderCategoryTabs();
+        renderProducts();
+        showToast('Produto deletado.');
+      }
+    });
+    // Cancelar como texto simples, fora de caixa.
+    document.querySelector('.hub-confirmar:last-of-type')?.classList.add('hub-confirmar--cancelar-texto');
+  });
+
+  const deleteYesBtn = document.getElementById('product-drawer-delete-yes-btn');
+  if (deleteYesBtn) deleteYesBtn.addEventListener('click', async () => {
+    const id = form.dataset.editId;
+    if (!id) return;
+    const { error } = await supabaseClient.from('products').delete().eq('id', id);
+    if (error) { showToast('Não foi possível remover o item.', true); return; }
+    rascunhoAtual = null;
+    close();
+    await loadProducts();
+    renderCategoryTabs();
+    renderProducts();
+    showToast('Item removido da vitrine.');
+  });
+
+  document.getElementById('product-category').addEventListener('change', () => {
+    const category = document.getElementById('product-category').value;
+    updateCategoryTriggerLabel();
+    updateCategoryFieldsVisibility();
+    document.getElementById('product-name').placeholder = DEFAULT_TITLE_PLACEHOLDER;
+    updateWizardNextButtonState();
+  });
+
+  document.getElementById('product-category-search').addEventListener('input', (e) => {
+    renderCategoryTree(e.target.value);
+  });
+
+  document.getElementById('product-category-trigger').addEventListener('click', () => {
+    if (isCategoryPanelOpen()) closeCategoryPanel();
+    else openCategoryPanel();
+  });
+
+  // Clica fora do seletor de categoria (em qualquer lugar do drawer) fecha
+  // o painel, igual um combobox normal.
+  document.addEventListener('click', (e) => {
+    const wrap = document.getElementById('product-category-select');
+    if (wrap && isCategoryPanelOpen() && !wrap.contains(e.target)) closeCategoryPanel();
+  });
+
+  document.getElementById('product-name').addEventListener('input', updateWizardNextButtonState);
+
+  // Sugere a categoria enquanto a pessoa digita o título — só até ela
+  // escolher a categoria com a mão (ver categoriaEscolhidaManualmente).
+  document.getElementById('product-name').addEventListener('input', (e) => {
+    if (categoriaEscolhidaManualmente || document.getElementById('product-category').value) return;
+    const categoria = detectCategoryFromTitle(e.target.value);
+    const select = document.getElementById('product-category');
+    if (categoria && select.value !== categoria) {
+      select.value = categoria;
+      currentSubcategory = null;
+      currentCategoryExpanded = null;
+      select.dispatchEvent(new Event('change'));
+    }
+  });
+
+  document.getElementById('pricing-type-select')?.addEventListener('change', (e) => {
+    currentPricingType = e.target.value || null;
+    renderPricingTypeFields();
+  });
+
+  document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentServiceAreaType = btn.dataset.serviceArea;
+      document.getElementById('product-service-area-toggle').querySelectorAll('[data-service-area]').forEach(b => b.classList.toggle('active', b === btn));
+      setPanelHidden('product-service-radius-fields', currentServiceAreaType !== 'radius_km');
+    });
+  });
+
+  ['included', 'excluded'].forEach(kind => {
+    const input = document.getElementById(`product-scope-${kind}-input`);
+    document.getElementById(`product-scope-${kind}-add-btn`).addEventListener('click', () => {
+      addScopeItemFromInput(kind);
+      input.focus();
+    });
+    // Enter adiciona o item (e não envia o formulário).
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addScopeItemFromInput(kind); }
+    });
+  });
+
+  document.getElementById('product-wizard-cancel-btn')?.addEventListener('click', () => {
+    document.getElementById('product-drawer-close')?.click();
+  });
+  document.getElementById('product-wizard-back-btn').addEventListener('click', () => {
+    if (currentStep > 1) goToStep(currentStep - 1);
+  });
+  document.querySelectorAll('#product-wizard-steps [data-step-indicator]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Criando, as etapas vão em sequência (Continuar); só editando dá para pular.
+      if (!document.getElementById('product-form')?.dataset.editId) return;
+      goToStep(Number(tab.dataset.stepIndicator));
+    });
+  });
+  document.getElementById('product-wizard-next-btn').addEventListener('click', () => {
+    // Aba 1 (Categoria) também tem a unidade de cobrança.
+    const validators = { 1: () => validateStep1() && validarLocal(), 2: () => validarCobranca() && validateStep3() };
+    const validate = validators[currentStep];
+    if (validate && !validate()) return;
+    if (currentStep < 3) goToStep(currentStep + 1);
+  });
+
+
+  // "Adicionar prato" saiu do drawer; pratos já salvos continuam no item.
+  const dishAddBtn = document.getElementById('product-dish-add-btn');
+  if (dishAddBtn) dishAddBtn.addEventListener('click', () => {
+    currentDishes.push({ id: 'd' + Date.now() + '-' + Math.round(Math.random() * 999), name: '', price: 0, quantity: 0 });
+    renderDishes();
+  });
+
+  if (form) {
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      // Clique repetido (ou Enter) enquanto o primeiro envio ainda está
+      // salvando criava o mesmo item várias vezes.
+      if (form.dataset.saving) return;
+      // Texto escrito no escopo sem apertar Enter também entra na lista.
+      addScopeItemFromInput('included');
+      addScopeItemFromInput('excluded');
+      const name = document.getElementById('product-name').value.trim();
+      const category = document.getElementById('product-category').value;
+      const description = document.getElementById('product-description').value.trim();
+      const active = true;
+
+      if (!validateStep1()) { goToStep(1); return; }
+      if (!validarLocal()) { goToStep(1); return; }
+      if (!validarCobranca()) { goToStep(2); return; }
+
+      const row = montarLinhaDoProduto();
+
       const submitBtn = document.getElementById('product-wizard-submit-btn');
+      clearTimeout(rascunhoTimer);
       form.dataset.saving = '1';
+      await rascunhoFila;
+      const idRascunho = !form.dataset.editId && rascunhoAtual && rascunhoAtual.id;
       if (submitBtn) submitBtn.disabled = true;
 
       try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session) return;
 
-        if (form.dataset.editId) {
+        if (idRascunho) {
+          const { error } = await supabaseClient.from('products').update(row).eq('id', idRascunho);
+          if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
+          avisarAdicionado(name, 'Produto adicionado à vitrine.');
+        } else if (form.dataset.editId) {
           const { error } = await supabaseClient.from('products').update(row).eq('id', form.dataset.editId);
           if (error) { showToast('Não foi possível atualizar o produto.', true); return; }
-          showToast('Produto atualizado.');
+          if (rascunhoAtual) avisarAdicionado(name, 'Rascunho finalizado: produto adicionado à vitrine.');
+          else showToast('Produto atualizado.');
         } else {
           const { error } = await supabaseClient.from('products').insert({ fornecedor_id: empresaId(session), ...row });
           if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
@@ -1857,6 +1936,7 @@ function initProductDrawer() {
         renderCategoryTabs();
         renderProducts();
         populateProductCategoryOptions();
+        rascunhoAtual = null;
         close();
       } finally {
         delete form.dataset.saving;
@@ -1984,6 +2064,7 @@ function openProductDrawer(id) {
 
   const form = document.getElementById('product-form');
   form.dataset.editId = p.id;
+  rascunhoAtual = p.rascunho && !p.active ? { id: p.id } : null;
   setPanelHidden('product-drawer-delete-btn', false);
   setPanelHidden('product-drawer-duplicate-btn', false);
   setPanelHidden('product-wizard-footer-default', false);

@@ -264,7 +264,7 @@ function initProfileForm() {
     p.description = document.getElementById('profile-description').value.trim();
     p.documentNumber = documentNumber;
     const erroBanco = await salvarPerfilNoBanco(p);
-    if (!erroBanco) await salvarDadosDaContaDigital(birthdatePicker.getValue());
+    const erroExtras = await salvarDadosDaContaDigital(birthdatePicker.getValue());
     // Razão social / documento só podem trocar a cada 7 dias (migration 121);
     // se o banco recusar (ex.: estado local desatualizado), o valor anterior volta.
     if (erroBanco && /ALTERACAO_BLOQUEADA/.test(erroBanco.message || '')) {
@@ -274,6 +274,12 @@ function initProfileForm() {
       document.getElementById('profile-document').value = p.documentNumber || '';
       lockConfiguredFields(p);
       showToast('A razão social e o CNPJ/CPF só podem ser alterados a cada 7 dias.', true);
+      return;
+    }
+    // Outro erro do banco: avisa de verdade (antes aparecia "Perfil atualizado").
+    const erroGeral = erroBanco || erroExtras;
+    if (erroGeral) {
+      showToast('Não foi possível salvar: ' + (erroGeral.message || 'tente de novo em instantes.'), true);
       return;
     }
     // Mudou razão social/documento de verdade: zera a contagem dos 7 dias
@@ -322,6 +328,28 @@ function initAbasDeInformacoes() {
   });
 }
 
+/* Grava em fornecedores. Se o banco não tiver alguma coluna (migration
+   ainda não rodada), tenta de novo sem ela, para o resto não se perder.
+   Devolve o erro que sobrou (ou null). */
+async function atualizarFornecedor(campos) {
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return new Error('Sessão expirada. Entre de novo.');
+  let dados = { ...campos };
+  for (let i = 0; i < 12; i++) {
+    const { data: linhas, error } = await supabaseClient.from('fornecedores').update(dados).eq('id', empresaId(session)).select('id');
+    // Sem erro e sem linha: o banco não deixou gravar (permissão) e não avisou.
+    if (!error && !(linhas && linhas.length)) return new Error('o cadastro da empresa não pôde ser gravado (permissão). Avise o suporte.');
+    if (!error) return null;
+    const falta = (error.message || '').match(/'([a-z_]+)' column|column "?([a-z_]+)"? (?:of relation|does not exist)/i);
+    const coluna = falta && (falta[1] || falta[2]);
+    if (!coluna || !(coluna in dados)) return error;
+    console.warn('Coluna ' + coluna + ' não existe em fornecedores; salvando sem ela.');
+    delete dados[coluna];
+    if (!Object.keys(dados).length) return null;
+  }
+  return null;
+}
+
 async function carregarDadosDaContaDigital() {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
@@ -353,7 +381,7 @@ async function salvarDadosDaContaDigital(nascimento) {
   const br = n.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
   if (br) dataNasc = `${br[3]}-${br[2]}-${br[1]}`;
   else if (/^\d{4}-\d{2}-\d{2}$/.test(n)) dataNasc = n;
-  const { error } = await supabaseClient.from('fornecedores').update({
+  const error = await atualizarFornecedor({
     tipo_empresa: v('profile-tipo-empresa') || null,
     faturamento_mensal: v('profile-faturamento') ? Number(v('profile-faturamento')) : null,
     cep: v('profile-cep').replace(/\D/g, '') || null,
@@ -362,8 +390,9 @@ async function salvarDadosDaContaDigital(nascimento) {
     bairro: v('profile-bairro') || null,
     responsavel_cpf: v('profile-resp-cpf').replace(/\D/g, '') || null,
     data_nascimento: dataNasc
-  }).eq('id', empresaId(session));
-  if (error) console.warn('Dados da conta digital não salvos (rode a migration 110).', error);
+  });
+  if (error) console.error('Dados da conta digital não salvos.', error);
+  return error;
 }
 
 /* O perfil também vai para o banco, não só para o localStorage. Sem isto,
@@ -374,9 +403,7 @@ async function salvarPerfilNoBanco(p) {
   const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
 
-  const { error } = await supabaseClient
-    .from('fornecedores')
-    .update({
+  const campos = {
       razao_social: p.razaoSocial || null,
       company_name: p.company || null,
       contact_name: p.name || null,
@@ -387,11 +414,16 @@ async function salvarPerfilNoBanco(p) {
       city: p.city || null,
       state: p.state || null,
       description: p.description || null
-    })
-    .eq('id', empresaId(session));
-
-  // Falhar aqui não pode travar o fluxo: o perfil local já foi salvo.
-  if (error) console.error('Não foi possível sincronizar o perfil com o banco.', error);
+  };
+  let error = await atualizarFornecedor(campos);
+  // Razão social / CNPJ só mudam a cada 7 dias: salva o resto mesmo assim e
+  // devolve o aviso do bloqueio.
+  if (error && /ALTERACAO_BLOQUEADA/.test(error.message || '')) {
+    const { razao_social, cnpj, document_type, ...resto } = campos;
+    const erroResto = await atualizarFornecedor(resto);
+    if (erroResto) error = erroResto;
+  }
+  if (error) console.error('Não foi possível salvar o perfil no banco.', error);
   return error || null;
 }
 

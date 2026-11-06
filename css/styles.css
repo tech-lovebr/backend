@@ -13995,8 +13995,8 @@ html body #b2b-vendor-profile-view .b2b-perfil-sobre-endereco:not(.hidden):not(#
 /* ==========================================================================
    Celular, Home (modelo de app): foto do convite atrás do topo (logo e
    ícones brancos por cima, topo branco de novo ao rolar); caixa com "Olá,
-   nome!", os dias que faltam e os atalhos (Checklist, Pedir orçamento,
-   Orçamento, Meu site, Mapear mesas, Save the date). Desktop não muda.
+   nome!", os dias que faltam e os atalhos (Editar convite, Checklist, Encontrar fornecedor,
+   Despesas, Mapear mesas, Save the date). Desktop não muda.
    ========================================================================== */
 .home-capa-celular-atalhos { display: none; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {

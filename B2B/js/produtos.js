@@ -1451,6 +1451,14 @@ function renderScopeList(kind) {
 
 /* -------------------- Navegação do wizard -------------------- */
 
+// Editor aberto num rascunho (Finalizar rascunho no card).
+function abrindoRascunho() {
+  try {
+    const id = document.getElementById('product-form')?.dataset.editId;
+    return !!(id && rascunhoAtual && rascunhoAtual.id === id);
+  } catch (e) { return false; }
+}
+
 function goToStep(n) {
   currentStep = n;
 
@@ -1469,7 +1477,8 @@ function goToStep(n) {
   // à direita. Salvar fica disponível em qualquer aba (o submit valida
   // Categoria e Preço e leva pra aba que faltar).
   const ultima = n === 3;
-  const criando = !document.getElementById('product-form')?.dataset.editId;
+  // Rascunho aberto pelo card segue como criando: Continuar até a Mídia.
+  const criando = !document.getElementById('product-form')?.dataset.editId || abrindoRascunho();
   if (criando) {
     // Criando: uma etapa de cada vez. 1: Cancelar + Continuar; 2: Voltar +
     // Continuar; 3: Voltar + Salvar produto.
@@ -1477,6 +1486,8 @@ function goToStep(n) {
     setPanelHidden('product-wizard-back-btn', n === 1);
     setPanelHidden('product-wizard-next-btn', ultima);
     setPanelHidden('product-wizard-submit-btn', !ultima);
+    setPanelHidden('product-drawer-duplicate-btn', true);
+    setPanelHidden('product-drawer-delete-btn', true);
   } else {
     // Editando: só "Salvar alterações" (as etapas ficam no menu lateral).
     ['product-wizard-cancel-btn', 'product-wizard-back-btn', 'product-wizard-next-btn', 'product-drawer-duplicate-btn', 'product-drawer-delete-btn']
@@ -2237,7 +2248,7 @@ function openProductDrawer(id) {
     const editando = !!(document.getElementById('product-form') || {}).dataset?.editId;
     // Editando: 'Editar: Bar completo' (o nome do produto ao lado).
     const nomeProduto = ((document.getElementById('product-name') || {}).value || '').trim();
-    titulo.textContent = aberto ? (editando ? (nomeProduto ? `Editar: ${nomeProduto}` : 'Editar produto') : 'Adicionar novo produto') : 'Meus produtos';
+    titulo.textContent = aberto ? (editando ? (abrindoRascunho() ? 'Finalizar rascunho' : (nomeProduto ? `Editar: ${nomeProduto}` : 'Editar produto')) : 'Adicionar novo produto') : 'Meus produtos';
     // O endereço acompanha o que está aberto, para o F5 voltar ao mesmo lugar.
     const idEditando = (document.getElementById('product-form') || {}).dataset?.editId;
     const endereco = aberto ? (editando ? `?editar=${encodeURIComponent(idEditando)}` : '?add=1') : '';

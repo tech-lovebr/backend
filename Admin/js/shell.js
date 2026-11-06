@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
      • MENOR    (1.0.1 → 1.1.0): função ou tela nova, sem quebrar o que existe;
      • MAIOR    (1.1.0 → 2.0.0): mudança que muda o jeito de usar o Admin.
    Ao subir MENOR, a CORREÇÃO volta a 0; ao subir MAIOR, as duas voltam a 0. */
-const VERSAO_ADMIN = '1.9.4';
+const VERSAO_ADMIN = '1.10.0';
 
 /* Rodapé igual ao do Hub e da plataforma: © Love Hub Ltda + "Feito com
    amor…" à esquerda e, no lugar de Privacidade/Termos, a versão do Admin. */
@@ -465,3 +465,84 @@ document.addEventListener('DOMContentLoaded', () => {
   main.appendChild(rodape);
   agendarEsticarTabelas();
 });
+
+/* Dicas ao passar o mouse: caixinha branca da Love (a mesma do sino de
+   Notificações da plataforma), nunca a caixinha do navegador. Vale para tudo
+   do Admin: atributo title, <title> dentro de SVG (pontos de gráfico) e
+   data-dica. Na primeira passada o texto vira data-dica e o title some, para
+   o navegador não mostrar a dele por cima. */
+(function ligarDicasDoAdmin() {
+  let dica = null;
+  let alvoAtual = null;
+
+  function textoDe(el) {
+    if (el.dataset && el.dataset.dica) return el.dataset.dica;
+    const t = el.getAttribute('title');
+    if (t) {
+      el.removeAttribute('title');
+      if (!el.hasAttribute('aria-label')) el.setAttribute('aria-label', t);
+      el.setAttribute('data-dica', t);
+      return t;
+    }
+    const filho = Array.from(el.children || []).find(c => c.tagName && c.tagName.toLowerCase() === 'title');
+    if (filho) {
+      const texto = filho.textContent.trim();
+      filho.remove();
+      if (texto) el.setAttribute('data-dica', texto);
+      return texto;
+    }
+    return '';
+  }
+
+  function alvoDe(no) {
+    for (let el = no instanceof Element ? no : null; el && el !== document.body; el = el.parentElement) {
+      if (el.hasAttribute('data-dica') || el.hasAttribute('title')) return el;
+      if (Array.from(el.children).some(c => c.tagName.toLowerCase() === 'title')) return el;
+    }
+    return null;
+  }
+
+  function esconder() {
+    alvoAtual = null;
+    if (dica) dica.classList.remove('is-visivel');
+  }
+
+  function mostrar(alvo) {
+    const texto = textoDe(alvo);
+    if (!texto) return;
+    alvoAtual = alvo;
+    if (!dica) {
+      dica = document.createElement('div');
+      dica.className = 'love-dica';
+      dica.setAttribute('role', 'tooltip');
+      document.body.appendChild(dica);
+    }
+    dica.textContent = texto;
+    dica.classList.add('is-visivel');
+    const r = alvo.getBoundingClientRect();
+    const d = dica.getBoundingClientRect();
+    let top = r.top - d.height - 8;
+    if (top < 8) top = r.bottom + 8;
+    const left = Math.max(8, Math.min(r.left + r.width / 2 - d.width / 2, window.innerWidth - d.width - 8));
+    dica.style.top = `${top}px`;
+    dica.style.left = `${left}px`;
+  }
+
+  document.addEventListener('mouseover', e => {
+    const alvo = alvoDe(e.target);
+    if (alvo && alvo !== alvoAtual) mostrar(alvo);
+    else if (!alvo && alvoAtual) esconder();
+  });
+  document.addEventListener('mouseout', e => {
+    if (!alvoAtual) return;
+    const para = e.relatedTarget instanceof Node ? e.relatedTarget : null;
+    if (!para || !alvoAtual.contains(para)) esconder();
+  });
+  document.addEventListener('focusin', e => {
+    const alvo = alvoDe(e.target);
+    if (alvo && e.target.matches && e.target.matches(':focus-visible')) mostrar(alvo);
+  });
+  document.addEventListener('focusout', esconder);
+  document.addEventListener('click', esconder, true);
+  window.addEventListener('scroll', esconder, true);
+})();

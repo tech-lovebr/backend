@@ -88,13 +88,7 @@
 
               <div class="product-wizard-panel product-wizard-panel-spaced" data-step="1">
                 <div>
-                  <label for="product-name" class="field-label product-title-label">Título do anúncio</label>
-                  <input id="product-name" type="text" class="field-input">
-                </div>
-
-                <div>
                   <label class="field-label product-title-label">Categoria</label>
-                  <p class="text-xs text-zinc-500 mb-2">A gente já sugere a categoria conforme você escreve o título — pode trocar se quiser.</p>
                   <div class="category-select" id="product-category-select">
                     <button type="button" class="category-select-trigger" id="product-category-trigger">
                       <span id="product-category-trigger-label">Selecione a categoria...</span>
@@ -135,8 +129,12 @@
                   </div>
                 </div>
 
+                <div>
+                  <label for="product-name" class="field-label product-title-label" id="product-name-label">Título do anúncio</label>
+                  <input id="product-name" type="text" class="field-input">
+                </div>
+
                 <div id="product-venue-details" class="mb-6" hidden>
-                  <label class="field-label product-title-label">Detalhes do local</label>
                   <div class="flex flex-col gap-4">
                     <div class="local-linha-endereco">
                       <div>
@@ -629,6 +627,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=80"></script>
-  <script src="js/produtos.js?v=77"></script>
+  <script src="js/produtos.js?v=78"></script>
 </body>
 </html>

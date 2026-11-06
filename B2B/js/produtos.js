@@ -1113,6 +1113,9 @@ function updateCategoryFieldsVisibility() {
   setPanelHidden('product-venue-fields', !isVenue);
   setPanelHidden('product-scope-lists', isVenue);
   setPanelHidden('product-venue-details', !isVenue);
+  // Espaço para locação: o título é o nome do lugar.
+  const tituloLabel = document.getElementById('product-name-label');
+  if (tituloLabel) tituloLabel.textContent = isVenue ? 'Nome do espaço/local' : 'Título do anúncio';
   setPanelHidden('product-food-fields', !isFood);
   // Valor fixo de Buffet e Gastronomia (ex.: bolo) não tem duração/permanência.
   setPanelHidden('pricing-fixed-duration-wrap', isFood);
@@ -1624,7 +1627,7 @@ function initProductDrawer() {
   // Sugere a categoria enquanto a pessoa digita o título — só até ela
   // escolher a categoria com a mão (ver categoriaEscolhidaManualmente).
   document.getElementById('product-name').addEventListener('input', (e) => {
-    if (categoriaEscolhidaManualmente) return;
+    if (categoriaEscolhidaManualmente || document.getElementById('product-category').value) return;
     const categoria = detectCategoryFromTitle(e.target.value);
     const select = document.getElementById('product-category');
     if (categoria && select.value !== categoria) {

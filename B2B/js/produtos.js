@@ -1232,7 +1232,6 @@ function openCategoryPanel() {
   panel.hidden = false;
   wrap.classList.add('is-open');
   document.getElementById('product-category-search').value = '';
-  if (select.value && SUBCATEGORY_MAP[select.value]) currentCategoryExpanded = select.value;
   renderCategoryTree('');
   document.getElementById('product-category-search').focus();
 }
@@ -1250,7 +1249,7 @@ function updateCategoryTriggerLabel() {
   const label = document.getElementById('product-category-trigger-label');
   if (!select || !label) return;
   // Só o nome mais específico: "Churrasco" (não "Buffet e Gastronomia · Churrasco").
-  const nome = select.value ? (currentSubcategory || select.value) : '';
+  const nome = select.value || '';
   label.textContent = nome || 'Selecione a categoria...';
   // Mídia: sempre a categoria principal (Sítio/Chácara → espaços para locação).
   const hint = document.getElementById('product-gallery-hint');
@@ -1275,7 +1274,7 @@ function renderCategoryTree(filterText) {
 
   wrap.innerHTML = filtered.length
     ? filtered.map(cat => {
-        const subs = SUBCATEGORY_MAP[cat] || [];
+        const subs = []; // sem subcategorias: viraram tags (js/data.js)
         const isExpanded = currentCategoryExpanded === cat;
         const rowHtml = `
           <div class="category-tree-row ${selectedCategory === cat ? 'active' : ''} ${isExpanded ? 'is-open' : ''}" data-category-row="${escapeHtml(cat)}">
@@ -1301,7 +1300,7 @@ function renderCategoryTree(filterText) {
       e.stopPropagation();
       categoriaEscolhidaManualmente = true;
       const cat = row.dataset.categoryRow;
-      const subs = SUBCATEGORY_MAP[cat] || [];
+      const subs = [];
       if (select.value !== cat) {
         select.value = cat;
         currentSubcategory = null;

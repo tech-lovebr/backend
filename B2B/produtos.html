@@ -28,7 +28,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=887">
+  <link rel="stylesheet" href="css/styles.css?v=888">
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -165,11 +165,18 @@
                       </div>
                     </div>
 
-                    <div class="local-campo-area">
-                      <label for="product-venue-size" class="field-label">Área útil</label>
-                      <div class="campo-com-unidade">
-                        <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" placeholder="m²" autocomplete="off">
-                        <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
+                    <div class="local-linha-area">
+                      <div class="local-campo-area">
+                        <label for="product-venue-size" class="field-label">Área útil</label>
+                        <div class="campo-com-unidade">
+                          <input id="product-venue-size" type="text" inputmode="numeric" maxlength="7" class="field-input" placeholder="m²" autocomplete="off">
+                          <span class="campo-unidade" aria-hidden="true"><span class="campo-unidade-eco"></span> m²</span>
+                        </div>
+                      </div>
+                      <div class="local-campo-coordenadas">
+                        <label for="product-venue-coords" class="field-label">Coordenadas</label>
+                        <input id="product-venue-coords" type="text" class="field-input" placeholder="Ex.: 23°04'17.5&quot;S 47°09'48.6&quot;W" autocomplete="off" spellcheck="false">
+                        <p class="local-coordenadas-status" id="product-venue-coords-status" hidden></p>
                       </div>
                     </div>
                   </div>
@@ -627,6 +634,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=81"></script>
-  <script src="js/produtos.js?v=79"></script>
+  <script src="js/produtos.js?v=80"></script>
 </body>
 </html>

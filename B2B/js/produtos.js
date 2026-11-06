@@ -916,6 +916,82 @@ function renderVenueCommonAreas() {
 
 // Estado -> Cidade em cascata, usando a base completa do IBGE (js/data-br-localidades.js):
 // escolher o estado popula o datalist da cidade (que também aceita digitar pra filtrar).
+/* -------------------- Coordenadas do local --------------------
+   Sítio e chácara muitas vezes não têm endereço: a pessoa cola a coordenada
+   (23°04'17.5"S 47°09'48.6"W ou -23.0715, -47.1635) e o endereço, a cidade
+   e o estado vêm sozinhos (OpenStreetMap). */
+function lerCoordenadas(texto) {
+  const t = String(texto || '').trim().replace(/,(?=\d)/g, '.');
+  if (!t) return null;
+  // Graus, minutos e segundos com S/N e W/O/E.
+  const gms = /(\d+(?:\.\d+)?)\s*°\s*(?:(\d+(?:\.\d+)?)\s*['’′]\s*)?(?:(\d+(?:\.\d+)?)\s*(?:"|”|″|'')\s*)?([NSLOWE])/gi;
+  const partes = [...t.matchAll(gms)];
+  if (partes.length === 2) {
+    const valor = m => {
+      let v = Number(m[1]) + (Number(m[2]) || 0) / 60 + (Number(m[3]) || 0) / 3600;
+      if (/[SWO]/i.test(m[4])) v = -v;
+      return { v, eixo: /[NS]/i.test(m[4]) ? 'lat' : 'lng' };
+    };
+    const a = valor(partes[0]), b = valor(partes[1]);
+    const lat = a.eixo === 'lat' ? a.v : b.v;
+    const lng = a.eixo === 'lat' ? b.v : a.v;
+    if (Math.abs(lat) <= 90 && Math.abs(lng) <= 180) return { lat, lng };
+    return null;
+  }
+  // Decimal: "-23.0715, -47.1635" (como o Google Maps copia) ou com vírgula decimal.
+  if (!/°/.test(t)) {
+    const nums = [...String(texto).trim().matchAll(/-?\d+(?:[.,]\d+)?/g)].map(m => Number(m[0].replace(',', '.')));
+    if (nums.length === 2 && Math.abs(nums[0]) <= 90 && Math.abs(nums[1]) <= 180) return { lat: nums[0], lng: nums[1] };
+  }
+  return null;
+}
+
+let coordenadasBusca = 0;
+async function buscarEnderecoDaCoordenada() {
+  const input = document.getElementById('product-venue-coords');
+  const status = document.getElementById('product-venue-coords-status');
+  if (!input || !status) return;
+  const mostrar = (texto, erro) => { status.textContent = texto; status.hidden = !texto; status.classList.toggle('is-erro', !!erro); };
+  if (!input.value.trim()) { mostrar(''); return; }
+  const c = lerCoordenadas(input.value);
+  if (!c) { mostrar('Coordenada não reconhecida. Use, por exemplo, 23°04\'17.5"S 47°09\'48.6"W ou -23.0715, -47.1635.', true); return; }
+  const minha = ++coordenadasBusca;
+  mostrar('Procurando o endereço...');
+  try {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${c.lat}&lon=${c.lng}&accept-language=pt-BR&addressdetails=1&zoom=18`;
+    const res = await fetch(url);
+    const dados = await res.json();
+    if (minha !== coordenadasBusca) return;
+    const a = (dados && dados.address) || {};
+    if (!dados || dados.error || !a.country_code) { mostrar('Não achamos o endereço dessa coordenada. Preencha o endereço abaixo.', true); return; }
+    const rua = a.road || a.hamlet || a.village || a.neighbourhood || a.quarter || a.suburb || '';
+    const bairro = a.suburb || a.quarter || a.neighbourhood || '';
+    const cidade = a.city || a.town || a.municipality || a.village || '';
+    const uf = String(a['ISO3166-2-lvl4'] || '').replace(/^BR-/, '');
+    const set = (id, v) => { const el = document.getElementById(id); if (el && v) el.value = v; };
+    set('product-venue-street', bairro && bairro !== rua ? `${rua}, ${bairro}` : rua);
+    set('product-venue-number', a.house_number || '');
+    const estado = document.getElementById('product-venue-state');
+    if (estado && uf && [...estado.options].some(o => o.value === uf)) {
+      estado.value = uf;
+      populateVenueCityOptions(uf);
+    }
+    set('product-venue-city', cidade);
+    mostrar([rua, cidade, uf].filter(Boolean).join(', ') ? `Endereço encontrado: ${[rua, cidade, uf].filter(Boolean).join(', ')}. Confira e ajuste se precisar.` : 'Endereço encontrado. Confira os campos acima.');
+    document.getElementById('product-form')?.dispatchEvent(new Event('change'));
+  } catch (e) {
+    if (minha === coordenadasBusca) mostrar('Não foi possível buscar o endereço agora. Preencha o endereço acima.', true);
+  }
+}
+
+function initCoordenadasDoLocal() {
+  const input = document.getElementById('product-venue-coords');
+  if (!input) return;
+  let timer = null;
+  input.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(buscarEnderecoDaCoordenada, 700); });
+  input.addEventListener('change', () => { clearTimeout(timer); buscarEnderecoDaCoordenada(); });
+}
+
 function populateVenueStateOptions() {
   const select = document.getElementById('product-venue-state');
   if (!select || typeof BR_ESTADOS === 'undefined') return;
@@ -1394,8 +1470,9 @@ function validarLocal() {
   const category = document.getElementById('product-category').value;
   if (!categoryGroups(category).isVenue) return true;
   const endereco = document.getElementById('product-venue-street');
-  if (!endereco.value.trim()) {
-    showToast('Preencha o endereço do local.', true);
+  const temCoordenada = !!lerCoordenadas(document.getElementById('product-venue-coords')?.value);
+  if (!endereco.value.trim() && !temCoordenada) {
+    showToast('Preencha o endereço do local ou as coordenadas.', true);
     endereco.focus();
     return false;
   }
@@ -1468,6 +1545,7 @@ function montarLinhaDoProduto() {
         city: document.getElementById('product-venue-city').value.trim(),
         state: document.getElementById('product-venue-state').value.trim(),
         size: document.getElementById('product-venue-size').value.trim(),
+        coordinates: (() => { const t = document.getElementById('product-venue-coords').value.trim(); const c = lerCoordenadas(t); return t ? { texto: t, lat: c ? c.lat : null, lng: c ? c.lng : null } : null; })(),
         commonAreas: currentVenueCommonAreas.slice(),
         capacitySeated: Number(document.getElementById('product-venue-capacity-seated').value) || 0,
         capacityStanding: Number(document.getElementById('product-venue-capacity-standing').value) || 0,
@@ -1647,6 +1725,7 @@ function initProductDrawer() {
   });
 
   populateVenueStateOptions();
+  initCoordenadasDoLocal();
   initPacotes();
   initRedesSociais();
   const skuInput = document.getElementById('product-sku');
@@ -1695,6 +1774,8 @@ function initProductDrawer() {
     renderVenueCommonAreas();
     document.getElementById('product-venue-state').value = '';
     populateVenueCityOptions('');
+    const statusCoordsNovo = document.getElementById('product-venue-coords-status');
+    if (statusCoordsNovo) statusCoordsNovo.hidden = true;
     atualizarUnidadeArea();
     closeCategoryPanel();
     updateCategoryTriggerLabel();
@@ -1993,6 +2074,9 @@ function openProductDrawer(id) {
   populateVenueCityOptions(venueState);
   document.getElementById('product-venue-city').value = (p.venue && p.venue.city) || '';
   document.getElementById('product-venue-size').value = String((p.venue && p.venue.size) || '').replace(/\D/g, '');
+  document.getElementById('product-venue-coords').value = (p.venue && p.venue.coordinates && p.venue.coordinates.texto) || '';
+  const statusCoords = document.getElementById('product-venue-coords-status');
+  if (statusCoords) statusCoords.hidden = true;
   atualizarUnidadeArea();
   document.getElementById('product-venue-capacity-seated').value = (p.venue && p.venue.capacitySeated) || '';
   document.getElementById('product-venue-capacity-standing').value = (p.venue && p.venue.capacityStanding) || '';

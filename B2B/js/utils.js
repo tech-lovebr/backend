@@ -571,7 +571,34 @@ function initDatePicker(input, initialIso) {
     else { viewDate.setDate(1); viewDate.setMonth(viewDate.getMonth() + 1); render(); }
   });
 
-  input.addEventListener('click', (e) => { e.stopPropagation(); open(); });
+  input.addEventListener('click', (e) => { e.stopPropagation(); if (popover.style.display !== 'block') open(); });
+
+  // Também dá pra digitar: dd/mm/aaaa com as barras automáticas. Data
+  // completa e válida vira o valor e o calendário pula para ela.
+  input.readOnly = false;
+  input.setAttribute('inputmode', 'numeric');
+  input.setAttribute('maxlength', '10');
+  input.addEventListener('input', () => {
+    const d = input.value.replace(/\D/g, '').slice(0, 8);
+    input.value = d.length > 4 ? `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}` : d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
+    if (d.length < 8) { isoValue = ''; input.dataset.isoValue = ''; return; }
+    const dia = Number(d.slice(0, 2)), mes = Number(d.slice(2, 4)), ano = Number(d.slice(4));
+    const data = new Date(ano, mes - 1, dia);
+    if (ano < 1900 || data.getFullYear() !== ano || data.getMonth() !== mes - 1 || data.getDate() !== dia) return;
+    isoValue = isoOf(ano, mes - 1, dia);
+    input.dataset.isoValue = isoValue;
+    if (popover.style.display === 'block') {
+      viewDate = new Date(ano, mes - 1, 1);
+      viewMode = 'days';
+      render();
+    }
+  });
+  // Tab ou Enter fecha o calendário.
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab' || e.key === 'Escape') close();
+    else if (e.key === 'Enter' && popover.style.display === 'block') { e.preventDefault(); close(); }
+  });
+
   const icon = input.parentElement && input.parentElement.querySelector('.date-picker-field-icon');
   if (icon) icon.addEventListener('click', (e) => { e.stopPropagation(); open(); });
 

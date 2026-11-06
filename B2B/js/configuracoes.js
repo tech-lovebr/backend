@@ -436,7 +436,7 @@ async function carregarDadosDaContaDigital() {
   if (data.data_nascimento) {
     const [a, m, d] = String(data.data_nascimento).split('-');
     const nasc = document.getElementById('profile-birthdate');
-    if (nasc && !nasc.value) nasc.value = `${d}/${m}/${a}`;
+    if (nasc && !nasc.value) { nasc.value = `${d}/${m}/${a}`; nasc.dispatchEvent(new Event("input")); }
   }
 }
 

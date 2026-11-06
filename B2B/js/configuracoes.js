@@ -184,8 +184,14 @@ function initProfileForm() {
   const nomeInput = document.getElementById('profile-name');
   const primeiroInput = document.getElementById('profile-first-name');
   const sobrenomeInput = document.getElementById('profile-last-name');
+  // Primeira vez (sem celular ou com o nome igual ao da empresa): o nome é
+  // pessoal, então começa em branco em vez de vir do cadastro.
+  const norm = t => String(t || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  infoPrimeiraVez = !String(p.phone || '').replace(/\D/g, '') || !norm(p.name) || norm(p.name) === norm(p.company);
+  const nomeInicial = infoPrimeiraVez ? '' : String(p.name || '').trim();
+  nomeInput.value = nomeInicial;
   if (primeiroInput && sobrenomeInput) {
-    const partes = String(p.name || '').trim().split(/\s+/).filter(Boolean);
+    const partes = nomeInicial.split(/\s+/).filter(Boolean);
     primeiroInput.value = partes.shift() || '';
     sobrenomeInput.value = partes.join(' ');
     const juntar = () => { nomeInput.value = [primeiroInput.value.trim(), sobrenomeInput.value.trim()].filter(Boolean).join(' '); };
@@ -196,7 +202,7 @@ function initProfileForm() {
     // Celular: o nome do responsável num campo só; reparte em primeiro nome e sobrenome.
     const responsavelInput = document.getElementById('profile-responsavel');
     if (responsavelInput) {
-      responsavelInput.value = String(p.name || '').trim();
+      responsavelInput.value = nomeInicial;
       if (typeof wireNameCaseInput === 'function') wireNameCaseInput(responsavelInput);
       responsavelInput.addEventListener('input', () => {
         const ps = responsavelInput.value.trim().split(/\s+/).filter(Boolean);
@@ -239,6 +245,17 @@ function initProfileForm() {
 
   document.getElementById('profile-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (infoPrimeiraVez && abaDeInformacoesAtiva() === 'empresa') {
+      const faltaEmpresa = !document.getElementById('profile-company').value.trim();
+      const faltaDoc = !SETTINGS_CELULAR.matches && !document.getElementById('profile-document').value.trim();
+      if (faltaEmpresa || faltaDoc) {
+        showToast(faltaDoc ? `Preencha o nome fantasia e o ${p.documentType === 'cpf' ? 'CPF' : 'CNPJ'} para continuar.` : 'Preencha o nome da empresa para continuar.', true);
+        return;
+      }
+      abrirAbaDeInformacoes('pessoal');
+      document.querySelector('[data-info-painel="pessoal"] input:not([type=hidden])')?.focus();
+      return;
+    }
     const antes = { company: p.company, razaoSocial: p.razaoSocial, documentNumber: p.documentNumber, documentType: p.documentType };
     const company = document.getElementById('profile-company').value.trim();
     const name = document.getElementById('profile-name').value.trim();
@@ -308,6 +325,8 @@ function initProfileForm() {
 
     lockConfiguredFields(p);
     resetSalvarTopoLabel();
+    infoPrimeiraVez = false;
+    atualizarBotaoDeInformacoes();
     // Salvou, mas o banco ainda não tem as colunas da conta digital (migration 110).
     if (colunasSemSalvar.size) {
       showToast('Perfil salvo, mas tipo de empresa, faturamento, CEP e endereço não foram gravados: falta rodar a migration 110 no Supabase.', true);
@@ -321,12 +340,29 @@ function initProfileForm() {
    Abas sobre a caixa de Suas informações e os dados da conta digital da
    empresa no Asaas (tipo de empresa, faturamento, endereço completo, CPF e
    nascimento do responsável — migration 110). */
+// Primeira vez preenchendo: "Salvar e continuar" em Informações da empresa
+// leva para Informações pessoais; lá "Salvar alterações" grava tudo.
+let infoPrimeiraVez = false;
+
+function abaDeInformacoesAtiva() {
+  return document.querySelector('[data-info-aba].is-ativa')?.dataset.infoAba || 'empresa';
+}
+
+function atualizarBotaoDeInformacoes() {
+  const botao = document.querySelector('#profile-form .settings-zola-salvar');
+  if (botao) botao.textContent = infoPrimeiraVez && abaDeInformacoesAtiva() === 'empresa' ? 'Salvar e continuar' : 'Salvar alterações';
+}
+
+function abrirAbaDeInformacoes(qual) {
+  document.querySelectorAll('[data-info-aba]').forEach(x => { const on = x.dataset.infoAba === qual; x.classList.toggle('is-ativa', on); x.setAttribute('aria-selected', String(on)); });
+  document.querySelectorAll('[data-info-painel]').forEach(pn => { pn.hidden = pn.dataset.infoPainel !== qual; });
+  atualizarBotaoDeInformacoes();
+}
+
 function initAbasDeInformacoes() {
   const abas = document.querySelectorAll('[data-info-aba]');
-  abas.forEach(b => b.addEventListener('click', () => {
-    abas.forEach(x => { const on = x === b; x.classList.toggle('is-ativa', on); x.setAttribute('aria-selected', String(on)); });
-    document.querySelectorAll('[data-info-painel]').forEach(pn => { pn.hidden = pn.dataset.infoPainel !== b.dataset.infoAba; });
-  }));
+  abas.forEach(b => b.addEventListener('click', () => abrirAbaDeInformacoes(b.dataset.infoAba)));
+  atualizarBotaoDeInformacoes();
   const cep = document.getElementById('profile-cep');
   cep?.addEventListener('input', () => { const d = cep.value.replace(/\D/g, '').slice(0, 8); cep.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d; });
   // Com o CEP completo, rua, bairro, estado e cidade vêm sozinhos (js/utils.js).

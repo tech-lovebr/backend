@@ -48,11 +48,6 @@
 #view-login#view-login .lg-lado { position: relative; isolation: isolate; display: flex; flex-direction: column; padding: clamp(24px, 3.2vw, 40px) clamp(24px, 4.2vw, 64px) clamp(24px, 3vw, 40px); min-width: 0; }
 #view-login#view-login .lg-relevo { position: absolute; z-index: -1; right: -14%; bottom: -10%; width: 78%; pointer-events: none; }
 #view-login#view-login .lg-relevo svg { display: block; width: 100%; height: auto; }
-#view-login#view-login .lg-topo { display: flex; align-items: center; width: 100%; max-width: 400px; margin: 0 auto; }
-#view-login#view-login .lg-voltar { display: inline-flex; align-items: center; gap: 8px; width: fit-content; font-size: 14px !important; color: var(--lg-mudo) !important; text-decoration: none; transition: color .3s; }
-#view-login#view-login .lg-voltar:hover { color: var(--lg-tinta) !important; }
-#view-login#view-login .lg-voltar svg { width: 16px; height: 16px; transition: transform .3s var(--lg-ease); }
-#view-login#view-login .lg-voltar:hover svg { transform: translateX(-3px); }
 /* Cabeçalho acima do cartão: logo centralizado, mesma altura e tamanho da landing */
 #view-login#view-login .lg-cabecalho { position: sticky; top: 0; z-index: 20; width: 100%; background: rgba(247,248,250,.82) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0 var(--lg-linha) !important; height: 72px; display: flex; align-items: center; justify-content: center; padding-top: env(safe-area-inset-top, 0px); }
 #view-login#view-login .lg-logo { display: block; width: 102px; }
@@ -60,7 +55,7 @@
 
 /* Coluna do formulário em 400px: o botão oficial do Google vai no máximo a
    400px, então o Entrar e os campos ficam com a mesma largura dele. */
-#view-login#view-login .lg-painel { width: 100%; max-width: 400px; margin: clamp(28px, 6vh, 64px) auto 0; display: flex; flex-direction: column; }
+#view-login#view-login .lg-painel { width: 100%; max-width: 400px; margin: auto; display: flex; flex-direction: column; }
 #view-login#view-login .lg-cabeca { display: grid; gap: 12px; }
 #view-login#view-login .lg-sobre { font-size: 12px !important; font-weight: 500 !important; letter-spacing: .22em !important; text-transform: uppercase; color: var(--lg-suave) !important; }
 #view-login#view-login .lg-titulo { font-family: var(--lg-serif) !important; font-weight: 300 !important; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -.02em !important; font-size: clamp(32px, 3.1vw, 44px) !important; line-height: 1.04 !important; color: var(--lg-azul) !important; text-wrap: balance; }
@@ -119,11 +114,10 @@
   #view-login#view-login .lg-cartao { grid-template-columns: 1fr; min-height: 0; border-radius: 24px !important; }
   #view-login#view-login .lg-janela { height: 34vh; min-height: 220px; }
   #view-login#view-login .lg-frase { font-size: 26px !important; }
-  #view-login#view-login .lg-painel { margin-top: 28px; }
+  #view-login#view-login .lg-painel { margin-top: 0; }
   #view-login#view-login .lg-relevo { width: 110%; right: -30%; bottom: -6%; }
 }
 @media (max-width: 420px) {
-  #view-login#view-login .lg-voltar span { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   #view-login#view-login .lg-foto { transition: opacity .01s; }

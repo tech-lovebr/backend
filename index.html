@@ -97,6 +97,8 @@
   <!-- Custom Styles -->
   <link rel="stylesheet" href="css/styles.css?v=20261106_dicas">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
+  <link rel="stylesheet" href="css/landing-nova.css?v=20261114_lv1">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -105,310 +107,279 @@
        ======================================================================= -->
   <div id="view-public-site">
     
-    <!-- Cabeçalho público: logo, anfitriões | fornecedores (desktop) e Entrar / Criar evento grátis -->
-    <header class="lp-topo">
-      <div class="lp-faixa lp-topo-linha">
-        <a href="/" class="lp-logo" aria-label="Início da Love">
-          <img src="assets/logo.png?v=2" alt="Love">
-        </a>
-        <!-- Desktop: escolha do público, como no Hub (anfitriões | fornecedores) -->
-        <nav class="lp-publico" aria-label="Escolha o público">
-          <a href="/" aria-current="page" data-en="For hosts">Para anfitriões</a>
-          <a href="https://hub.love.com.br" rel="noopener" data-en="For vendors">Para fornecedores</a>
-        </nav>
-        <div class="lp-topo-acoes">
-          <button type="button" class="btn-trigger-login lp-link-entrar" data-en="Log in">Entrar</button>
-          <button type="button" class="btn-trigger-register lp-btn lp-btn-primario" data-en="Create event for free">Criar evento grátis</button>
-        </div>
-      </div>
-    </header>
+    <!-- Landing (layout novo, css/landing-nova.css e js/landing.js): tudo com prefixo lv- -->
+<svg width="0" height="0" style="position:absolute !important" aria-hidden="true">
+  <defs><g id="lv-nh"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g><g id="lv-nw"><path d="M524.486 244.349L524.523 283.179L492.445 283.155L492.38 110.395L492.325 49.4918L524.311 49.48L524.422 70.6791L524.486 244.349Z"/><path d="M602.423 283.178V253.057H506.866V283.178H602.423Z"/><path d="M603.319 182.643C603.319 128.414 646.891 82.2754 707.818 82.2754C768.746 82.2754 812.318 128.404 812.318 182.643C812.318 236.881 768.746 283.01 707.818 283.01C646.891 283.01 603.319 236.881 603.319 182.643ZM775.127 182.643C775.127 143.902 746.429 115.027 707.829 115.027C669.228 115.027 640.531 143.902 640.531 182.643C640.531 221.383 669.218 250.258 707.829 250.258C746.439 250.258 775.127 221.383 775.127 182.643Z"/><path d="M1006.38 82.1177L936.465 282.759H881.716L809.815 82.1177H845.44L904.481 249.921H914.378L971.769 82.1177H1006.4H1006.38Z"/><path d="M1108.76 82.2681C1177.47 82.2681 1209 128.407 1209 182.635H1038.97C1038.97 221.375 1069.08 251.306 1120.44 251.306C1151.27 251.306 1174.35 242.296 1188.64 226.542H1201.06C1187.98 259.498 1158.65 283.002 1112.3 283.002C1048.89 283.002 1003.55 236.874 1003.55 182.635C1003.55 128.397 1047.13 82.2682 1108.76 82.2681ZM1108.04 111.854C1074.38 111.854 1051.72 129.818 1043.22 156.227H1170.74C1164.01 129.818 1145.59 111.854 1108.04 111.854Z"/></g>
+    <g id="lv-b1" transform="matrix(.935 0 0 .935 0 0)"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g>
+    <path id="lv-b2" d="M0 0"/>
+    <path id="lv-b3" d="M0 0"/>
+    <path id="lv-b4" d="M0 0"/>
+    <path id="lv-wm" fill-rule="evenodd" d="M576 253C558 250 540 239 530 224C525 217 522 210 520 204C519 202 518 198 518 197C517 192 517 172 518 166C522 150 532 135 544 125C550 121 560 116 566 114C568 113 572 112 573 112C578 110 599 111 606 112C609 113 616 116 621 119C638 127 652 143 658 162C660 171 660 193 658 202C650 226 632 244 608 251C602 253 584 254 576 253ZM882 252C858 247 841 231 834 204C830 190 831 168 835 156C844 131 860 118 886 112C904 109 925 112 937 120C942 123 947 129 948 133C952 143 953 159 951 167C949 173 944 179 937 182C934 183 928 186 924 188C920 189 917 191 917 191C916 191 912 193 907 195C901 198 897 200 897 200C896 200 892 202 886 205C880 208 875 210 874 210C872 211 879 218 884 221C891 224 903 224 910 221C915 218 919 213 921 206L922 202L939 202L955 202L955 206C955 227 943 243 923 250C918 252 914 252 902 253C893 253 884 253 882 252ZM462 155L462 60L478 60L493 60L493 130C493 169 493 212 493 225L494 250L478 250L462 250L462 155ZM720 248C712 246 705 239 700 229C698 223 696 220 693 204C692 198 685 172 682 158C681 153 679 145 678 140C674 124 673 118 672 116C672 114 673 114 689 114L707 114L708 118C708 120 710 125 710 129C711 133 713 142 715 148C716 155 718 163 718 166C719 168 720 172 720 174C720 176 722 182 723 187C724 192 725 199 726 202C727 208 732 214 738 218C746 224 755 223 756 216C757 215 759 207 761 200C763 192 766 184 766 182C768 175 781 129 782 126C783 125 784 121 784 119L786 114L803 114L820 114L819 116C819 117 817 125 815 132C813 139 810 150 809 156C807 162 805 168 805 170C804 171 803 177 801 184C799 190 798 196 797 198C796 201 794 207 791 220C790 222 789 228 787 234C786 239 784 245 784 246L783 249L753 249C737 249 722 248 720 248ZM605 220C619 214 627 200 627 182C627 164 619 151 604 144C599 142 597 142 588 142C579 142 577 142 572 144C555 153 546 173 550 192C552 198 556 208 560 213C564 217 572 222 579 223C587 225 598 223 605 220ZM869 186C869 186 872 185 874 184C876 183 888 177 899 172C922 161 922 160 920 154C917 145 909 140 898 140C890 140 884 142 878 148C869 156 865 165 865 178C865 187 866 189 869 186Z"/>
+    <symbol id="lv-logo" viewBox="0 0 1209 333"><g fill="currentColor"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/><path d="M524.486 244.349L524.523 283.179L492.445 283.155L492.38 110.395L492.325 49.4918L524.311 49.48L524.422 70.6791L524.486 244.349Z"/><path d="M602.423 283.178V253.057H506.866V283.178H602.423Z"/><path d="M603.319 182.643C603.319 128.414 646.891 82.2754 707.818 82.2754C768.746 82.2754 812.318 128.404 812.318 182.643C812.318 236.881 768.746 283.01 707.818 283.01C646.891 283.01 603.319 236.881 603.319 182.643ZM775.127 182.643C775.127 143.902 746.429 115.027 707.829 115.027C669.228 115.027 640.531 143.902 640.531 182.643C640.531 221.383 669.218 250.258 707.829 250.258C746.439 250.258 775.127 221.383 775.127 182.643Z"/><path d="M1006.38 82.1177L936.465 282.759H881.716L809.815 82.1177H845.44L904.481 249.921H914.378L971.769 82.1177H1006.4H1006.38Z"/><path d="M1108.76 82.2681C1177.47 82.2681 1209 128.407 1209 182.635H1038.97C1038.97 221.375 1069.08 251.306 1120.44 251.306C1151.27 251.306 1174.35 242.296 1188.64 226.542H1201.06C1187.98 259.498 1158.65 283.002 1112.3 283.002C1048.89 283.002 1003.55 236.874 1003.55 182.635C1003.55 128.397 1047.13 82.2682 1108.76 82.2681ZM1108.04 111.854C1074.38 111.854 1051.72 129.818 1043.22 156.227H1170.74C1164.01 129.818 1145.59 111.854 1108.04 111.854Z"/></g></symbol>
+    <symbol id="lv-heart" viewBox="0 0 421 333"><g fill="currentColor"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g></symbol>
+    <symbol id="lv-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <linearGradient id="lv-gp" gradientUnits="userSpaceOnUse" x1="20" y1="300" x2="380" y2="10"><stop offset="0" stop-color="#F6DDD2"/><stop offset="1" stop-color="#DC9A82"/></linearGradient><linearGradient id="lv-lgp" gradientUnits="userSpaceOnUse" x1="8.5" y1="322.9" x2="449.3" y2="32.4"><stop offset="0" stop-color="#FFDDD2"/><stop offset="1" stop-color="#F09A81"/></linearGradient><symbol id="lv-logog" viewBox="0 0 1209 333"><use href="#lv-nh" fill="url(#lv-lgp)"/><use href="#lv-nw" fill="currentColor"/></symbol><symbol id="lv-heartg" viewBox="0 0 421 333"><use href="#lv-nh" fill="url(#lv-lgp)"/></symbol><filter id="lv-eb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="b"/><feOffset in="b" dx="-0.8" dy="0.8" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#7A4535" flood-opacity="0.07"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx="0.8" dy="-0.8" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#FFFFFF" flood-opacity="0.32"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter><filter id="lv-ebd" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="b"/><feOffset in="b" dx="-0.9" dy="0.9" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#000000" flood-opacity="0.22"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx="0.9" dy="-0.9" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#7FA2CF" flood-opacity="0.2"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter><filter id="lv-ebn" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="0.9" result="b"/><feOffset in="b" dx="-1.1" dy="1.1" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#000000" flood-opacity="0.3"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx="1.1" dy="-1.1" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#5B86B8" flood-opacity="0.2"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter></defs>
+</svg>
 
-    <!-- Conteúdo de marketing da home — escondido como bloco único quando uma
-         página legal (Termos/Privacidade) está sendo exibida no lugar dele,
-         mantendo o mesmo header/footer da home (ver openLegalDocPage). -->
-    <div id="public-landing-sections" class="lp">
 
-    <!-- =======================================================================
-         ABERTURA — foto real em tela cheia, título com serifa
-         ======================================================================= -->
-    <!-- Desktop: faixa de apresentação acima da foto da abertura -->
-    <div class="lp2-faixa-intro">
-      <p data-en="Create your event's digital invitation">Crie o convite digital do seu evento</p>
-      <button type="button" class="btn-trigger-register lp2-faixa-intro-link"><span data-en="Get started">Começar agora</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+<div class="lv-bar"><span data-en="Create your event&#39;s digital invitation">Crie o convite digital do seu evento</span> <a class="btn-trigger-register" href="/cadastro"><b data-en="Get started">Começar agora</b> <span>→</span></a></div>
+
+<header class="lv-nav" id="lv-nav">
+  <div class="lv-wrap lv-in">
+    <span><ul><li><a href="/" aria-current="page" class="lv-atual" data-en="For hosts">Para anfitriões</a></li><li><a href="https://hub.love.com.br" rel="noopener" data-en="For vendors">Para fornecedores</a></li></ul></span>
+    <a class="lv-logo" href="/" aria-label="Love, início"><svg viewBox="0 0 1209 333"><use href="#lv-logo"/></svg></a>
+    <div class="lv-r"><button type="button" class="lv-ent btn-trigger-login" data-en="Log in">Entrar</button><a class="lv-btn lv-btn-d btn-trigger-register" href="/cadastro" data-en="Create event for free">Criar evento grátis</a></div>
+  </div>
+</header>
+
+    <!-- Seções de marketing: escondidas como bloco único quando Termos/Privacidade
+         aparecem no lugar delas (ver openLegalDocPage em app.js). -->
+    <div id="public-landing-sections" class="lv-main">
+<!-- HERO -->
+<section class="lv-hero lv-pl lv-gr lv-sky lv-drift" id="lv-hero">
+  <span class="lv-glow" id="lv-glow" aria-hidden="true"></span>
+  <div class="lv-wrap lv-in">
+    <nav class="lv-seg" aria-label="Escolha seu perfil"><a class="lv-on" href="/" aria-current="page" data-en="For hosts">Para anfitriões</a><a href="https://hub.love.com.br" rel="noopener" data-en="For vendors">Para fornecedores</a></nav>
+    <h1 class="lv-dis" data-en-html="Where celebrations are &lt;span class=&quot;lv-it&quot;&gt;planned with love.&lt;/span&gt;">A plataforma definitiva <span class="lv-it">para suas celebrações.</span></h1>
+    <p class="lv-lede lv-center" data-en="Build your site, manage invitations, receive cash gifts, and hire vendors, all without the hassle.">Crie seu site, gerencie convites, receba presentes em dinheiro e contrate fornecedores sem complicação.</p>
+    <div class="lv-ctas"><a class="lv-btn lv-btn-d btn-trigger-register" href="/cadastro"><span data-en="Create my event for free">Criar meu evento grátis</span> <i></i></a><a class="lv-btn lv-btn-o" href="/encontrar-evento" data-en="Find an event">Encontrar um evento</a></div>
+  </div>
+  <div class="lv-wrap">
+    <div class="lv-stage">
+      <figure class="lv-ph lv-slides" id="lv-slides" aria-roledescription="carrossel" aria-label="Tipos de evento">
+        <img class="lv-on" src="assets/landing/final.jpg" data-t="Casamento" data-t-en="Wedding" alt="Noivos rindo de mãos dadas num campo verde" style="object-position:50% 35% !important">
+        <img src="assets/landing/tconvidados.jpg" data-t="Aniversário" data-t-en="Birthday" alt="Amigos brindando e rindo numa festa à noite" style="object-position:50% 40% !important" loading="lazy">
+        <img src="assets/landing/heroi.jpg" data-t="Chá de bebê" data-t-en="Baby shower" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas" style="object-position:50% 50% !important" loading="lazy">
+        <figcaption class="lv-slab"><span id="lv-slab">Casamento</span><span class="lv-dots" aria-hidden="true"><i class="lv-on"></i><i></i><i></i></span></figcaption>
+      </figure>
+      <div class="lv-float lv-f2 lv-bob lv-d2"><div class="lv-fr lv-toast"><span class="lv-ic lv-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></span><div class="lv-swap" id="lv-hs1"><b>Ana confirmou presença</b><small>128 de 150 convidados</small></div></div></div>
+      <div class="lv-float lv-f3 lv-bob lv-d3"><div class="lv-fr lv-toast"><span class="lv-ic lv-pe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1s6 1 6 1Zm0 0c2-4 6-4 6-1s-6 1-6 1Z"/></svg></span><div class="lv-swap" id="lv-hs2"><b>Novo presente recebido</b><small class="lv-num">R$ 250,00 via Pix · agora</small></div></div></div>
     </div>
-    <section class="lp2-hero">
-      <img class="lp2-hero-foto" src="assets/landing/heroi.jpg" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas" data-en-alt="Outdoor party table with blue napkins and white flowers">
-      <div class="lp2-hero-veu" aria-hidden="true"></div>
-      <div class="lp-faixa lp2-hero-conteudo">
-        <p class="lp2-hero-intro" data-en="Create your event's digital invitation">Crie o convite digital do seu evento</p>
-        <!-- Desktop: escolha do público dentro da foto, acima do título -->
-        <nav class="lp-publico lp-publico-foto" aria-label="Escolha o público">
-          <a href="/" aria-current="page" data-en="For hosts">Para anfitriões</a>
-          <a href="https://hub.love.com.br" rel="noopener" data-en="For vendors">Para fornecedores</a>
-        </nav>
-        <h1 class="lp2-hero-titulo" data-en="Where celebrations are planned with love.">A plataforma definitiva para suas celebrações.</h1>
-        <p class="lp2-hero-sub" data-en="Build your site, manage invitations, receive cash gifts, and hire vendors — all without the hassle.">Crie seu site, gerencie convites, receba presentes em dinheiro e contrate fornecedores sem complicação.</p>
-        <div class="lp2-hero-ctas">
-          <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande" data-en="Create my event for free">Criar meu evento grátis</button>
-          <a href="/encontrar-evento" class="lp2-hero-encontrar" data-en="Find an event">Encontrar um evento</a>
-        </div>
+  </div>
+</section>
+
+<!-- TUDO NUM SÓ LUGAR -->
+<section class="lv-sec lv-wrap">
+  <div class="lv-head"><h2 class="lv-h2" data-en-html="Everything your event needs, &lt;span class=&quot;lv-it&quot;&gt;in one place&lt;/span&gt;">Tudo o que o seu evento precisa, <span class="lv-it">num só lugar</span></h2><p class="lv-p lv-center" data-en="For every day leading up to the big day, and the day after, too.">Para todos os dias até o grande dia, e para o dia seguinte também.</p></div>
+  <div class="lv-all">
+    <a href="#lv-convite"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></span><span data-en="Digital invitation">Convite digital</span></a>
+    <a href="#lv-convidados"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 6 9 17l-5-5"/></svg></span><span data-en="RSVP">Confirmação de presença</span></a>
+    <a href="#lv-presentes"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18"/></svg></span><span data-en="Gift registry">Lista de presentes</span></a>
+    <a href="#lv-mesas"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="12" cy="17" r="3"/></svg></span><span data-en="Seating chart">Mapa do evento</span></a>
+    <a href="#lv-carteira"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12.5h2"/></svg></span><span data-en="Wallet &amp; Pix">Carteira e Pix</span></a>
+    <a href="#lv-detalhes"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span data-en="Heartfelt messages">Recados com carinho</span></a>
+  </div>
+</section>
+
+<!-- CONVITE -->
+<section class="lv-wrap lv-duo" id="lv-convite">
+  <div class="lv-txt">
+    <p class="lv-over" data-en="Digital invitation">Convite digital</p>
+    <h2 class="lv-h2" data-en-html="A digital invitation &lt;span class=&quot;lv-it&quot;&gt;worthy of you&lt;/span&gt;">Um convite digital <span class="lv-it">à sua altura</span></h2>
+    <p class="lv-p" data-en="Elegant templates to personalize with your photos, your story, the venue map and a countdown. Share it with your own link.">Modelos elegantes para personalizar com as suas fotos, a sua história, o local com mapa e a contagem regressiva. Compartilhe com um link só seu.</p>
+    <div class="lv-tpls" id="lv-tpls" role="group" aria-label="Modelos de convite">
+      <button class="lv-tpl lv-on" data-t="monograma" aria-pressed="true"><span class="lv-th">M&amp;P</span>Monograma</button>
+      <button class="lv-tpl" data-t="classico" aria-pressed="false"><span class="lv-th">Aa</span>Clássico</button>
+      <button class="lv-tpl" data-t="moderno" aria-pressed="false"><span class="lv-th">A—</span>Moderno</button>
+      <button class="lv-tpl" data-t="data" aria-pressed="false"><span class="lv-th">12</span>Data</button>
+    </div>
+    <div class="lv-inks" role="group" aria-label="Cor do convite">Cor
+      <button class="lv-ink lv-on" data-c="#183B54" style="background:#183B54 !important;color:#183B54 !important" aria-label="Azul profundo" aria-pressed="true"></button>
+      <button class="lv-ink" data-c="#537BAE" style="background:#537BAE !important;color:#537BAE !important" aria-label="Azul" aria-pressed="false"></button>
+      <button class="lv-ink" data-c="#B9826D" style="background:#E7C3B3 !important;color:#B9826D !important" aria-label="Pétala" aria-pressed="false"></button>
+      <button class="lv-ink" data-c="#2B2F36" style="background:#2B2F36 !important;color:#2B2F36 !important" aria-label="Grafite" aria-pressed="false"></button>
+    </div>
+    <a class="lv-tlink btn-trigger-register" href="/cadastro" data-en="Create my invitation →">Criar meu convite →</a>
+  </div>
+  <div class="lv-media lv-pl lv-gr lv-petalsky lv-drift lv-inv-m">
+    <div class="lv-arch lv-a-env" aria-hidden="true"></div>
+    <article class="lv-invite lv-t-monograma" id="lv-inv" aria-label="Prévia do convite">
+      <p class="lv-kicker" id="lv-kick">Vamos nos casar</p>
+      <div class="lv-mono" aria-hidden="true"><b><span id="lv-i1">M</span><i>&amp;</i><span class="lv-i2" id="lv-i2">P</span></b></div>
+      <h3 class="lv-names" id="lv-names">Marina<em>&amp;</em>Pedro</h3>
+      <p class="lv-big lv-num" id="lv-big">12.06</p>
+      <div class="lv-dt"><span class="lv-rule"></span><p class="lv-date lv-num" id="lv-date">12 · 06 · 2027</p><p class="lv-left lv-num" id="lv-left">faltam 219 dias</p></div>
+    </article>
+    <div class="lv-float lv-bob" style="left:6% !important;bottom:8% !important"><div class="lv-fr lv-toast"><span class="lv-ic lv-bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span><div><b>Convite publicado</b><small id="lv-pub">love.com.br/marina-e-pedro</small></div></div></div>
+  </div>
+</section>
+
+<!-- CONVIDADOS -->
+<section class="lv-wrap lv-duo lv-rev" id="lv-convidados">
+  <div class="lv-txt">
+    <p class="lv-over" data-en="RSVP">Confirmação de presença</p>
+    <h2 class="lv-h2" data-en-html="Your guest list, &lt;span class=&quot;lv-it&quot;&gt;always up to date&lt;/span&gt;">Sua lista de convidados, <span class="lv-it">sempre em dia</span></h2>
+    <p class="lv-p" data-en="Guests RSVP in a few taps, with plus-ones and dietary needs. You see everything in real time, no spreadsheets.">Cada convidado confirma a presença em poucos toques, com acompanhantes e restrições alimentares. Você vê tudo em tempo real, sem planilha.</p>
+    <a class="lv-tlink btn-trigger-register" href="/cadastro" data-en="Build my guest list →">Montar minha lista →</a>
+  </div>
+  <div class="lv-media lv-pl lv-gr lv-dusk">
+    <div class="lv-fr lv-rsvp">
+      <div class="lv-hd"><b class="lv-num"><span id="lv-cnt">128</span> <span style="color:var(--soft) !important">de 150</span></b><small>convidados</small></div>
+      <div class="lv-bar2"><i id="lv-cbar" style="width:85.3% !important"></i></div>
+      <div id="lv-gl">
+        <div class="lv-gst"><span class="lv-av">AN</span><div>Ana Martins<small>2 pessoas · sem restrição</small></div><span class="lv-st lv-ok">Confirmada</span></div>
+        <div class="lv-gst"><span class="lv-av">VL</span><div>Vó Lourdes<small>1 pessoa · sem glúten</small></div><span class="lv-st lv-ok">Confirmada</span></div>
+        <div class="lv-gst lv-p1"><span class="lv-av">TC</span><div>Tio Carlos<small>Aguardando resposta</small></div><span class="lv-st">Aguardando</span></div>
+        <div class="lv-gst lv-p1"><span class="lv-av">RB</span><div>Rafa e Bia<small>Aguardando resposta</small></div><span class="lv-st">Aguardando</span></div>
       </div>
-    </section>
+    </div>
+    <div class="lv-float lv-bob lv-d2 lv-mob-b" style="right:5% !important;top:7% !important"><div class="lv-fr lv-toast"><span class="lv-ic lv-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg></span><div class="lv-swap" id="lv-ct"><b>Ana confirmou presença</b><small>Agora são 128 convidados</small></div></div></div>
+  </div>
+</section>
 
-    <!-- =======================================================================
-         TUDO O QUE VOCÊ PRECISA — 6 fotos que levam aos painéis
-         ======================================================================= -->
-    <section class="lp2-tudo">
-      <div class="lp-faixa">
-        <h2 class="lp2-titulo-centro" data-en="Everything your event needs, in one place">Tudo o que o seu evento precisa, num só lugar</h2>
-        <p class="lp2-sub-centro" data-en="For every day leading up to the big day — and the day after, too.">Para todos os dias até o grande dia, e para o dia seguinte também.</p>
-        <div class="lp2-mosaico">
-          <a href="#painel-convite" class="lp2-ladrilho"><img src="assets/landing/tconvite.jpg" alt="" loading="lazy"><span data-en="Digital invitation">Convite digital</span></a>
-          <a href="#painel-convidados" class="lp2-ladrilho"><img src="assets/landing/tconvidados.jpg" alt="" loading="lazy"><span data-en="RSVP">Confirmação de presença</span></a>
-          <a href="#painel-presentes" class="lp2-ladrilho"><img src="assets/landing/tpresentes.jpg" alt="" loading="lazy"><span data-en="Gift registry">Lista de presentes</span></a>
-          <a href="#painel-mesas" class="lp2-ladrilho"><img src="assets/landing/tmesas.jpg" alt="" loading="lazy"><span data-en="Seating chart">Mapa do evento</span></a>
-          <a href="#painel-carteira" class="lp2-ladrilho"><img src="assets/landing/tcarteira.jpg" alt="" loading="lazy"><span data-en="Wallet &amp; Pix">Carteira e Pix</span></a>
-          <a href="#detalhes" class="lp2-ladrilho"><img src="assets/landing/trecados.jpg" alt="" loading="lazy"><span data-en="Heartfelt messages">Recados com carinho</span></a>
-        </div>
+<!-- PRESENTES -->
+<section class="lv-wrap lv-duo" id="lv-presentes">
+  <div class="lv-txt">
+    <p class="lv-over" data-en="Gift registry">Lista de presentes</p>
+    <h2 class="lv-h2" data-en-html="Gifts that &lt;span class=&quot;lv-it&quot;&gt;turn into cash&lt;/span&gt;">Presentes que <span class="lv-it">viram dinheiro</span></h2>
+    <p class="lv-p" data-en="Build your list your way or start from a ready-made one. Guests give via Pix or card, and bigger gifts can be group-funded.">Monte a lista do seu jeito ou comece por uma lista pronta. Os convidados presenteiam com Pix ou cartão, e os presentes maiores ganham vaquinha.</p>
+    <a class="lv-tlink btn-trigger-register" href="/cadastro" data-en="Create my registry →">Criar minha lista →</a>
+  </div>
+  <div class="lv-gifts lv-ph">
+    <img src="assets/landing/ppresentes.jpg" alt="Caixa de presente com laço azul" style="object-position:50% 50% !important" loading="lazy">
+    <div class="lv-stack">
+      <div class="lv-fr lv-toast lv-bob" style="max-width:none !important"><span class="lv-ic lv-pe"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13M3 12h18M12 8c-2-4-6-4-6-1s6 1 6 1Zm0 0c2-4 6-4 6-1s-6 1-6 1Z"/></svg></span><div class="lv-swap" id="lv-gt"><b>Novo presente recebido</b><small class="lv-num">R$ 250,00 via Pix · agora</small></div></div>
+      <div class="lv-fr lv-vaq">
+        <div class="lv-row"><b>Lua de mel</b><small>vaquinha</small></div>
+        <div class="lv-bar2"><i id="lv-vbar" style="width:68% !important;background:var(--blue) !important"></i></div>
+        <div class="lv-row"><small class="lv-num" id="lv-vval">R$ 6.120 de R$ 9.000</small><small class="lv-num" id="lv-vpct">68%</small></div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <!-- =======================================================================
-         PAINÉIS — menu fixo à esquerda, um painel colorido por recurso
-         ======================================================================= -->
-    <section id="como-funciona" class="lp2-paineis">
-      <div class="lp-faixa lp2-paineis-linha">
-        <nav class="lp2-paineis-menu" aria-label="Recursos">
-          <a href="#painel-convite" class="ativo" data-en="Digital invitation">Convite digital</a>
-          <a href="#painel-convidados" data-en="RSVP">Confirmação de presença</a>
-          <a href="#painel-presentes" data-en="Gift registry">Lista de presentes</a>
-          <a href="#painel-mesas" data-en="Seating chart">Mapa do evento</a>
-          <a href="#painel-carteira" data-en="Wallet &amp; Pix">Carteira e Pix</a>
-        </nav>
-        <div class="lp2-paineis-lista">
+<!-- RECADOS -->
+<section class="lv-wrap lv-duo lv-rev" id="lv-recados">
+  <div class="lv-txt">
+    <p class="lv-over" data-en="Messages">Recados</p>
+    <h2 class="lv-h2" data-en-html="Messages kept &lt;span class=&quot;lv-it&quot;&gt;forever&lt;/span&gt;">Recados guardados <span class="lv-it">para sempre</span></h2>
+    <p class="lv-p" data-en="Every gift comes with a message from someone you love, all in one place.">Junto com cada presente chega uma mensagem de quem você ama, reunida num só lugar.</p>
+    <a class="lv-tlink btn-trigger-register" href="/cadastro" data-en="Get started →">Começar agora →</a>
+  </div>
+  <div class="lv-notes" aria-label="Exemplos de recados">
+    <div class="lv-arch lv-a-lights" aria-hidden="true"></div>
+    <article class="lv-note lv-n1" style="background:var(--deep) !important;color:#EAF1F8 !important"><small>Recado de Caio · R$ 200,00 via Pix</small><p class="lv-sf">Que a viagem seja tão boa quanto a festa.</p></article>
+    <article class="lv-note lv-n2" style="background:var(--petal) !important;color:var(--ink) !important"><small>Recado da Vó Lourdes · Cartão</small><p class="lv-sf">Cinquenta anos depois, <i>ainda dançando.</i></p></article>
+    <article class="lv-note lv-n3" style="background:#FFFFFF !important;color:var(--ink) !important"><small>Recado da Júlia · R$ 150,00 via Pix</small><p class="lv-sf">Que essa casa tenha sempre gente em volta. <i>Com todo o amor.</i></p><span class="lv-hand lv-sig">Júlia</span></article>
+  </div>
+</section>
 
-          <article id="painel-convite" class="lp2-painel" style="--fundo:#183b54;--tom:#CFE3F2">
-            <div class="lp2-painel-texto">
-              <h2 data-en-html="A digital invitation &lt;em&gt;that matches your style&lt;/em&gt;">Um convite digital <em>à sua altura</em></h2>
-              <p data-en="Elegant templates you can personalize with your photos, your story, a map to the venue, and a countdown. Share it with a link that's all your own.">Modelos elegantes para personalizar com as suas fotos, a sua história, o local com mapa e a contagem regressiva. Compartilhe com um link só seu.</p>
-              <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Create my invitation">Criar meu convite</button>
-              </div>
-            </div>
-            <figure class="lp2-painel-foto">
-              <img src="assets/landing/pconvite.jpg" alt="Casal de noivos sorrindo" loading="lazy" data-en-alt="Smiling engaged couple">
-              <figcaption class="lp-aviso lp2-chip">
-                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
-                <div><b data-en="Invitation published">Convite publicado</b><small data-en="planwithlove.com/marina-e-pedro">love.com.br/marina-e-pedro</small></div>
-              </figcaption>
-            </figure>
-          </article>
-
-          <article id="painel-convidados" class="lp2-painel" style="--fundo:#0E4A57;--tom:#CDEDEA">
-            <div class="lp2-painel-texto">
-              <h2 data-en-html="Your guest list, &lt;em&gt;always up to date&lt;/em&gt;">Sua lista de convidados, <em>sempre em dia</em></h2>
-              <p data-en="Guests RSVP in just a few taps, with plus-ones and dietary restrictions. You see everything in real time — no spreadsheets needed.">Cada convidado confirma a presença em poucos toques, com acompanhantes e restrições alimentares. Você vê tudo em tempo real, sem planilha.</p>
-              <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Build my guest list">Montar minha lista</button>
-              </div>
-            </div>
-            <figure class="lp2-painel-foto">
-              <img src="assets/landing/pconvidados.jpg" alt="Convidados celebrando à mesa" loading="lazy" data-en-alt="Guests celebrating at the table">
-              <figcaption class="lp-aviso lp2-chip">
-                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-                <div><b data-en="Ana confirmed her RSVP">Ana confirmou presença</b><small data-en="128 of 150 guests">128 de 150 convidados</small></div>
-              </figcaption>
-            </figure>
-          </article>
-
-          <article id="painel-presentes" class="lp2-painel" style="--fundo:#27394f;--tom:#DCE4F5">
-            <div class="lp2-painel-texto">
-              <h2 data-en-html="Gifts that &lt;em&gt;turn into cash&lt;/em&gt;">Presentes que <em>viram dinheiro</em></h2>
-              <p data-en="Build your registry your way, or start from a ready-made list. Guests can gift via Pix or card, and bigger gifts can be group-funded.">Monte a lista do seu jeito ou comece por uma lista pronta. Os convidados presenteiam com Pix ou cartão, e os presentes maiores ganham vaquinha.</p>
-              <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Create my registry">Criar minha lista</button>
-              </div>
-            </div>
-            <figure class="lp2-painel-foto">
-              <img src="assets/landing/ppresentes.jpg" alt="Caixa de presente azul com laço" loading="lazy" data-en-alt="Blue gift box with a bow">
-              <figcaption class="lp-aviso lp2-chip">
-                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span>
-                <div><b data-en="New gift received">Novo presente recebido</b><small data-en="R$ 250.00 via Pix · just now">R$ 250,00 via Pix · agora</small></div>
-              </figcaption>
-            </figure>
-          </article>
-
-          <article id="painel-mesas" class="lp2-painel" style="--fundo:#1D4466;--tom:#D6E8FA">
-            <div class="lp2-painel-texto">
-              <h2 data-en-html="Every guest &lt;em&gt;in the right seat&lt;/em&gt;">Cada convidado <em>no lugar certo</em></h2>
-              <p data-en="Build your seating chart by dragging guests to their tables. Round, rectangular, dance floor — however your venue is laid out.">Monte o mapa do evento arrastando os convidados para as mesas. Redondas, retangulares, pista de dança, do jeito que o salão é.</p>
-              <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Build my seating chart">Montar meu mapa</button>
-              </div>
-            </div>
-            <figure class="lp2-painel-foto">
-              <img src="assets/landing/pmesas.jpg" alt="Mesa redonda decorada em azul" loading="lazy" data-en-alt="Round table decorated in blue">
-              <figcaption class="lp-aviso lp2-chip">
-                <span class="lp-aviso-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="4" rx="1"/><path d="M6 13v6M18 13v6"/></svg></span>
-                <div><b data-en="Table 7 is full">Mesa 7 completa</b><small data-en="8 of 8 seats">8 de 8 lugares</small></div>
-              </figcaption>
-            </figure>
-          </article>
-
-          <article id="painel-carteira" class="lp2-painel" style="--fundo:#122B3D;--tom:#D3EFE0">
-            <div class="lp2-painel-texto">
-              <h2 data-en-html="Your money, &lt;em&gt;fully transparent&lt;/em&gt;">O seu dinheiro, <em>com transparência</em></h2>
-              <p data-en="Every gift lands in your Wallet balance along with a note from who sent it. Track your statement and withdraw to your bank account via Pix whenever you like.">Cada presente entra no saldo da sua Carteira com o recado de quem enviou. Acompanhe o extrato e saque para a sua conta via Pix quando quiser.</p>
-              <div class="lp2-painel-ctas">
-                <button type="button" class="btn-trigger-register lp2-btn-tom" data-en="Get started">Começar agora</button>
-              </div>
-            </div>
-            <figure class="lp2-painel-foto">
-              <img src="assets/landing/pcarteira.jpg" alt="Casal sorrindo em frente ao notebook" loading="lazy" data-en-alt="Couple smiling in front of a laptop">
-              <figcaption class="lp-aviso lp2-chip">
-                <span class="lp-aviso-icone lp-aviso-icone-verde"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M16 15h2"/></svg></span>
-                <div><b data-en="Available balance">Saldo disponível</b><small data-en="R$ 12,480.00">R$ 12.480,00</small></div>
-              </figcaption>
-            </figure>
-          </article>
-
-        </div>
+<!-- MESAS -->
+<section class="lv-wrap lv-duo" id="lv-mesas">
+  <div class="lv-txt">
+    <p class="lv-over" data-en="Seating chart">Mapa do evento</p>
+    <h2 class="lv-h2" data-en-html="Every guest &lt;span class=&quot;lv-it&quot;&gt;in the right seat&lt;/span&gt;">Cada convidado <span class="lv-it">no lugar certo</span></h2>
+    <p class="lv-p" data-en="Build your seating chart by dragging guests to tables. Round, rectangular, dance floor, just like your venue.">Monte o mapa do evento arrastando os convidados para as mesas. Redondas, retangulares, pista de dança, do jeito que o salão é.</p>
+    <a class="lv-tlink btn-trigger-register" href="/cadastro" data-en="Build my seating chart →">Montar meu mapa →</a>
+  </div>
+  <div class="lv-media">
+    <figure class="lv-ph" aria-hidden="true"><img src="assets/landing/pmesas.jpg" alt="" style="object-position:50% 50% !important" loading="lazy"></figure>
+    <div class="lv-fr lv-tables">
+      <div class="lv-floor" id="lv-floor">
+        <button class="lv-tbl lv-full" style="left:7% !important;top:10% !important" data-t="Mesa 7 completa" data-n="8 de 8 lugares">7</button>
+        <button class="lv-tbl" style="left:38% !important;top:7% !important" data-t="Mesa 3" data-n="6 de 8 lugares">3</button>
+        <button class="lv-tbl lv-full" style="left:68% !important;top:14% !important" data-t="Mesa 1 completa" data-n="8 de 8 lugares">1</button>
+        <button class="lv-tbl" style="left:18% !important;top:56% !important" data-t="Mesa 5" data-n="4 de 8 lugares">5</button>
+        <button class="lv-tbl" style="left:45% !important;top:52% !important" data-t="Mesa 2" data-n="7 de 8 lugares">2</button>
+        <div class="lv-dance">Pista</div>
       </div>
-    </section>
+      <p class="lv-tip" id="lv-tip">Toque numa mesa para ver os lugares livres.</p>
+    </div>
+    <div class="lv-float lv-bob lv-d3" style="left:5% !important;top:7% !important"><div class="lv-fr lv-toast"><span class="lv-ic lv-bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><div><b>Mesa 7 completa</b><small>8 de 8 lugares</small></div></div></div>
+  </div>
+</section>
 
-    <!-- =======================================================================
-         A DIFERENÇA ESTÁ NOS DETALHES — abas à esquerda, foto à direita
-         ======================================================================= -->
-    <section id="detalhes" class="lp2-detalhes">
-      <div class="lp-faixa lp2-detalhes-linha">
-        <div class="lp2-detalhes-texto">
-          <h2 class="lp2-titulo" data-en="The difference is in the details">A diferença está nos detalhes</h2>
-          <div class="lp2-abas" role="tablist">
-            <button type="button" class="lp2-aba ativo" role="tab" aria-selected="true" data-foto="assets/landing/dvaquinha.jpg">
-              <b data-en="Group-funding for bigger gifts">Vaquinha nos presentes maiores</b>
-              <span data-en="Multiple guests can chip in together for that special gift — the honeymoon, the sofa, the big trip.">Vários convidados se juntam para dar aquele presente especial, como a viagem, o sofá ou a lua de mel.</span>
-            </button>
-            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/drecados.jpg">
-              <b data-en="Messages kept forever">Recados guardados para sempre</b>
-              <span data-en="Every gift arrives with a heartfelt message from the people you love, all gathered in one place.">Junto com cada presente chega uma mensagem de quem você ama, reunida num só lugar.</span>
-            </button>
-            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dmapa.jpg">
-              <b data-en="Smart seating chart">Mapa de mesas inteligente</b>
-              <span data-en="Drag, swap, and instantly see how many seats are still open at each table.">Arraste, troque e veja na hora quantos lugares ainda estão livres em cada mesa.</span>
-            </button>
-            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dsaque.jpg">
-              <b data-en="Withdraw via Pix">Saque via Pix</b>
-              <span data-en="Your gift money goes straight to your account whenever you want, hassle-free.">O dinheiro dos presentes vai para a sua conta quando você quiser, sem complicação.</span>
-            </button>
-            <button type="button" class="lp2-aba" role="tab" aria-selected="false" data-foto="assets/landing/dlista.jpg">
-              <b data-en="A complete guest list">Lista de convidados completa</b>
-              <span data-en="Groups, plus-ones, dietary needs, and contacts — import them straight from your phone.">Grupos, acompanhantes, restrições e contatos, importe direto da agenda do celular.</span>
-            </button>
-          </div>
-        </div>
-        <figure class="lp2-detalhes-foto">
-          <img src="assets/landing/dvaquinha.jpg" alt="" loading="lazy">
-        </figure>
+<!-- CARTEIRA -->
+<section class="lv-wrap lv-duo lv-rev" id="lv-carteira">
+  <div class="lv-txt">
+    <p class="lv-over" data-en="Wallet">Carteira</p>
+    <h2 class="lv-h2" data-en-html="Your money, &lt;span class=&quot;lv-it&quot;&gt;fully transparent&lt;/span&gt;">O seu dinheiro, <span class="lv-it">com transparência</span></h2>
+    <p class="lv-p" data-en="Every gift lands in your Wallet balance with a message from the sender. Track your statement and withdraw to your account via Pix whenever you want.">Cada presente entra no saldo da sua Carteira com o recado de quem enviou. Acompanhe o extrato e saque para a sua conta via Pix quando quiser.</p>
+    <a class="lv-tlink btn-trigger-register" href="/cadastro" data-en="Get started →">Começar agora →</a>
+  </div>
+  <div class="lv-media lv-pl lv-gr lv-deepsky lv-drift"><div class="lv-emb" aria-hidden="true"><svg viewBox="-6 -6 405 325"><g filter="url(#lv-ebn)"><use href="#lv-b1"/><use href="#lv-b2"/><use href="#lv-b3"/><use href="#lv-b4"/></g></svg></div>
+    <div class="lv-fr lv-wallet">
+      <div class="lv-bal"><div><small>Saldo disponível</small><b id="lv-saldo" class="lv-num">R$ 12.480,00</b></div><button class="lv-eye" id="lv-eye" aria-label="Ocultar saldo" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+      <div>
+        <div class="lv-tx"><span>Presente de Beatriz Lima</span><span class="lv-v">+ R$ 350,00</span><small>Pix · “Para o primeiro jantar”</small><small class="lv-v">hoje</small></div>
+        <div class="lv-tx"><span>Vaquinha · Lua de mel</span><span class="lv-v">+ R$ 1.200,00</span><small>6 convidados</small><small class="lv-v">ontem</small></div>
+        <div class="lv-tx"><span>Saque para sua conta</span><span class="lv-v lv-neg">− R$ 3.000,00</span><small>Pix</small><small class="lv-v">12 mai</small></div>
       </div>
-    </section>
+      <a class="lv-btn lv-btn-d btn-trigger-register" href="/cadastro" data-en="Withdraw via Pix">Sacar via Pix</a>
+    </div>
+  </div>
+</section>
 
-    <!-- =======================================================================
-         SEGURANÇA — foto real + comprovante + garantias
-         ======================================================================= -->
-    <section id="seguranca" class="lp2-seguranca">
-      <div class="lp-faixa lp2-seguranca-linha">
-        <figure class="lp2-seguranca-foto">
-          <img src="assets/landing/seguranca.jpg" alt="Casal planejando o evento no notebook" loading="lazy">
-          <div class="lp-recibo lp2-recibo" aria-hidden="true">
-            <div class="lp-recibo-topo">
-              <span class="lp-recibo-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></span>
-              <div><b data-en="Gift confirmed">Presente confirmado</b><small data-en="Payment approved · Pix">Pagamento aprovado · Pix</small></div>
-            </div>
-            <div class="lp-recibo-valor" data-en="R$ 350.00">R$ 350,00</div>
-            <dl class="lp-recibo-dados">
-              <div><dt data-en="From">De</dt><dd>Beatriz Lima</dd></div>
-              <div><dt data-en="Reference">Identificador</dt><dd class="lp-mono">E2E·7F3A·91C0</dd></div>
-            </dl>
-          </div>
-        </figure>
-        <div class="lp2-seguranca-texto">
-          <span class="lp-sobretitulo" data-en="Security">Segurança</span>
-          <h2 class="lp2-titulo" data-en="Technology that looks after your money and your data">Tecnologia que cuida do seu dinheiro e dos seus dados</h2>
-          <p class="lp2-texto" data-en="Behind a beautiful invitation is a serious financial operation. Every gift is logged, traceable, and lands in your balance with full transparency.">Por trás de um convite bonito existe uma operação financeira séria. Cada presente é registrado, rastreável e chega ao seu saldo com transparência total.</p>
-          <ul class="lp2-garantias">
-            <li><b data-en="Encryption on every connection">Criptografia em todas as conexões</b><span data-en="Your data stays protected by HTTPS, from invitation to payment.">Os dados trafegam protegidos por HTTPS, do convite ao pagamento.</span></li>
-            <li><b data-en="Privacy under LGPD">Privacidade de acordo com a LGPD</b><span data-en="Your guests' information is used only for your event.">As informações dos seus convidados são usadas só para o seu evento.</span></li>
-            <li><b data-en="A record of every cent">Histórico de cada centavo</b><span data-en="A statement showing who sent what, when, and how it was paid.">Extrato com quem enviou, quanto, quando e como foi pago.</span></li>
-            <li><b data-en="Payments through a regulated partner">Pagamentos com parceiro regulado</b><span data-en="Pix and card payments processed by a licensed payment partner.">Pix e cartão processados por instituição de pagamento parceira.</span></li>
-          </ul>
-        </div>
-      </div>
-    </section>
+<!-- DETALHES -->
+<section class="lv-sec lv-wrap" id="lv-detalhes">
+  <div class="lv-head"><h2 class="lv-h2" data-en-html="The difference is &lt;span class=&quot;lv-it&quot;&gt;in the details&lt;/span&gt;">A diferença está <span class="lv-it">nos detalhes</span></h2></div>
+  <div class="lv-dets">
+    <div class="lv-det"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5M11 19c.8-3 2.8-4.5 5-4.5s4.2 1.5 5 4.5"/></svg></span><b data-en="Group gifts for bigger items">Vaquinha nos presentes maiores</b><p data-en="Several guests chip in for that special gift, like the trip, the sofa or the honeymoon.">Vários convidados se juntam para dar aquele presente especial, como a viagem, o sofá ou a lua de mel.</p></div>
+    <div class="lv-det"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><b data-en="Messages kept forever">Recados guardados para sempre</b><p data-en="Every gift comes with a message from someone you love, all in one place.">Junto com cada presente chega uma mensagem de quem você ama, reunida num só lugar.</p></div>
+    <div class="lv-det"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="12" cy="17" r="3"/></svg></span><b data-en="Smart seating chart">Mapa de mesas inteligente</b><p data-en="Drag, swap and instantly see how many seats are still free at each table.">Arraste, troque e veja na hora quantos lugares ainda estão livres em cada mesa.</p></div>
+    <div class="lv-det"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 10l7-7 7 7"/></svg></span><b data-en="Withdraw via Pix">Saque via Pix</b><p data-en="Gift money goes to your account whenever you want, hassle-free.">O dinheiro dos presentes vai para a sua conta quando você quiser, sem complicação.</p></div>
+    <div class="lv-det"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span><b data-en="Complete guest list">Lista de convidados completa</b><p data-en="Groups, plus-ones, dietary needs and contacts, imported straight from your phone.">Grupos, acompanhantes, restrições e contatos, importe direto da agenda do celular.</p></div>
+  </div>
+</section>
 
-    <!-- =======================================================================
-         PARA TODOS OS MOMENTOS
-         ======================================================================= -->
-    <section class="lp2-momentos">
-      <div class="lp-faixa">
-        <h2 class="lp2-titulo-centro" data-en="For every occasion">Para todos os momentos</h2>
-        <div class="lp2-momentos-lista">
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-casamento.jpg" alt="" loading="lazy"><span data-en="Wedding">Casamento</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy"><span data-en="Baby shower">Chá de bebê</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-aniversario.jpg" alt="" loading="lazy"><span data-en="Birthday">Aniversário</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-bodas.jpg" alt="" loading="lazy"><span data-en="Anniversary">Bodas</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy"><span data-en="Kitchen shower">Chá de panela</span></button>
-          <button type="button" class="btn-trigger-register lp2-momento"><img src="assets/criar-revelacao.jpg" alt="" loading="lazy"><span data-en="Gender reveal">Chá revelação</span></button>
-        </div>
-      </div>
-    </section>
+<!-- SEGURANÇA -->
+<section class="lv-wrap lv-duo" id="lv-seguranca">
+  <div class="lv-txt">
+    <p class="lv-over" data-en="Security">Segurança</p>
+    <h2 class="lv-h2" data-en-html="Technology that protects your money &lt;span class=&quot;lv-it&quot;&gt;and your data&lt;/span&gt;">Tecnologia que cuida do seu dinheiro <span class="lv-it">e dos seus dados</span></h2>
+    <p class="lv-p" data-en="Behind a beautiful invitation there is a serious financial operation. Every gift is recorded, traceable and reaches your balance with full transparency.">Por trás de um convite bonito existe uma operação financeira séria. Cada presente é registrado, rastreável e chega ao seu saldo com transparência total.</p>
+    <div class="lv-secl">
+      <div><b data-en="Encryption on every connection">Criptografia em todas as conexões</b><p data-en="Data travels protected by HTTPS, from the invitation to the payment.">Os dados trafegam protegidos por HTTPS, do convite ao pagamento.</p></div>
+      <div><b data-en="Privacy under Brazil&#39;s LGPD">Privacidade de acordo com a LGPD</b><p data-en="Your guests&#39; information is used only for your event.">As informações dos seus convidados são usadas só para o seu evento.</p></div>
+      <div><b data-en="A record of every cent">Histórico de cada centavo</b><p data-en="A statement showing who sent it, how much, when and how it was paid.">Extrato com quem enviou, quanto, quando e como foi pago.</p></div>
+      <div><b data-en="Payments through a regulated partner">Pagamentos com parceiro regulado</b><p data-en="Pix and card processed by a partner payment institution.">Pix e cartão processados por instituição de pagamento parceira.</p></div>
+    </div>
+  </div>
+  <div class="lv-media lv-pl lv-gr lv-sky">
+    <div class="lv-fr lv-receipt">
+      <span class="lv-check" id="lv-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5"/></svg></span>
+      <div><p style="font-size:20px !important">Presente confirmado</p><p style="font-size:13px !important;color:var(--mute) !important">Pagamento aprovado · Pix</p></div>
+      <p class="lv-num" style="font-size:36px !important;font-weight:300 !important;letter-spacing:-.02em !important">R$ 350,00</p>
+      <div class="lv-rc"><span>De</span><b style="font-weight:500 !important">Beatriz Lima</b></div>
+      <div class="lv-rc"><span>Identificador</span><b style="font-weight:500 !important" class="lv-num">E2E·7F3A·91C0</b></div>
+    </div>
+  </div>
+</section>
 
-    <!-- =======================================================================
-         DÚVIDAS
-         ======================================================================= -->
-    <section id="duvidas" class="lp-secao lp-secao-branca lp2-duvidas">
-      <div class="lp-faixa lp-duvidas-linha">
-        <div class="lp-cab-secao">
-          <h2 class="lp2-titulo" data-en="Frequently asked questions">Perguntas frequentes</h2>
-          <p class="lp2-texto" data-en="Can't find what you're looking for? Reach out through our Help Center.">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p>
-        </div>
-        <div class="lp-faq">
-          <details open>
-            <summary data-en="How much does it cost to create my event?">Quanto custa criar o meu evento?</summary>
-            <p data-en="Creating your event, digital invitation, and gift registry is free. You can start right now and only publish when it's exactly how you want it.">Criar o evento, o convite digital e a lista de presentes é grátis. Você começa agora mesmo e só publica quando estiver do seu jeito.</p>
-          </details>
-          <details>
-            <summary data-en="How do I receive cash gifts?">Como recebo os presentes em dinheiro?</summary>
-            <p data-en="When a guest sends a gift, the amount lands in your Love Wallet balance along with their message. From there, just withdraw it to your bank account via Pix, right from the platform.">Quando um convidado presenteia, o valor cai no saldo da sua Carteira na Love, com o recado de quem enviou. Depois é só sacar para a sua conta via Pix, direto pela plataforma.</p>
-          </details>
-          <details>
-            <summary data-en="Do my guests need to create an account?">Meus convidados precisam criar conta?</summary>
-            <p data-en="No. They open your invitation link, RSVP, and pick a gift in just a few taps — on their phone or computer.">Não. Eles abrem o link do convite, confirmam a presença e escolhem o presente em poucos toques, pelo celular ou pelo computador.</p>
-          </details>
-          <details>
-            <summary data-en="Is it safe to pay and receive through Love?">É seguro pagar e receber pela Love?</summary>
-            <p data-en="Yes. Connections are encrypted, payments are processed by a licensed payment partner, and every gift is logged in your statement with date, amount, and payment method.">Sim. As conexões são criptografadas, os pagamentos são processados por instituição de pagamento parceira e cada presente fica registrado no seu extrato, com data, valor e forma de pagamento.</p>
-          </details>
-          <details>
-            <summary data-en="Does it work for events other than weddings?">Serve para outros eventos além de casamento?</summary>
-            <p data-en="Yes. There are templates for baby showers, gender reveals, kitchen showers, birthdays, anniversaries, and other celebrations.">Serve. Há modelos para chá de bebê, chá revelação, chá de panela, aniversário, bodas e outras comemorações.</p>
-          </details>
-        </div>
-      </div>
-    </section>
+<!-- MOMENTOS -->
+<section class="lv-sec lv-wrap">
+  <div class="lv-head"><h2 class="lv-h2" data-en-html="For every &lt;span class=&quot;lv-it&quot;&gt;moment&lt;/span&gt;">Para todos <span class="lv-it">os momentos</span></h2></div>
+    <div class="lv-polas" id="lv-polas">
+    <figure class="lv-pola"><div class="lv-ph"><img src="assets/landing/pconvite.jpg" alt="Casal abraçado sorrindo" style="object-position:50% 30% !important" loading="lazy"></div><figcaption>casamento</figcaption></figure>
+    <figure class="lv-pola"><div class="lv-ph"><img src="assets/landing/dvaquinha.jpg" alt="Caixas de presente azuis com laço" style="object-position:70% 40% !important" loading="lazy"></div><figcaption>chá de bebê</figcaption></figure>
+    <figure class="lv-pola"><div class="lv-ph"><img src="assets/landing/dlista.jpg" alt="Convidadas brindando numa festa ao ar livre" style="object-position:60% 40% !important" loading="lazy"></div><figcaption>aniversário</figcaption></figure>
+    <figure class="lv-pola"><div class="lv-ph"><img src="assets/landing/pconvidados.jpg" alt="Casal brindando num jantar à luz de velas" style="object-position:50% 40% !important" loading="lazy"></div><figcaption>bodas</figcaption></figure>
+    
+  </div>
+  <p class="lv-more">Chá de panela, chá revelação <span class="lv-hand">e o próximo.</span></p>
+</section>
 
-    <!-- =======================================================================
-         CHAMADA FINAL — foto em tela cheia
-         ======================================================================= -->
-    <section class="lp2-final">
-      <img class="lp2-final-foto" src="assets/landing/final.jpg" alt="" loading="lazy">
-      <div class="lp2-final-veu" aria-hidden="true"></div>
-      <div class="lp-faixa lp2-final-conteudo">
-        <h2 data-en-html="Start today.&lt;br&gt;We'll handle the rest.">Comece hoje.<br>O resto a gente organiza.</h2>
-        <p data-en="Create your event for free and share it with the people you love.">Crie o seu evento grátis e compartilhe com quem você ama.</p>
-        <button type="button" class="btn-trigger-register lp-btn lp-btn-branco lp-btn-grande" data-en="Create my event for free">Criar meu evento grátis</button>
-      </div>
-    </section>
+<!-- FAQ -->
+<section class="lv-wrap lv-faq" style="padding-bottom:clamp(56px,7vw,104px) !important">
+  <div style="display:grid !important;gap:16px !important;align-content:start !important"><h2 class="lv-h2" data-en-html="Frequently asked &lt;span class=&quot;lv-it&quot;&gt;questions&lt;/span&gt;">Perguntas <span class="lv-it">frequentes</span></h2><p class="lv-p" data-en="Didn&#39;t find what you were looking for? Talk to us through the Help Center.">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p></div>
+  <div id="lv-faq">
+    <div class="lv-qa lv-open"><button aria-expanded="true"><span data-en="How much does it cost to create my event?">Quanto custa criar o meu evento?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="Creating the event, the digital invitation and the gift registry is free. Start right now and publish only when it looks just right.">Criar o evento, o convite digital e a lista de presentes é grátis. Você começa agora mesmo e só publica quando estiver do seu jeito.</p></div></div></div>
+    <div class="lv-qa"><button aria-expanded="false"><span data-en="How do I receive cash gifts?">Como recebo os presentes em dinheiro?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="When a guest gives a gift, the amount goes to your Love Wallet balance, with the sender&#39;s message. Then just withdraw to your account via Pix, right from the platform.">Quando um convidado presenteia, o valor cai no saldo da sua Carteira na Love, com o recado de quem enviou. Depois é só sacar para a sua conta via Pix, direto pela plataforma.</p></div></div></div>
+    <div class="lv-qa"><button aria-expanded="false"><span data-en="Do my guests need an account?">Meus convidados precisam criar conta?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="No. They open the invitation link, RSVP and choose a gift in a few taps, on their phone or computer.">Não. Eles abrem o link do convite, confirmam a presença e escolhem o presente em poucos toques, pelo celular ou pelo computador.</p></div></div></div>
+    <div class="lv-qa"><button aria-expanded="false"><span data-en="Is it safe to pay and receive through Love?">É seguro pagar e receber pela Love?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="Yes. Connections are encrypted, payments are processed by a partner payment institution and every gift is recorded in your statement, with date, amount and payment method.">Sim. As conexões são criptografadas, os pagamentos são processados por instituição de pagamento parceira e cada presente fica registrado no seu extrato, com data, valor e forma de pagamento.</p></div></div></div>
+    <div class="lv-qa"><button aria-expanded="false"><span data-en="Does it work for events other than weddings?">Serve para outros eventos além de casamento?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="Yes. There are templates for baby showers, gender reveals, bridal showers, birthdays, anniversaries and other celebrations.">Serve. Há modelos para chá de bebê, chá revelação, chá de panela, aniversário, bodas e outras comemorações.</p></div></div></div>
+  </div>
+</section>
 
+<!-- FINAL -->
+<section class="lv-final lv-pl lv-gr lv-petalsky lv-drift" id="lv-criar"><div class="lv-emb" aria-hidden="true"><svg viewBox="-6 -6 405 325"><g filter="url(#lv-eb)"><use href="#lv-b1"/><use href="#lv-b2"/><use href="#lv-b3"/><use href="#lv-b4"/></g></svg></div>
+  <div class="lv-ov">
+    <p class="lv-sign" data-en="For the days that last forever">Para os dias que ficam para sempre</p>
+    <h2 class="lv-t lv-sf" data-en-html="Start today. &lt;i&gt;We&amp;#39;ll handle the rest.&lt;/i&gt;">Comece hoje. <i>O resto a gente organiza.</i></h2>
+    <p class="lv-sub" data-en="Create your event for free and share it with the people you love.">Crie o seu evento grátis e compartilhe com quem você ama.</p>
+    <a class="lv-btn lv-btn-d btn-trigger-register" href="/cadastro"><span data-en="Create my event for free">Criar meu evento grátis</span> <i></i></a>
+  </div>
+</section>
     </div><!-- /#public-landing-sections -->
 
     <!-- =======================================================================
@@ -426,69 +397,38 @@
     </section>
 
     <!-- Rodapé da landing (mesmos ids usados em app.js) -->
-    <footer id="public-landing-footer" class="lp-rodape">
-      <div class="lp-faixa">
-        <div class="lp-rodape-grade">
-          <div class="lp-rodape-marca">
-            <img src="assets/logo.png" alt="Love" class="lp-rodape-logo">
-            <p data-en="Digital invitations, gift registry, and RSVPs — all in one platform, built for the most important days of your life.">Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
-            <div class="lp-redes">
-              <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg>
-              </a>
-              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-1.01-.02 2.98.02 5.96-.02 8.94-.03 1.53-.45 3.08-1.28 4.38-1.12 1.77-2.97 3.04-5.04 3.49-1.71.38-3.55.19-5.14-.54-1.68-.78-3.05-2.14-3.86-3.8-1.07-2.18-.94-4.88.35-6.94 1.05-1.67 2.75-2.86 4.67-3.29.93-.21 1.9-.22 2.85-.04v4.18c-.7-.22-1.49-.24-2.19-.04-.84.23-1.57.81-1.95 1.59-.51 1.03-.38 2.3.33 3.2.66.84 1.72 1.34 2.8 1.34 1.14 0 2.21-.56 2.85-1.51.37-.55.57-1.22.57-1.89V.02z"/></svg>
-              </a>
-              <a href="https://x.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="X">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </a>
-              <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
-              </a>
-              <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-              </a>
-            </div>
-          </div>
-
-          <div class="lp-rodape-coluna">
-            <h4 data-en="Platform">Plataforma</h4>
-            <ul>
-              <li><button type="button" id="btn-footer-create-event" data-en="Create new event">Criar novo evento</button></li>
-              <li><button type="button" id="btn-footer-find-event" data-en="Find an event">Encontre um evento</button></li>
-              <li><button type="button" id="btn-footer-b2b-advisors" data-en="Advisor dashboard">Painel de assessores</button></li>
-              <li><button type="button" id="btn-footer-blog" data-en="Blog">Blog</button></li>
-            </ul>
-          </div>
-
-          <div class="lp-rodape-coluna">
-            <h4 data-en="Support">Suporte</h4>
-            <ul>
-              <li><button type="button" id="btn-footer-help-center" data-en="Help Center">Central de ajuda</button></li>
-              <li><button type="button" id="btn-footer-contact" data-en="Contact us">Fale conosco</button></li>
-              <li><button type="button" class="btn-trigger-login" data-en="Host area">Área do anfitrião</button></li>
-            </ul>
-          </div>
-
-          <div class="lp-rodape-coluna">
-            <h4 data-en="Security">Segurança</h4>
-            <ul class="lp-rodape-selos">
-              <li><img src="assets/pix-icone.png" alt="" aria-hidden="true"><span data-en="Gifts via Pix">Presentes via Pix</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span data-en="Encrypted connection">Conexão criptografada</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"/></svg><span data-en="Data protected (LGPD)">Dados protegidos (LGPD)</span></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="lp-rodape-base">
-          <p data-en="© 2026 Love Hub Ltda. All rights reserved.">© 2026 Love Hub Ltda. Todos os direitos reservados.</p>
-          <nav aria-label="Links legais">
-            <a href="/privacidade" data-en="Privacy">Privacidade</a>
-            <a href="/termos" data-en="Terms &amp; conditions">Termos e condições</a>
-          </nav>
+<footer id="public-landing-footer" class="lv-rodape">
+  <div class="lv-wrap">
+    <div class="lv-fgrid">
+      <div class="lv-fmarca">
+        <a class="lv-logo lv-flogo" href="/" aria-label="Love"><svg viewBox="0 0 1209 333"><use href="#lv-logog"/></svg></a>
+        <p class="lv-p lv-ftexto" data-en="Digital invitations, gift registry, and RSVPs, all in one platform, built for the most important days of your life.">Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
+        <div class="lv-redes">
+          <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
+          <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.850 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.130zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
+          <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3 3 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3 3 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3 3 0 0 0 2.12-2.14C24 15.930 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a>
         </div>
       </div>
-    </footer>
+      <div><h4 data-en="Platform">Plataforma</h4><ul>
+        <li><button type="button" id="btn-footer-create-event" data-en="Create new event">Criar novo evento</button></li>
+        <li><button type="button" id="btn-footer-find-event" data-en="Find an event">Encontre um evento</button></li>
+        <li><button type="button" id="btn-footer-b2b-advisors" data-en="Advisor dashboard">Painel de assessores</button></li>
+        <li><button type="button" id="btn-footer-blog" data-en="Blog">Blog</button></li>
+      </ul></div>
+      <div><h4 data-en="Support">Suporte</h4><ul>
+        <li><button type="button" id="btn-footer-help-center" data-en="Help Center">Central de ajuda</button></li>
+        <li><button type="button" id="btn-footer-contact" data-en="Contact us">Fale conosco</button></li>
+        <li><button type="button" class="btn-trigger-login" data-en="Host area">Área do anfitrião</button></li>
+      </ul></div>
+      <div><h4 data-en="Security">Segurança</h4><ul>
+        <li data-en="Gifts via Pix">Presentes via Pix</li>
+        <li data-en="Encrypted connection">Conexão criptografada</li>
+        <li data-en="Data protected (LGPD)">Dados protegidos (LGPD)</li>
+      </ul></div>
+    </div>
+    <div class="lv-legal"><span data-en="© 2026 Love Hub Ltda. All rights reserved.">© 2026 Love Hub Ltda. Todos os direitos reservados.</span><span><a href="/privacidade" data-en="Privacy">Privacidade</a> · <a href="/termos" data-en="Terms &amp; conditions">Termos e condições</a></span></div>
+  </div>
+</footer>
 
   </div>
 
@@ -5807,7 +5747,7 @@
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
   <script src="js/app.js?v=20261106_dicas"></script>
-  <script src="js/landing.js?v=20261031_landing4"></script>
+  <script src="js/landing.js?v=20261114_lv1"></script>
   <script src="js/carteira.js?v=20261102_contasconfig"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
   <script src="js/pedidos-orcamento.js?v=20261030_textosdesk"></script>

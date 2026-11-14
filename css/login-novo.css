@@ -54,9 +54,7 @@
 #view-login#view-login .lg-voltar svg { width: 16px; height: 16px; transition: transform .3s var(--lg-ease); }
 #view-login#view-login .lg-voltar:hover svg { transform: translateX(-3px); }
 /* Cabeçalho acima do cartão: logo centralizado, mesma altura e tamanho da landing */
-#view-login#view-login .lg-cabecalho { position: sticky; top: 0; z-index: 20; transition: background .5s, box-shadow .5s; height: 72px; display: flex; align-items: center; justify-content: center; padding-top: env(safe-area-inset-top, 0px); }
-/* Ao rolar, o cabeçalho ganha o fundo da página, como o da landing */
-#view-login#view-login .lg-cabecalho.lg-on { background: rgba(247,248,250,.82) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0 var(--lg-linha) !important; }
+#view-login#view-login .lg-cabecalho { position: sticky; top: 0; z-index: 20; width: 100%; background: rgba(247,248,250,.82) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0 var(--lg-linha) !important; height: 72px; display: flex; align-items: center; justify-content: center; padding-top: env(safe-area-inset-top, 0px); }
 #view-login#view-login .lg-logo { display: block; width: 102px; }
 #view-login#view-login .lg-logo img { display: block; width: 100%; height: auto; }
 

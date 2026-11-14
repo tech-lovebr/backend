@@ -127,3 +127,8 @@
 @media (prefers-reduced-motion: reduce) {
   #view-login#view-login .lg-foto { transition: opacity .01s; }
 }
+
+/* Celular: sem a janela de fotos no início; o formulário vem logo abaixo do cabeçalho. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login .lg-janela { display: none !important; }
+}

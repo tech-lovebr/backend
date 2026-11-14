@@ -64,6 +64,7 @@
 #view-login#view-login .lg-cabeca { display: grid; gap: 12px; }
 #view-login#view-login .lg-sobre { font-size: 12px !important; font-weight: 500 !important; letter-spacing: .22em !important; text-transform: uppercase; color: var(--lg-suave) !important; }
 #view-login#view-login .lg-titulo { font-family: var(--lg-serif) !important; font-weight: 300 !important; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -.02em !important; font-size: clamp(32px, 3.1vw, 44px) !important; line-height: 1.04 !important; color: var(--lg-azul) !important; text-wrap: balance; }
+#view-login#view-login .lg-sub { color: var(--lg-mudo) !important; font-size: 15.5px !important; line-height: 1.5 !important; max-width: 38ch; text-wrap: pretty; }
 #view-login#view-login .lg-titulo i { font-style: italic; }
 
 /* Formulário */
@@ -132,3 +133,7 @@
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-login#view-login .lg-janela { display: none !important; }
 }
+
+/* Entrar: Google primeiro, depois "ou entre com seu e-mail" e o formulário. */
+#view-login#view-login #login-panel-signin .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
+#view-login#view-login #login-panel-signin .lg-ou + .lg-form { margin-top: 0; }

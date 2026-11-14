@@ -55,7 +55,7 @@
       esconderSenha: { pt: 'Esconder senha', en: 'Hide password' },
       esqueceuSenha: { pt: 'Esqueceu a senha?', en: 'Forgot your password?' },
       entrar: { pt: 'Entrar', en: 'Log in' },
-      ouContinueCom: { pt: 'ou continue com', en: 'or continue with' },
+      ouComEmail: { pt: 'ou entre com seu e-mail', en: 'or sign in with your email' },
       continuarComGoogle: { pt: 'Continuar com o Google', en: 'Continue with Google' },
       continuarComApple: { pt: 'Continuar com a Apple', en: 'Continue with Apple' },
       aindaNaoTemConta: { pt: 'Ainda não tem uma conta?', en: "Don't have an account yet?" },

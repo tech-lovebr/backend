@@ -2619,6 +2619,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   window.loveAtualizarCapaDaHome = atualizarCapaDaHomeCelular;
+  // Computador: "Alterar imagem" na capa da Home troca a capa do Convite
+  // digital (a Home mostra a capa do convite).
+  (function trocarCapaPelaHome() {
+    const botao = document.getElementById('btn-home-capa-trocar');
+    const arquivo = /** @type {HTMLInputElement|null} */ (document.getElementById('home-capa-arquivo'));
+    if (!botao || !arquivo) return;
+    botao.addEventListener('click', () => arquivo.click());
+    arquivo.addEventListener('change', () => {
+      const file = arquivo.files && arquivo.files[0];
+      arquivo.value = '';
+      if (!file) return;
+      const w = /** @type {any} */ (window);
+      if (typeof w.loveTrocarCapaDoConvite === 'function') w.loveTrocarCapaDoConvite(file);
+    });
+  })();
   // Topo da Home (celular) por cima da foto: transparente até rolar a página.
   (function topoDaHomeSobreAFoto() {
     const conferir = () => { document.body.classList.toggle('home-rolou', window.scrollY > 150); };

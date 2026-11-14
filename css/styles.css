@@ -15380,3 +15380,20 @@ html body .sidebar-icon-rail .rail-chat-btn:not(#love-h-a):not(#love-h-b):not(#l
 html body #view-event-os-dashboard :is(h1, h2, h3, .floorplan-page-name, #info-active-sub-title):not(#dash-hub-title):not(.builder-canvas *):not([id="live-preview-container"] *):not(.convite-tela *):not(.font-serif):not(.font-serif-title):not(#love-h-a):not(#love-h-b) {
   font-weight: 500 !important;
 }
+
+/* Home (computador): "Alterar imagem" no canto superior direito da capa, ao
+   passar o mouse; troca também a capa do Convite digital. */
+.home-capa-trocar { display: none; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #tab-overview .home-capa-trocar:not(#love-h-a) {
+    display: inline-flex; position: absolute; top: 16px; right: 16px; z-index: 3;
+    align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 8px;
+    background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.4); color: #FFFFFF !important;
+    font-size: 13px; font-weight: 500; cursor: pointer; opacity: 0; transition: opacity .2s ease;
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  }
+  html body #tab-overview .home-capa-trocar svg:not(#love-h-a) { width: 16px; height: 16px; flex: none; }
+  html body #tab-overview .home-capa-celular:has(.home-capa-celular-foto:hover) .home-capa-trocar:not(#love-h-a),
+  html body #tab-overview .home-capa-trocar:not(#love-h-a):is(:hover, :focus-visible) { opacity: 1; }
+  html body #tab-overview .home-capa-trocar:not(#love-h-a):hover { border-color: #FFFFFF; }
+}

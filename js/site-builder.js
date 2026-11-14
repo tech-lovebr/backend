@@ -4495,6 +4495,27 @@ function renderConvitePublico(root) {
  * sempre a capa, as cores e os botões do Convite digital.
  * @returns {any}
  */
+// Home (computador): "Alterar imagem" na capa troca a imagem do topo do
+// Convite digital (primeira seção), igual a Informações, e salva.
+window.loveTrocarCapaDoConvite = function (file) {
+  const conv = estadoDoConvite();
+  const alvo = conv && (conv.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock);
+  if (!alvo) { showToast('Crie o convite digital para escolher a capa.'); return; }
+  readFileAsDataUrl(file, (dataUrl) => {
+    alvo.bgImage = dataUrl;
+    if (conv === builderState) {
+      pushHistory();
+      renderCanvas();
+      persistBuilderState(true);
+    } else {
+      guardarPaginaNoCache('convite', conv);
+      persistBuilderStateRemote('convite', conv);
+      if (typeof window.loveAtualizarCapaDaHome === 'function') { try { window.loveAtualizarCapaDaHome(); } catch (e) { /* Home fora da tela */ } }
+    }
+    showToast('Capa alterada!');
+  });
+};
+
 function estadoDoConvite() {
   if (currentPageKey === 'convite' || !builderState) return builderState;
   try {

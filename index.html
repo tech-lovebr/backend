@@ -95,7 +95,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261114_titulos500">
+  <link rel="stylesheet" href="css/styles.css?v=20261114_capahome">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261114_lv2">
@@ -2461,6 +2461,10 @@
           <!-- Celular: foto do convite colada no topo e a caixa "Olá, nome" + dias que faltam -->
           <div id="home-capa-celular" class="home-capa-celular">
             <div id="home-capa-celular-foto" class="home-capa-celular-foto" role="img" aria-label="Foto do evento"></div>
+            <!-- Computador: ao passar o mouse na capa, "Alterar imagem" no canto
+                 superior direito; troca também a capa do Convite digital. -->
+            <button type="button" id="btn-home-capa-trocar" class="home-capa-trocar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 2 2"/></svg><span>Alterar imagem</span></button>
+            <input type="file" id="home-capa-arquivo" accept="image/*" class="hidden">
             <div class="home-capa-celular-caixa">
               <p id="home-capa-celular-ola" class="home-capa-celular-ola">Olá!</p>
               <p id="home-capa-celular-dias" class="home-capa-celular-dias"></p>
@@ -5704,7 +5708,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261114_chattopo"></script>
+  <script src="js/app.js?v=20261114_capahome"></script>
   <script src="js/landing.js?v=20261114_lv1"></script>
   <script src="js/carteira.js?v=20261102_contasconfig"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
@@ -5712,6 +5716,6 @@
   <script src="js/contratos.js?v=20261025_coanf3"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261114_chattopo"></script>
+  <script src="js/site-builder.js?v=20261114_capahome"></script>
 </body>
 </html>

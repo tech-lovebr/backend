@@ -15324,3 +15324,41 @@ html body .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover {
 html body .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover span { color: #18181B !important; }
 body[data-theme="dark"] .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover { background: #2A2F36 !important; border-color: #2A2F36 !important; }
 body[data-theme="dark"] .btn-select-event-type-card:not(#love-h-a):not(#love-h-b):hover span { color: #FFFFFF !important; }
+
+/* ==========================================================================
+   Tipografia da landing na plataforma logada (pedido de 2026-11-14):
+   Outfit em tudo (textos, menus, botões, campos, tabelas, títulos e valores);
+   Fraunces nos destaques em serifa (saudação da Home, saldos grandes da
+   Carteira e o texto dos recados); Nothing You Could Do na assinatura dos
+   recados. Ficam de fora a landing, o login (têm o próprio CSS), o conteúdo
+   que o anfitrião edita (canvas, prévia e páginas públicas do convite) e os
+   códigos em mono.
+   ========================================================================== */
+:root {
+  --fonte-love: "Outfit", "Helvetica Neue", Arial, sans-serif;
+  --fonte-love-serifa: "Fraunces", Georgia, "Times New Roman", serif;
+  --fonte-love-mao: "Nothing You Could Do", "Bradley Hand", cursive;
+}
+html body:not(:has([id="public-preview-root"])) { font-family: var(--fonte-love); }
+html body:not(:has([id="public-preview-root"])) :is(button, input, select, textarea, p, span, a, label, h1, h2, h3, h4, h5, h6, li, td, th, div, strong, small, b, em, .font-sans, .font-heading):not(#view-public-site *):not(#view-login *):not(.builder-canvas):not(.builder-canvas *):not([id="live-preview-container"]):not([id="live-preview-container"] *):not(.convite-tela):not(.convite-tela *):not(.font-mono):not(.font-mono *):not(code):not(pre):not(kbd):not(.font-serif):not(.font-serif-title):not(#love-h-a):not(#love-h-b) {
+  font-family: var(--fonte-love) !important;
+}
+/* Destaques em serifa, como os da landing (peso leve e SOFT). */
+html body #view-event-os-dashboard #dash-hub-title:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body [id^="wallet-balance"]:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body [id^="kpi-wallet"]:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body #carteira-raiz .cart-numero:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body #recados-raiz .recado-carta-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body .recado-ficha .recado-ficha-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: var(--fonte-love-serifa) !important;
+  font-weight: 400 !important;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.02em !important;
+}
+/* Assinatura do recado em letra de mão ("Com carinho," continua em Outfit). */
+html body #recados-raiz .recado-carta-assinatura:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: var(--fonte-love-mao) !important; font-weight: 400 !important; font-size: 24px !important; letter-spacing: 0 !important; color: #183b54 !important;
+}
+html body #recados-raiz .recado-carta-assinatura span:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-family: var(--fonte-love) !important; }
+body[data-theme="dark"] #recados-raiz .recado-carta-assinatura:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+html body #modal-crop-cover :is(h3, h4, .font-serif-title):not(#love-h-a):not(#love-h-b) { font-family: var(--fonte-love) !important; }

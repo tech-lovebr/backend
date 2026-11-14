@@ -99,7 +99,7 @@
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261114_lv1">
-  <link rel="stylesheet" href="css/login-novo.css?v=20261114_lg2">
+  <link rel="stylesheet" href="css/login-novo.css?v=20261114_lg4">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -588,22 +588,19 @@
     </div>
 
     <script>
-      // Fotos do login: janela nítida + fundo desfocado, bolinhas embaixo da
-      // frase; cada foto traz a frase do seu tipo de evento.
+      // Fotos do login: janela com as fotos e bolinhas embaixo da frase; cada
+      // foto traz a frase do seu tipo de evento. O cabeçalho ganha fundo ao rolar.
       (function () {
         var janela = document.getElementById('lg-janela');
-        var fundo = document.getElementById('lg-fundo');
+        var cabecalho = document.querySelector('#view-login .lg-cabecalho');
         var pontos = document.getElementById('lg-pontos');
         var frase = document.getElementById('login-carrossel-frase');
         if (!janela) return;
         var fotos = Array.prototype.slice.call(janela.querySelectorAll('.lg-foto'));
-        var borradas = fotos.map(function (f, i) {
-          var b = document.createElement('img');
-          b.alt = ''; b.src = f.getAttribute('src'); if (i) b.loading = 'lazy';
-          if (!i) b.className = 'is-ativa';
-          fundo.appendChild(b);
-          return b;
-        });
+        if (cabecalho) {
+          var aoRolar = function () { cabecalho.classList.toggle('lg-on', window.scrollY > 8); };
+          window.addEventListener('scroll', aoRolar, { passive: true }); aoRolar();
+        }
         pontos.innerHTML = fotos.map(function (_, i) { return '<i' + (i ? '' : ' class="is-ativo"') + '></i>'; }).join('');
         var bolinhas = Array.prototype.slice.call(pontos.children);
         var emIngles = function () { return !!(window.LoveI18n && window.LoveI18n.emIngles); };
@@ -621,12 +618,10 @@
           if (document.hidden || !janela.offsetWidth) return; // só troca com o login aberto
           var antes = atual;
           atual = (atual + 1) % fotos.length;
-          [fotos, borradas].forEach(function (lista) {
-            lista.forEach(function (x) { x.classList.remove('is-anterior'); });
-            lista[antes].classList.add('is-anterior');
-            lista[antes].classList.remove('is-ativa');
-            lista[atual].classList.add('is-ativa');
-          });
+          fotos.forEach(function (x) { x.classList.remove('is-anterior'); });
+          fotos[antes].classList.add('is-anterior');
+          fotos[antes].classList.remove('is-ativa');
+          fotos[atual].classList.add('is-ativa');
           bolinhas.forEach(function (b, i) { b.classList.toggle('is-ativo', i === atual); });
           var texto = fotos[atual].getAttribute(emIngles() ? 'data-frase-en' : 'data-frase');
           frase.classList.add('is-trocando');

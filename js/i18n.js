@@ -44,6 +44,10 @@
   var DICIONARIO = {
     login: {
       acessarConta: { pt: 'Acesse sua conta', en: 'Access your account' },
+      entrarNaLove: { pt: 'Entrar na Love', en: 'Log in to Love' },
+      tituloHtml: { pt: 'Para os dias que<br><i>ficam para sempre.</i>', en: 'For the days that<br><i>last forever.</i>' },
+      subtitulo: { pt: 'Acesse sua lista de presentes, o convite e a lista de convidados.', en: 'Access your gift registry, your invitation and your guest list.' },
+      voltarAoSite: { pt: 'Voltar ao site', en: 'Back to site' },
       email: { pt: 'E-mail', en: 'Email' },
       emailPlaceholder: { pt: 'seu.email@exemplo.com', en: 'you@example.com' },
       senha: { pt: 'Senha', en: 'Password' },

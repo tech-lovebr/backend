@@ -37,7 +37,7 @@
        corpo da página (ex.: o carrossel do login) que já chama LoveI18n.t()
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
-  <script src="js/i18n.js?v=20261105_atributo"></script>
+  <script src="js/i18n.js?v=20261114_login"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -95,10 +95,11 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261106_dicas">
+  <link rel="stylesheet" href="css/styles.css?v=20261114_login">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261114_lv1">
+  <link rel="stylesheet" href="css/login-novo.css?v=20261114_lg1">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -465,205 +466,171 @@
     }
   </script>
 
-    <!-- Celular: prévia da barra de baixo da plataforma (enfeite; só o Início clica e volta para a landing) -->
-    <nav class="login-barra-previa">
-      <a href="/" class="login-barra-item is-ativo login-barra-inicio" aria-label="Voltar para o início"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path> </svg><small data-love-i18n="dashboardChrome.inicio">Início</small></a>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path> </svg><small data-love-i18n="dashboardChrome.convidados">Convidados</small></span>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path> </svg><small data-love-i18n="dashboardChrome.presentes">Presentes</small></span>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"/> </svg><small data-love-i18n="dashboardChrome.convite">Convite</small></span>
-      <span class="login-barra-item" aria-hidden="true"><svg aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/> </svg><small data-love-i18n="dashboardChrome.mensagens">Mensagens</small></span>
-    </nav>
+    <!-- Login (layout novo, css/login-novo.css): foto do evento como fundo
+         desfocado e janela da esquerda; formulário à direita com o logo no
+         topo. Os ids continuam os mesmos que o app.js usa. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <g id="lg-b1" transform="matrix(.935 0 0 .935 0 0)"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g>
+        <filter id="lg-eb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation=".8" result="b"/><feOffset in="b" dx="-.8" dy=".8" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#7A4535" flood-opacity=".07"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx=".8" dy="-.8" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#C9D3DF" flood-opacity=".55"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter>
+      </defs>
+    </svg>
 
-    <!-- Esquerda: formulário -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
-      <div class="w-full max-w-md">
+    <div class="lg-fundo" id="lg-fundo" aria-hidden="true"></div>
 
-        <!-- Painel: Entrar -->
-        <div id="login-panel-signin">
-          <div class="mb-6">
-            <img src="assets/logo.png?v=2" alt="Love" class="h-12 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900" data-love-i18n="login.acessarConta">Acesse sua conta</h3>
+    <div class="lg-pagina">
+      <section class="lg-cartao" aria-label="Entrar na Love" data-love-i18n-aria-label="login.entrarNaLove">
+
+        <!-- Janela de fotos: troca sozinha; cada tipo de evento tem a sua frase -->
+        <figure class="lg-janela" id="lg-janela">
+          <img class="lg-foto is-ativa" src="assets/login-banner.jpg?v=20261022" alt="" data-frase="Para o dia em|que tudo começa" data-frase-en="For the day|it all begins">
+          <img class="lg-foto" src="assets/criar-aniversario.jpg" alt="" loading="lazy" decoding="async" data-frase="Para celebrar mais|um ano de vida" data-frase-en="To celebrate another|year of life">
+          <img class="lg-foto" src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy" decoding="async" data-frase="Para esperar quem|já é tanto amor" data-frase-en="For the little one|already so loved">
+          <img class="lg-foto" src="assets/criar-bodas.jpg" alt="" loading="lazy" decoding="async" data-frase="Para celebrar cada|ano lado a lado" data-frase-en="To celebrate every|year side by side">
+          <img class="lg-foto" src="assets/criar-revelacao.jpg" alt="" loading="lazy" decoding="async" data-frase="Para descobrir juntos|a maior surpresa" data-frase-en="To discover together|the biggest surprise">
+          <img class="lg-foto" src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy" decoding="async" data-frase="Para montar a casa|onde a história mora" data-frase-en="To build the home|where your story lives">
+          <img class="lg-foto" src="assets/criar-casamento.jpg" alt="" loading="lazy" decoding="async" data-frase="Para dizer sim|a quem você ama" data-frase-en="To say yes|to the one you love">
+          <figcaption class="lg-legenda">
+            <p id="login-carrossel-frase" class="lg-frase">Para o dia em<br>que tudo começa</p>
+            <span class="lg-pontos" id="lg-pontos" aria-hidden="true"></span>
+          </figcaption>
+        </figure>
+
+        <div class="lg-lado">
+          <div class="lg-relevo" aria-hidden="true"><svg viewBox="-6 -6 405 325"><g filter="url(#lg-eb)" fill="#fff"><use href="#lg-b1"/></g></svg></div>
+
+          <div class="lg-topo">
+            <a class="lg-voltar" href="/"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg><span data-love-i18n="login.voltarAoSite">Voltar ao site</span></a>
+            <a class="lg-logo" href="/" aria-label="Love"><img src="assets/logo-love-rosa.svg" alt="Love"></a>
+            <span aria-hidden="true"></span>
           </div>
 
-          <!-- Formulário E-mail e Senha -->
-          <form id="form-login-email" class="space-y-3.5 text-left" method="post" autocomplete="on">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.email">E-mail</label>
-              <input type="email" id="login-email-input" name="email" autocomplete="username email" required placeholder="seu.email@exemplo.com" data-love-i18n-placeholder="login.emailPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-              <!-- Erro do login (e-mail/senha errados, não cadastrado, Google
-                   recusado etc.): logo abaixo do e-mail, não em cima do botão
-                   Entrar — é sobre a CONTA, não sobre qual campo foi digitado. -->
-              <p id="login-error-message" class="text-sm text-red-600 hidden mt-1.5"></p>
+          <!-- Painel: Entrar -->
+          <div id="login-panel-signin" class="lg-painel">
+            <div class="lg-cabeca">
+              <p class="lg-sobre" data-love-i18n="login.entrarNaLove">Entrar na Love</p>
+              <h1 class="lg-titulo" data-love-i18n-html="login.tituloHtml">Para os dias que<br><i>ficam para sempre.</i></h1>
+              <p class="lg-sub" data-love-i18n="login.subtitulo">Acesse sua lista de presentes, o convite e a lista de convidados.</p>
             </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.senha">Senha</label>
-              <div class="login-campo-com-icone">
-                <input type="password" id="login-password-input" name="password" autocomplete="current-password" required placeholder="Sua senha secreta" data-love-i18n-placeholder="login.senhaPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-                <!-- Olhinho: mostra/esconde a senha -->
-                <button type="button" id="btn-login-ver-senha" class="login-campo-icone login-ver-senha" data-ver-senha="login-password-input" aria-label="Mostrar senha" data-love-i18n-aria-label="login.mostrarSenha" aria-pressed="false"><svg class="login-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="login-olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+            <form id="form-login-email" class="lg-form" method="post" autocomplete="on" novalidate>
+              <div class="lg-campo">
+                <input type="email" id="login-email-input" name="email" autocomplete="username email" required placeholder=" ">
+                <label for="login-email-input" data-love-i18n="login.email">E-mail</label>
               </div>
-              <!-- Esqueceu a senha: embaixo da senha, à direita, em cinza -->
-              <div class="flex justify-end mt-1.5">
-                <button type="button" id="btn-login-forgot-password" class="login-esqueceu-senha" data-love-i18n="login.esqueceuSenha">Esqueceu a senha?</button>
+              <!-- Erro do login (e-mail/senha errados, não cadastrado, Google recusado etc.) -->
+              <p id="login-error-message" class="lg-erro hidden"></p>
+              <div class="lg-campo lg-campo-senha">
+                <input type="password" id="login-password-input" name="password" autocomplete="current-password" required placeholder=" ">
+                <label for="login-password-input" data-love-i18n="login.senha">Senha</label>
+                <button type="button" id="btn-login-ver-senha" class="lg-olho login-ver-senha" data-ver-senha="login-password-input" aria-label="Mostrar senha" data-love-i18n-aria-label="login.mostrarSenha" aria-pressed="false"><svg class="login-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="login-olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
               </div>
-            </div>
+              <div class="lg-linha">
+                <button type="button" id="btn-login-forgot-password" class="lg-link" data-love-i18n="login.esqueceuSenha">Esqueceu a senha?</button>
+              </div>
+              <button type="submit" id="btn-do-email-login" class="lg-btn lg-btn-escuro"><span data-love-i18n="login.entrar">Entrar</span><i aria-hidden="true"></i></button>
+            </form>
 
-            <button type="submit" id="btn-do-email-login" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-              <span data-love-i18n="login.entrar">Entrar</span>
-            </button>
-          </form>
+            <div class="lg-ou"><span data-love-i18n="login.ouContinueCom">ou continue com</span></div>
 
-          <div class="flex items-center gap-3 my-4">
-            <div class="h-px bg-slate-200 flex-1"></div>
-            <span class="login-ou-continue" data-love-i18n="login.ouContinueCom">ou continue com</span>
-            <div class="h-px bg-slate-200 flex-1"></div>
-          </div>
-
-          <div class="space-y-2.5">
-            <button id="btn-google-login" type="button" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer">
-              <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <button id="btn-google-login" type="button" class="lg-btn lg-btn-claro">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.940l2.85-2.22.81-.63z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
               </svg>
               <span data-love-i18n="login.continuarComGoogle">Continuar com o Google</span>
             </button>
+
+            <p class="lg-novo"><span data-love-i18n="login.aindaNaoTemConta">Ainda não tem uma conta?</span> <button type="button" id="btn-login-to-register" class="lg-link lg-link-forte" data-love-i18n="login.cadastreSe">Cadastre-se</button></p>
           </div>
 
-          <div class="pt-5 text-sm text-slate-500 flex items-center gap-1">
-            <span class="text-sm text-slate-500" data-love-i18n="login.aindaNaoTemConta">Ainda não tem uma conta?</span>
-            <button type="button" id="btn-login-to-register" class="text-sm text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-love-i18n="login.cadastreSe">
-              Cadastre-se
-            </button>
-          </div>
-        </div>
-
-        <!-- Painel: Esqueci a senha -->
-        <div id="login-panel-forgot" class="hidden">
-          <div class="mb-6">
-            <img src="assets/logo.png?v=2" alt="Love" class="h-12 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900" data-love-i18n="login.recuperarSenha">Recuperar senha</h3>
-            <p class="text-xs sm:text-sm text-slate-500 mt-2" data-love-i18n="login.recuperarSenhaDesc">Digite seu e-mail e enviaremos um link para você criar uma nova senha.</p>
-          </div>
-
-          <form id="form-login-forgot" class="space-y-3.5 text-left">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.email">E-mail</label>
-              <input type="email" id="login-forgot-email-input" required placeholder="seu.email@exemplo.com" data-love-i18n-placeholder="login.emailPlaceholder" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+          <!-- Painel: Esqueci a senha -->
+          <div id="login-panel-forgot" class="lg-painel hidden">
+            <div class="lg-cabeca">
+              <p class="lg-sobre" data-love-i18n="login.entrarNaLove">Entrar na Love</p>
+              <h1 class="lg-titulo" data-love-i18n="login.recuperarSenha">Recuperar senha</h1>
+              <p class="lg-sub" data-love-i18n="login.recuperarSenhaDesc">Digite seu e-mail e enviaremos um link para você criar uma nova senha.</p>
             </div>
-
-            <button type="submit" id="btn-do-forgot-password" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-              <span data-love-i18n="login.reenviarSenha">Reenviar senha</span>
-            </button>
-          </form>
-
-          <div class="pt-4 text-xs text-slate-500 flex items-center gap-1">
-            <button type="button" id="btn-forgot-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-love-i18n="login.voltarParaLogin">
-              ← Voltar para o login
-            </button>
-          </div>
-        </div>
-
-        <!-- Painel: Código de dois fatores -->
-        <div id="login-panel-mfa" class="hidden">
-          <div class="mb-6">
-            <img src="assets/logo.png?v=2" alt="Love" class="h-9 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900" data-love-i18n="login.verificacaoDuasEtapas">Verificação em duas etapas</h3>
-            <p class="text-xs sm:text-sm text-slate-500 mt-2" data-love-i18n="login.verificacaoDuasEtapasDesc">Digite o código de 6 dígitos do seu app autenticador.</p>
+            <form id="form-login-forgot" class="lg-form" novalidate>
+              <div class="lg-campo">
+                <input type="email" id="login-forgot-email-input" required placeholder=" ">
+                <label for="login-forgot-email-input" data-love-i18n="login.email">E-mail</label>
+              </div>
+              <button type="submit" id="btn-do-forgot-password" class="lg-btn lg-btn-escuro"><span data-love-i18n="login.reenviarSenha">Reenviar senha</span><i aria-hidden="true"></i></button>
+            </form>
+            <p class="lg-novo"><button type="button" id="btn-forgot-to-login" class="lg-link lg-link-forte" data-love-i18n="login.voltarParaLogin">← Voltar para o login</button></p>
           </div>
 
-          <form id="form-login-mfa" class="space-y-3.5 text-left">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1" data-love-i18n="login.codigo">Código</label>
-              <input type="text" id="login-mfa-code-input" required inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" class="w-full text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800 tracking-[0.3em] text-center font-mono">
+          <!-- Painel: Código de dois fatores -->
+          <div id="login-panel-mfa" class="lg-painel hidden">
+            <div class="lg-cabeca">
+              <p class="lg-sobre" data-love-i18n="login.entrarNaLove">Entrar na Love</p>
+              <h1 class="lg-titulo" data-love-i18n="login.verificacaoDuasEtapas">Verificação em duas etapas</h1>
+              <p class="lg-sub" data-love-i18n="login.verificacaoDuasEtapasDesc">Digite o código de 6 dígitos do seu app autenticador.</p>
             </div>
-
-            <p id="login-mfa-error" class="text-xs text-red-600 hidden"></p>
-
-            <button type="submit" id="btn-do-mfa-login" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-bold shadow-md hover:shadow-lg transition-all cursor-pointer mt-2">
-              <span data-love-i18n="login.verificar">Verificar</span>
-            </button>
-          </form>
-
-          <div class="pt-4 text-xs text-slate-500 flex items-center gap-1">
-            <button type="button" id="btn-mfa-to-login" class="text-xs text-[#537bae] hover:text-[#416799] font-bold hover:underline transition-colors cursor-pointer" data-love-i18n="login.voltarParaLogin">
-              ← Voltar para o login
-            </button>
+            <form id="form-login-mfa" class="lg-form" novalidate>
+              <div class="lg-campo lg-campo-codigo">
+                <input type="text" id="login-mfa-code-input" required inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder=" ">
+                <label for="login-mfa-code-input" data-love-i18n="login.codigo">Código</label>
+              </div>
+              <p id="login-mfa-error" class="lg-erro hidden"></p>
+              <button type="submit" id="btn-do-mfa-login" class="lg-btn lg-btn-escuro"><span data-love-i18n="login.verificar">Verificar</span><i aria-hidden="true"></i></button>
+            </form>
+            <p class="lg-novo"><button type="button" id="btn-mfa-to-login" class="lg-link lg-link-forte" data-love-i18n="login.voltarParaLogin">← Voltar para o login</button></p>
           </div>
         </div>
-
-      </div>
+      </section>
     </div>
 
-    <!-- Direita: imagem -->
-    <div class="login-imagem hidden lg:flex w-1/2 relative overflow-hidden">
-      <!-- Carrossel automático de tipos de evento (sem setas; troca a cada 5s) -->
-      <div class="login-carrossel" aria-hidden="true">
-        <img src="assets/login-banner.jpg?v=20261022" alt="" data-frase="Para o dia em|que tudo começa" data-frase-en="For the day|it all begins" class="login-carrossel-foto is-ativa" data-tipo="Casamento">
-        <img src="assets/criar-aniversario.jpg" alt="" data-frase="Para celebrar mais|um ano de vida" data-frase-en="To celebrate another|year of life" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Aniversário">
-        <img src="assets/criar-cha-de-bebe.jpg" alt="" data-frase="Para esperar quem|já é tanto amor" data-frase-en="For the little one|already so loved" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá de bebê">
-        <img src="assets/criar-bodas.jpg" alt="" data-frase="Para celebrar cada|ano lado a lado" data-frase-en="To celebrate every|year side by side" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Bodas">
-        <img src="assets/criar-revelacao.jpg" alt="" data-frase="Para descobrir juntos|a maior surpresa" data-frase-en="To discover together|the biggest surprise" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá revelação">
-        <img src="assets/criar-cha-de-panela.jpg" alt="" data-frase="Para montar a casa|onde a história mora" data-frase-en="To build the home|where your story lives" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Chá de panela">
-        <img src="assets/criar-casamento.jpg" alt="" data-frase="Para dizer sim|a quem você ama" data-frase-en="To say yes|to the one you love" loading="lazy" decoding="async" class="login-carrossel-foto" data-tipo="Casamento">
-      </div>
-      <script>
-        (function () {
-          var fotos = document.querySelectorAll('.login-carrossel-foto');
-          // Primeira frase (antes do carrossel trocar a primeira vez): também
-          // precisa vir em inglês em planwithlove.com, senão pisca em português.
-          // Em DOMContentLoaded porque o <h2 id="login-carrossel-frase"> só é
-          // parseado depois deste <script> (vem mais abaixo no HTML).
-          if (window.LoveI18n && window.LoveI18n.emIngles && fotos.length) {
-            document.addEventListener('DOMContentLoaded', function () {
-              var fraseInicial = document.getElementById('login-carrossel-frase');
-              var textoInicial = fotos[0].getAttribute('data-frase-en');
-              if (fraseInicial && textoInicial) {
-                fraseInicial.textContent = '';
-                textoInicial.split('|').forEach(function (linha, i) {
-                  if (i) fraseInicial.appendChild(document.createElement('br'));
-                  fraseInicial.appendChild(document.createTextNode(linha));
-                });
-              }
-            });
-          }
-          if (fotos.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          var atual = 0;
-          setInterval(function () {
-            var caixa = document.querySelector('.login-imagem');
-            if (document.hidden || !caixa || !caixa.offsetWidth) return; // só troca com o login aberto no desktop
-            fotos[atual].classList.remove('is-ativa');
-            atual = (atual + 1) % fotos.length;
-            fotos[atual].classList.add('is-ativa');
-            // A frase acompanha a foto (cada tipo de evento tem a sua).
-            var frase = document.getElementById('login-carrossel-frase');
-            var emIngles = window.LoveI18n && window.LoveI18n.emIngles;
-            var texto = fotos[atual].getAttribute(emIngles ? 'data-frase-en' : 'data-frase');
-            if (frase && texto) {
-              frase.classList.add('is-trocando');
-              setTimeout(function () {
-                frase.textContent = '';
-                texto.split('|').forEach(function (linha, i) {
-                  if (i) frase.appendChild(document.createElement('br'));
-                  frase.appendChild(document.createTextNode(linha));
-                });
-                frase.classList.remove('is-trocando');
-              }, 450);
-            }
-          }, 5000);
-        })();
-      </script>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
-      <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
-        <div></div>
-        <div>
-          <h2 id="login-carrossel-frase" class="text-white text-4xl font-normal leading-tight mb-10">Para o dia em<br>que tudo começa</h2>
-          <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
-        </div>
-      </div>
-    </div>
+    <script>
+      // Fotos do login: janela nítida + fundo desfocado, bolinhas embaixo da
+      // frase; cada foto traz a frase do seu tipo de evento.
+      (function () {
+        var janela = document.getElementById('lg-janela');
+        var fundo = document.getElementById('lg-fundo');
+        var pontos = document.getElementById('lg-pontos');
+        var frase = document.getElementById('login-carrossel-frase');
+        if (!janela) return;
+        var fotos = Array.prototype.slice.call(janela.querySelectorAll('.lg-foto'));
+        var borradas = fotos.map(function (f, i) {
+          var b = document.createElement('img');
+          b.alt = ''; b.src = f.getAttribute('src'); if (i) b.loading = 'lazy';
+          if (!i) b.className = 'is-ativa';
+          fundo.appendChild(b);
+          return b;
+        });
+        pontos.innerHTML = fotos.map(function (_, i) { return '<i' + (i ? '' : ' class="is-ativo"') + '></i>'; }).join('');
+        var bolinhas = Array.prototype.slice.call(pontos.children);
+        var emIngles = function () { return !!(window.LoveI18n && window.LoveI18n.emIngles); };
+        var escrever = function (texto) {
+          frase.textContent = '';
+          texto.split('|').forEach(function (linha, i) {
+            if (i) frase.appendChild(document.createElement('br'));
+            frase.appendChild(document.createTextNode(linha));
+          });
+        };
+        document.addEventListener('DOMContentLoaded', function () { if (emIngles()) escrever(fotos[0].getAttribute('data-frase-en')); });
+        if (fotos.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var atual = 0;
+        setInterval(function () {
+          if (document.hidden || !janela.offsetWidth) return; // só troca com o login aberto
+          var antes = atual;
+          atual = (atual + 1) % fotos.length;
+          [fotos, borradas].forEach(function (lista) {
+            lista.forEach(function (x) { x.classList.remove('is-anterior'); });
+            lista[antes].classList.add('is-anterior');
+            lista[antes].classList.remove('is-ativa');
+            lista[atual].classList.add('is-ativa');
+          });
+          bolinhas.forEach(function (b, i) { b.classList.toggle('is-ativo', i === atual); });
+          var texto = fotos[atual].getAttribute(emIngles() ? 'data-frase-en' : 'data-frase');
+          frase.classList.add('is-trocando');
+          setTimeout(function () { if (texto) escrever(texto); frase.classList.remove('is-trocando'); }, 420);
+        }, 5000);
+      })();
+    </script>
   </div>
 
   <!-- =======================================================================
@@ -4202,12 +4169,6 @@
             <span>Continuar com o Google</span>
           </button>
 
-          <button id="btn-apple-register" type="button" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all shadow-xs cursor-pointer">
-            <svg class="w-4 h-4 fill-zinc-900" viewBox="0 0 170 170">
-              <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.66-7.83-11.87-14.28-5.77-8.91-10.35-18.9-13.74-29.96-3.4-11.06-5.1-21.73-5.1-32.01 0-14.65 3.63-26.68 10.89-36.09 7.26-9.41 16.5-14.23 27.72-14.47 4.58 0 9.87 1.25 15.86 3.76 6 2.5 9.8 3.82 11.41 3.94 1.34-.12 5.37-1.48 12.08-4.08 6.71-2.6 12.19-3.8 16.45-3.6 12.67.63 22.56 5.33 29.68 14.09-11.14 6.78-16.58 16.2-16.32 28.27.24 9.4 3.82 17.15 10.74 23.27 6.92 6.12 15.22 9.53 24.9 10.23-2.12 6.64-4.87 13.43-8.24 20.37zM119.22 31.84c0-7.39 2.66-14.35 7.98-20.89C132.52 4.41 139.19.78 147.21 0c.12 1.03.18 1.94.18 2.74 0 7.39-2.78 14.46-8.33 21.21-5.56 6.75-12.38 10.51-20.47 11.28-.48-1.14-.72-2.27-.72-3.39z"/>
-            </svg>
-            <span>Continuar com a Apple</span>
-          </button>
         </div>
 
         <div class="flex items-center gap-3 my-2">

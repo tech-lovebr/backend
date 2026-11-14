@@ -382,3 +382,8 @@
 #view-public-site#view-public-site .lp-legal { background: var(--bg); }
 #view-public-site#view-public-site .lp-legal-titulo { font-size: clamp(32px, 4vw, 48px) !important; font-weight: 200 !important; letter-spacing: -0.025em !important; line-height: 1.1 !important; color: var(--ink) !important; }
 #view-public-site#view-public-site .lp-legal-data { color: var(--soft) !important; }
+
+/* Celular: sem as opções de modelo do convite digital (Monograma, Clássico, Moderno, Data). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-public-site#view-public-site .lv-tpls { display: none !important; }
+}

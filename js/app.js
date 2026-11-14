@@ -1742,8 +1742,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const footerLogosLight = document.querySelectorAll('.footer-logo-light');
     const footerLogosDark = document.querySelectorAll('.footer-logo-dark');
 
-    if (logoLight) logoLight.src = 'assets/love-dark-03.png';
-    if (logoDark) logoDark.src = 'assets/Love-white-03.png';
+    if (logoLight) logoLight.src = 'assets/love-logo-escuro.svg?v=2';
+    if (logoDark) logoDark.src = 'assets/love-logo-branco.svg?v=2';
 
     if (isDark) {
       if (logoLight) logoLight.classList.add('hidden');

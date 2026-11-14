@@ -1119,6 +1119,7 @@ const SAIDAS_DO_CONSTRUTOR = [
   '.event-switcher-item',
   '#btn-dropdown-create-new-event',
   '#btn-dash-header-chat',
+  '#btn-dash-topo-chat',
   '#btn-notifications-menu',
   '#dropdown-user-account [id^="btn-account-"]:not(#btn-account-preview-site)',
   '#dashboard-footer a',

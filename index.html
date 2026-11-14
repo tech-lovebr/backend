@@ -95,7 +95,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261114_fontes">
+  <link rel="stylesheet" href="css/styles.css?v=20261114_chattopo">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261114_lv2">
@@ -679,6 +679,15 @@
       <!-- Right: Chat + Notificações (Ícones adaptativos ao tema) -->
       <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-auto">
         
+        <!-- Mensagens (chat com fornecedores) no topo, à esquerda do sino: só no
+             desktop. No celular o chat fica na barra de baixo (#btn-dash-header-chat). -->
+        <button id="btn-dash-topo-chat" type="button" class="header-icon-btn header-chat-topo p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Mensagens" aria-label="Mensagens">
+          <svg class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.15" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
+          </svg>
+          <span class="badge-header-chat hidden absolute top-0.5 right-0.5 min-w-[16px] h-4 px-1 rounded-full text-[10px] font-bold flex items-center justify-center font-sans leading-none shadow-xs" style="background-color: #c7305b !important; color: #FFFFFF !important;">0</span>
+        </button>
+
         <!-- Notificações: abre a página própria /notificacoes (ver
              openNotificationsPage em app.js) em vez de um dropdown. -->
         <button id="btn-notifications-menu" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" data-dica="Notificações" data-love-i18n-dica="dashboardChrome.notificacoes" aria-label="Notificações" data-love-i18n-aria-label="dashboardChrome.notificacoes">
@@ -5695,7 +5704,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261023_cabecalhoFiel"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261114_dicagoogle"></script>
+  <script src="js/app.js?v=20261114_chattopo"></script>
   <script src="js/landing.js?v=20261114_lv1"></script>
   <script src="js/carteira.js?v=20261102_contasconfig"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
@@ -5703,6 +5712,6 @@
   <script src="js/contratos.js?v=20261025_coanf3"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261105_modelostipos"></script>
+  <script src="js/site-builder.js?v=20261114_chattopo"></script>
 </body>
 </html>

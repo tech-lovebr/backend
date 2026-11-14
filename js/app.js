@@ -21437,11 +21437,11 @@ document.addEventListener('DOMContentLoaded', () => {
       aviso.hidden = fornecedores === 0;
     }
     const texto = total > 99 ? '99+' : String(total);
-    const badgeHeader = document.querySelector('.badge-header-chat');
-    if (badgeHeader) {
+    // Selo do chat: na barra lateral/de baixo e no ícone do topo (desktop).
+    document.querySelectorAll('.badge-header-chat').forEach(badgeHeader => {
       badgeHeader.textContent = texto;
       badgeHeader.classList.toggle('hidden', total === 0);
-    }
+    });
     const itemChat = document.querySelector('.sub-drawer-item[data-route-sub="messages"]');
     if (itemChat) {
       let badge = itemChat.querySelector('.badge-recados-count');
@@ -22904,8 +22904,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Botão Mensagens/Chat no Header Superior (Direciona para o Chat B2B)
-  const btnHeaderChat = document.getElementById('btn-dash-header-chat');
-  if (btnHeaderChat) {
+  // (barra de baixo no celular e ícone do topo no desktop).
+  ['btn-dash-header-chat', 'btn-dash-topo-chat'].map(id => document.getElementById(id)).filter(Boolean).forEach(btnHeaderChat => {
     btnHeaderChat.addEventListener('click', (e) => {
       e.preventDefault();
       dropdownUserAccount?.classList.add('hidden');
@@ -22914,7 +22914,7 @@ document.addEventListener('DOMContentLoaded', () => {
       switchRailTab('b2b');
       switchB2BView('messages');
     });
-  }
+  });
 
   // Sino de notificações: abre a página própria (ver openNotificationsPage).
   if (btnNotifications) {

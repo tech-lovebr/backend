@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
     /** @param {EventTarget|null} no */
     function alvoDe(no) {
       for (let el = no instanceof Element ? no : null; el && el !== document.body; el = el.parentElement) {
+        // Iframes (ex.: botão oficial do Google no login) usam o title só
+        // para leitores de tela; não viram dica.
+        if (el.tagName === 'IFRAME') return null;
         if (el.hasAttribute('data-dica') || el.hasAttribute('title')) return el;
         if (Array.from(el.children).some(c => c.tagName.toLowerCase() === 'title')) return el;
       }

@@ -296,3 +296,8 @@ footer{padding-block:64px 36px}
 @media (max-width:560px){.bar{font-size:12.5px;flex-wrap:wrap;gap:2px 10px;text-align:center}.media .float.mob-b{top:auto!important;bottom:4%}.inbox,.prop{margin:0 0 56px}.req{grid-template-columns:40px minmax(0,1fr);row-gap:8px}.req .send{grid-column:2;justify-self:start}.li span:last-child,.parc b{white-space:nowrap}.parc div{padding:8px}.parc b{font-size:12.5px}.prop{padding:18px}}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* Título da abertura: a parte em destaque ("Mais dinheiro na conta.") um pouco mais forte (350) que o resto (200), como na landing da Love. */
+.dis .it{font-weight:350}
+/* Seções que o menu do topo abre param abaixo do cabeçalho fixo (72px). */
+#pedidos,#saldo{scroll-margin-top:96px}

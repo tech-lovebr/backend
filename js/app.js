@@ -24044,6 +24044,24 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Dados do /cadastro digitados antes de "Continuar com o Google" (nome,
+    // nascimento, tipo e data do evento): gravados no cadastro agora que ele
+    // existe. Só preenche o que ainda está vazio.
+    if (cliente) {
+      let pendente = null;
+      try { pendente = JSON.parse(localStorage.getItem('love-pending-cadastro') || 'null'); } catch (e) {}
+      if (pendente) {
+        const dados = {};
+        Object.entries(pendente).forEach(([campo, valor]) => { if (valor && !cliente[campo]) dados[campo] = valor; });
+        if (Object.keys(dados).length) {
+          const { error: erroPendente } = await supabaseClient.from('clientes').update(dados).eq('id', session.user.id);
+          if (erroPendente) console.error('Erro ao salvar os dados do cadastro:', erroPendente);
+          else Object.assign(cliente, dados);
+        }
+        try { localStorage.removeItem('love-pending-cadastro'); } catch (e) {}
+      }
+    }
+
     window.loveClienteSession = session;
     window.loveClienteProfile = cliente || perfilDeColaborador(session);
     atualizarAvatarDoCabecalho();

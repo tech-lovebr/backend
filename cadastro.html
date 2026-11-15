@@ -458,6 +458,9 @@
       const dados = {};
       if (first_name) Object.assign(dados, { first_name, last_name, full_name });
       if (birthday) dados.birthday = birthday;
+      // Tipo de evento escolhido: o Admin mostra como rascunho até o evento ser criado.
+      if (onboardType) Object.assign(dados, { intended_event_type: onboardType, intended_event_type_label: onboardTypeLabel || null });
+      if (eventDate) dados.intended_event_date = eventDate;
       if (Object.keys(dados).length) {
         const { error } = await supabaseClient.from('clientes').update(dados).eq('id', session.user.id);
         if (error) console.error('Erro ao salvar nome/nascimento da conta nova:', error);
@@ -561,6 +564,20 @@
       const btn = e.currentTarget;
       if (btn.disabled) return;
       btn.disabled = true;
+      try {
+        const nomes = montarNomeCliente(
+          document.getElementById('onboard-firstname-input').value,
+          document.getElementById('onboard-lastname-input').value
+        );
+        localStorage.setItem('love-pending-cadastro', JSON.stringify({
+          first_name: nomes.first_name || null,
+          last_name: nomes.last_name || null,
+          birthday: document.getElementById('onboard-birthday-input').value || null,
+          intended_event_type: onboardType || null,
+          intended_event_type_label: onboardTypeLabel || null,
+          intended_event_date: document.getElementById('onboard-eventdate-input').value || null
+        }));
+      } catch (erro) { /* sem armazenamento: segue sem os dados */ }
       if (onboardType) {
         localStorage.setItem('love-pending-event-type', onboardType);
         localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');

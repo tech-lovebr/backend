@@ -1003,7 +1003,8 @@ const ContaDrawer = (() => {
           .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
           .map(e => linhaDeEvento(e))
           .join('')
-      : `<p class="cell-muted" style="font-size:.8125rem;margin:0">Esta conta ainda não criou nenhum evento.</p>`;
+      : rascunhoDoCadastro(cliente)
+        || `<p class="cell-muted" style="font-size:.8125rem;margin:0">Esta conta ainda não criou nenhum evento.</p>`;
 
     return `
       <p class="drawer-section-title">Cadastro do anfitrião</p>
@@ -1017,11 +1018,28 @@ const ContaDrawer = (() => {
       ${listaEventos}`;
   }
 
+  /* Tipo de evento escolhido no cadastro (onboarding) por quem ainda não
+     terminou de criar o evento: aparece como rascunho, sem abrir detalhe. */
+  const TIPOS_DO_CADASTRO = { wedding: 'Casamento', birthday: 'Aniversário', anniversary: 'Bodas', baby_shower: 'Chá de bebê / fraldas', baby: 'Chá de bebê / fraldas', bridal_shower: 'Chá de panela', gender_reveal: 'Chá revelação', corporate: 'Corporativo' };
+  function rascunhoDoCadastro(cliente) {
+    if (!cliente || !cliente.intended_event_type) return '';
+    const tipo = cliente.intended_event_type_label || TIPOS_DO_CADASTRO[cliente.intended_event_type] || EVENT_TYPE_LABELS[cliente.intended_event_type] || cliente.intended_event_type;
+    const data = cliente.intended_event_date ? ` · ${formatDate(cliente.intended_event_date)}` : '';
+    return `
+      <div class="evento-conta evento-conta-rascunho">
+        <span class="nome">${escapeHtml(tipo)}<span class="cell-muted">${escapeHtml(data)}</span></span>
+        ${badge('Rascunho', 'badge-warning')}
+      </div>`;
+  }
+
   function linhaDeEvento(e) {
     const categoria = EVENT_TYPE_LABELS[e.tipo] || e.tipo || '—';
+    // Evento criado mas ainda sem convite publicado: o link (slug) só é gravado ao publicar.
+    const rascunho = !e.slug ? badge('Rascunho', 'badge-warning') : '';
     return `
       <button type="button" class="evento-conta" data-evento="${escapeHtml(e.id)}">
         <span class="nome">${escapeHtml(e.titulo || 'Sem título')}</span>
+        ${rascunho}
         <span class="evento-conta-categoria">${escapeHtml(categoria)}</span>
         <svg class="evento-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="m9 5 7 7-7 7"/>

@@ -4682,3 +4682,8 @@ body.login-page .login-versao { margin: 0; text-align: center; font-size: 12px; 
   margin-bottom: 1.5rem;
 }
 body[data-theme="dark"] .admin-main .admin-header-bar { background: #181D24; border-bottom-color: rgba(255, 255, 255, .08); }
+
+/* Evento escolhido no cadastro que ainda não foi criado: linha sem clique. */
+.evento-conta-rascunho { cursor: default; }
+.evento-conta-rascunho:hover { background: var(--bg-muted); border-color: transparent; }
+.evento-conta-rascunho .nome .cell-muted { margin-left: 2px; }

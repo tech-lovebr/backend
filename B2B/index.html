@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+  <!-- hub.planwithlove.com: o mesmo Hub, só que em inglês (para os Estados Unidos).
+       O idioma vem só do endereço (como no planwithlove.com da Love); a página
+       fica escondida até js/hub-landing.js trocar os textos, para não piscar
+       o português. ?lang=en força o inglês em qualquer endereço (para testar). -->
+  <style>html.hub-en:not(.hub-en-pronta) body { visibility: hidden; }</style>
+  <script>
+    try {
+      if (/(^|\.)planwithlove\.com$/i.test(location.hostname) || /[?&]lang=en(&|$)/.test(location.search)) {
+        document.documentElement.classList.add('hub-en');
+        document.documentElement.lang = 'en';
+      }
+    } catch (e) {}
+  </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -20,7 +33,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300,50,0;1,9..144,300,50,0&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/hub-landing.css?v=15">
+  <link rel="stylesheet" href="css/hub-landing.css?v=16">
 </head>
 <body>
 
@@ -50,7 +63,6 @@
 <main id="top">
 
 <section class="hero pl gr night drift" id="hero">
-  <span class="glow" id="glow" aria-hidden="true"></span>
   <div class="wrap in">
     <nav class="seg" aria-label="Escolha seu perfil"><a href="https://love.com.br" rel="noopener">Para anfitriões</a><a class="on" href="#top" aria-current="page">Para fornecedores</a></nav>
     <p class="over">Clientes e cobranças num lugar só</p>
@@ -265,6 +277,6 @@
   </div>
 </footer>
 
-<script src="js/hub-landing.js?v=3"></script>
+<script src="js/hub-landing.js?v=4"></script>
 </body>
 </html>

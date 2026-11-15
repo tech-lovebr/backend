@@ -15861,3 +15861,39 @@ html body #tab-overview .home-saldo-nome .love-olho:not(#love-h-a):not(#love-h-b
   html body.chat-conversa-aberta #tab-b2b:not(#love-h-a):not(#love-h-b) { animation: none !important; transform: none !important; }
   html body.chat-conversa-aberta .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }
+
+/* Nova solicitação de orçamento: o rodapé (Cancelar / Continuar) fica fora da
+   caixa branca, sem a faixa cinza (uma regra genérica de "footer" pintava). */
+html body #b2b-pedidos-view .rfp-editor footer.rfp-rodape:not(#love-h-a):not(#love-h-b) { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+
+/* Celular › Nova solicitação: cada etapa numa caixa branca (Serviço avulso /
+   Evento completo e o serviço; o evento; título, descrição e orçamento), tudo
+   da esquerda para a direita, e o Continuar fora da caixa com a largura dos
+   campos de dentro dela. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-pedidos-view .rfp-caixa-form:not(#love-h-a):not(#love-h-b) {
+    padding: 16px !important; background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 10px !important;
+  }
+  html body #b2b-pedidos-view .rfp-editor .rfp-intro:not(#love-h-a):not(#love-h-b),
+  html body #b2b-pedidos-view .rfp-editor :is(.rfp-etapa-titulo, .rfp-etapa-sub, .rfp-exemplos, .rfp-exemplos *, .rfp-rotulo-texto, .rfp-pergunta, .rfp-opcional, .rfp-cel-bloco, .rfp-cel-pergunta, .rfp-cel-ajuda, .rfp-erro, .rfp-erro-geral):not(#love-h-a):not(#love-h-b) { text-align: left !important; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-etapa-sub:not(#love-h-a):not(#love-h-b) { margin-left: 0 !important; margin-right: 0 !important; max-width: none !important; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-cel-caixa:not(#love-h-a):not(#love-h-b) { text-align: left !important; text-align-last: left !important; }
+  /* "Quando é o evento?": a data na mesma altura e alinhamento dos outros campos. */
+  html body #b2b-pedidos-view .rfp-editor input[type="date"].rfp-cel-caixa:not(#love-h-a):not(#love-h-b) { height: 56px !important; min-height: 56px; padding: 0 16px !important; line-height: 54px !important; }
+  html body #b2b-pedidos-view .rfp-editor input[type="date"].rfp-cel-caixa::-webkit-date-and-time-value { text-align: left; min-height: 54px; line-height: 54px; }
+  html body #b2b-pedidos-view .rfp-editor input[type="date"].rfp-cel-caixa::-webkit-datetime-edit { line-height: 54px; }
+  html body #b2b-pedidos-view .rfp-editor .rfp-cel-qtd:not(#love-h-a):not(#love-h-b) { margin-left: 0 !important; margin-right: auto !important; }
+  html body #b2b-pedidos-view .rfp-editor footer.rfp-rodape:not(#love-h-a):not(#love-h-b) { padding-left: 17px !important; padding-right: 17px !important; }
+  html body #b2b-pedidos-view .rfp-editor footer.rfp-rodape .rfp-btn:not(#love-h-a):not(#love-h-b) { width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
+}
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #b2b-pedidos-view .rfp-editor input[type="date"].rfp-campo:not(#love-h-a):not(#love-h-b) { height: 43px !important; box-sizing: border-box; }
+}
+
+/* Celular › Encontrar fornecedor: o botão Mensagem fica à direita do título e
+   da empresa (na mesma linha), sem ocupar uma linha só para ele. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-cards-list-container .b2b-item-card .flex-nowrap:not(#love-h-a):not(#love-h-b) { flex-wrap: nowrap !important; align-items: flex-start; column-gap: 12px; }
+  html body #b2b-cards-list-container .b2b-item-card .flex-nowrap > .min-w-0.flex-1:not(#love-h-a):not(#love-h-b) { flex: 1 1 0 !important; min-width: 0; }
+  html body #b2b-cards-list-container .b2b-item-card .btn-message-supplier:not(#love-h-a):not(#love-h-b) { height: 40px; padding: 0 14px; font-size: 14px; white-space: nowrap; flex-shrink: 0; }
+}

@@ -11008,11 +11008,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return matchesFilter && matchesSearch;
     }).sort(compararOrdemDeConvidados);
 
-    // O parêntese ao lado de "Convidados" mostra só quantos estão marcados
-    // (ver atualizarLixeiraDeConvidados); o total já aparece nas abas acima.
+    // O parêntese ao lado de "Convidados" mostra quantas pessoas estão na
+    // tabela (convidado + acompanhantes, como nas abas); com convidados
+    // marcados, mostra quantos estão marcados (ver atualizarLixeiraDeConvidados).
+    totalNaTabelaDeConvidados = somaPessoas(filteredGuests);
     const footerCountEl = document.getElementById('rsvp-footer-count');
     if (footerCountEl) {
-      footerCountEl.textContent = '';
+      footerCountEl.textContent = totalNaTabelaDeConvidados ? `(${totalNaTabelaDeConvidados})` : '';
     }
 
     if (filteredGuests.length === 0) {
@@ -11569,6 +11571,9 @@ document.addEventListener('DOMContentLoaded', () => {
     caixa.style.setProperty('--fim-das-linhas', `${fimDasLinhas}px`);
   }
 
+  /** Pessoas na tabela de Meus convidados (o número entre parênteses ao lado de "Convidados"). */
+  var totalNaTabelaDeConvidados = 0; // var: a tabela pode ser desenhada antes desta linha rodar
+
   // Lixeira ao lado do "Filtrar por" (barra da tabela): aparece com algum
   // convidado marcado, com a quantidade; "Selecionar tudo" marca os visíveis.
   function atualizarLixeiraDeConvidados() {
@@ -11583,7 +11588,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const checks = Array.from(document.querySelectorAll('#rsvp-guests-table-body .guest-select-check'));
     const contagem = document.getElementById('rsvp-footer-count');
-    if (contagem) contagem.textContent = convidadosSelecionados.size ? `(${convidadosSelecionados.size})` : '';
+    if (contagem) contagem.textContent = convidadosSelecionados.size ? `(${convidadosSelecionados.size})` : (totalNaTabelaDeConvidados ? `(${totalNaTabelaDeConvidados})` : '');
     const todos = document.getElementById('rsvp-select-all');
     if (todos) {
       const marcados = checks.filter(c => c.checked).length;

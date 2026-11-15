@@ -15312,3 +15312,24 @@ html body #view-event-os-dashboard :is(h1, h2, h3, .floorplan-page-name, #info-a
   html body #tab-overview .home-capa-trocar:not(#love-h-a):is(:hover, :focus-visible) { opacity: 1; }
   html body #tab-overview .home-capa-trocar:not(#love-h-a):hover { border-color: #FFFFFF; }
 }
+
+/* Celular: mesmas fontes e correções do computador. Saudação da Home em
+   Fraunces leve (como o "Olá" do computador) e os títulos das telas, fichas e
+   menus em Outfit 500 — várias telas do celular tinham título próprio em
+   Inter 600/700. Valores em dinheiro seguem com o peso deles. */
+html body #home-capa-celular-ola:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+  font-family: var(--fonte-love-serifa) !important;
+  font-weight: 400 !important;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.02em !important;
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body :is(#view-event-os-dashboard, #menu-celular, .ficha-convidado) :is(h1, h2, h3, h4):not(#dash-hub-title):not(#home-capa-celular-ola):not(.builder-canvas *):not([id="live-preview-container"] *):not(.convite-tela *):not(#editor-form-invite-print *):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d),
+  html body #tab-edit-site #builder-page-select-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d),
+  html body #tab-edit-site #builder-page-select-btn *:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d),
+  html body :is(.ficha-titulo, .ficha-nome, .ct-topo-titulo, .ct-bloco-titulo, .ct-cartao-titulo, .rc-popup-titulo, .despesa-titulo, .orc-extrato-titulo, .rfp-etapa-titulo, #drawer-gift-heading-title):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    font-family: var(--fonte-love) !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.025em !important;
+  }
+}

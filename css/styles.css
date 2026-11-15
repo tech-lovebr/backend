@@ -16056,3 +16056,7 @@ html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305
 html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"] path:not(#love-h-a):not(#love-h-b):not(#love-h-c) { stroke: none !important; stroke-width: 0 !important; }
 /* Favoritar marcado: a bolinha também sem contorno. */
 html body #view-event-os-dashboard :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite):has(svg[class*="c7305b"]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-color: transparent !important; border-width: 0 !important; box-shadow: none !important; }
+
+/* Encontrar fornecedor: o nome no card (lista e grid) na mesma fonte e peso do
+   título da página (Outfit 500); o tamanho continua o mesmo. */
+html body #b2b-cards-list-container h4:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-family: var(--fonte-love, 'Outfit'), sans-serif !important; font-weight: 500 !important; letter-spacing: -0.02em !important; }

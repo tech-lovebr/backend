@@ -4687,3 +4687,11 @@ body[data-theme="dark"] .admin-main .admin-header-bar { background: #181D24; bor
 .evento-conta-rascunho { cursor: default; }
 .evento-conta-rascunho:hover { background: var(--bg-muted); border-color: transparent; }
 .evento-conta-rascunho .nome .cell-muted { margin-left: 2px; }
+
+/* Caixas que abrem dentro da página (ver mais, detalhes): o mesmo respiro das
+   tabelas em relação ao que vem acima (cards de números, filtros). Logo abaixo
+   do cabeçalho não somam espaço: o cabeçalho já tem a margem dele. */
+.admin-content > [id^="visao-"],
+.admin-content > #painel-auto { margin-top: var(--bloco-gap); }
+.admin-content > .admin-header-bar + [id^="visao-"],
+.admin-content > .admin-header-bar + #painel-auto { margin-top: 0; }

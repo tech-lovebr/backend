@@ -64,6 +64,8 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
 
 /* Títulos e textos */
 #cd#cd .onboard-step h1 { font-family: var(--cd-serif) !important; font-weight: 300 !important; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -.02em !important; font-size: clamp(30px, 2.8vw, 40px) !important; line-height: 1.06 !important; color: var(--cd-azul) !important; text-wrap: balance; margin-bottom: 12px !important; }
+/* Segunda linha do título à mão (Nothing You Could Do), em itálico */
+#cd#cd .onboard-step h1 i { font-family: "Nothing You Could Do", cursive !important; font-style: italic; font-weight: 400 !important; font-size: 1.04em; letter-spacing: 0 !important; }
 #cd#cd .onboard-step h1 + p { font-size: 15.5px !important; line-height: 1.5 !important; color: var(--cd-mudo) !important; margin-bottom: 24px !important; text-wrap: pretty; }
 #cd#cd .onboard-step label.block { font-size: 12.5px !important; color: var(--cd-mudo) !important; margin-bottom: 6px !important; }
 

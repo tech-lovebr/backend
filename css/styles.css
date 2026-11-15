@@ -15684,3 +15684,10 @@ body[data-theme="dark"] #b2b-cards-list-container .b2b-item-card { background: #
     box-sizing: border-box !important;
   }
 }
+
+/* Pop-up Adicionar/Editar convidado (computador): as caixas de Informações de
+   contato, Restrição alimentar e Acompanhantes sem contorno (os campos
+   continuam com a borda fina). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .ficha-convidado .ficha-cartao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border: 0 !important; box-shadow: none !important; }
+}

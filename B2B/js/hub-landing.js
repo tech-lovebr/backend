@@ -8,7 +8,7 @@
      aparece. No love.com.br nada disso roda. */
   const EN = document.documentElement.classList.contains('hub-en');
   const D = {
-    'Love Hub: Encontre Clientes, Receba Pagamentos & Organize seu Negócio': 'Love Hub: Find Clients, Get Paid & Organize Your Business',
+    'Love Hub: CRM Gratuito para Encontrar & Gerenciar Clientes': 'Love Hub: Free CRM to Find & Manage Clients',
     'Encontre clientes': 'Find clients', 'Receba pagamentos': 'Get paid', 'Entrar': 'Log in', 'Cadastre-se grátis': 'Sign up free',
     'Love Hub, início': 'Love Hub, home', 'Escolha seu perfil': 'Choose your profile',
     'Para anfitriões': 'For hosts', 'Para fornecedores': 'For vendors',

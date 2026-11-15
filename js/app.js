@@ -2115,8 +2115,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sem isso, o título da aba do navegador ficava preso em "Política de
     // Privacidade" (ou Termos) depois de sair da página legal pra qualquer
     // outro lugar do painel.
-    if (document.title !== 'Love - Event OS & Lista de Presentes') {
-      document.title = 'Love - Event OS & Lista de Presentes';
+    if (document.title !== 'Love: Site para Evento Grátis, Lista de Convidados & Presentes') {
+      document.title = 'Love: Site para Evento Grátis, Lista de Convidados & Presentes';
     }
 
     // Reseta todos os modos especiais do body primeiro
@@ -22616,7 +22616,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (elements.dashHeader.eventTitle) elements.dashHeader.eventTitle.textContent = 'Nenhum evento';
       if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = '';
       if (window.location.pathname !== '/') history.replaceState({}, '', '/');
-      document.title = 'Love - Event OS & Lista de Presentes';
+      document.title = 'Love: Site para Evento Grátis, Lista de Convidados & Presentes';
       openCreateEventPage(true, false);
       return null;
     }

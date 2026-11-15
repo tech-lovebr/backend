@@ -2,138 +2,168 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Encontrar um evento | Love</title>
   <meta name="description" content="Pesquise pelo nome dos anfitriões ou do evento e abra o convite digital e a lista de presentes.">
   <link rel="icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <link rel="apple-touch-icon" href="assets/love-logo-google-120.png?v=1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
+  <link rel="stylesheet" href="css/landing-nova.css?v=20261114_lv5">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=20261105_googlecontanova"></script>
   <style>
-    html, body { margin: 0; background: #FFFFFF; }
-    #view-public-site { display: flex; }
-    #view-public-site .ee { flex: 1; padding: 72px 0 96px; }
-    #view-public-site .ee-faixa { max-width: 720px; margin: 0 auto; padding: 0 32px; }
-    #view-public-site .ee-titulo { margin: 0; text-align: center; font-size: 40px; font-weight: 700; line-height: 1.12; letter-spacing: -0.035em; color: var(--lp-tinta); }
-    #view-public-site .ee-sub { margin: 14px auto 0; max-width: 520px; text-align: center; font-size: 16px; line-height: 1.6; color: var(--lp-texto); }
-    #view-public-site .ee-form { display: flex; gap: 8px; margin: 36px auto 0; max-width: 560px; }
-    #view-public-site .ee-campo { position: relative; flex: 1; }
-    #view-public-site .ee-campo svg { position: absolute; left: 16px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: #A1A1AA; pointer-events: none; }
-    #view-public-site .ee-campo input {
-      width: 100%; height: 52px; padding: 0 16px 0 44px; border: 0; border-radius: var(--lp-raio); background: #F4F6F7;
-      font-size: 15px; color: var(--lp-tinta); outline: none; -webkit-appearance: none; appearance: none;
-    }
-    #view-public-site .ee-campo input::placeholder { color: #A1A1AA; }
-    #view-public-site .ee-campo input:focus { background: #EDF0F2; }
-    #view-public-site .ee-botao {
-      height: 52px; padding: 0 24px; border: 0; border-radius: var(--lp-raio); background: #EAF0F5; color: #183b54;
-      font-size: 15px; font-weight: 600; cursor: pointer;
-    }
-    #view-public-site .ee-botao:hover { box-shadow: inset 0 0 0 1px #183b54; }
-    #view-public-site .ee-botao:focus-visible { outline: 2px solid #181D24; outline-offset: 2px; }
-    #view-public-site .ee-aviso { margin: 14px 0 0; text-align: center; font-size: 13px; color: var(--lp-suave); }
-    #view-public-site .ee-resultados { margin-top: 48px; }
-    #view-public-site .ee-total { margin: 0 0 12px; text-align: center; font-size: 15px; color: var(--lp-texto); }
-    #view-public-site .ee-lista { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--lp-borda); }
-    #view-public-site .ee-lista li { border-bottom: 1px solid var(--lp-borda); }
-    #view-public-site .ee-item { display: flex; align-items: center; gap: 16px; padding: 20px 4px; text-decoration: none; color: inherit; }
-    #view-public-site .ee-item-textos { flex: 1; min-width: 0; }
-    #view-public-site .ee-item b { display: block; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: var(--lp-tinta); }
-    #view-public-site .ee-item small { display: block; margin-top: 4px; font-size: 14px; color: var(--lp-suave); }
-    #view-public-site .ee-item svg { width: 18px; height: 18px; flex-shrink: 0; color: #A1A1AA; transition: color .15s; }
-    #view-public-site .ee-item:hover b { color: var(--lp-azul); }
-    #view-public-site .ee-item:hover svg { color: var(--lp-azul); }
-    #view-public-site .ee-vazio { padding: 40px 0 8px; text-align: center; }
-    #view-public-site .ee-vazio b { display: block; font-size: 16px; font-weight: 600; color: var(--lp-tinta); }
-    #view-public-site .ee-vazio p { margin: 8px auto 0; max-width: 420px; font-size: 14px; line-height: 1.6; color: var(--lp-suave); }
-    #view-public-site .ee-criar { margin-top: 56px; padding: 28px; border: 1px solid var(--lp-borda); border-radius: var(--lp-raio-card); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    #view-public-site .ee-criar b { display: block; font-size: 16px; font-weight: 600; color: var(--lp-tinta); }
-    #view-public-site .ee-criar span { display: block; margin-top: 4px; font-size: 14px; color: var(--lp-suave); }
-    #view-public-site .ee-criar a { flex-shrink: 0; text-decoration: none; }
-    #view-public-site .ee-rodape { padding: 24px 0; border-top: 1px solid var(--lp-borda); font-size: 13px; color: var(--lp-suave); }
-    #view-public-site .ee-rodape .lp-faixa { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-    #view-public-site .ee-rodape p { margin: 0; }
-    #view-public-site .ee-rodape nav { display: flex; gap: 20px; }
-    #view-public-site .ee-rodape a { color: var(--lp-texto); text-decoration: none; }
-    #view-public-site .ee-rodape a:hover { color: var(--lp-tinta); text-decoration: underline; }
-    #view-public-site .lp-topo-acoes a { text-decoration: none; }
+    /* Encontrar evento: mesmo topo, fundo e rodapé da landing (css/landing-nova.css). */
+    html, body { margin: 0; background: #F7F8FA; }
     [hidden] { display: none !important; }
+    #view-public-site#view-public-site .ee-topo { margin: 0 clamp(0px, 1.4vw, 16px); border-radius: 0 0 40px 40px; padding: clamp(56px, 8vw, 104px) 0 clamp(56px, 7vw, 88px); }
+    #view-public-site#view-public-site .ee-topo .lv-wrap { display: grid; justify-items: center; text-align: center; gap: 18px; }
+    #view-public-site#view-public-site .ee-titulo { margin: 0; font-size: clamp(40px, 5.4vw, 72px) !important; font-weight: 200 !important; letter-spacing: -.03em !important; line-height: 1.02 !important; }
+    #view-public-site#view-public-site .ee-titulo .lv-it { font-weight: 350 !important; }
+    #view-public-site#view-public-site .ee-sub { margin: 0; max-width: 46ch; color: var(--mute) !important; font-size: 17px !important; }
+    #view-public-site#view-public-site .ee-form { display: flex; gap: 8px; width: 100%; max-width: 600px; margin-top: 14px; padding: 6px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 999px !important; box-shadow: 0 18px 40px rgba(24,59,84,.08); }
+    #view-public-site#view-public-site .ee-campo { position: relative; flex: 1; min-width: 0; display: block; }
+    #view-public-site#view-public-site .ee-campo svg { position: absolute; left: 18px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--soft); pointer-events: none; }
+    #view-public-site#view-public-site .ee-campo input { width: 100%; height: 48px; padding: 0 16px 0 46px; border: 0; background: transparent; font-size: 16px !important; color: var(--ink) !important; outline: none; -webkit-appearance: none; appearance: none; }
+    #view-public-site#view-public-site .ee-campo input::placeholder { color: var(--soft); }
+    #view-public-site#view-public-site .ee-campo input::-webkit-search-cancel-button { -webkit-appearance: none; }
+    #view-public-site#view-public-site .ee-form .lv-btn { height: 48px !important; padding: 0 24px !important; flex: none; }
+    #view-public-site#view-public-site .ee-aviso { margin: 0; font-size: 14px !important; color: var(--mute) !important; }
+    #view-public-site#view-public-site .ee-corpo { padding: clamp(40px, 6vw, 72px) 0 clamp(64px, 8vw, 104px); }
+    #view-public-site#view-public-site .ee-faixa { max-width: 760px; margin: 0 auto; }
+    #view-public-site#view-public-site .ee-total { margin: 0 0 14px; font-size: 12px !important; font-weight: 500 !important; letter-spacing: .18em !important; text-transform: uppercase; color: var(--soft) !important; }
+    #view-public-site#view-public-site .ee-lista { margin: 0; display: grid; gap: 10px; }
+    #view-public-site#view-public-site .ee-item { display: flex; align-items: center; gap: 16px; padding: 20px 24px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 20px !important; transition: border-color .2s, transform .2s; }
+    #view-public-site#view-public-site .ee-item:hover { border-color: var(--deep); }
+    #view-public-site#view-public-site .ee-item-textos { flex: 1; min-width: 0; }
+    #view-public-site#view-public-site .ee-item b { display: block; font-size: 18px !important; font-weight: 400 !important; letter-spacing: -.01em !important; color: var(--ink) !important; }
+    #view-public-site#view-public-site .ee-item small { display: block; margin-top: 2px; font-size: 14px !important; color: var(--mute) !important; }
+    #view-public-site#view-public-site .ee-item svg { width: 20px; height: 20px; flex: none; color: var(--soft); transition: color .2s, transform .2s; }
+    #view-public-site#view-public-site .ee-item:hover svg { color: var(--deep); transform: translateX(3px); }
+    #view-public-site#view-public-site .ee-vazio { padding: 36px 24px; text-align: center; background: #FFFFFF; border: 1px solid var(--line); border-radius: 20px !important; }
+    #view-public-site#view-public-site .ee-vazio b { display: block; font-size: 18px !important; font-weight: 400 !important; color: var(--ink) !important; }
+    #view-public-site#view-public-site .ee-vazio p { margin: 8px auto 0; max-width: 46ch; font-size: 15px !important; color: var(--mute) !important; }
+    #view-public-site#view-public-site .ee-criar { margin-top: 40px; padding: 28px 32px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-radius: 28px !important; }
+    #view-public-site#view-public-site .ee-criar b { display: block; font-size: 22px !important; font-weight: 300 !important; letter-spacing: -.02em !important; color: var(--ink) !important; }
+    #view-public-site#view-public-site .ee-criar span { display: block; margin-top: 4px; font-size: 15px !important; color: var(--mute) !important; }
+    #view-public-site#view-public-site .ee-criar .lv-btn { flex: none; }
     @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-      #view-public-site .ee { padding: 40px 0 64px; }
-      #view-public-site .ee-faixa { padding: 0 16px; }
-      #view-public-site .ee-titulo { font-size: 30px; text-align: left; }
-      #view-public-site .ee-sub { margin-left: 0; text-align: left; font-size: 15px; }
-      #view-public-site .ee-form { flex-direction: column; margin-top: 28px; }
-      #view-public-site .ee-aviso { text-align: left; }
-      #view-public-site .ee-resultados { margin-top: 32px; }
-      #view-public-site .ee-total { text-align: left; }
-      #view-public-site .ee-item { padding: 16px 0; }
-      #view-public-site .ee-criar { flex-direction: column; align-items: stretch; padding: 20px; }
-      #view-public-site .ee-criar .lp-btn { width: 100%; }
-      #view-public-site .ee-rodape .lp-faixa { flex-direction: column; text-align: center; }
+      #view-public-site#view-public-site .ee-topo { border-radius: 0 0 28px 28px; }
+      #view-public-site#view-public-site .ee-form { flex-direction: column; border-radius: 24px !important; padding: 8px; }
+      #view-public-site#view-public-site .ee-form .lv-btn { justify-content: center; width: 100%; }
+      #view-public-site#view-public-site .ee-item { padding: 16px 18px; }
+      #view-public-site#view-public-site .ee-criar { flex-direction: column; align-items: stretch; padding: 24px; }
+      #view-public-site#view-public-site .ee-criar .lv-btn { justify-content: center; }
     }
   </style>
 </head>
 <body>
   <div id="view-public-site">
-    <header class="lp-topo">
-      <div class="lp-faixa lp-topo-linha">
-        <a href="/" class="lp-logo" aria-label="Início da Love"><img src="assets/logo.png?v=2" alt="Love"></a>
-        <div class="lp-topo-acoes">
-          <a href="/login" class="lp-link-entrar">Entrar</a>
-          <a href="/cadastro" class="lp-btn lp-btn-primario">Criar evento grátis</a>
+<svg width="0" height="0" style="position:absolute !important" aria-hidden="true">
+  <defs><g id="lv-nh"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g><g id="lv-nw"><path d="M524.486 244.349L524.523 283.179L492.445 283.155L492.38 110.395L492.325 49.4918L524.311 49.48L524.422 70.6791L524.486 244.349Z"/><path d="M602.423 283.178V253.057H506.866V283.178H602.423Z"/><path d="M603.319 182.643C603.319 128.414 646.891 82.2754 707.818 82.2754C768.746 82.2754 812.318 128.404 812.318 182.643C812.318 236.881 768.746 283.01 707.818 283.01C646.891 283.01 603.319 236.881 603.319 182.643ZM775.127 182.643C775.127 143.902 746.429 115.027 707.829 115.027C669.228 115.027 640.531 143.902 640.531 182.643C640.531 221.383 669.218 250.258 707.829 250.258C746.439 250.258 775.127 221.383 775.127 182.643Z"/><path d="M1006.38 82.1177L936.465 282.759H881.716L809.815 82.1177H845.44L904.481 249.921H914.378L971.769 82.1177H1006.4H1006.38Z"/><path d="M1108.76 82.2681C1177.47 82.2681 1209 128.407 1209 182.635H1038.97C1038.97 221.375 1069.08 251.306 1120.44 251.306C1151.27 251.306 1174.35 242.296 1188.64 226.542H1201.06C1187.98 259.498 1158.65 283.002 1112.3 283.002C1048.89 283.002 1003.55 236.874 1003.55 182.635C1003.55 128.397 1047.13 82.2682 1108.76 82.2681ZM1108.04 111.854C1074.38 111.854 1051.72 129.818 1043.22 156.227H1170.74C1164.01 129.818 1145.59 111.854 1108.04 111.854Z"/></g>
+    <g id="lv-b1" transform="matrix(.935 0 0 .935 0 0)"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g>
+    <path id="lv-b2" d="M0 0"/>
+    <path id="lv-b3" d="M0 0"/>
+    <path id="lv-b4" d="M0 0"/>
+    <path id="lv-wm" fill-rule="evenodd" d="M576 253C558 250 540 239 530 224C525 217 522 210 520 204C519 202 518 198 518 197C517 192 517 172 518 166C522 150 532 135 544 125C550 121 560 116 566 114C568 113 572 112 573 112C578 110 599 111 606 112C609 113 616 116 621 119C638 127 652 143 658 162C660 171 660 193 658 202C650 226 632 244 608 251C602 253 584 254 576 253ZM882 252C858 247 841 231 834 204C830 190 831 168 835 156C844 131 860 118 886 112C904 109 925 112 937 120C942 123 947 129 948 133C952 143 953 159 951 167C949 173 944 179 937 182C934 183 928 186 924 188C920 189 917 191 917 191C916 191 912 193 907 195C901 198 897 200 897 200C896 200 892 202 886 205C880 208 875 210 874 210C872 211 879 218 884 221C891 224 903 224 910 221C915 218 919 213 921 206L922 202L939 202L955 202L955 206C955 227 943 243 923 250C918 252 914 252 902 253C893 253 884 253 882 252ZM462 155L462 60L478 60L493 60L493 130C493 169 493 212 493 225L494 250L478 250L462 250L462 155ZM720 248C712 246 705 239 700 229C698 223 696 220 693 204C692 198 685 172 682 158C681 153 679 145 678 140C674 124 673 118 672 116C672 114 673 114 689 114L707 114L708 118C708 120 710 125 710 129C711 133 713 142 715 148C716 155 718 163 718 166C719 168 720 172 720 174C720 176 722 182 723 187C724 192 725 199 726 202C727 208 732 214 738 218C746 224 755 223 756 216C757 215 759 207 761 200C763 192 766 184 766 182C768 175 781 129 782 126C783 125 784 121 784 119L786 114L803 114L820 114L819 116C819 117 817 125 815 132C813 139 810 150 809 156C807 162 805 168 805 170C804 171 803 177 801 184C799 190 798 196 797 198C796 201 794 207 791 220C790 222 789 228 787 234C786 239 784 245 784 246L783 249L753 249C737 249 722 248 720 248ZM605 220C619 214 627 200 627 182C627 164 619 151 604 144C599 142 597 142 588 142C579 142 577 142 572 144C555 153 546 173 550 192C552 198 556 208 560 213C564 217 572 222 579 223C587 225 598 223 605 220ZM869 186C869 186 872 185 874 184C876 183 888 177 899 172C922 161 922 160 920 154C917 145 909 140 898 140C890 140 884 142 878 148C869 156 865 165 865 178C865 187 866 189 869 186Z"/>
+    <symbol id="lv-logo" viewBox="0 0 1209 333"><g fill="currentColor"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/><path d="M524.486 244.349L524.523 283.179L492.445 283.155L492.38 110.395L492.325 49.4918L524.311 49.48L524.422 70.6791L524.486 244.349Z"/><path d="M602.423 283.178V253.057H506.866V283.178H602.423Z"/><path d="M603.319 182.643C603.319 128.414 646.891 82.2754 707.818 82.2754C768.746 82.2754 812.318 128.404 812.318 182.643C812.318 236.881 768.746 283.01 707.818 283.01C646.891 283.01 603.319 236.881 603.319 182.643ZM775.127 182.643C775.127 143.902 746.429 115.027 707.829 115.027C669.228 115.027 640.531 143.902 640.531 182.643C640.531 221.383 669.218 250.258 707.829 250.258C746.439 250.258 775.127 221.383 775.127 182.643Z"/><path d="M1006.38 82.1177L936.465 282.759H881.716L809.815 82.1177H845.44L904.481 249.921H914.378L971.769 82.1177H1006.4H1006.38Z"/><path d="M1108.76 82.2681C1177.47 82.2681 1209 128.407 1209 182.635H1038.97C1038.97 221.375 1069.08 251.306 1120.44 251.306C1151.27 251.306 1174.35 242.296 1188.64 226.542H1201.06C1187.98 259.498 1158.65 283.002 1112.3 283.002C1048.89 283.002 1003.55 236.874 1003.55 182.635C1003.55 128.397 1047.13 82.2682 1108.76 82.2681ZM1108.04 111.854C1074.38 111.854 1051.72 129.818 1043.22 156.227H1170.74C1164.01 129.818 1145.59 111.854 1108.04 111.854Z"/></g></symbol>
+    <symbol id="lv-heart" viewBox="0 0 421 333"><g fill="currentColor"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g></symbol>
+    <symbol id="lv-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <linearGradient id="lv-gp" gradientUnits="userSpaceOnUse" x1="20" y1="300" x2="380" y2="10"><stop offset="0" stop-color="#F6DDD2"/><stop offset="1" stop-color="#DC9A82"/></linearGradient><linearGradient id="lv-lgp" gradientUnits="userSpaceOnUse" x1="8.5" y1="322.9" x2="449.3" y2="32.4"><stop offset="0" stop-color="#FFDDD2"/><stop offset="1" stop-color="#F09A81"/></linearGradient><symbol id="lv-logog" viewBox="0 0 1209 333"><use href="#lv-nh" fill="url(#lv-lgp)"/><use href="#lv-nw" fill="currentColor"/></symbol><symbol id="lv-heartg" viewBox="0 0 421 333"><use href="#lv-nh" fill="url(#lv-lgp)"/></symbol><filter id="lv-eb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="b"/><feOffset in="b" dx="-0.8" dy="0.8" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#7A4535" flood-opacity="0.07"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx="0.8" dy="-0.8" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#FFFFFF" flood-opacity="0.32"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter><filter id="lv-ebd" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="0.8" result="b"/><feOffset in="b" dx="-0.9" dy="0.9" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#000000" flood-opacity="0.22"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx="0.9" dy="-0.9" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#7FA2CF" flood-opacity="0.2"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter><filter id="lv-ebn" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="0.9" result="b"/><feOffset in="b" dx="-1.1" dy="1.1" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#000000" flood-opacity="0.3"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx="1.1" dy="-1.1" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#5B86B8" flood-opacity="0.2"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter></defs>
+</svg>
+
+<div class="lv-bar"><span data-en="Create your event&#39;s digital invitation">Crie o convite digital do seu evento</span> <a href="/cadastro"><b data-en="Get started">Começar agora</b> <span>→</span></a></div>
+
+<header class="lv-nav" id="lv-nav">
+  <div class="lv-wrap lv-in">
+    <span><ul><li><a href="/#lv-convite">Convite digital</a></li><li><a href="/#lv-presentes">Presentes</a></li></ul></span>
+    <a class="lv-logo" href="/" aria-label="Love, início"><svg viewBox="0 0 1209 333"><use href="#lv-logo"/></svg></a>
+    <div class="lv-r"><a class="lv-ent" href="/login">Entrar</a><a class="lv-btn lv-btn-d" href="/cadastro">Criar evento grátis</a></div>
+  </div>
+</header>
+
+    <main>
+      <section class="ee-topo lv-pl lv-gr lv-sky">
+        <div class="lv-wrap">
+          <p class="lv-over">Encontrar evento</p>
+          <h1 class="ee-titulo">Encontre o convite <span class="lv-it">de quem você ama.</span></h1>
+          <p class="ee-sub">Pesquise pelo nome dos anfitriões ou do evento para abrir o convite e a lista de presentes.</p>
+          <form class="ee-form" id="ee-form" role="search">
+            <label class="ee-campo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+              <input type="search" id="ee-texto" name="q" autocomplete="off" placeholder="Pesquisar pelo nome" aria-label="Pesquisar pelo nome dos anfitriões ou do evento">
+            </label>
+            <button type="submit" class="lv-btn lv-btn-d">Pesquisar</button>
+          </form>
+          <p class="ee-aviso" id="ee-aviso" hidden></p>
         </div>
-      </div>
-    </header>
+      </section>
 
-    <main class="ee">
-      <div class="ee-faixa">
-        <h1 class="ee-titulo">Encontre um evento</h1>
-        <p class="ee-sub">Pesquise pelo nome dos anfitriões ou do evento para abrir o convite e a lista de presentes.</p>
-
-        <form class="ee-form" id="ee-form" role="search">
-          <label class="ee-campo">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input type="search" id="ee-texto" name="q" autocomplete="off" placeholder="Pesquisar pelo nome" aria-label="Pesquisar pelo nome dos anfitriões ou do evento">
-          </label>
-          <button type="submit" class="ee-botao">Pesquisar</button>
-        </form>
-        <p class="ee-aviso" id="ee-aviso" hidden></p>
-
-        <section class="ee-resultados" id="ee-resultados" aria-live="polite" hidden>
-          <p class="ee-total" id="ee-total"></p>
-          <ul class="ee-lista" id="ee-lista"></ul>
-          <div class="ee-vazio" id="ee-vazio" hidden>
-            <b>Nenhum evento encontrado</b>
-            <p>Confira a grafia ou pesquise pelo sobrenome de um dos anfitriões. O evento só aparece depois que o convite é publicado.</p>
+      <section class="ee-corpo">
+        <div class="lv-wrap ee-faixa">
+          <div class="ee-resultados" id="ee-resultados" aria-live="polite" hidden>
+            <p class="ee-total" id="ee-total"></p>
+            <ul class="ee-lista" id="ee-lista"></ul>
+            <div class="ee-vazio" id="ee-vazio" hidden>
+              <b>Nenhum evento encontrado</b>
+              <p>Confira a grafia ou pesquise pelo sobrenome de um dos anfitriões. O evento só aparece depois que o convite é publicado.</p>
+            </div>
           </div>
-        </section>
 
-        <div class="ee-criar">
-          <div>
-            <b>Vai organizar um evento?</b>
-            <span>Crie o seu convite digital e a lista de presentes grátis.</span>
+          <div class="ee-criar lv-pl lv-gr lv-dawn">
+            <div>
+              <b>Vai organizar um evento?</b>
+              <span>Crie o seu convite digital e a lista de presentes grátis.</span>
+            </div>
+            <a href="/cadastro" class="lv-btn lv-btn-d">Criar meu evento</a>
           </div>
-          <a href="/cadastro" class="lp-btn lp-btn-claro">Criar meu evento</a>
         </div>
-      </div>
+      </section>
     </main>
 
-    <footer class="ee-rodape">
-      <div class="lp-faixa">
-        <p>© 2026 Love Hub Ltda. Todos os direitos reservados.</p>
-        <nav aria-label="Links legais">
-          <a href="/privacidade">Privacidade</a>
-          <a href="/termos">Termos e condições</a>
-        </nav>
+<footer class="lv-rodape">
+  <div class="lv-wrap">
+    <div class="lv-fgrid">
+      <div class="lv-fmarca">
+        <a class="lv-logo lv-flogo" href="/" aria-label="Love"><svg viewBox="0 0 1209 333"><use href="#lv-logog"/></svg></a>
+        <p class="lv-p lv-ftexto" data-en="Digital invitations, gift registry, and RSVPs, all in one platform, built for the most important days of your life.">Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
+        <div class="lv-redes">
+          <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
+          <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.850 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.130zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
+          <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3 3 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3 3 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3 3 0 0 0 2.12-2.14C24 15.930 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a>
+        </div>
       </div>
-    </footer>
+      <div><h4 data-en="Platform">Plataforma</h4><ul>
+        <li><a href="/cadastro" data-en="Create new event">Criar novo evento</a></li>
+        <li><a href="/encontrar-evento" data-en="Find an event">Encontre um evento</a></li>
+        <li><a href="/login" data-en="Advisor dashboard">Painel de assessores</a></li>
+        <li><a href="/" data-en="Blog">Blog</a></li>
+      </ul></div>
+      <div><h4 data-en="Support">Suporte</h4><ul>
+        <li><a href="/login" data-en="Help Center">Central de ajuda</a></li>
+        <li><a href="/" data-en="Contact us">Fale conosco</a></li>
+        <li><a href="/login" data-en="Host area">Área do anfitrião</a></li>
+      </ul></div>
+      <div><h4 data-en="Security">Segurança</h4><ul>
+        <li data-en="Gifts via Pix">Presentes via Pix</li>
+        <li data-en="Encrypted connection">Conexão criptografada</li>
+        <li data-en="Data protected (LGPD)">Dados protegidos (LGPD)</li>
+      </ul></div>
+    </div>
+    <div class="lv-legal"><span data-en="© 2026 Love Hub Ltda. All rights reserved.">© 2026 Love Hub Ltda. Todos os direitos reservados.</span><span><a href="/privacidade" data-en="Privacy">Privacidade</a> · <a href="/termos" data-en="Terms &amp; conditions">Termos e condições</a></span></div>
+  </div>
+</footer>
   </div>
 
+  <script>
+    // Topo ganha fundo ao rolar, como na landing.
+    (function () {
+      var nav = document.getElementById('lv-nav');
+      var aoRolar = function () { nav.classList.toggle('lv-on', window.scrollY > 40); };
+      window.addEventListener('scroll', aoRolar, { passive: true }); aoRolar();
+    })();
+  </script>
   <script>
     // Pesquisa de eventos publicados (função buscar_eventos — migration 121).
     (function () {

@@ -13950,16 +13950,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isMesa) {
         const core = document.createElement('div');
         core.className = 'floorplan-mesa-core';
-        // Cor escolhida no pop-up: pinta o tampo; texto claro se a cor for escura.
-        if (/^#[0-9a-f]{6}$/i.test(elData.cor || '')) {
-          core.classList.add('tem-cor');
-          core.style.setProperty('--cor-da-mesa', elData.cor);
-          core.style.setProperty('--cor-texto-da-mesa', corEhEscura(elData.cor) ? '#FFFFFF' : '#18181B');
-        }
+        // Mesa com todos os lugares ocupados: o tampo fica na cor dos ícones
+        // do menu lateral (#183b54), com o número em branco.
+        const lugaresDaMesa = parseInt(elData.seats) || 1;
+        const ocupadosDaMesa = (Array.isArray(elData.seatNames) ? elData.seatNames : []).slice(0, lugaresDaMesa).filter(n => String(n || '').trim()).length;
+        if (ocupadosDaMesa >= lugaresDaMesa) core.classList.add('is-cheia');
 
         const numberEl = document.createElement('span');
         numberEl.className = 'floorplan-table-number';
-        numberEl.textContent = `Mesa ${elData.number}`;
+        numberEl.textContent = String(elData.number);
         // Retangular: o ícone de girar fica dentro da mesa, ao lado do "Mesa N"
         // (à esquerda na horizontal; em cima na vertical).
         const linhaDoNumero = document.createElement('span');
@@ -14008,10 +14007,10 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!guestName) seatDot.title = 'Lugar vago';
           seatDot.style.left = `${seatX}px`;
           seatDot.style.top = `${seatY}px`;
-          // Assento: quadrado com cantos arredondados (padrão da Love).
+          // Assento: bolinha.
           let anguloDaCadeira = Math.atan2(seatY - containerSize / 2, seatX - containerSize / 2) * 180 / Math.PI;
           if (formato !== 'redonda') anguloDaCadeira = Math.round(anguloDaCadeira / 90) * 90;
-          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><rect x="3.5" y="3.5" width="23" height="23" rx="6"/></svg>`);
+          seatDot.insertAdjacentHTML('afterbegin', `<svg class="floorplan-cadeira" viewBox="0 0 30 30" aria-hidden="true" style="transform:rotate(${anguloDaCadeira + 90}deg)"><circle cx="15" cy="15" r="11.5"/></svg>`);
           if (guestName) {
             seatDot.title = guestName;
             if (showNames) {
@@ -14086,7 +14085,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!item && elData.type === 'rabisco') {
           el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${parseFloat(elData.bw) || 84} ${parseFloat(elData.bh) || 64}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.rotacao ? ` rotate(${tam.rotacao}deg)` : ''}" aria-hidden="true"><path class="l" d="${tracadoSeguro(elData.d)}"/></svg>`);
         }
-        if (item) {
+        if (item && elData.type === 'pista') {
+          el.insertAdjacentHTML('beforeend', '<span class="floorplan-pista-rotulo">Pista</span>');
+        } else if (item) {
           el.insertAdjacentHTML('beforeend', `<svg class="floorplan-planta" viewBox="0 0 ${item.w} ${item.h}" style="width:${tam.baseW}px;height:${tam.baseH}px;transform:translate(-50%, -50%)${tam.rotacao ? ` rotate(${tam.rotacao}deg)` : ''}" aria-hidden="true">${item.planta}</svg>`);
         }
       }
@@ -15884,10 +15885,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button type="button" data-acao="mais" aria-label="Mais um lugar"${total >= FLOORPLAN_MAX_SEATS ? ' disabled' : ''}>${MAIS}</button>
               </div>
             </div>
-            <label class="mesa-celular-linha">
-              <span class="mesa-celular-rotulo">Cor</span>
-              <span class="mesa-celular-cor" style="background:${cor}"><input type="color" value="${cor}" aria-label="Cor da mesa"></span>
-            </label>
             <div class="mesa-celular-acoes">
               ${formato === 'retangular' ? '<button type="button" data-acao="girar">Girar</button>' : ''}
               <button type="button" data-acao="duplicar">Duplicar</button>

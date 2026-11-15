@@ -15691,3 +15691,18 @@ body[data-theme="dark"] #b2b-cards-list-container .b2b-item-card { background: #
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body .ficha-convidado .ficha-cartao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border: 0 !important; box-shadow: none !important; }
 }
+
+
+/* Mapa do evento: mesa só com o número; mesa cheia na cor dos ícones do menu
+   lateral; assentos em bolinhas; pista com "Pista" escrito sobre listras. */
+html body .floorplan-mesa-core.is-cheia:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #183b54 !important; border-color: #183b54 !important; }
+html body .floorplan-mesa-core.is-cheia:not(#love-h-a):not(#love-h-b):not(#love-h-c) * { color: #FFFFFF !important; }
+html body .floorplan-el.is-mesa .floorplan-table-number:not(#love-h-a):not(#love-h-b) { font-size: 15px !important; font-weight: 500 !important; letter-spacing: -0.01em; }
+html body .floorplan-el.is-item.item-pista:not(#love-h-a):not(#love-h-b) {
+  display: flex !important; align-items: center; justify-content: center;
+  border-radius: 10px !important;
+  background: repeating-linear-gradient(135deg, #E9EFF6 0 12px, #F5F8FB 12px 24px) !important;
+}
+html body .floorplan-pista-rotulo:not(#love-h-a) { font-family: var(--fonte-love, 'Outfit'), sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #8A97A8; pointer-events: none; user-select: none; }
+body[data-theme="dark"] .floorplan-el.is-item.item-pista { background: repeating-linear-gradient(135deg, #252B33 0 12px, #1E2329 12px 24px) !important; }
+body[data-theme="dark"] .floorplan-pista-rotulo { color: #A1A1AA; }

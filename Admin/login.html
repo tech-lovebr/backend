@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=154">
+  <link rel="stylesheet" href="css/admin.css?v=155">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/carregamento.js?v=1"></script>
@@ -97,7 +97,16 @@
         navegador. Entre com qualquer e-mail e senha.
       </p>
     </div>
+    <p class="login-versao" id="login-versao"></p>
   </main>
+
+  <script>
+    // Versão do Admin embaixo da caixa: lida do shell.js (VERSAO_ADMIN), o único lugar onde ela sobe.
+    fetch('js/shell.js?v=' + Date.now()).then(r => r.text()).then(t => {
+      const m = t.match(/VERSAO_ADMIN\s*=\s*'([^']+)'/);
+      if (m) document.getElementById('login-versao').textContent = 'Versão ' + m[1];
+    }).catch(() => {});
+  </script>
 
   <script>
     const verSenha = document.getElementById('btn-ver-senha');

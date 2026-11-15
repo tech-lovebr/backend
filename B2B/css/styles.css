@@ -13313,5 +13313,20 @@ html body #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love
   html body #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { font-size: 26px !important; line-height: 1.25 !important; }
 }
 @media (min-width: 769px) {
-  html body:not([data-theme="dark"]) #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #18181B !important; }
+  html body:not([data-theme="dark"]) #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #EAF1F8 !important; }
+}
+
+/* Home do Hub (computador): as caixas brancas (Olá + atalhos, saldo, Sua
+   agenda, Analytics, Notícias e Precisa de ajuda?) no estilo do botão "Ver
+   como funciona" da landing (.btn-o): vidro bem leve, contorno claro a 22% e
+   texto #EAF1F8. Os atalhos seguem o mesmo botão. */
+@media (min-width: 769px) {
+  html body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card, .dashboard-help-card, .btn-secondary.dashboard-quick-action-btn):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    background: rgba(255, 255, 255, 0.04) !important; background-image: none !important;
+    border: 1px solid rgba(234, 241, 248, 0.22) !important; box-shadow: none !important;
+    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    color: #EAF1F8 !important;
+  }
+  html body[data-page="dashboard"] .b2b-content .btn-secondary.dashboard-quick-action-btn:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-color: rgba(234, 241, 248, 0.6) !important; }
+  html body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card, .dashboard-help-card, .dashboard-quick-action-btn) :is(h1, h2, h3, h4, p, span, strong, small, a:not(.dash-saldo-celular-botao), li, div, svg, button:not(.btn-primary)):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #EAF1F8 !important; }
 }

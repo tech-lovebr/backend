@@ -96,7 +96,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261115_semfaixa">
+  <link rel="stylesheet" href="css/styles.css?v=20261115_rfptab5">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261114_lv5">
@@ -964,8 +964,8 @@
                 </button>
               </div>
               <!-- Co-anfitriões: abre o convite na caixa da tabela (só o criador vê) -->
-              <button type="button" id="btn-org-adicionar" class="btn-primary btn-host-add-gift flex-shrink-0">
-                <span>Adicionar novo</span>
+              <button type="button" id="btn-org-adicionar" class="btn-primary btn-host-add-gift flex-shrink-0" aria-label="Adicionar co-anfitrião" data-dica="Adicionar co-anfitrião">
+                <span>Adicionar co-anfitrião</span>
               </button>
             </div>
           </div>
@@ -3659,20 +3659,45 @@
                 <p id="rfp-lista-aviso" class="rfp-lista-aviso hidden" role="status"></p>
                 <!-- Solicitações (rascunhos e publicadas), no modelo "All job posts" -->
                 <div class="dash-card love-tabela-caixa" id="rfp-caixa">
-                  <!-- Excluir em massa: aparece ao marcar alguma solicitação -->
-                  <div class="love-tabela-barra rfp-selecao-barra" id="rfp-selecao-barra" hidden>
-                    <label class="rfp-selecao-todas">
-                      <input type="checkbox" id="rfp-select-all" class="gifts-select-all-check" aria-label="Selecionar todas as solicitações">
-                      <span id="rfp-selecao-contagem">0 selecionadas</span>
-                    </label>
+                  <!-- Barra do topo da caixa (como em Meus convidados): Pesquisar à esquerda, Exportar à direita -->
+                  <div class="love-tabela-barra rfp-barra">
+                    <div class="love-tabela-barra-esq">
+                      <div class="love-tabela-busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><input type="search" id="rfp-busca" placeholder="Pesquisar solicitação..." aria-label="Pesquisar solicitação" autocomplete="off"></div>
+                    </div>
                     <div class="love-tabela-barra-dir">
-                      <button type="button" id="btn-rfp-excluir-selecionadas" class="love-tabela-botao love-tabela-lixeira" aria-label="Remover solicitações selecionadas">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h16"/><path d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path d="M10.5 11v5.5M13.5 11v5.5"/></svg>
-                        <span>Remover</span>
-                      </button>
+                      <!-- Marcou alguma: quantas e Remover -->
+                      <span class="rfp-selecao-barra" id="rfp-selecao-barra" hidden>
+                        <span id="rfp-selecao-contagem" class="rfp-selecao-contagem">0 selecionadas</span>
+                        <button type="button" id="btn-rfp-excluir-selecionadas" class="love-tabela-botao love-tabela-lixeira" aria-label="Remover solicitações selecionadas">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h16"/><path d="M9 6.5V4.5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/><path d="M6.5 9.5V18a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V9.5"/><path d="M10.5 11v5.5M13.5 11v5.5"/></svg>
+                          <span>Remover</span>
+                        </button>
+                      </span>
+                      <button type="button" id="btn-rfp-exportar" class="love-tabela-botao love-tabela-exportar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 3v12m0-12 4.5 4.5M12 3 7.5 7.5"/></svg><span>Exportar</span></button>
                     </div>
                   </div>
-                  <div id="rfp-lista" class="rfp-posts"></div>
+                  <div class="overflow-x-auto -mx-1 rfp-tabela-rolagem">
+                    <table class="guests-table love-tabela w-full rfp-tabela" id="rfp-tabela">
+                      <thead>
+                        <tr>
+                          <th><span class="inline-flex items-center gap-4"><input type="checkbox" id="rfp-select-all" class="gifts-select-all-check" aria-label="Selecionar todas as solicitações"><span>Solicitação</span></span></th>
+                          <th>Evento</th>
+                          <th>Local</th>
+                          <th>Orçamento</th>
+                          <th>Propostas</th>
+                          <th>Situação</th>
+                          <th class="love-tabela-col-acoes love-tabela-col-mais" aria-label="Ações"></th>
+                        </tr>
+                      </thead>
+                      <tbody id="rfp-lista"></tbody>
+                    </table>
+                    <!-- Vazio: igual ao de Meus convidados -->
+                    <div id="rfp-empty-state" class="hidden">
+                      <dotlottie-wc class="rsvp-vazio-icone rsvp-vazio-animado" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
+                      <p class="rsvp-vazio-titulo" id="rfp-vazio-titulo"><button type="button" class="rsvp-vazio-link" data-rfp-criar>Crie a sua primeira solicitação</button></p>
+                      <p id="rfp-vazio-texto">Conte o que você precisa e receba propostas de fornecedores para o seu evento.</p>
+                    </div>
+                  </div>
                   <div class="guests-pagination rfp-paginacao" id="rfp-paginacao" hidden></div>
                 </div>
               </div>
@@ -5708,11 +5733,11 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261115_semfaixa"></script>
+  <script src="js/app.js?v=20261115_coanf"></script>
   <script src="js/landing.js?v=20261115_fraldas"></script>
   <script src="js/carteira.js?v=20261102_contasconfig"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
-  <script src="js/pedidos-orcamento.js?v=20261115_solicit"></script>
+  <script src="js/pedidos-orcamento.js?v=20261115_rfptab3"></script>
   <script src="js/contratos.js?v=20261115_solicit"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

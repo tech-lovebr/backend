@@ -7798,6 +7798,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('btn-org-adicionar')?.addEventListener('click', abrirFormulario);
     document.getElementById('btn-cancel-host-invite')?.addEventListener('click', fecharFormulario);
+    // Computador: o convite abre num pop-up (como Adicionar convidado); clicar
+    // fora ou Esc fecha.
+    document.addEventListener('mousedown', (ev) => {
+      if (!caixaOrg?.classList.contains('is-adicionando') || window.matchMedia('(max-width: 768px)').matches) return;
+      const alvo = /** @type {HTMLElement} */ (ev.target);
+      if (alvo.closest('#organizadores-convidar, #btn-org-adicionar, .love-confirmar, [role="dialog"]')) return;
+      fecharFormulario();
+    });
+    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && caixaOrg?.classList.contains('is-adicionando')) fecharFormulario(); });
 
     formInviteHost.addEventListener('submit', async (e) => {
       e.preventDefault();

@@ -2190,64 +2190,115 @@
       </div>
     </div>`;
 
-  /** @param {string} texto @param {boolean} [comBotao] */
-  // Lista vazia no mesmo molde de Meus convidados: ícone, título que é um
-  // link (abre Criar solicitação) e uma linha de texto. Sem botão na caixa.
-  const listaVazia = (texto, comBotao) => comBotao ? `
-    <div class="rfp-vazio-love">
-      <svg class="rfp-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.75h6M9 3.75a1.5 1.5 0 0 0-1.5 1.5v.75h9v-.75a1.5 1.5 0 0 0-1.5-1.5M9 3.75H6.75A1.5 1.5 0 0 0 5.25 5.25v14.25a1.5 1.5 0 0 0 1.5 1.5h10.5a1.5 1.5 0 0 0 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H15M8.25 11.25h7.5M8.25 15h4.5"/></svg>
-      <p class="rfp-vazio-titulo"><button type="button" class="rfp-vazio-link" data-rfp-criar>Crie a sua primeira solicitação</button></p>
-      <p class="rfp-vazio-texto">${esc(texto)}</p>
-    </div>` : `
-    <div class="rfp-vazio-love">
-      <p class="rfp-vazio-texto">${esc(texto)}</p>
-    </div>`;
+  /** Mensagem dentro da tabela (Carregando…, entrar na conta, erro). @param {string} texto */
+  const listaVazia = (texto) => `<tr class="rfp-linha-msg"><td colspan="7"><p class="rfp-msg">${esc(texto)}</p></td></tr>`;
 
-  /** @param {any} it */
-  function linhaDaSolicitacao(it) {
+  /** Vazio de verdade: a mesma animação, título-link e texto de Meus convidados. @param {boolean} mostrar */
+  function vazioDaLista(mostrar) {
+    const vazio = document.getElementById('rfp-empty-state');
+    vazio?.classList.toggle('hidden', !mostrar);
+    if (mostrar && !customElements.get('dotlottie-wc') && !document.getElementById('love-dotlottie-wc')) {
+      const s = document.createElement('script');
+      s.type = 'module';
+      s.id = 'love-dotlottie-wc';
+      s.src = 'https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-wc@0.9.28/+esm';
+      document.head.appendChild(s);
+    }
+  }
+
+  /** Orçamento da solicitação: "R$ 2.000 a R$ 5.000", "Até R$ 3.000"… @param {any} min @param {any} max */
+  function orcamentoDe(min, max) {
+    const r = (/** @type {number} */ v) => `R$ ${Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`;
+    const a = Number(min) > 0 ? Number(min) : 0;
+    const b = Number(max) > 0 ? Number(max) : 0;
+    if (a && b) return `${r(a)} a ${r(b)}`;
+    if (b) return `Até ${r(b)}`;
+    if (a) return `A partir de ${r(a)}`;
+    return 'A combinar';
+  }
+  /** @param {any} d */
+  const localDe = (d) => [d.bairro, d.cidade].filter(Boolean).join(', ') + (d.uf ? ` - ${d.uf}` : '');
+  /** @param {string} iso @param {boolean} flexivel */
+  const dataDoEvento = (iso, flexivel) => (flexivel || !iso ? 'Data flexível' : formatarData(iso));
+
+  /** Colunas de uma linha (tabela e exportação). @param {any} it */
+  function colunasDa(it) {
     if (it.tipo === 'rascunho') {
       const d = it.r.dados || {};
       const l = loteDosDados(d);
       const titulo = l.categorias.length > 1
         ? `${l.categorias.length} serviços: ${l.categorias.map(id => CATEGORIA_CURTA[id] || id).join(', ')}`
         : (l.categorias.length ? (String(l.itens[l.categorias[0]].titulo || '').trim() || CATEGORIA_CURTA[l.categorias[0]] || 'Solicitação') : 'Solicitação sem título');
-      return `
-        <div class="rfp-post" data-rascunho-id="${esc(it.id)}">
-          <div class="rfp-post-info">
-            <div class="rfp-post-topo">
-              <input type="checkbox" class="gifts-select-all-check rfp-select-check" data-rfp-sel="r:${esc(it.id)}"${selecionadas.has('r:' + it.id) ? ' checked' : ''} aria-label="Selecionar ${esc(titulo)}">
-              <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(it.id)}">${esc(titulo)}</button>
-            </div>
-            <p class="rfp-post-criado">Criada ${esc(haQuanto(it.criado))} por você</p>
-            <p class="rfp-post-situacao"><b>Rascunho</b> · Salvo em ${esc(dataCurta(it.quando))}</p>
-          </div>
-          <div class="rfp-post-num"></div>
-          <div class="rfp-post-num"></div>
-          <button type="button" class="rfp-post-botao" data-rfp-acao="editar">Editar rascunho</button>
-          ${menuDaLinha(l.categorias.length > 1 ? [['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']] : [['editar-titulo', 'Editar título'], ['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])}
-        </div>`;
+      const celeb = d.tipoCelebracao === 'outro' ? String(d.celebracaoOutro || '').trim() : nomeDaCelebracao(d.tipoCelebracao);
+      return { titulo, sub: `Criada ${haQuanto(it.criado)}`, evento: celeb || '—', quando: d.dataEvento || d.dataFlexivel ? dataDoEvento(d.dataEvento, d.dataFlexivel) : '', local: localDe(d) || '—', orcamento: orcamentoDe(d.valorMin, d.valorMax), propostas: '—', novas: 0, situacao: 'Rascunho', status: 'rascunho' };
     }
     const p = it.p;
     const cat = categoriaPorId(p.categoria);
     const titulo = p.titulo || (cat ? `${cat.nome} para ${nomeDaCelebracao(p.tipo_celebracao).toLowerCase()}` : 'Solicitação');
     const n = numerosDasPropostas[p.id] || { total: p.propostas_recebidas || 0, novas: 0, mensagens: 0 };
     const situacao = p.status === 'aberto' ? 'Publicada' : (SITUACOES[/** @type {'fechado'} */ (p.status)] || p.status);
-    return `
-      <div class="rfp-post" data-rfp-id="${esc(p.id)}">
-        <div class="rfp-post-info">
-          <div class="rfp-post-topo">
-            <input type="checkbox" class="gifts-select-all-check rfp-select-check" data-rfp-sel="p:${esc(p.id)}"${selecionadas.has('p:' + p.id) ? ' checked' : ''} aria-label="Selecionar ${esc(titulo)}">
-            <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(p.id)}">${esc(titulo)}</button>
-          </div>
-          <p class="rfp-post-criado">Criada ${esc(haQuanto(p.created_at))} por você</p>
-          <p class="rfp-post-situacao"><b>${esc(situacao)}</b> · ${esc(dataCurta(p.created_at))}</p>
-        </div>
-        <div class="rfp-post-num"><b>${n.mensagens}</b><span>Mensagens</span></div>
-        <div class="rfp-post-num"><b>${n.total}${n.novas ? ` (${n.novas} ${n.novas === 1 ? 'nova' : 'novas'})` : ''}</b><span>Propostas</span></div>
-        <button type="button" class="rfp-post-botao" data-rfp-ver="${esc(p.id)}">Ver propostas</button>
-        ${menuDaLinha([['editar-titulo', 'Editar título'], ['duplicar', 'Duplicar'], ['excluir', 'Remover']])}
-      </div>`;
+    return { titulo, sub: `Criada ${haQuanto(p.created_at)}`, evento: nomeDaCelebracao(p.tipo_celebracao) || '—', quando: dataDoEvento(p.data_evento, p.data_flexivel), local: localDe(p) || '—', orcamento: orcamentoDe(p.valor_min, p.valor_max), propostas: String(n.total), novas: n.novas, situacao, status: p.status };
   }
+
+  /** @param {any} it */
+  function linhaDaSolicitacao(it) {
+    const c = colunasDa(it);
+    const chave = (it.tipo === 'rascunho' ? 'r:' : 'p:') + it.id;
+    const attr = it.tipo === 'rascunho' ? `data-rascunho-id="${esc(it.id)}"` : `data-rfp-id="${esc(it.id)}"`;
+    const menu = it.tipo === 'rascunho'
+      ? menuDaLinha(loteDosDados(it.r.dados || {}).categorias.length > 1 ? [['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']] : [['editar-titulo', 'Editar título'], ['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])
+      : menuDaLinha([['ver-propostas', 'Ver propostas'], ['editar-titulo', 'Editar título'], ['duplicar', 'Duplicar'], ['excluir', 'Remover']]);
+    const botao = '';
+    return `
+      <tr class="rfp-post" ${attr}>
+        <td>
+          <span class="rfp-col-sol">
+            <input type="checkbox" class="gifts-select-all-check rfp-select-check" data-rfp-sel="${esc(chave)}"${selecionadas.has(chave) ? ' checked' : ''} aria-label="Selecionar ${esc(c.titulo)}">
+            <span class="rfp-col-sol-texto">
+              <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(it.id)}">${esc(c.titulo)}</button>
+              <span class="rfp-col-sub">${esc(c.sub)}</span>
+            </span>
+          </span>
+        </td>
+        <td>${esc(c.evento)}${c.quando ? `<span class="rfp-col-sub">${esc(c.quando)}</span>` : ''}</td>
+        <td>${esc(c.local)}</td>
+        <td class="rfp-col-num">${esc(c.orcamento)}</td>
+        <td class="rfp-col-num">${esc(c.propostas)}${c.novas ? `<span class="rfp-col-sub">${c.novas} ${c.novas === 1 ? 'nova' : 'novas'}</span>` : ''}</td>
+        <td><span class="rfp-situacao rfp-situacao-${esc(c.status)}">${esc(c.situacao)}</span></td>
+        <td class="love-tabela-col-acoes"><span class="rfp-col-acoes">${botao}${menu}</span></td>
+      </tr>`;
+  }
+
+  /** Busca do topo da caixa. */
+  let buscaDaLista = '';
+  const semAcento = (/** @type {string} */ s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  function itensFiltrados() {
+    const q = semAcento(buscaDaLista.trim());
+    if (!q) return itensDaLista;
+    return itensDaLista.filter(it => { const c = colunasDa(it); return semAcento([c.titulo, c.evento, c.quando, c.local, c.situacao].join(' ')).includes(q); });
+  }
+  document.addEventListener('input', (e) => {
+    const el = /** @type {HTMLInputElement} */ (e.target);
+    if (!el || el.id !== 'rfp-busca') return;
+    buscaDaLista = el.value;
+    pagina = 1;
+    desenharPagina();
+  });
+  /** Exportar: CSV (abre no Excel) com as solicitações da busca atual. */
+  function exportarSolicitacoes() {
+    const linhas = [['Solicitação', 'Evento', 'Data', 'Local', 'Orçamento', 'Propostas', 'Situação', 'Criada em']];
+    itensFiltrados().forEach(it => { const c = colunasDa(it); linhas.push([c.titulo, c.evento, c.quando, c.local, c.orcamento, c.propostas, c.situacao, dataCurta(it.criado)]); });
+    const csv = '\ufeff' + linhas.map(l => l.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'minhas-solicitacoes.csv';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  document.addEventListener('click', (e) => { if (e.target instanceof Element && e.target.closest('#btn-rfp-exportar')) exportarSolicitacoes(); });
 
   async function mostrarLista() {
     if (vendoPropostas) modoPropostas(false);
@@ -2257,10 +2308,11 @@
     if (!caixa) return;
     const u = usuarioLogado();
     if (!u || typeof supabaseClient === 'undefined') {
+      vazioDaLista(false);
       caixa.innerHTML = listaVazia('Entre na sua conta para ver suas solicitações.');
       return;
     }
-    if (!caixa.children.length) caixa.innerHTML = listaVazia('Carregando…');
+    if (!caixa.children.length) { vazioDaLista(false); caixa.innerHTML = listaVazia('Carregando…'); }
     await salvandoRascunho;
     const [ped, rascunhos] = await Promise.all([
       supabaseClient.from('pedidos_orcamento').select('*').eq('cliente_id', u.id).order('created_at', { ascending: false }),
@@ -2268,6 +2320,7 @@
     ]);
     const falhou = !!ped.error && !tabelaAusente(ped.error);
     if (falhou && !rascunhos.length) {
+      vazioDaLista(false);
       caixa.innerHTML = listaVazia('Não foi possível carregar suas solicitações agora.');
       return;
     }
@@ -2313,11 +2366,14 @@
     const caixa = document.getElementById('rfp-lista');
     const rodape = document.getElementById('rfp-paginacao');
     if (!caixa) return;
-    const total = itensDaLista.length;
+    const lista = itensFiltrados();
+    const total = lista.length;
     const paginas = Math.max(1, Math.ceil(total / porPagina));
     pagina = Math.min(Math.max(1, pagina), paginas);
-    const daPagina = itensDaLista.slice((pagina - 1) * porPagina, pagina * porPagina);
-    caixa.innerHTML = total ? daPagina.map(it => linhaDaSolicitacao(it)).join('') : listaVazia('Conte o que você precisa e receba propostas de fornecedores para o seu evento.', true);
+    const daPagina = lista.slice((pagina - 1) * porPagina, pagina * porPagina);
+    // Sem nenhuma solicitação: o vazio de Meus convidados. Só a busca sem resultado: uma linha avisando.
+    vazioDaLista(!itensDaLista.length);
+    caixa.innerHTML = total ? daPagina.map(it => linhaDaSolicitacao(it)).join('') : (itensDaLista.length ? listaVazia('Nenhuma solicitação encontrada.') : '');
     if (rodape) {
       rodape.hidden = !total;
       rodape.innerHTML = total ? `
@@ -2751,6 +2807,7 @@
     }
     if (!linha || typeof supabaseClient === 'undefined') return;
     const tipo = acao.dataset.rfpAcao;
+    if (tipo === 'ver-propostas') { mostrarPropostas(linha.dataset.rfpId || ''); return; }
     const w = /** @type {any} */ (window);
     if (tipo === 'editar-titulo') { editarTitulo(linha); return; }
     if (tipo === 'editar') { editarRascunho(linha.dataset.rascunhoId || ''); return; }

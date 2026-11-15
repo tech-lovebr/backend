@@ -4516,3 +4516,9 @@ body[data-theme="dark"] .admin-header-bar h1 { color: #F4F4F5; }
 .love-dica { position: fixed; z-index: 10000; max-width: 320px; padding: 6px 10px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.35; color: #18181B; white-space: pre-line; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
 .love-dica.is-visivel { opacity: 1; visibility: visible; }
 body[data-theme="dark"] .love-dica { background: #1F2329; border-color: rgba(255,255,255,.1); color: #F4F4F5; }
+
+/* Logo da sidebar como na landing do Hub: logotipo (coração azul) + etiqueta "Admin". */
+.admin-sidebar-brand { gap: 10px; }
+.admin-sidebar-brand img { height: 36px; }
+.admin-sidebar-brand .marca-etiqueta { font-style: normal; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; font-weight: 500; line-height: 1; letter-spacing: .2em; text-transform: uppercase; color: #3F7FD8; padding: 5px 9px; border: 1px solid rgba(80, 150, 240, .35); border-radius: 999px; }
+body[data-theme="dark"] .admin-sidebar-brand .marca-etiqueta { color: #A9C6EA; border-color: rgba(169, 198, 234, .35); }

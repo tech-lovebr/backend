@@ -300,3 +300,15 @@ footer{padding-block:64px 36px}
 .dis .it{font-weight:350}
 /* Seções que o menu do topo abre param abaixo do cabeçalho fixo (72px). */
 #pedidos,#saldo{scroll-margin-top:96px}
+
+/* Logo do topo: letras na altura do logotipo da plataforma logada (~23px). */
+.nav .logo{width:118px}
+
+/* Tudo num só lugar: caixa de vidro no tom do primeiro banner (.night) e um
+   destaque que passa por cima de um recurso de cada vez, a cada 5 s. */
+.all.all-carrossel{position:relative;gap:8px;padding:8px;border-radius:20px;border:1px solid rgba(169,198,234,.18);background:radial-gradient(55% 70% at 82% 8%,rgba(46,95,140,.45) 0%,transparent 64%),radial-gradient(60% 80% at 8% 92%,rgba(28,66,99,.45) 0%,transparent 70%),rgba(15,33,50,.55);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}
+.all.all-carrossel > a{position:relative;z-index:1;padding:20px 18px;border-top:0;border-radius:14px;color:var(--mute);transition:color .5s var(--ease)}
+.all.all-carrossel > a.all-on{color:var(--ink)}
+.all.all-carrossel > a:hover .ic{transform:none}
+.all-luz{position:absolute;left:0;top:0;z-index:0;border-radius:14px;pointer-events:none;background:radial-gradient(55% 70% at 82% 8%,#2E5F8C 0%,transparent 64%),radial-gradient(60% 80% at 8% 92%,#1C4263 0%,transparent 70%),radial-gradient(38% 48% at 55% 58%,rgba(242,211,198,.16) 0%,transparent 70%),#0F2132;border:1px solid rgba(169,198,234,.25);box-shadow:0 10px 30px rgba(0,0,0,.25);transition:left .8s var(--ease),top .8s var(--ease),width .8s var(--ease),height .8s var(--ease)}
+@media (prefers-reduced-motion:reduce){.all-luz{transition:none}}

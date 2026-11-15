@@ -191,6 +191,23 @@
     ['#check','#saldo-v'].forEach(s => io.observe($(s)));
   }
 
+  /* Tudo num só lugar: o destaque (.all-luz) passa por cima de um recurso de
+     cada vez, a cada 5 s; ao passar o mouse, vai direto para aquele recurso. */
+  const all = $('#all'), luz = $('#all-luz');
+  if (all && luz) {
+    const itens = $$('#all > a');
+    let ai = 0, timer = null;
+    const por = i => {
+      ai = i; const a = itens[i];
+      itens.forEach((x, k) => x.classList.toggle('all-on', k === i));
+      Object.assign(luz.style, { left: a.offsetLeft + 'px', top: a.offsetTop + 'px', width: a.offsetWidth + 'px', height: a.offsetHeight + 'px' });
+    };
+    const girar = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => { if (!document.hidden) por((ai + 1) % itens.length); }, 5000); };
+    itens.forEach((a, i) => a.addEventListener('mouseenter', () => { por(i); girar(); }));
+    addEventListener('resize', () => por(ai));
+    por(0); girar();
+  }
+
   const chips = $$('#chips .chip'); let ci = 0;
   if (!reduce) setInterval(() => { chips.forEach((x,j) => x.classList.toggle('on', j===ci)); ci = (ci + 1) % chips.length; }, 1800);
 

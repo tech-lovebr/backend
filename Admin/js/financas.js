@@ -11,7 +11,6 @@
    ========================================================================== */
 
 const Financas = (() => {
-  const API_CUSTOS = 'https://love.com.br/api/custos';
   const DIA_MS = 86400000;
 
   /* ------------------------------------------------- Custo da plataforma */
@@ -21,10 +20,7 @@ const Financas = (() => {
 
   async function buscarIntegrados() {
     try {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const r = await fetch(API_CUSTOS, { headers: { Authorization: `Bearer ${session?.access_token || ''}` } });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return await r.json();
+      return await buscarCustosDaApi();
     } catch {
       return { itens: [], cotacoes: {} };
     }

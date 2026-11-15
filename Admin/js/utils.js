@@ -590,6 +590,41 @@ function groupBy(rows, key) {
  * Consulta tolerante: se a tabela ainda não existe (migration não rodada),
  * devolve lista vazia em vez de quebrar a página inteira.
  */
+/* Custos das integrações (api/custos: Vercel, Supabase, Amazon). A API busca
+   meses de cobrança na Vercel e pode levar vários segundos quando o servidor
+   acorda. O navegador guarda o último resultado: a tela abre na hora com ele
+   e, passados 15 minutos, busca de novo por trás (sem segurar a página). */
+const CHAVE_CUSTOS_API = 'love-admin-custos-api-v1';
+const CUSTOS_FRESCO_MS = 15 * 60 * 1000;
+const CUSTOS_VALIDO_MS = 24 * 60 * 60 * 1000;
+
+async function buscarCustosDaApi({ forcar = false } = {}) {
+  const buscar = async (fundo) => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const r = await fetch(`https://love.com.br/api/custos${forcar ? '?atualizar=1' : ''}`, {
+      headers: { Authorization: `Bearer ${session?.access_token || ''}` },
+      semEsperar: fundo
+    });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const dados = await r.json();
+    if (!(dados.itens || []).some(i => i.status === 'erro')) {
+      try { localStorage.setItem(CHAVE_CUSTOS_API, JSON.stringify({ em: Date.now(), dados })); } catch { /* sem armazenamento */ }
+    }
+    return dados;
+  };
+
+  if (!forcar) {
+    let guardado = null;
+    try { guardado = JSON.parse(localStorage.getItem(CHAVE_CUSTOS_API) || 'null'); } catch { /* ignora */ }
+    const idade = guardado ? Date.now() - guardado.em : Infinity;
+    if (guardado && idade < CUSTOS_VALIDO_MS) {
+      if (idade > CUSTOS_FRESCO_MS) buscar(true).catch(() => {});
+      return guardado.dados;
+    }
+  }
+  return buscar(false);
+}
+
 async function safeSelect(table, columns = '*', tweak) {
   let query = supabaseClient.from(table).select(columns);
   if (tweak) query = tweak(query);

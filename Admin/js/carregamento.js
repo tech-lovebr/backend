@@ -13,7 +13,7 @@
   const fetchOriginal = window.fetch.bind(window);
   window.fetch = function (entrada, opcoes) {
     const url = typeof entrada === 'string' ? entrada : (entrada && entrada.url) || '';
-    if (mostrado || IGNORAR.test(url)) return fetchOriginal(entrada, opcoes);
+    if (mostrado || IGNORAR.test(url) || (opcoes && opcoes.semEsperar)) return fetchOriginal(entrada, opcoes);
     pendentes++;
     return fetchOriginal(entrada, opcoes).finally(() => { pendentes--; });
   };

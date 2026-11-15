@@ -5,7 +5,6 @@
    outra moeda é convertido para real pela cotação do dia.
    ========================================================================== */
 
-const API_CUSTOS = 'https://love.com.br/api/custos';
 
 const CATEGORIAS_CUSTO = [
   'Infraestrutura', 'Servidor', 'Banco de dados', 'E-mail', 'Ferramentas e APIs',
@@ -138,12 +137,7 @@ async function carregar(forcar = false) {
 
 async function buscarIntegracoes(forcar) {
   try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    const r = await fetch(`${API_CUSTOS}${forcar ? '?atualizar=1' : ''}`, {
-      headers: { Authorization: `Bearer ${session?.access_token || ''}` }
-    });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    return await r.json();
+    return await buscarCustosDaApi({ forcar: !!forcar });
   } catch (e) {
     // Sem a função no ar, as três integrações aparecem como não conectadas.
     const zerado = Object.fromEntries(MESES.map(m => [m, 0]));

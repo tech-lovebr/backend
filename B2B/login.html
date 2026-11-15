@@ -177,8 +177,9 @@ html, body { margin: 0; padding: 0; background: #F7F8FA; }
 #view-login#view-login .lg-erro.text-zinc-600 { color: var(--lg-mudo) !important; }
 #view-login#view-login .lg-erro strong { font-weight: 500 !important; color: var(--lg-tinta) !important; }
 #view-login#view-login .lg-erro button { color: var(--lg-azul) !important; font-weight: 500 !important; text-decoration: underline; }
-#view-login#view-login .lg-termos { margin-top: 24px; font-size: 12.5px !important; line-height: 1.5 !important; color: var(--lg-suave) !important; text-align: center; }
-#view-login#view-login .lg-termos a { color: var(--lg-mudo) !important; text-decoration: underline; }
+#view-login#view-login .lg-pagina { align-content: center; row-gap: 20px; }
+#view-login#view-login .lg-termos { max-width: 520px; margin: 0; font-size: 12.5px !important; line-height: 1.5 !important; color: var(--lg-mudo) !important; text-align: center; }
+#view-login#view-login .lg-termos a { color: var(--lg-tinta) !important; text-decoration: underline; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -257,10 +258,11 @@ html, body { margin: 0; padding: 0; background: #F7F8FA; }
 
             <p class="lg-novo"><span data-en="Don't have an account yet?">Ainda não tem uma conta?</span> <a href="signup" id="go-to-signup" class="lg-link lg-link-forte" data-en="Sign up">Cadastre-se</a></p>
 
-            <p class="lg-termos" data-en-html="By continuing, you agree to the &lt;a href=&quot;termos&quot;&gt;Terms of Use&lt;/a&gt; and the &lt;a href=&quot;privacidade&quot;&gt;Privacy Policy&lt;/a&gt;.">Ao continuar, você concorda com os <a href="termos">Termos de Uso</a> e a <a href="privacidade">Política de Privacidade</a>.</p>
           </div>
         </div>
       </section>
+      <!-- Termos fora do cartão, centralizados logo abaixo dele -->
+      <p class="lg-termos" data-en-html="By continuing, you agree to the &lt;a href=&quot;termos&quot;&gt;Terms of Use&lt;/a&gt; and the &lt;a href=&quot;privacidade&quot;&gt;Privacy Policy&lt;/a&gt;.">Ao continuar, você concorda com os <a href="termos">Termos de Uso</a> e a <a href="privacidade">Política de Privacidade</a>.</p>
     </div>
   </div>
 

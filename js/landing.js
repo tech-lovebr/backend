@@ -61,41 +61,63 @@
       setTimeout(function () { trocarTexto($('#lv-hs2'), h2[hi][0], h2[hi][1]); }, 900);
     }, 3400);
 
-    // Convite: um botão por tipo de evento; cada um mostra o seu exemplo
-    // (texto, nomes, data e estilo). Passa sozinho até a pessoa tocar.
-    var inv = $('#lv-inv'), modelos = $$('#lv-tpls .lv-tpl');
-    if (inv && modelos.length) {
-      var demo = [
-        { k: 'Vamos nos casar', a: 'Marina', b: 'Pedro', d: '2027-06-12' },
-        { k: 'Vem comemorar comigo', a: 'Rafael', b: '', d: '2027-01-30' },
-        { k: 'Bodas de ouro', a: 'Lourdes', b: 'Antônio', d: '2027-09-05' },
-        { k: 'Chá de bebê / fraldas', a: 'Lia', b: '', d: '2027-02-14' }
-      ];
-      var auto = !reduce, di = 0;
-      var slug = function (v) { return v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); };
-      var usarModelo = function (i) {
-        modelos.forEach(function (x, j) { x.classList.toggle('lv-on', j === i); x.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
-        inv.classList.remove('lv-t-monograma', 'lv-t-classico', 'lv-t-moderno', 'lv-t-data');
-        inv.classList.add('lv-t-' + modelos[i].dataset.t);
+    // Convite: um botão por tipo de evento; cada um mostra o modelo de
+    // convite que a plataforma já usa para esse tipo (o padrão salvo no banco
+    // ou o modelo pronto do código), desenhado pelo mesmo motor do Convite
+    // digital (js/site-builder.js). Passa sozinho até a pessoa tocar.
+    var inv = $('#lv-inv'), tela = $('#lv-inv-tela'), modelos = $$('#lv-tpls .lv-tpl');
+    if (inv && tela && modelos.length) {
+      var exemplos = {
+        wedding: { nome: 'Marina & Pedro', data: '2027-06-12', url: 'marina-e-pedro', sobre: 'A cerimônia será no fim da tarde, seguida de jantar e festa. Contamos com você!' },
+        birthday: { nome: 'Rafael', data: '2027-01-30', url: 'aniversario-rafael', sobre: 'Vai ter música, comida boa e muita gente querida. Venha comemorar com a gente!' },
+        anniversary: { nome: 'Lourdes & Antônio', data: '2027-09-05', url: 'bodas-lourdes-e-antonio', sobre: 'Cinquenta anos juntos merecem uma festa. Será uma alegria ter você com a gente.' },
+        baby_shower: { nome: 'Lia', data: '2027-02-14', url: 'cha-da-lia', sobre: 'A Lia está chegando! Venha celebrar esse momento com a gente.' }
       };
-      var mostrar = function (x) {
-        inv.classList.toggle('lv-solo', !x.b);
-        $('#lv-kick').textContent = x.k;
-        var n = $('#lv-names'); n.textContent = ''; n.append(x.a);
-        if (x.b) { var em = document.createElement('em'); em.textContent = '&'; n.append(em, x.b); }
-        $('#lv-i1').textContent = x.a[0]; $('#lv-i2').textContent = x.b ? x.b[0] : '';
-        var u = slug(x.b ? x.a + ' e ' + x.b : x.k.split(' ').slice(-2).join(' ') + ' ' + x.a);
-        $('#lv-pub').textContent = 'love.com.br/' + u;
-        var d = new Date(x.d + 'T16:30:00-03:00'), p = function (v) { return String(v).padStart(2, '0'); };
-        $('#lv-date').textContent = p(d.getDate()) + ' · ' + p(d.getMonth() + 1) + ' · ' + d.getFullYear();
-        $('#lv-big').textContent = p(d.getDate()) + '.' + p(d.getMonth() + 1);
-        var dias = Math.ceil((d - Date.now()) / 864e5);
-        $('#lv-left').textContent = dias > 1 ? 'faltam ' + dias + ' dias' : 'é hoje';
+      var cacheModelos = {}, auto = !reduce, di = 0, vez = 0;
+      var pronto = function () { return typeof window.conviteDoModelo === 'function' && typeof window.renderAnySectionHtml === 'function'; };
+      var modeloDo = function (tipo) {
+        if (cacheModelos[tipo]) return cacheModelos[tipo];
+        cacheModelos[tipo] = (typeof window.templatePadraoDoTipo === 'function' ? window.templatePadraoDoTipo(tipo) : Promise.resolve(null))
+          .catch(function () { return null; })
+          .then(function (st) {
+            if (!st) st = window.conviteDoModelo(tipo, window.variacoesDoTipo(tipo)[0]);
+            var ex = exemplos[tipo];
+            try { window.ajustarDatasDoTemplate(st, { data: ex.data, hora: '16:30' }); } catch (e) { /* sem data */ }
+            try { window.preencherTituloDoTemplate(st, ex.nome); } catch (e) { /* sem título */ }
+            // Textos vazios do modelo: o primeiro vira o "Sobre…", o último a assinatura.
+            var vazios = [];
+            (st.sections || []).forEach(function (s) { (s.columns || []).forEach(function (c) { (c.elements || []).forEach(function (el) { if (el.type === 'texto' && !String(el.content || '').trim()) vazios.push(el); }); }); });
+            if (vazios[0]) vazios[0].content = ex.sobre;
+            if (vazios.length > 1) vazios[vazios.length - 1].content = ex.nome;
+            return st;
+          });
+        return cacheModelos[tipo];
       };
-      var passo = function (k) { inv.style.opacity = '.3'; setTimeout(function () { usarModelo(k); mostrar(demo[k]); inv.style.opacity = '1'; }, 250); };
-      modelos.forEach(function (b, i) { b.addEventListener('click', function () { auto = false; di = i; passo(i); }); });
-      usarModelo(0); mostrar(demo[0]);
-      setInterval(function () { if (auto && visivel()) { di = (di + 1) % demo.length; passo(di); } }, 3800);
+      var desenhar = function (i) {
+        modelos.forEach(function (x, k) { x.classList.toggle('lv-on', k === i); x.setAttribute('aria-pressed', k === i ? 'true' : 'false'); });
+        var tipo = modelos[i].dataset.t, minha = ++vez;
+        if (!pronto()) return;
+        inv.style.opacity = '.3';
+        modeloDo(tipo).then(function (st) {
+          if (minha !== vez) return;
+          var gs = st.globalStyle || {};
+          tela.style.setProperty('--bx-primary', gs.primaryColor || '#537bae');
+          tela.style.setProperty('--bx-radius', (gs.radius !== undefined ? gs.radius : 16) + 'px');
+          tela.style.setProperty('--bx-section-spacing', (gs.sectionSpacing !== undefined ? gs.sectionSpacing : 32) + 'px');
+          var visiveis = (st.sections || []).filter(function (s) { return !s.hidden; });
+          tela.innerHTML = visiveis.map(function (s) { return window.renderAnySectionHtml(s, 'preview', 'mobile'); }).join('') + window.renderFixedFooterHtml();
+          var capa = tela.querySelector(':scope > section');
+          if (capa) { capa.style.minHeight = '348px'; capa.classList.add('convite-capa'); }
+          tela.scrollTop = 0;
+          if (typeof window.startCountdownTicker === 'function') window.startCountdownTicker(tela);
+          var pub = $('#lv-pub'); if (pub) pub.textContent = 'love.com.br/' + exemplos[tipo].url;
+          inv.style.opacity = '1';
+        });
+      };
+      modelos.forEach(function (b, i) { b.addEventListener('click', function () { auto = false; di = i; desenhar(i); }); });
+      var comecar = function () { if (pronto()) desenhar(0); else setTimeout(comecar, 300); };
+      comecar();
+      setInterval(function () { if (auto && visivel()) { di = (di + 1) % modelos.length; desenhar(di); } }, 6000);
     }
 
     // Convidados confirmando.

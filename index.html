@@ -99,7 +99,7 @@
   <link rel="stylesheet" href="css/styles.css?v=20261115_buildertitulo">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
-  <link rel="stylesheet" href="css/landing-nova.css?v=20261115_lv9">
+  <link rel="stylesheet" href="css/landing-nova.css?v=20261115_lv11">
   <link rel="stylesheet" href="css/login-novo.css?v=20261115_lg11">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
@@ -180,22 +180,16 @@
     <h2 class="lv-h2" data-en-html="A digital invitation &lt;span class=&quot;lv-it&quot;&gt;worthy of you&lt;/span&gt;">Um convite digital <span class="lv-it">à sua altura</span></h2>
     <p class="lv-p" data-en="Elegant templates to personalize with your photos, your story, the venue map and a countdown. Share it with your own link.">Modelos elegantes para personalizar com as suas fotos, a sua história, o local com mapa e a contagem regressiva. Compartilhe com um link só seu.</p>
     <div class="lv-tpls" id="lv-tpls" role="group" aria-label="Tipos de evento">
-      <button class="lv-tpl lv-on" data-t="monograma" aria-pressed="true"><span class="lv-th">&amp;</span><span data-en="Wedding">Casamento</span></button>
-      <button class="lv-tpl" data-t="moderno" aria-pressed="false"><span class="lv-th">30</span><span data-en="Birthday">Aniversário</span></button>
-      <button class="lv-tpl" data-t="classico" aria-pressed="false"><span class="lv-th">50</span><span data-en="Anniversary">Bodas</span></button>
-      <button class="lv-tpl" data-t="data" aria-pressed="false"><span class="lv-th">♡</span><span data-en="Baby shower">Chá de bebê / fraldas</span></button>
+      <button class="lv-tpl lv-on" data-t="wedding" aria-pressed="true"><span data-en="Wedding">Casamento</span></button>
+      <button class="lv-tpl" data-t="birthday" aria-pressed="false"><span data-en="Birthday">Aniversário</span></button>
+      <button class="lv-tpl" data-t="anniversary" aria-pressed="false"><span data-en="Anniversary">Bodas</span></button>
+      <button class="lv-tpl" data-t="baby_shower" aria-pressed="false"><span data-en="Baby shower">Chá de bebê / fraldas</span></button>
     </div>
-    <a class="lv-tlink btn-trigger-register" href="/cadastro" data-en="Create my invitation →">Criar meu convite →</a>
+    <a class="lv-btn lv-btn-d lv-btn-maior btn-trigger-register" href="/cadastro"><span data-en="Create my event for free">Criar meu evento grátis</span> <i></i></a>
   </div>
   <div class="lv-media lv-pl lv-gr lv-petalsky lv-drift lv-inv-m">
     <div class="lv-arch lv-a-env" aria-hidden="true"></div>
-    <article class="lv-invite lv-t-monograma" id="lv-inv" aria-label="Prévia do convite">
-      <p class="lv-kicker" id="lv-kick">Vamos nos casar</p>
-      <div class="lv-mono" aria-hidden="true"><b><span id="lv-i1">M</span><i>&amp;</i><span class="lv-i2" id="lv-i2">P</span></b></div>
-      <h3 class="lv-names" id="lv-names">Marina<em>&amp;</em>Pedro</h3>
-      <p class="lv-big lv-num" id="lv-big">12.06</p>
-      <div class="lv-dt"><span class="lv-rule"></span><p class="lv-date lv-num" id="lv-date">12 · 06 · 2027</p><p class="lv-left lv-num" id="lv-left">faltam 219 dias</p></div>
-    </article>
+    <div class="lv-inv-real" id="lv-inv" aria-label="Prévia do convite"><div class="builder-canvas" data-device="mobile" id="lv-inv-tela"></div></div>
     <div class="lv-float lv-bob" style="left:6% !important;bottom:8% !important"><div class="lv-fr lv-toast"><span class="lv-ic lv-bl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span><div><b>Convite publicado</b><small id="lv-pub">love.com.br/marina-e-pedro</small></div></div></div>
   </div>
 </section>
@@ -5734,7 +5728,7 @@
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
   <script src="js/app.js?v=20261115_explorar"></script>
-  <script src="js/landing.js?v=20261115_lvcarrossel3"></script>
+  <script src="js/landing.js?v=20261115_convitereal"></script>
   <script src="js/carteira.js?v=20261102_contasconfig"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
   <script src="js/pedidos-orcamento.js?v=20261115_rfptab3"></script>

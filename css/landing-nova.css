@@ -403,3 +403,20 @@
 
 /* Tudo num só lugar: o texto abaixo do título fica numa linha só no computador. */
 @media (min-width: 769px){#view-public-site#view-public-site .lv-head .lv-p.lv-uma-linha{max-width:none !important;white-space:nowrap}}
+
+/* Convite: os tipos só com o texto (sem o ícone), todos na mesma linha. */
+#view-public-site#view-public-site .lv-tpls{flex-wrap:nowrap !important}
+#view-public-site#view-public-site .lv-tpl{padding:8px 14px !important;white-space:nowrap}
+@media (max-width:560px){#view-public-site#view-public-site .lv-tpls{flex-wrap:wrap !important}}
+/* Botão do convite: o mesmo "Criar meu evento grátis" da abertura, um pouco maior. */
+#view-public-site#view-public-site .lv-btn.lv-btn-maior{height:58px !important;padding:0 32px !important;font-size:16px !important;width:fit-content}
+/* Prévia do convite: o modelo de verdade da plataforma, numa tela de celular que rola. */
+#view-public-site#view-public-site .lv-inv-m>.lv-inv-real{position:relative;z-index:2}
+#view-public-site#view-public-site .lv-inv-real{width:min(100%,330px);height:540px;border-radius:18px;overflow:hidden;background:#FFFFFF;border:1px solid rgba(24,59,84,.10);box-shadow:0 40px 80px rgba(24,59,84,.16);transition:opacity .25s,transform .6s var(--ease)}
+#view-public-site#view-public-site .lv-media:hover .lv-inv-real{transform:translateY(-6px)}
+#view-public-site#view-public-site #lv-inv-tela{width:100% !important;height:100% !important;max-width:none !important;margin:0 !important;overflow-y:auto !important;overscroll-behavior:contain;scrollbar-width:none;display:flex !important;flex-direction:column;border-radius:0 !important;box-shadow:none !important}
+#view-public-site#view-public-site #lv-inv-tela::-webkit-scrollbar{display:none}
+#view-public-site#view-public-site #lv-inv-tela>*{flex-shrink:0}
+@media (max-width:560px){#view-public-site#view-public-site .lv-inv-real{width:78%;height:460px}}
+@media (max-width:560px){#view-public-site#view-public-site .lv-tpls{display:grid !important;grid-template-columns:repeat(2,max-content);justify-content:start}
+#view-public-site#view-public-site .lv-inv-real{width:min(100%,300px);height:500px}}

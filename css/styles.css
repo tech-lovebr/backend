@@ -15401,19 +15401,24 @@ html body #btn-rsvp-minhas-listas:not(#love-h-a) { display: none; }
   .listas-salvas-painel .listas-salvas-remover { opacity: 1; }
 }
 
-/* Computador, tema claro: barra lateral em azul claro (#DCE9F8), ícones e o
-   símbolo da Love no topo no azul do símbolo (#183B54). Item ativo em branco
+/* Computador, tema claro: barra lateral branca, ícones e o
+   símbolo da Love no topo no azul do símbolo (#183B54). Item ativo em #EBF4FF
    com o ícone na primária. No celular a barra de baixo não muda. */
 #sidebar-brand-icon-simbolo { display: none; }
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body:not([data-theme="dark"]) .sidebar-icon-rail:not(#love-h-a):not(#love-h-b),
-  html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top:not(#love-h-a):not(#love-h-b) { background-color: #DCE9F8 !important; }
-  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background-color: #FFFFFF !important; }
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top:not(#love-h-a):not(#love-h-b) { background-color: #FFFFFF !important; }
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background-color: #EBF4FF !important; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) { border-right-color: rgba(24, 59, 84, 0.12) !important; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top:not(#love-h-a):not(#love-h-b) { border-bottom-color: rgba(24, 59, 84, 0.12) !important; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn:not(.active):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #183b54 !important; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn:not(.active):not(#love-h-a):not(#love-h-b):not(#love-h-c) :is(svg, svg *) { color: #183b54 !important; stroke: #183b54 !important; }
-  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn:not(.active):not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background-color: rgba(255, 255, 255, 0.7) !important; color: #122c3f !important; }
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn:not(.active):not(#love-h-a):not(#love-h-b):not(#love-h-c):hover {
+    /* hover de vidro: cinza bem leve e transparente, com desfoque, borda fina e brilho em cima */
+    background-color: rgba(228, 231, 236, 0.45) !important; color: #122c3f !important;
+    -webkit-backdrop-filter: blur(10px) saturate(160%); backdrop-filter: blur(10px) saturate(160%);
+    box-shadow: inset 0 0 0 1px rgba(24, 29, 36, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(24, 29, 36, 0.06) !important;
+  }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top :is(#sidebar-brand-icon-light, #sidebar-brand-icon-dark):not(#love-h-a):not(#love-h-b) { display: none !important; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top #sidebar-brand-icon-simbolo:not(#love-h-a):not(#love-h-b) { display: block !important; width: 36px !important; height: auto !important; max-width: none !important; }
 }

@@ -4523,3 +4523,24 @@ body[data-theme="dark"] .love-dica { background: #1F2329; border-color: rgba(255
 body[data-theme="dark"] .admin-sidebar-brand img { filter: brightness(0) invert(1); }
 .admin-sidebar-brand .marca-etiqueta { font-style: normal; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; font-weight: 500; line-height: 1; letter-spacing: .2em; text-transform: uppercase; color: #16202F; padding: 5px 9px; border: 1px solid rgba(22, 32, 47, .2); border-radius: 999px; }
 body[data-theme="dark"] .admin-sidebar-brand .marca-etiqueta { color: #A9C6EA; border-color: rgba(169, 198, 234, .35); }
+
+/* Fundo do Admin em todas as páginas: degradê azul claro (branco no alto à
+   esquerda, azul mais forte embaixo à direita). Fica parado ao rolar; cards e
+   tabelas continuam brancos por cima. */
+.admin-main {
+  background:
+    radial-gradient(ellipse 45% 40% at 15% 20%, rgba(255, 255, 255, .95) 0%, rgba(255, 255, 255, 0) 100%),
+    radial-gradient(ellipse 60% 55% at 70% 92%, rgba(184, 207, 236, .95) 0%, rgba(184, 207, 236, 0) 100%),
+    #E8EFFA;
+  background-attachment: fixed;
+}
+.admin-main .admin-content { background: transparent; }
+.admin-main .admin-topbar { background: rgba(236, 242, 251, .82); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+body[data-theme="dark"] .admin-main .admin-topbar { background: rgba(18, 22, 28, .82); }
+body[data-theme="dark"] .admin-main {
+  background:
+    radial-gradient(ellipse 45% 40% at 15% 20%, rgba(255, 255, 255, .05) 0%, rgba(255, 255, 255, 0) 100%),
+    radial-gradient(ellipse 60% 55% at 70% 92%, rgba(80, 120, 180, .22) 0%, rgba(80, 120, 180, 0) 100%),
+    #12161C;
+  background-attachment: fixed;
+}

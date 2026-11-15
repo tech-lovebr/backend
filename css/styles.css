@@ -15648,3 +15648,8 @@ body[data-theme="dark"] .rfp-tabela .rfp-post-titulo { color: #FFFFFF !important
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #rfp-tabela tr.rfp-post > td:nth-child(7):not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: auto !important; min-width: 36px; }
 }
+
+/* Convite digital e Save the Date (editor): a área em volta do convite usa o
+   mesmo céu da plataforma (Home, Meus convidados), sem o cinza. */
+html body:not([data-theme="dark"]) #view-event-os-dashboard .builder-canvas-viewport:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; background-image: none !important; }
+html body:not([data-theme="dark"]) #view-event-os-dashboard #site-builder-root:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }

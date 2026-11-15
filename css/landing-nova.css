@@ -386,3 +386,17 @@
 
 /* Seções que o menu do topo abre: param abaixo do cabeçalho fixo (72px). */
 #view-public-site#view-public-site :is(#lv-convite, #lv-presentes) { scroll-margin-top: 96px; }
+
+/* Logo do topo: letras na mesma altura do logotipo de texto da plataforma logada (~23px). */
+#view-public-site#view-public-site .lv-nav .lv-logo{width:118px}
+/* Tudo num só lugar: os recursos numa caixa de vidro no tom do primeiro banner,
+   e uma caixa preenchida (o mesmo céu, mais forte) passa por cima de um de cada
+   vez, a cada 5 s. */
+#view-public-site#view-public-site .lv-all.lv-all-carrossel{position:relative;gap:8px !important;padding:8px;border-radius:20px;border:1px solid rgba(255,255,255,.7);background:radial-gradient(55% 70% at 15% 20%,rgba(255,255,255,.7) 0%,transparent 60%),radial-gradient(60% 75% at 85% 15%,rgba(245,230,222,.55) 0%,transparent 62%),radial-gradient(70% 80% at 70% 90%,rgba(185,209,238,.5) 0%,transparent 70%),rgba(233,241,251,.55);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+#view-public-site#view-public-site .lv-all.lv-all-carrossel > a{position:relative;z-index:1;padding:20px 18px !important;border-top:0 !important;border-radius:14px;color:var(--mute) !important;transition:color .5s var(--ease)}
+#view-public-site#view-public-site .lv-all.lv-all-carrossel > a.lv-all-on{color:var(--deep) !important}
+#view-public-site#view-public-site .lv-all.lv-all-carrossel > a:hover .lv-ic{transform:none}
+#view-public-site#view-public-site .lv-all-luz{position:absolute;left:0;top:0;z-index:0;border-radius:14px;pointer-events:none;background:radial-gradient(55% 70% at 15% 20%,#FFFFFF 0%,transparent 60%),radial-gradient(60% 75% at 85% 15%,#F5E6DE 0%,transparent 62%),radial-gradient(70% 80% at 70% 90%,#B9D1EE 0%,transparent 70%),#E9F1FB;border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(24,59,84,.10),inset 0 1px 0 #FFFFFF;transition:left .8s var(--ease),top .8s var(--ease),width .8s var(--ease),height .8s var(--ease) !important}
+@media (prefers-reduced-motion:reduce){#view-public-site#view-public-site .lv-all-luz{transition:none}}
+#view-public-site#view-public-site .lv-all.lv-all-carrossel > a > span:not(.lv-ic){color:var(--mute) !important;transition:color .5s var(--ease)}
+#view-public-site#view-public-site .lv-all.lv-all-carrossel > a.lv-all-on > span:not(.lv-ic){color:var(--deep) !important}

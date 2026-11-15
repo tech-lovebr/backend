@@ -183,6 +183,39 @@
       ci = (ci + 1) % polas.length;
     }, 2200);
 
+    // Tudo num só lugar: uma caixa de vidro no tom do primeiro banner passa
+    // por cima de cada recurso (Convite digital, Confirmação de presença…),
+    // trocando a cada 5 segundos, como um carrossel. Passar o mouse pausa.
+    var todos = document.querySelector('#view-public-site .lv-all');
+    if (todos) {
+      var itensTodos = $$('#view-public-site .lv-all > a');
+      var luz = document.createElement('span');
+      luz.className = 'lv-all-luz';
+      luz.setAttribute('aria-hidden', 'true');
+      todos.insertBefore(luz, todos.firstChild);
+      todos.classList.add('lv-all-carrossel');
+      var ti = 0, pausado = false;
+      var marcar = function (i) {
+        ti = i;
+        var a = itensTodos[i];
+        if (!a) return;
+        itensTodos.forEach(function (x, k) { x.classList.toggle('lv-all-on', k === i); });
+        luz.style.width = a.offsetWidth + 'px';
+        luz.style.height = a.offsetHeight + 'px';
+        luz.style.setProperty('left', a.offsetLeft + 'px', 'important');
+        luz.style.setProperty('top', a.offsetTop + 'px', 'important');
+      };
+      marcar(0);
+      window.addEventListener('resize', function () { marcar(ti); });
+      todos.addEventListener('mouseenter', function () { pausado = true; });
+      todos.addEventListener('mouseleave', function () { pausado = false; });
+      itensTodos.forEach(function (a, k) { a.addEventListener('mouseenter', function () { marcar(k); }); });
+      setInterval(function () {
+        if (pausado || !visivel()) return;
+        marcar((ti + 1) % itensTodos.length);
+      }, 5000);
+    }
+
     // Perguntas frequentes: uma aberta por vez.
     $$('#lv-faq .lv-qa').forEach(function (q) {
       q.querySelector('button').addEventListener('click', function () {

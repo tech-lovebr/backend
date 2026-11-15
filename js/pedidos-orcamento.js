@@ -427,10 +427,12 @@
     const criar = document.getElementById('btn-rfp-novo');
     const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
     if (titulo && pedidosAberto) titulo.textContent = aberta ? (noCelular() ? 'Criar solicitação' : TITULO_DA_NOVA) : TITULO_DA_LISTA;
-    if (voltar) voltar.hidden = true;
-    if (vendoPropostas && aberta) { vendoPropostas = false; document.getElementById('pedidos-abas')?.classList.remove('hidden'); }
-    // Sem botão "Criar solicitação" no cabeçalho (a aba Criar solicitação já faz isso).
-    if (criar) criar.classList.add('hidden');
+    // Computador: na nova solicitação a setinha volta para Minhas solicitações
+    // (no celular a setinha é a do próprio cabeçalho do celular).
+    if (voltar) { voltar.hidden = !aberta || noCelular(); if (aberta) voltar.setAttribute('aria-label', 'Voltar para Minhas solicitações'); }
+    if (vendoPropostas && aberta) vendoPropostas = false;
+    // Minhas solicitações: o botão "Criar solicitação" fica no topo, à direita.
+    if (criar) criar.classList.toggle('hidden', aberta || !pedidosAberto);
   }
 
   /** Serviço já marcado na próxima abertura (tarefas do Checklist). */
@@ -497,8 +499,6 @@
 
   /** Abas de Criar solicitação: 'nova', 'lote' (Criar várias) e 'minhas' (lista). @param {'nova'|'lote'|'minhas'} aba */
   function mostrarAba(aba) {
-    document.querySelectorAll('#pedidos-abas [data-pedidos-aba]').forEach(b => b.classList.toggle('active', /** @type {HTMLElement} */ (b).dataset.pedidosAba === aba));
-    document.getElementById('pedidos-abas')?.classList.remove('hidden');
     const minhas = document.getElementById('pedidos-painel-minhas');
     if (aba === 'nova' || aba === 'lote') {
       if (vendoPropostas) modoPropostas(false);
@@ -2191,10 +2191,16 @@
     </div>`;
 
   /** @param {string} texto @param {boolean} [comBotao] */
-  const listaVazia = (texto, comBotao) => `
-    <div class="rfp-posts-vazio">
-      <p>${esc(texto)}</p>
-      ${comBotao ? '<button type="button" class="rfp-post-criar" data-rfp-criar>Criar solicitação</button>' : ''}
+  // Lista vazia no mesmo molde de Meus convidados: ícone, título que é um
+  // link (abre Criar solicitação) e uma linha de texto. Sem botão na caixa.
+  const listaVazia = (texto, comBotao) => comBotao ? `
+    <div class="rfp-vazio-love">
+      <svg class="rfp-vazio-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.75h6M9 3.75a1.5 1.5 0 0 0-1.5 1.5v.75h9v-.75a1.5 1.5 0 0 0-1.5-1.5M9 3.75H6.75A1.5 1.5 0 0 0 5.25 5.25v14.25a1.5 1.5 0 0 0 1.5 1.5h10.5a1.5 1.5 0 0 0 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H15M8.25 11.25h7.5M8.25 15h4.5"/></svg>
+      <p class="rfp-vazio-titulo"><button type="button" class="rfp-vazio-link" data-rfp-criar>Crie a sua primeira solicitação</button></p>
+      <p class="rfp-vazio-texto">${esc(texto)}</p>
+    </div>` : `
+    <div class="rfp-vazio-love">
+      <p class="rfp-vazio-texto">${esc(texto)}</p>
     </div>`;
 
   /** @param {any} it */
@@ -2311,7 +2317,7 @@
     const paginas = Math.max(1, Math.ceil(total / porPagina));
     pagina = Math.min(Math.max(1, pagina), paginas);
     const daPagina = itensDaLista.slice((pagina - 1) * porPagina, pagina * porPagina);
-    caixa.innerHTML = total ? daPagina.map(it => linhaDaSolicitacao(it)).join('') : listaVazia('Você ainda não criou nenhuma solicitação.', true);
+    caixa.innerHTML = total ? daPagina.map(it => linhaDaSolicitacao(it)).join('') : listaVazia('Conte o que você precisa e receba propostas de fornecedores para o seu evento.', true);
     if (rodape) {
       rodape.hidden = !total;
       rodape.innerHTML = total ? `
@@ -2578,7 +2584,7 @@
     const voltar = document.getElementById('btn-rfp-voltar');
     if (titulo) titulo.textContent = ligado ? 'Propostas recebidas' : TITULO_DA_LISTA;
     if (voltar) { voltar.hidden = !ligado; voltar.setAttribute('aria-label', 'Voltar para Minhas solicitações'); }
-    document.getElementById('pedidos-abas')?.classList.toggle('hidden', ligado);
+    document.getElementById('btn-rfp-novo')?.classList.toggle('hidden', ligado);
   }
 
   /** @param {string} id */
@@ -2711,7 +2717,7 @@
     const alvo = e.target instanceof Element ? e.target : null;
     if (!alvo) return;
     if (alvo.closest('[data-rfp-propostas-voltar]')) { mostrarLista(); return; }
-    if (alvo.closest('[data-rfp-criar]')) { mostrarAba('nova'); return; }
+    if (alvo.closest('[data-rfp-criar], #btn-rfp-novo')) { mostrarAba('nova'); return; }
     const detalhe = /** @type {HTMLElement|null} */ (alvo.closest('[data-rfp-detalhe]'));
     if (detalhe) { mostrarDetalhe(detalhe.dataset.rfpDetalhe || ''); return; }
     if (alvo.closest('[data-rfp-detalhe-voltar]')) { mostrarLista(); return; }
@@ -2788,5 +2794,16 @@
     return true;
   }
 
-  window.LovePedidos = { abrir, abrirComServico, fechar, mostrarLista, mostrarAba, voltarEtapa, CATEGORIAS, FAIXAS };
+  /** Pedido de abrir direto a nova solicitação (ex.: "Criar solicitação" em Contratos). */
+  let novaPedida = false;
+  function pedirNova() { novaPedida = true; }
+  /** Entrar em Fornecedores › Minhas solicitações: abre a lista, ou a nova
+   *  solicitação quando alguém pediu (Checklist com serviço, Contratos, rascunho). */
+  function entrar() {
+    const nova = novaPedida || !!servicoPedido || !!rascunhoPendente;
+    novaPedida = false;
+    mostrarAba(nova ? 'nova' : 'minhas');
+  }
+
+  window.LovePedidos = { abrir, abrirComServico, pedirNova, entrar, fechar, mostrarLista, mostrarAba, voltarEtapa, CATEGORIAS, FAIXAS };
 })();

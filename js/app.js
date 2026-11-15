@@ -1842,7 +1842,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'pedidos', label: 'Criar solicitação' },
+        { id: 'pedidos', label: 'Minhas solicitações' },
         { id: 'explore', label: 'Explorar' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Contratos' },
@@ -1937,7 +1937,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gifts: { 'my-gifts': '', 'gift-messages': 'recados', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento' },
-    // Fornecedores abre em Criar solicitação (/fornecedores); Explorar em /fornecedores/explorar.
+    // Fornecedores abre em Minhas solicitações (/fornecedores); Explorar em /fornecedores/explorar.
     b2b: { pedidos: '', explore: 'explorar', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
   };
 
@@ -10421,15 +10421,24 @@ document.addEventListener('DOMContentLoaded', () => {
     return (sessao && sessao.session && sessao.session.user && sessao.session.user.id) || null;
   }
 
+  /** Última carga falhou (ou sem sessão): a próxima abertura tenta de novo. */
+  let listasSalvasFalhou = false;
   /** @param {boolean} [forcar] */
   async function carregarListasSalvas(forcar) {
-    if (listasSalvas && !forcar) return listasSalvas;
-    const uid = await idDaContaLogada();
-    if (!uid) { listasSalvas = []; return listasSalvas; }
-    const { data, error } = await supabaseClient.from('listas_convidados')
-      .select('id, nome, convidados, created_at').eq('cliente_id', uid).order('created_at', { ascending: false });
-    if (error) { console.error('Erro ao carregar as listas salvas:', error); return null; }
-    listasSalvas = data || [];
+    if (listasSalvas && !forcar && !listasSalvasFalhou) return listasSalvas;
+    try {
+      const uid = await idDaContaLogada();
+      if (!uid) { listasSalvas = []; listasSalvasFalhou = true; return listasSalvas; }
+      const { data, error } = await supabaseClient.from('listas_convidados')
+        .select('id, nome, convidados, created_at').eq('cliente_id', uid).order('created_at', { ascending: false });
+      if (error) throw error;
+      listasSalvas = data || [];
+      listasSalvasFalhou = false;
+    } catch (erro) {
+      console.error('Erro ao carregar as listas salvas:', erro);
+      listasSalvas = [];
+      listasSalvasFalhou = true;
+    }
     return listasSalvas;
   }
 
@@ -10484,8 +10493,8 @@ document.addEventListener('DOMContentLoaded', () => {
     ancora.setAttribute('aria-expanded', 'true');
     painel.addEventListener('click', (e) => e.stopPropagation());
     desenharPainelDasListas(salvando);
-    if (!listasSalvas) {
-      await carregarListasSalvas();
+    if (!listasSalvas || listasSalvasFalhou) {
+      await carregarListasSalvas(true);
       if (painelDasListas === painel) desenharPainelDasListas(salvando && !!painel.querySelector('.listas-salvas-form'));
     }
   }
@@ -10499,7 +10508,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const itens = !listasSalvas
       ? '<p class="listas-salvas-vazio">Carregando…</p>'
       : !listasSalvas.length
-        ? '<p class="listas-salvas-vazio">Você ainda não tem nenhuma lista salva.</p>'
+        ? '<p class="listas-salvas-vazio">Você não tem listas salvas.</p>'
         : '<ul class="listas-salvas-itens">' + listasSalvas.map(l => {
           const qtd = Array.isArray(l.convidados) ? l.convidados.length : 0;
           const textos = `<span class="listas-salvas-nome">${escaparHtml(l.nome)}</span>
@@ -21890,7 +21899,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.drawerSubItemsList) {
       const b2bItemMap = {
         'explore': 'Explorar',
-        'pedidos': 'Criar solicitação',
+        'pedidos': 'Minhas solicitações',
         'messages': 'Mensagens',
         'contracted': 'Contratos',
         'insurance': 'Benefícios',
@@ -21913,12 +21922,12 @@ document.addEventListener('DOMContentLoaded', () => {
     pedidosView?.classList.toggle('hidden', !ehPedidos);
     document.getElementById('btn-rfp-novo')?.classList.add('hidden');
     if (ehPedidos) {
-      // "Criar solicitação" abre direto a Nova solicitação de orçamento.
+      // Minhas solicitações: a lista; "Criar solicitação" fica no topo.
       document.body.classList.remove('b2b-chat-mode');
       document.getElementById('b2b-toolbar-controls')?.classList.add('hidden');
       if (searchBar) searchBar.classList.remove('hidden');
       [exploreView, messagesView, contractedView, insuranceView].forEach(v => v?.classList.add('hidden'));
-      if (window.LovePedidos) window.LovePedidos.mostrarAba('nova');
+      if (window.LovePedidos) { if (window.LovePedidos.entrar) window.LovePedidos.entrar(); else window.LovePedidos.mostrarAba('minhas'); }
       return;
     }
 
@@ -24529,7 +24538,9 @@ document.addEventListener('DOMContentLoaded', () => {
     arrumar();
     document.getElementById('btn-rfp-voltar-explorar-celular')?.addEventListener('click', () => {
       if (/** @type {any} */ (window).LovePedidos?.voltarEtapa?.()) return;
-      window.loveIrPara?.('b2b', 'explore');
+      // Na 1ª etapa da nova solicitação, volta para Minhas solicitações.
+      /** @type {any} */ (window).LovePedidos?.mostrarAba('minhas');
+      window.scrollTo({ top: 0 });
     });
     document.getElementById('btn-rfp-lista-celular')?.addEventListener('click', () => {
       const lista = document.getElementById('pedidos-painel-minhas');

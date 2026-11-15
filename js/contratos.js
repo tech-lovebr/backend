@@ -394,7 +394,7 @@
     const abrir = alvo.closest('[data-ct-abrir]');
     if (abrir) { abaDaPagina = 'geral'; if (w.loveAbrirContrato) w.loveAbrirContrato(abrir.getAttribute('data-ct-abrir')); return; }
     if (alvo.closest('[data-ct-voltar]')) { if (w.loveFecharContrato) w.loveFecharContrato(); return; }
-    if (alvo.closest('[data-ct-solicitar]')) { if (w.loveIrPara) w.loveIrPara('b2b', 'pedidos'); return; }
+    if (alvo.closest('[data-ct-solicitar]')) { if (w.LovePedidos && w.LovePedidos.pedirNova) w.LovePedidos.pedirNova(); if (w.loveIrPara) w.loveIrPara('b2b', 'pedidos'); return; }
     const aba = alvo.closest('[data-ct-aba]');
     if (aba) {
       const pagina = aba.closest('[data-ct-pagina]');

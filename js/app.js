@@ -17224,71 +17224,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return contratos.concat(proprias);
   }
 
+  /** Despesas de exemplo que a versão antiga gravava (id|item): não são fornecedores reais. */
+  var DESPESAS_DE_EXEMPLO = { 'exp-1|Espaço Quintal da Villa': 1, 'exp-2|Buffet Gastronomia Nobre': 1, 'exp-3|Estúdio Fotografia & Cinema': 1, 'exp-4|Decoração Floral Jardim Real': 1, 'exp-5|DJ & Iluminação Pista': 1, 'exp-6|Bar de Coquetéis & Drinks': 1 };
   function getBudgetExpensesProprias() {
     const activeEv = getActiveEvent();
     if (!activeEv) return [];
 
     try {
       const stored = localStorage.getItem(`love_budget_expenses_${activeEv.id}`);
-      if (stored) return JSON.parse(stored).map(/** @param {any} e */ e => (e && e.category === 'Local' ? Object.assign({}, e, { category: 'Espaços para locação' }) : e));
+      // Tira as despesas de exemplo (exp-1 a exp-6) que ficaram gravadas junto quando
+      // o anfitrião salvou a primeira despesa ou o orçamento.
+      if (stored) return JSON.parse(stored).filter(/** @param {any} e */ e => e && !DESPESAS_DE_EXEMPLO[e.id + '|' + e.item]).map(/** @param {any} e */ e => (e.category === 'Local' ? Object.assign({}, e, { category: 'Espaços para locação' }) : e));
     } catch (e) {}
 
-    return [
-      {
-        id: 'exp-1',
-        item: 'Espaço Quintal da Villa',
-        vendor: 'Villa Bisutti Casa do Ator',
-        category: 'Espaços para locação',
-        estimated: 25000,
-        actual: 22000,
-        paid: 15000
-      },
-      {
-        id: 'exp-2',
-        item: 'Buffet Gastronomia Nobre',
-        vendor: 'Buffet Gastronomia Nobre',
-        category: 'Alimentação',
-        estimated: 18000,
-        actual: 16500,
-        paid: 10000
-      },
-      {
-        id: 'exp-3',
-        item: 'Estúdio Fotografia & Cinema',
-        vendor: 'Estúdio Fotografia & Cinema',
-        category: 'Fotografia e mídia',
-        estimated: 8000,
-        actual: 7800,
-        paid: 7800
-      },
-      {
-        id: 'exp-4',
-        item: 'Decoração Floral Jardim Real',
-        vendor: 'Decoração Floral Jardim Real',
-        category: 'Decoração',
-        estimated: 10000,
-        actual: 6200,
-        paid: 3000
-      },
-      {
-        id: 'exp-5',
-        item: 'DJ & Iluminação Pista',
-        vendor: '',
-        category: 'Música',
-        estimated: 5500,
-        actual: 0,
-        paid: 0
-      },
-      {
-        id: 'exp-6',
-        item: 'Bar de Coquetéis & Drinks',
-        vendor: '',
-        category: 'Serviços de bar',
-        estimated: 4200,
-        actual: 0,
-        paid: 0
-      }
-    ];
+    // Sem despesas de exemplo: a lista começa vazia e só tem o que o anfitrião
+    // cadastrou (e os contratos reais, que entram por itensDeContratosParaOrcamento).
+    return [];
   }
 
   function saveBudgetExpenses(expenses) {

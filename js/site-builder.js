@@ -903,6 +903,7 @@ async function seedConviteDigitalForEvent(eventoId, typeKey, quando) {
   const state = (await templatePadraoDoTipo(typeKey)) || conviteDoModelo(typeKey, variacoesDoTipo(typeKey)[0]);
   ajustarDatasDoTemplate(state, quando);
   preencherTituloDoTemplate(state, quando && quando.nome);
+  state.modeloAplicado = true;
   const { error } = await supabaseClient
     .from('convite_digital_pages')
     .upsert({ evento_id: eventoId, page_key: 'convite', state }, { onConflict: 'evento_id,page_key' });
@@ -914,16 +915,64 @@ window.seedConviteDigitalForEvent = seedConviteDigitalForEvent;
 // isso é a fonte de verdade (sobrescreve o cache local); se ainda não
 // existir (ex.: evento criado antes desta integração), publica o estado
 // local atual pra lá, pra passar a existir dali em diante.
+/**
+ * Convite sem o modelo: nenhuma seção (fora capa, botões e presentes) tem
+ * elemento, e o modelo nunca foi aplicado nele.
+ * @param {any} state
+ */
+function conviteSemModelo(state) {
+  if (!state || typeof state !== 'object') return true;
+  if (state.modeloAplicado) return false;
+  const secoes = Array.isArray(state.sections) ? state.sections : [];
+  return !secoes.some((/** @type {any} */ s) => s && !s.isQuickNav && !s.isGiftsBlock
+    && (s.columns || []).some((/** @type {any} */ c) => (c.elements || []).length));
+}
+
+/**
+ * Modelo pronto do tipo do evento ativo, com a data, o horário e o nome dele.
+ * Mantém a capa que o anfitrião já tinha escolhido.
+ * @param {any} [anterior]
+ */
+async function conviteProntoDoEventoAtivo(anterior) {
+  const ev = getActiveEventForBuilder();
+  if (!ev) return null;
+  const tipo = ev.type || 'wedding';
+  const state = (await templatePadraoDoTipo(tipo)) || conviteDoModelo(tipo, variacoesDoTipo(tipo)[0]);
+  if (!state || !Array.isArray(state.sections)) return null;
+  const det = ev.eventDetails || {};
+  ajustarDatasDoTemplate(state, { data: det.date || ev.date || '', hora: det.time || ev.time || '' });
+  preencherTituloDoTemplate(state, ev.title || ev.hostName || '');
+  const capaAntiga = anterior && Array.isArray(anterior.sections)
+    ? (anterior.sections.find((/** @type {any} */ s) => s && !s.isQuickNav && !s.isGiftsBlock) || {}).bgImage : '';
+  const capaNova = state.sections.find((/** @type {any} */ s) => s && !s.isQuickNav && !s.isGiftsBlock);
+  if (capaAntiga && capaNova) capaNova.bgImage = capaAntiga;
+  state.modeloAplicado = true;
+  return state;
+}
+
 async function syncBuilderStateFromSupabase(pageKey) {
   const eventId = getActiveEventUuid();
   if (!eventId || typeof supabaseClient === 'undefined') return;
-  const { data: row, error } = await supabaseClient
+  let { data: row, error } = await supabaseClient
     .from('convite_digital_pages')
     .select('state, published_at')
     .eq('evento_id', eventId)
     .eq('page_key', pageKey)
     .maybeSingle();
   if (error) { console.error('Erro ao buscar Convite Digital:', error); return; }
+
+  // Convite que nunca foi publicado e está sem nenhum elemento (nasceu em
+  // branco ou foi gravado em branco por cima do modelo): recebe o modelo
+  // pronto do tipo do evento (frases, nome, data, Sobre e contagem regressiva).
+  if (pageKey === 'convite' && !(row && row.published_at) && (!row || conviteSemModelo(row.state))) {
+    const pronto = await conviteProntoDoEventoAtivo(row && row.state);
+    if (pronto && getActiveEventUuid() === eventId) {
+      const { error: erroModelo } = await supabaseClient
+        .from('convite_digital_pages')
+        .upsert({ evento_id: eventId, page_key: 'convite', state: pronto, updated_at: new Date().toISOString() }, { onConflict: 'evento_id,page_key' });
+      if (!erroModelo) row = Object.assign({}, row || {}, { state: pronto });
+    }
+  }
 
   paginasJaPublicadas[pageKey] = !!(row && row.published_at);
   if (pageKey === currentPageKey) atualizarBotoesDaPagina();

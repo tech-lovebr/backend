@@ -3390,6 +3390,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (mainPreviewContent) mainPreviewContent.classList.add('hidden');
       if (hostsPreviewContent) hostsPreviewContent.classList.remove('hidden');
       updateHostsPreview();
+      // A tabela de Co-anfitriões só tem tamanho depois de aparecer: mede as linhas vazias agora.
+      const listaDeOrganizadores = document.getElementById('hosts-team-list');
+      if (listaDeOrganizadores) setTimeout(() => alinharLinhasVaziasDaTabela(listaDeOrganizadores), 0);
     } else {
       if (mainPreviewContent) mainPreviewContent.classList.remove('hidden');
       if (hostsPreviewContent) hostsPreviewContent.classList.add('hidden');
@@ -7132,7 +7135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const td = tds[c.i];
         if (!td) return esc('');
         const clone = td.cloneNode(true);
-        clone.querySelectorAll('button:not(.guest-nome-btn), .love-copiar-email-ok, svg, .guest-tipo-badge, .guest-sub-conector, .guest-trilho').forEach(el => el.remove());
+        clone.querySelectorAll('button:not(.guest-nome-btn), .love-copiar-email-ok, svg, .guest-tipo-badge, .guest-sub-conector, .guest-trilho, .org-avatar-celular, .org-copiado').forEach(el => el.remove());
         return esc(clone.textContent);
       }).join(';'));
     });
@@ -7440,6 +7443,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    // Co-anfitriões (Personalizar evento): pesquisa e exportar, como em Meus convidados.
+    const tabelaOrganizadores = document.getElementById('organizadores-tabela');
+    if (tabelaOrganizadores) {
+      montarBarraDaTabela(tabelaOrganizadores, {
+        caixa: document.getElementById('organizadores-caixa') || undefined,
+        placeholder: 'Pesquisar co-anfitrião...',
+        nome: 'co-anfitrioes'
+      });
+    }
+
     // Convite online
     const tabelaConvites = document.getElementById('table-online-invites-guests')?.closest('table');
     if (tabelaConvites) {
@@ -7624,6 +7637,19 @@ document.addEventListener('DOMContentLoaded', () => {
       </tr>` : ''}`;
   }
 
+  // Linhas vazias abaixo dos co-anfitriões (como em Meus convidados): mede
+  // de novo sempre que a tabela aparece ou muda de tamanho.
+  /** @type {ResizeObserver|null} */
+  let observadorDosOrganizadores = null;
+  /** @param {HTMLElement} corpo */
+  function linhasDosOrganizadores(corpo) {
+    alinharLinhasVaziasDaTabela(corpo);
+    const tabela = corpo.closest('table');
+    if (observadorDosOrganizadores || !tabela || typeof ResizeObserver === 'undefined') return;
+    observadorDosOrganizadores = new ResizeObserver(() => alinharLinhasVaziasDaTabela(corpo));
+    observadorDosOrganizadores.observe(tabela);
+  }
+
   // Tabela "Organizadores": criador (só leitura) + convidados do banco.
   async function renderOrganizadores() {
     const hostsList = document.getElementById('hosts-team-list');
@@ -7641,6 +7667,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${situacaoDoOrganizadorHtml({ criador: true })}</td>
         <td class="love-tabela-col-mais"></td>
       </tr>`;
+    linhasDosOrganizadores(hostsList);
     if (!ehUuid(ev.id)) return;
     const { data, error } = await supabaseClient
       .from('eventos_organizadores')
@@ -7653,6 +7680,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     hostsList.insertAdjacentHTML('beforeend', (data || []).map(o => linhaDeOrganizadorHtml(o, ehDono)).join(''));
+    linhasDosOrganizadores(hostsList);
   }
 
   // Menu ⋯ da linha: Editar funções / Copiar link do convite / Remover.
@@ -7783,6 +7811,62 @@ document.addEventListener('DOMContentLoaded', () => {
       </label>` + checklistDeAreasHtml('host-invite-area');
     };
     const limparPasso2 = () => { areasBox.innerHTML = ''; };
+
+    // Fornecedores contratados (propostas aceitas): escolher um no lugar do
+    // e-mail. Sem nenhum, o botão leva para Fornecedores › Explorar.
+    const fornLista = document.getElementById('host-invite-fornecedores-lista');
+    /** @type {string} */
+    let fornecedorEscolhido = '';
+    const nomeDoFornecedorEscolhido = () => {
+      const r = /** @type {HTMLElement|null} */ (fornLista?.querySelector(`[data-org-forn="${fornecedorEscolhido}"]`) || null);
+      return r ? (r.dataset.nome || 'o fornecedor') : '';
+    };
+    const marcarFornecedor = (id) => {
+      fornecedorEscolhido = id;
+      fornLista?.querySelectorAll('[data-org-forn]').forEach(el => {
+        const sim = /** @type {HTMLElement} */ (el).dataset.orgForn === id;
+        el.classList.toggle('is-escolhido', sim);
+        el.setAttribute('aria-pressed', String(sim));
+      });
+      if (id) { inputEmail.value = ''; emailLabel.textContent = nomeDoFornecedorEscolhido(); }
+      else emailLabel.textContent = inputEmail.value.trim() || 'a pessoa';
+      erroForm?.classList.add('hidden');
+    };
+    const desenharFornecedores = async () => {
+      if (!fornLista) return;
+      fornecedorEscolhido = '';
+      const w = /** @type {any} */ (window);
+      let lista = [];
+      try { lista = w.LoveContratos ? (w.LoveContratos.lista() && w.LoveContratos.lista().length ? w.LoveContratos.lista() : await w.LoveContratos.carregar()) : []; } catch (err) { lista = []; }
+      const vistos = new Set();
+      const unicos = (lista || []).filter(c => c && c.fornecedorId && !vistos.has(c.fornecedorId) && vistos.add(c.fornecedorId));
+      if (!unicos.length) {
+        fornLista.innerHTML = `<div class="org-forn-vazio"><p>Você ainda não tem fornecedores contratados.</p><button type="button" class="org-forn-encontrar" data-org-forn-encontrar>Encontrar fornecedor</button></div>`;
+        return;
+      }
+      fornLista.innerHTML = unicos.map(c => {
+        const nome = String(c.fornecedor || 'Fornecedor');
+        const partes = nome.trim().split(/\s+/);
+        const iniciais = ((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '');
+        const foto = c.foto ? `<img src="${escaparHtml(c.foto)}" alt="" loading="lazy">` : `<span>${escaparHtml(iniciais.toUpperCase())}</span>`;
+        return `<button type="button" class="org-forn-item" data-org-forn="${escaparHtml(c.fornecedorId)}" data-nome="${escaparHtml(nome)}" aria-pressed="false">
+          <span class="org-forn-foto">${foto}</span>
+          <span class="org-forn-texto"><b>${escaparHtml(nome)}</b><small>${escaparHtml(c.titulo || '')}</small></span>
+          <span class="org-forn-marca" aria-hidden="true"></span>
+        </button>`;
+      }).join('');
+    };
+    fornLista?.addEventListener('click', (ev) => {
+      const alvo = /** @type {HTMLElement} */ (ev.target);
+      if (alvo.closest('[data-org-forn-encontrar]')) {
+        fecharFormulario();
+        /** @type {any} */ (window).loveIrPara?.('b2b', 'explore');
+        return;
+      }
+      const item = /** @type {HTMLElement|null} */ (alvo.closest('[data-org-forn]'));
+      if (!item) return;
+      marcarFornecedor(fornecedorEscolhido === item.dataset.orgForn ? '' : (item.dataset.orgForn || ''));
+    });
     const abrirFormulario = () => {
       feedback?.classList.add('hidden');
       erroForm?.classList.add('hidden');
@@ -7790,6 +7874,7 @@ document.addEventListener('DOMContentLoaded', () => {
       emailLabel.textContent = 'a pessoa';
       limparPasso2();
       montarAreas();
+      desenharFornecedores();
       caixaOrg?.classList.add('is-adicionando');
       inputEmail.focus();
     };
@@ -7814,7 +7899,11 @@ document.addEventListener('DOMContentLoaded', () => {
       document.addEventListener('click', (ev) => { if (caixaOrg?.classList.contains('is-adicionando') && /** @type {HTMLElement} */ (ev.target).closest('.rail-icon-btn, #submenu-celular')) fecharFormulario(); }, true);
     }
 
-    inputEmail.addEventListener('input', () => { emailLabel.textContent = inputEmail.value.trim() || 'a pessoa'; erroForm?.classList.add('hidden'); });
+    inputEmail.addEventListener('input', () => {
+      if (fornecedorEscolhido && inputEmail.value.trim()) marcarFornecedor('');
+      emailLabel.textContent = inputEmail.value.trim() || 'a pessoa';
+      erroForm?.classList.add('hidden');
+    });
     areasBox.addEventListener('change', (e) => {
       const alvo = /** @type {HTMLInputElement} */ (e.target);
       const areas = /** @type {HTMLInputElement[]} */ (Array.from(areasBox.querySelectorAll('.host-invite-area')));
@@ -7841,20 +7930,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const ev = getActiveEvent();
       const email = (inputEmail.value || '').trim();
       const permissoes = Array.from(document.querySelectorAll('.host-invite-area:checked')).map(c => c.value);
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return avisar('Digite um e-mail válido.', true);
+      const fornecedorId = fornecedorEscolhido;
+      const nomeDoFornecedor = nomeDoFornecedorEscolhido();
+      if (!fornecedorId && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return avisar('Digite um e-mail válido ou escolha um fornecedor.', true);
       if (!ev || !ehUuid(ev.id)) return avisar('Salve o evento antes de convidar organizadores.', true);
-      if (!permissoes.length) return avisar('Marque pelo menos uma função para a pessoa acessar.', true);
+      if (!permissoes.length) return avisar(`Marque pelo menos uma função para ${fornecedorId ? 'o fornecedor' : 'a pessoa'} acessar.`, true);
 
       const btn = /** @type {HTMLButtonElement|null} */ (document.getElementById('btn-submit-host-invite'));
       if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
-      const { data, error } = await supabaseClient.rpc('convidar_organizador', {
-        p_evento_id: ev.id, p_email: email, p_papel: 'personalizado', p_permissoes: permissoes, p_nome: null
-      });
+      const { data, error } = fornecedorId
+        ? await supabaseClient.rpc('convidar_fornecedor_organizador', { p_evento_id: ev.id, p_fornecedor_id: fornecedorId, p_permissoes: permissoes })
+        : await supabaseClient.rpc('convidar_organizador', {
+          p_evento_id: ev.id, p_email: email, p_papel: 'personalizado', p_permissoes: permissoes, p_nome: null
+        });
       if (btn) { btn.disabled = false; btn.textContent = 'Enviar convite'; }
       if (error || !data || !data.ok) {
         if (error) console.error('Erro ao convidar organizador:', error);
         const codigo = data && data.erro;
-        const msgs = { proprio_email: 'Esse é o seu próprio e-mail.', email_invalido: 'Digite um e-mail válido.', sem_permissao: 'Só o criador do evento pode convidar organizadores.' };
+        const msgs = { proprio_email: 'Esse é o seu próprio e-mail.', email_invalido: 'Digite um e-mail válido.', sem_permissao: 'Só o criador do evento pode convidar organizadores.', fornecedor_nao_contratado: 'Só é possível adicionar fornecedores que você contratou.', fornecedor_sem_email: 'Esse fornecedor ainda não tem e-mail cadastrado na Love.' };
         return avisar(msgs[codigo] || 'Não foi possível enviar o convite agora. Tente de novo.', true);
       }
 
@@ -7866,11 +7959,13 @@ document.addEventListener('DOMContentLoaded', () => {
         enviado = !!(j && j.enviado);
       } catch (err) { enviado = false; }
 
-      const conta = data.conta === 'fornecedor' ? ' Esse e-mail tem conta de fornecedor na Love: a pessoa entra com ela e vê só as áreas liberadas.'
+      const quem = fornecedorId ? (nomeDoFornecedor || 'o fornecedor') : email;
+      const conta = fornecedorId ? ' O fornecedor entra com a conta dele na Love e vê só as áreas liberadas.'
+        : data.conta === 'fornecedor' ? ' Esse e-mail tem conta de fornecedor na Love: a pessoa entra com ela e vê só as áreas liberadas.'
         : data.conta === 'anfitriao' ? '' : ' Esse e-mail ainda não tem conta na Love; pelo link a pessoa pode criar uma e aceitar.';
-      if (data.status === 'aceito') avisar(`${escaparHtml(email)} já organiza este evento — o acesso foi atualizado.`);
-      else if (enviado) avisar(`Convite enviado para <strong>${escaparHtml(email)}</strong>.${conta}`);
-      else avisar(`Convite criado para <strong>${escaparHtml(email)}</strong>, mas o e-mail não pôde ser enviado. Copie o link e mande para a pessoa: <a href="${escaparHtml(link)}" class="font-semibold text-[#537bae] break-all">${escaparHtml(link)}</a>${conta}`);
+      if (data.status === 'aceito') avisar(`${escaparHtml(quem)} já organiza este evento — o acesso foi atualizado.`);
+      else if (enviado) avisar(`Convite enviado para <strong>${escaparHtml(quem)}</strong>.${conta}`);
+      else avisar(`Convite criado para <strong>${escaparHtml(quem)}</strong>, mas o e-mail não pôde ser enviado. Copie o link e mande para a pessoa: <a href="${escaparHtml(link)}" class="font-semibold text-[#537bae] break-all">${escaparHtml(link)}</a>${conta}`);
       fecharFormulario();
       renderOrganizadores();
     });

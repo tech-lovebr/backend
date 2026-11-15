@@ -15754,3 +15754,37 @@ html body #carteira-raiz button.love-olho:not(#love-h-a):not(#love-h-b) { width:
 html.love-saldo-oculto .love-saldo-valor { filter: blur(9px); user-select: none; }
 body[data-theme="dark"] button.love-olho { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
 html body #tab-overview .home-presentes-celular .home-presentes-nome:not(#love-h-a):not(#love-h-b) { min-height: 32px; display: inline-flex !important; align-items: center; }
+
+
+/* Co-anfitriões (computador): a caixa da tabela vai até o fim da tela, como
+   Meus convidados, com as linhas continuando abaixo dos nomes. O pop-up de
+   Adicionar sem o contorno da caixa de dentro. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #organizadores-caixa:not(#love-h-a):not(#love-h-b) { display: flex !important; flex-direction: column; min-height: calc(100vh - 251px); }
+  html body #organizadores-caixa > .overflow-x-auto:not(#love-h-a):not(#love-h-b) { flex: 1 0 auto; }
+  html body #organizadores-convidar .org-form:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border: 0 !important; padding-top: 8px !important; }
+}
+
+/* Adicionar co-anfitrião › Fornecedores contratados. */
+.org-fornecedores { display: flex; flex-direction: column; gap: 8px; }
+.org-forn-lista { display: flex; flex-direction: column; gap: 8px; }
+html body button.org-forn-item:not(#love-h-a) {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; text-align: left;
+  background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; cursor: pointer; font-family: inherit; color: #18181B;
+}
+html body button.org-forn-item:not(#love-h-a):hover { border-color: #181D24; }
+html body button.org-forn-item.is-escolhido:not(#love-h-a) { border-color: #183b54; box-shadow: inset 0 0 0 1px #183b54; }
+.org-forn-foto { width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; overflow: hidden; display: grid; place-items: center; background: #EBF4FF; color: #183b54; font-size: 13px; font-weight: 600; }
+.org-forn-foto img { width: 100%; height: 100%; object-fit: cover; }
+.org-forn-texto { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
+.org-forn-texto b { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.org-forn-texto small { font-size: 12px; color: #71717A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.org-forn-marca { width: 18px; height: 18px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid #D4D4D8; }
+.org-forn-item.is-escolhido .org-forn-marca { border: 5px solid #183b54; }
+.org-forn-vazio { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px dashed rgba(0, 0, 0, 0.14); border-radius: 8px; }
+.org-forn-vazio p { margin: 0; font-size: 13px; color: #52525B; }
+html body button.org-forn-encontrar:not(#love-h-a) { flex-shrink: 0; height: 36px; padding: 0 14px; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: #183b54; cursor: pointer; }
+html body button.org-forn-encontrar:not(#love-h-a):hover { border-color: #181D24; }
+body[data-theme="dark"] :is(button.org-forn-item, button.org-forn-encontrar) { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] .org-forn-vazio { border-color: #404040; }
+body[data-theme="dark"] .org-forn-vazio p { color: #D4D4D8; }

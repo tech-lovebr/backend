@@ -15530,3 +15530,21 @@ body[data-theme="dark"] .contas-faixa-frase span { color: #9CC0E4; }
   .contas-faixa-f3 { left: 76%; transform: rotate(5deg); }
   .contas-faixa-frase { top: auto; bottom: 6px; transform: translateX(-50%); font-size: 22px; }
 }
+
+/* Barra de baixo (celular), tema claro: o item ativo fica todo branco, com
+   contorno fino e sombra leve para destacar da barra; ícone e nome na
+   primária. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    background-color: #FFFFFF !important; color: #183b54 !important;
+    box-shadow: inset 0 0 0 1px rgba(24, 59, 84, 0.10), 0 2px 8px rgba(24, 29, 36, 0.08) !important;
+  }
+}
+
+/* Rodapé: "© Love Hub Ltda." na mesma cor de Privacidade e Termos. */
+html body #dashboard-footer .rodape-logado-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #18181B !important; }
+html body[data-theme="dark"] #dashboard-footer .rodape-logado-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #dashboard-footer .rodape-logado-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #52525B !important; font-weight: 500 !important; }
+  html body[data-theme="dark"] #dashboard-footer .rodape-logado-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #D4D4D8 !important; }
+}

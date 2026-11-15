@@ -73,6 +73,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   ContaDrawer.emLinha({ host: document.getElementById('visao-conta'), esconder: [document.querySelector('.table-card'), document.getElementById('barra-selecao'), document.getElementById('header-actions')] });
   ligarMenuDeFiltros();
   aplicarBuscaDaUrl(document.getElementById('busca'));
+
+  // Link direto para uma conta: fornecedores?conta=<uuid> (ex.: nome no Dashboard).
+  const conta = new URLSearchParams(location.search).get('conta');
+  if (conta) abrirDetalhe(conta);
 });
 
 /* ---------------------------------------------------------------- Filtros */

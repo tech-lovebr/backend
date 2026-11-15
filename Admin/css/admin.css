@@ -4695,3 +4695,7 @@ body[data-theme="dark"] .admin-main .admin-header-bar { background: #181D24; bor
 .admin-content > #painel-auto { margin-top: var(--bloco-gap); }
 .admin-content > .admin-header-bar + [id^="visao-"],
 .admin-content > .admin-header-bar + #painel-auto { margin-top: 0; }
+
+/* Nome clicável no painel da conta (Dashboard): sublinha ao passar o mouse. */
+.dados-link { color: inherit; text-decoration: none; cursor: pointer; }
+.dados-link:hover { text-decoration: underline; text-underline-offset: 3px; }

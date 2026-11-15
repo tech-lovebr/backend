@@ -246,6 +246,14 @@ const ContaDrawer = (() => {
     { id: 'category', rotulo: 'Categoria', tipo: 'categoria' }
   ];
 
+  /* No Dashboard (painel fora da página da conta), o nome leva ao cadastro
+     completo: fornecedor em Fornecedores, anfitrião em Anfitriões. */
+  function nomeComLink(c, texto) {
+    const pagina = c.origem === 'b2b' ? 'fornecedores.html' : c.origem === 'anfitriao' ? 'anfitrioes.html' : '';
+    if (alvoEmLinha || !pagina) return escapeHtml(texto);
+    return `<a class="dados-link" href="${pagina}?conta=${encodeURIComponent(c.id)}">${escapeHtml(texto)}</a>`;
+  }
+
   const fornecedorDe = id => (DADOS?.fornecedores || []).find(x => x.id === id);
 
   const campoTexto = (id, valor, placeholder = '', tipo = 'text') =>
@@ -274,7 +282,7 @@ const ContaDrawer = (() => {
     const f = fornecedorDe(c.id);
     if (!f) return '';
     // Fora da edição, razão social, documento etc. ficam em "Informações da empresa".
-    if (!EDITANDO) return linha('Nome', escapeHtml(f.company_name || c.nome || '—'));
+    if (!EDITANDO) return linha('Nome', nomeComLink(c, f.company_name || c.nome || '—'));
     if (EDITANDO) {
       return CAMPOS_EDITAVEIS.map(campo => linha(campo.rotulo, campo.tipo === 'categoria'
         ? campoCategoria(f.category)
@@ -379,7 +387,7 @@ const ContaDrawer = (() => {
       acoes: acoesDoCabecalho(c),
       body: `
         <div class="lista-dados">
-          ${identidadeDoFornecedor(c, linha) || linha('Nome', escapeHtml(c.nome || '—'))}
+          ${identidadeDoFornecedor(c, linha) || linha('Nome', nomeComLink(c, c.nome || '—'))}
           ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}
           ${c.origem === 'b2b' && !EDITANDO && fornecedorDe(c.id) ? '' : linha('Data de nascimento', EDITANDO && c.origem === 'b2b'
             ? campoTexto('birthday', fornecedorDe(c.id)?.birthday, '', 'date')

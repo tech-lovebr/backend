@@ -172,20 +172,39 @@
     desenharLista(el);
   }
 
+  // Barra do topo da caixa, como em Meus convidados: Pesquisar à esquerda e
+  // Exportar à direita (aparece mesmo sem nenhum contrato).
+  const BARRA_DOS_CONTRATOS = `
+        <div class="love-tabela-barra ct-barra-topo">
+          <div class="love-tabela-barra-esq">
+            <div class="love-tabela-busca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg><input type="search" id="ct-busca" placeholder="Pesquisar contrato..." aria-label="Pesquisar contrato" autocomplete="off"></div>
+          </div>
+          <div class="love-tabela-barra-dir">
+            <button type="button" id="btn-ct-exportar" class="love-tabela-botao love-tabela-exportar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 3v12m0-12 4.5 4.5M12 3 7.5 7.5"/></svg><span>Exportar</span></button>
+          </div>
+        </div>`;
+
   function desenharLista(el) {
     if (!contratos.length) {
+      // Sem contrato: a mesma caixa branca de Meus convidados, com o cabeçalho
+      // da tabela e o vazio animado no meio.
       el.innerHTML = `
-        <div class="dash-card love-tabela-caixa ct-caixa">
+        <div class="dash-card love-tabela-caixa ct-caixa ct-caixa-vazia">
+          ${BARRA_DOS_CONTRATOS}
+          <table class="guests-table love-tabela w-full ct-tabela-vazia">
+            <thead><tr><th>Contrato</th><th>Fornecedor</th><th>Valor</th><th>Pago</th><th>Situação</th></tr></thead>
+          </table>
           <div class="ct-vazio">
-            <p class="ct-vazio-titulo">Nenhum contrato ainda</p>
+            <dotlottie-wc class="rsvp-vazio-icone rsvp-vazio-animado" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
+            <p class="ct-vazio-titulo"><button type="button" class="rsvp-vazio-link" data-ct-solicitar>Nenhum contrato ainda</button></p>
             <p class="ct-vazio-texto">Quando você aceitar a proposta de um fornecedor em Minhas solicitações, o contrato aparece aqui com o valor combinado, os pagamentos e as datas de entrega.</p>
-            <button type="button" class="ct-botao-escuro" data-ct-solicitar>Criar solicitação</button>
           </div>
         </div>`;
       return;
     }
     el.innerHTML = `
       <div class="dash-card love-tabela-caixa ct-caixa">
+        ${BARRA_DOS_CONTRATOS}
         ${contratos.map(c => {
           const s = situacao(c);
           return `
@@ -212,6 +231,26 @@
         }).join('')}
       </div>`;
   }
+
+  document.addEventListener('input', (e) => {
+    const campo = /** @type {HTMLInputElement} */ (e.target);
+    if (!campo || campo.id !== 'ct-busca') return;
+    const q = campo.value.trim().toLowerCase();
+    document.querySelectorAll('.ct-caixa .ct-linha').forEach(l => { /** @type {HTMLElement} */ (l).hidden = !!q && !String(l.textContent || '').toLowerCase().includes(q); });
+  });
+  document.addEventListener('click', (e) => {
+    if (!(e.target instanceof Element) || !e.target.closest('#btn-ct-exportar')) return;
+    const w = /** @type {any} */ (window);
+    if (!contratos.length) { if (typeof w.showToast === 'function') w.showToast('Ainda não há contratos para exportar.'); return; }
+    const linhas = [['Contrato', 'Fornecedor', 'Valor', 'Pago', 'Falta', 'Situação']];
+    contratos.forEach(c => linhas.push([c.titulo, c.fornecedor, reais(c.valor), reais(c.pago), reais(c.falta), situacao(c).texto.replace(/<[^>]+>/g, '')]));
+    const csv = '\ufeff' + linhas.map(l => l.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = 'contratos.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
 
   // ------------------------------------------------------------------ Página
   async function renderPagina(id, el) {

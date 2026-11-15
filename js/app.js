@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const oculto = raiz.classList.contains('love-saldo-oculto');
       document.querySelectorAll('[data-love-olho]').forEach(b => {
         b.setAttribute('aria-pressed', String(oculto));
-        b.setAttribute('aria-label', oculto ? 'Mostrar saldo' : 'Esconder saldo');
+        b.setAttribute('aria-label', oculto ? 'Mostrar valores' : 'Esconder valores');
       });
     };
     document.addEventListener('click', (ev) => {

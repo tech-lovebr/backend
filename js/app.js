@@ -510,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Lista de presentes: Configurações sai das abas (ícone ao lado do +).
         .filter(i => /** @type {HTMLElement} */ (i).dataset.routeSub !== 'gift-settings')
         // Fornecedores: Explorar (coroinha em Mensagens / ☰), Mensagens (barra de baixo) e Favoritos (☰) saem das abas; Convidados: Checklist (já está na Home).
-        .filter(i => !['explore', 'messages', 'favorites', 'checklist', 'listas'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''));
+        .filter(i => !['explore', 'messages', 'favorites', 'checklist'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''));
       // Só redesenha quando os itens mudam (redesenhar sempre engolia os
       // toques) — mas "mudam" tem que levar em conta os ELEMENTOS em si, não
       // só o texto: trocar de aba e voltar recria os .sub-drawer-item do
@@ -1824,8 +1824,7 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [
         { id: 'all', label: 'Meus convidados' },
         { id: 'tables', label: 'Mapa do evento' },
-        { id: 'checklist', label: 'Checklist' },
-        { id: 'listas', label: 'Listas salvas' }
+        { id: 'checklist', label: 'Checklist' }
       ]
     },
     wallet: {
@@ -1936,7 +1935,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const SUB_ROUTES = {
     'edit-site': { home: '', data: 'informacoes', about: 'anfitrioes', 'invite-print': 'convite' },
     gifts: { 'my-gifts': '', 'gift-messages': 'recados', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
-    rsvp: { all: '', tables: 'mesas', checklist: 'checklist', listas: 'listas-salvas' },
+    rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento' },
     // Fornecedores abre em Criar solicitação (/fornecedores); Explorar em /fornecedores/explorar.
     b2b: { pedidos: '', explore: 'explorar', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
@@ -10388,9 +10387,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (id === 'checklist') {
       document.getElementById('tab-rsvp-checklist')?.classList.add('active');
       renderEventChecklist();
-    } else if (id === 'listas') {
-      document.getElementById('tab-rsvp-listas')?.classList.add('active');
-      renderListasSalvas();
     } else {
       document.getElementById('tab-rsvp')?.classList.add('active');
       renderGuestsTable('all');
@@ -10398,12 +10394,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // LISTAS SALVAS (Lista de convidados › Listas salvas). A lista é da CONTA,
-  // não do evento (tabela listas_convidados, migration 128): a pessoa salva os
-  // convidados de um evento com um nome e usa em qualquer outro evento.
+  // LISTAS SALVAS. A lista é da CONTA, não do evento (tabela
+  // listas_convidados, migration 128): a pessoa salva os convidados de um
+  // evento com um nome e usa em qualquer outro evento. Em Meus convidados:
+  // ícone de salvos (computador) / "Minhas listas" (celular) abre as listas;
+  // "Salvar lista" aparece quando o evento já tem convidados.
   // ==========================================
   /** @type {any[]|null} */
   let listasSalvas = null;
+  const ICONE_SALVOS_LISTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.6 3.3c.9.1 1.6.9 1.6 1.8V21l-7.2-3.6L4.8 21V5.1c0-.9.7-1.7 1.6-1.8a50 50 0 0 1 11.2 0Z"/></svg>';
 
   /** Só o que vale para outro evento: quem é, contato, acompanhantes e relação. @param {any} g */
   function convidadoParaLista(g) {
@@ -10434,111 +10433,154 @@ document.addEventListener('DOMContentLoaded', () => {
     return listasSalvas;
   }
 
-  /** @param {string} iso */
-  const dataDaLista = (iso) => { const d = new Date(iso); return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR'); };
+  const convidadosDoEventoAtivo = () => ((getActiveEvent() || {}).guests || []).filter((/** @type {any} */ g) => (g.name || '').trim());
 
-  function linhaVaziaDasListas(texto) {
-    return `<tr class="linha-vazia"><td colspan="5" class="text-center text-sm text-zinc-500 py-10">${texto}</td></tr>`;
+  // "Salvar lista" só aparece quando a lista do evento já começou.
+  function atualizarBotaoSalvarLista() {
+    const botao = document.getElementById('btn-rsvp-salvar-lista');
+    if (botao) botao.hidden = !convidadosDoEventoAtivo().length;
   }
 
-  async function renderListasSalvas() {
-    const corpo = document.getElementById('listas-salvas-corpo');
-    if (!corpo) return;
-    const tabela = document.getElementById('listas-salvas-tabela');
-    if (tabela && !tabela.dataset.barraMontada) montarBarraDaTabela(tabela, { placeholder: 'Pesquisar lista...', nome: 'listas-salvas' });
-    if (!listasSalvas) corpo.innerHTML = linhaVaziaDasListas('Carregando…');
-    const listas = await carregarListasSalvas();
-    if (!listas) { corpo.innerHTML = linhaVaziaDasListas('Não foi possível carregar as listas. Tente de novo.'); return; }
-    if (!listas.length) {
-      corpo.innerHTML = linhaVaziaDasListas('Nenhuma lista salva ainda. Use "Salvar lista atual" para guardar os convidados deste evento e usar em outros eventos.');
+  /** @type {HTMLElement|null} */
+  let painelDasListas = null;
+  /** @type {HTMLElement|null} */
+  let ancoraDasListas = null;
+
+  function fecharPainelDasListas() {
+    if (painelDasListas) painelDasListas.remove();
+    painelDasListas = null;
+    if (ancoraDasListas) ancoraDasListas.setAttribute('aria-expanded', 'false');
+    ancoraDasListas = null;
+  }
+
+  function posicionarPainelDasListas() {
+    if (!painelDasListas || !ancoraDasListas) return;
+    const r = ancoraDasListas.getBoundingClientRect();
+    const largura = painelDasListas.offsetWidth;
+    painelDasListas.style.top = `${r.bottom + 8}px`;
+    painelDasListas.style.left = `${Math.max(8, Math.min(r.right - largura, window.innerWidth - largura - 8))}px`;
+  }
+
+  /**
+   * Abre as listas salvas embaixo do botão. salvando = abre já com o campo
+   * do nome para salvar os convidados do evento como lista nova.
+   * @param {HTMLElement} ancora @param {boolean} [salvando]
+   */
+  async function abrirPainelDasListas(ancora, salvando = false) {
+    if (painelDasListas && ancoraDasListas === ancora && !salvando) { fecharPainelDasListas(); return; }
+    fecharPainelDasListas();
+    fecharMenuDoPresente();
+    const painel = document.createElement('div');
+    painel.className = 'listas-salvas-painel';
+    painel.setAttribute('role', 'dialog');
+    painel.setAttribute('aria-label', 'Listas salvas');
+    document.body.appendChild(painel);
+    painelDasListas = painel;
+    ancoraDasListas = ancora;
+    ancora.setAttribute('aria-expanded', 'true');
+    painel.addEventListener('click', (e) => e.stopPropagation());
+    desenharPainelDasListas(salvando);
+    if (!listasSalvas) {
+      await carregarListasSalvas();
+      if (painelDasListas === painel) desenharPainelDasListas(salvando && !!painel.querySelector('.listas-salvas-form'));
+    }
+  }
+
+  /** @param {boolean} salvando */
+  function desenharPainelDasListas(salvando) {
+    const painel = painelDasListas;
+    if (!painel) return;
+    const convidados = convidadosDoEventoAtivo();
+    const ev = getActiveEvent();
+    const itens = !listasSalvas
+      ? '<p class="listas-salvas-vazio">Carregando…</p>'
+      : !listasSalvas.length
+        ? '<p class="listas-salvas-vazio">Nenhuma lista salva ainda. Salve os convidados deste evento para usar em outros eventos.</p>'
+        : '<ul class="listas-salvas-itens">' + listasSalvas.map(l => {
+          const qtd = Array.isArray(l.convidados) ? l.convidados.length : 0;
+          return `<li data-lista-id="${escaparHtml(l.id)}">
+            <button type="button" class="listas-salvas-usar" data-dica="Usar neste evento">
+              <span class="listas-salvas-nome">${escaparHtml(l.nome)}</span>
+              <span class="listas-salvas-qtd">${qtd} convidado${qtd === 1 ? '' : 's'}</span>
+            </button>
+            <button type="button" class="listas-salvas-remover" aria-label="Remover lista" data-dica="Remover lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+          </li>`;
+        }).join('') + '</ul>';
+    const sugestao = `Convidados · ${(ev && (ev.title || ev.name)) || 'meu evento'}`;
+    const rodape = !convidados.length ? '' : salvando
+      ? `<form class="listas-salvas-form">
+          <label class="listas-salvas-rotulo" for="listas-salvas-nome-novo">Nome da lista (${convidados.length} convidado${convidados.length === 1 ? '' : 's'})</label>
+          <input type="text" id="listas-salvas-nome-novo" maxlength="80" value="${escaparHtml(sugestao)}" autocomplete="off">
+          <p class="listas-salvas-erro" hidden></p>
+          <div class="listas-salvas-form-acoes"><button type="button" class="listas-salvas-cancelar">Cancelar</button><button type="submit" class="listas-salvas-confirmar">Salvar</button></div>
+        </form>`
+      : '<button type="button" class="listas-salvas-novo">+ Salvar os convidados deste evento</button>';
+    painel.innerHTML = `<p class="listas-salvas-titulo">Listas salvas</p>${itens}${rodape ? `<div class="listas-salvas-rodape">${rodape}</div>` : ''}`;
+    posicionarPainelDasListas();
+
+    painel.querySelectorAll('li[data-lista-id]').forEach(li => {
+      const id = /** @type {HTMLElement} */ (li).dataset.listaId || '';
+      li.querySelector('.listas-salvas-usar')?.addEventListener('click', (e) => usarListaSalva(id, /** @type {HTMLButtonElement} */ (e.currentTarget)));
+      li.querySelector('.listas-salvas-remover')?.addEventListener('click', () => removerListaSalva(id));
+    });
+    painel.querySelector('.listas-salvas-novo')?.addEventListener('click', () => desenharPainelDasListas(true));
+    const form = /** @type {HTMLFormElement|null} */ (painel.querySelector('.listas-salvas-form'));
+    if (form) {
+      const campo = /** @type {HTMLInputElement} */ (form.querySelector('input'));
+      campo.focus();
+      campo.select();
+      form.querySelector('.listas-salvas-cancelar')?.addEventListener('click', () => desenharPainelDasListas(false));
+      campo.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); desenharPainelDasListas(false); } });
+      form.addEventListener('submit', (e) => { e.preventDefault(); salvarListaAtual(form); });
+    }
+  }
+
+  /** @param {HTMLFormElement} form */
+  async function salvarListaAtual(form) {
+    const campo = /** @type {HTMLInputElement} */ (form.querySelector('input'));
+    const botao = /** @type {HTMLButtonElement} */ (form.querySelector('.listas-salvas-confirmar'));
+    const erro = /** @type {HTMLElement} */ (form.querySelector('.listas-salvas-erro'));
+    const nome = campo.value.trim();
+    const convidados = convidadosDoEventoAtivo();
+    if (!nome) { campo.focus(); return; }
+    if (!convidados.length || botao.disabled) return;
+    const uid = await idDaContaLogada();
+    if (!uid) return;
+    botao.disabled = true;
+    botao.textContent = 'Salvando…';
+    erro.hidden = true;
+    const { data, error } = await supabaseClient.from('listas_convidados')
+      .insert({ cliente_id: uid, nome, convidados: convidados.map(convidadoParaLista) })
+      .select('id, nome, convidados, created_at').single();
+    if (error || !data) {
+      console.error('Erro ao salvar a lista:', error);
+      erro.textContent = 'Não foi possível salvar a lista. Tente de novo.';
+      erro.hidden = false;
+      botao.disabled = false;
+      botao.textContent = 'Salvar';
       return;
     }
-    corpo.innerHTML = listas.map(l => {
-      const qtd = Array.isArray(l.convidados) ? l.convidados.length : 0;
-      return `<tr data-lista-id="${escaparHtml(l.id)}">
-        <td class="listas-salvas-nome">${escaparHtml(l.nome)}</td>
-        <td class="listas-salvas-qtd">${qtd}</td>
-        <td class="listas-salvas-data">${dataDaLista(l.created_at)}</td>
-        <td class="listas-salvas-col-usar"><button type="button" class="listas-salvas-usar">Usar neste evento</button></td>
-        <td class="love-tabela-col-mais">${botaoVerMaisHtml('Mais opções')}</td>
-      </tr>`;
-    }).join('');
-    corpo.querySelectorAll('tr[data-lista-id]').forEach(tr => {
-      const id = /** @type {HTMLElement} */ (tr).dataset.listaId || '';
-      tr.querySelector('.listas-salvas-usar')?.addEventListener('click', (e) => usarListaSalva(id, /** @type {HTMLButtonElement} */ (e.currentTarget)));
-      tr.querySelector('.love-tabela-mais')?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        abrirMenuDaListaSalva(/** @type {HTMLElement} */ (e.currentTarget), id);
-      });
-    });
+    listasSalvas = [data, ...(listasSalvas || [])];
+    desenharPainelDasListas(false);
   }
 
-  /** Texto no próprio botão por alguns segundos. @param {HTMLButtonElement} botao @param {string} msg */
-  function avisoNoBotao(botao, msg) {
-    const original = botao.dataset.textoOriginal || botao.textContent || '';
-    botao.dataset.textoOriginal = original;
-    botao.textContent = msg;
-    setTimeout(() => { botao.textContent = original; botao.disabled = false; }, 3000);
-  }
-
-  // "Salvar lista atual": linha nova no topo da tabela com o nome da lista.
-  function abrirNovaListaSalva() {
-    const corpo = document.getElementById('listas-salvas-corpo');
-    const botao = /** @type {HTMLButtonElement|null} */ (document.getElementById('btn-listas-salvar-atual'));
-    const ev = getActiveEvent();
-    const convidados = ((ev && ev.guests) || []).filter((/** @type {any} */ g) => (g.name || '').trim());
-    if (!corpo || !botao) return;
-    if (!convidados.length) { botao.disabled = true; avisoNoBotao(botao, 'Este evento ainda não tem convidados'); return; }
-    if (corpo.querySelector('.listas-salvas-nova')) { /** @type {HTMLInputElement|null} */ (corpo.querySelector('.listas-salvas-nova input'))?.focus(); return; }
-    corpo.querySelector('.linha-vazia')?.remove();
-    const tr = document.createElement('tr');
-    tr.className = 'listas-salvas-nova';
-    const sugestao = `Convidados · ${(ev && (ev.title || ev.name)) || 'meu evento'}`;
-    tr.innerHTML = `
-      <td class="listas-salvas-nome"><input type="text" class="suas-listas-campo" maxlength="80" aria-label="Nome da lista" value="${escaparHtml(sugestao)}"></td>
-      <td class="listas-salvas-qtd">${convidados.length}</td>
-      <td class="listas-salvas-data">${dataDaLista(new Date().toISOString())}</td>
-      <td class="listas-salvas-col-usar" colspan="2"><span class="listas-salvas-acoes"><button type="button" class="listas-salvas-confirmar">Salvar</button><button type="button" class="listas-salvas-cancelar">Cancelar</button></span></td>`;
-    corpo.prepend(tr);
-    const campo = /** @type {HTMLInputElement} */ (tr.querySelector('input'));
-    const btnSalvar = /** @type {HTMLButtonElement} */ (tr.querySelector('.listas-salvas-confirmar'));
-    campo.focus();
-    campo.select();
-    const salvar = async () => {
-      const nome = campo.value.trim();
-      if (!nome) { campo.focus(); return; }
-      const uid = await idDaContaLogada();
-      if (!uid) return;
-      btnSalvar.disabled = true;
-      btnSalvar.textContent = 'Salvando…';
-      const { data, error } = await supabaseClient.from('listas_convidados')
-        .insert({ cliente_id: uid, nome, convidados: convidados.map(convidadoParaLista) })
-        .select('id, nome, convidados, created_at').single();
-      if (error) {
-        console.error('Erro ao salvar a lista:', error);
-        btnSalvar.disabled = false;
-        btnSalvar.textContent = 'Tentar de novo';
-        return;
-      }
-      listasSalvas = [data, ...(listasSalvas || [])];
-      renderListasSalvas();
-    };
-    btnSalvar.addEventListener('click', salvar);
-    tr.querySelector('.listas-salvas-cancelar')?.addEventListener('click', () => renderListasSalvas());
-    campo.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); salvar(); }
-      else if (e.key === 'Escape') { e.preventDefault(); renderListasSalvas(); }
-    });
-  }
-
-  // "Usar neste evento": a lista entra em Meus convidados (quem já está na
-  // lista do evento, pelo nome, não entra de novo). Mesa a definir e pendente.
+  // Clicar numa lista: os convidados dela entram em Meus convidados (quem já
+  // está no evento, pelo nome, não entra de novo). Mesa a definir e pendente.
   /** @param {string} id @param {HTMLButtonElement} botao */
   async function usarListaSalva(id, botao) {
     const lista = (listasSalvas || []).find(l => l.id === id);
     const ev = getActiveEvent();
+    const qtdEl = /** @type {HTMLElement|null} */ (botao.querySelector('.listas-salvas-qtd'));
+    const avisar = (/** @type {string} */ msg) => {
+      if (!qtdEl) return;
+      const original = qtdEl.dataset.original || qtdEl.textContent || '';
+      qtdEl.dataset.original = original;
+      qtdEl.textContent = msg;
+      qtdEl.classList.add('is-aviso');
+      setTimeout(() => { qtdEl.textContent = original; qtdEl.classList.remove('is-aviso'); botao.disabled = false; }, 3000);
+    };
     if (!lista || !ev || botao.disabled) return;
-    if (!ehUuid(ev.id)) { botao.disabled = true; avisoNoBotao(botao, 'Crie o evento primeiro'); return; }
+    if (!ehUuid(ev.id)) { botao.disabled = true; avisar('Crie o evento primeiro'); return; }
     const uid = await idDaContaLogada();
     if (!uid) return;
     ev.guests = ev.guests || [];
@@ -10556,16 +10598,15 @@ document.addEventListener('DOMContentLoaded', () => {
         id: `g-${agora}-${i}`,
         table: 'Mesa a Definir', status: 'pending', giftsBought: [], observationComments: []
       }));
-    if (!novos.length) { botao.disabled = true; avisoNoBotao(botao, 'Todos já estão no evento'); return; }
+    if (!novos.length) { botao.disabled = true; avisar('Todos já estão no evento'); return; }
     botao.disabled = true;
-    botao.dataset.textoOriginal = botao.dataset.textoOriginal || botao.textContent || '';
-    botao.textContent = 'Adicionando…';
+    if (qtdEl) { qtdEl.dataset.original = qtdEl.dataset.original || qtdEl.textContent || ''; qtdEl.textContent = 'Adicionando…'; }
     const clienteId = ev.clienteId || uid;
     const { data, error } = await supabaseClient.from('convidados')
       .insert(novos.map(g => mapGuestToConvidadoRow(g, ev.id, clienteId))).select('id');
     if (error || !data) {
       console.error('Erro ao usar a lista salva:', error);
-      avisoNoBotao(botao, 'Não deu certo. Tente de novo');
+      avisar('Não deu certo. Tente de novo');
       return;
     }
     novos.forEach((g, i) => { if (data[i] && data[i].id) g.id = data[i].id; ev.guests.push(g); });
@@ -10573,89 +10614,14 @@ document.addEventListener('DOMContentLoaded', () => {
     renderGuestsTable();
     renderFloorPlanGuestCards();
     updateAllCelebrationData();
-    avisoNoBotao(botao, `${novos.length} adicionado${novos.length === 1 ? '' : 's'} ao evento`);
-  }
-
-  /** @param {HTMLElement} botao @param {string} id */
-  function abrirMenuDaListaSalva(botao, id) {
-    fecharMenuDoPresente();
-    const menu = document.createElement('div');
-    menu.className = 'gift-card-menu';
-    menu.setAttribute('role', 'menu');
-    menu.innerHTML = `
-      <button type="button" role="menuitem" data-acao="renomear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.85 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg><span>Renomear</span></button>
-      <button type="button" role="menuitem" data-acao="atualizar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12a9 9 0 0 1 15.5-6.2M21 4v5h-5M3 20v-5h5"/></svg><span>Substituir pelos convidados deste evento</span></button>
-      <button type="button" role="menuitem" data-acao="remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></svg><span>Remover lista</span></button>`;
-    document.body.appendChild(menu);
-    const r = botao.getBoundingClientRect();
-    menu.style.top = `${Math.min(r.bottom + 6, window.innerHeight - menu.offsetHeight - 8)}px`;
-    menu.style.left = `${Math.max(8, Math.min(r.right - menu.offsetWidth, window.innerWidth - menu.offsetWidth - 8))}px`;
-    menu.addEventListener('click', (e) => {
-      const item = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-acao]')) : null;
-      if (!item) return;
-      fecharMenuDoPresente();
-      if (item.dataset.acao === 'renomear') renomearListaSalva(id);
-      else if (item.dataset.acao === 'atualizar') substituirListaSalva(id);
-      else if (item.dataset.acao === 'remover') removerListaSalva(id);
-    });
-  }
-
-  /** O nome vira um campo na própria linha; Enter ou sair do campo salva. @param {string} id */
-  function renomearListaSalva(id) {
-    const lista = (listasSalvas || []).find(l => l.id === id);
-    const celula = document.querySelector(`#listas-salvas-corpo tr[data-lista-id="${CSS.escape(id)}"] .listas-salvas-nome`);
-    if (!lista || !celula) return;
-    celula.innerHTML = `<input type="text" class="suas-listas-campo" value="${escaparHtml(lista.nome)}" aria-label="Nome da lista" maxlength="80">`;
-    const campo = /** @type {HTMLInputElement} */ (celula.querySelector('input'));
-    campo.focus();
-    campo.select();
-    let feito = false;
-    const concluir = async (/** @type {boolean} */ salvar) => {
-      if (feito) return;
-      feito = true;
-      const novo = campo.value.trim();
-      if (salvar && novo && novo !== lista.nome) {
-        const { error } = await supabaseClient.from('listas_convidados').update({ nome: novo, updated_at: new Date().toISOString() }).eq('id', id);
-        if (error) console.error('Erro ao renomear a lista:', error);
-        else lista.nome = novo;
-      }
-      renderListasSalvas();
-    };
-    campo.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { e.preventDefault(); concluir(true); }
-      else if (e.key === 'Escape') { e.preventDefault(); concluir(false); }
-    });
-    campo.addEventListener('blur', () => concluir(true));
-  }
-
-  /** @param {string} id */
-  function substituirListaSalva(id) {
-    const lista = (listasSalvas || []).find(l => l.id === id);
-    const ev = getActiveEvent();
-    const convidados = ((ev && ev.guests) || []).filter((/** @type {any} */ g) => (g.name || '').trim());
-    if (!lista) return;
-    confirmarNaLove({
-      titulo: 'Substituir os convidados da lista?',
-      texto: convidados.length
-        ? `"${lista.nome}" passa a ter os ${convidados.length} convidados deste evento.`
-        : 'Este evento ainda não tem convidados.',
-      botao: 'Substituir',
-      aoConfirmar: async () => {
-        if (!convidados.length) return 'Adicione convidados ao evento antes.';
-        const novos = convidados.map(convidadoParaLista);
-        const { error } = await supabaseClient.from('listas_convidados').update({ convidados: novos, updated_at: new Date().toISOString() }).eq('id', id);
-        if (error) { console.error('Erro ao atualizar a lista:', error); return 'Não foi possível atualizar a lista. Tente de novo.'; }
-        lista.convidados = novos;
-        renderListasSalvas();
-        return null;
-      }
-    });
+    avisar(`${novos.length} adicionado${novos.length === 1 ? '' : 's'} ao evento`);
   }
 
   /** @param {string} id */
   function removerListaSalva(id) {
     const lista = (listasSalvas || []).find(l => l.id === id);
     if (!lista) return;
+    fecharPainelDasListas();
     confirmarNaLove({
       titulo: 'Remover lista salva?',
       texto: `"${lista.nome}" sai das suas listas salvas. Os convidados que já estão nos seus eventos continuam lá.`,
@@ -10664,18 +10630,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const { error } = await supabaseClient.from('listas_convidados').delete().eq('id', id);
         if (error) { console.error('Erro ao remover a lista:', error); return 'Não foi possível remover a lista. Tente de novo.'; }
         listasSalvas = (listasSalvas || []).filter(l => l.id !== id);
-        renderListasSalvas();
         return null;
       }
     });
   }
 
-  document.getElementById('btn-listas-salvar-atual')?.addEventListener('click', abrirNovaListaSalva);
-  // Celular: "Minhas listas" no topo de Meus convidados abre as Listas salvas.
-  document.getElementById('btn-rsvp-minhas-listas')?.addEventListener('click', () => {
-    const item = /** @type {HTMLElement|null} */ (document.querySelector('.sub-drawer-item[data-route-sub="listas"]'));
-    if (item) item.click(); else switchRsvpSubSection('listas');
+  document.getElementById('btn-rsvp-listas-salvas')?.addEventListener('click', (e) => { e.stopPropagation(); abrirPainelDasListas(/** @type {HTMLElement} */ (e.currentTarget)); });
+  document.getElementById('btn-rsvp-minhas-listas')?.addEventListener('click', (e) => { e.stopPropagation(); abrirPainelDasListas(/** @type {HTMLElement} */ (e.currentTarget)); });
+  document.getElementById('btn-rsvp-salvar-lista')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const icone = document.getElementById('btn-rsvp-listas-salvas');
+    abrirPainelDasListas(icone && icone.offsetWidth ? icone : /** @type {HTMLElement} */ (e.currentTarget), true);
   });
+  document.addEventListener('click', () => { if (painelDasListas) fecharPainelDasListas(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && painelDasListas) fecharPainelDasListas(); });
+  window.addEventListener('resize', posicionarPainelDasListas);
+  document.addEventListener('scroll', () => { if (painelDasListas) fecharPainelDasListas(); }, true);
 
   // Ordem da lista de convidados: sempre alfabética pelo nome do convidado
   // (os acompanhantes vêm logo abaixo de quem os trouxe, fora dessa ordem).
@@ -10805,6 +10775,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function renderGuestsTable(activeFilter = currentRsvpFilter, searchKeyword = '') {
     linhaDoConvidadoAberta = null;
+    atualizarBotaoSalvarLista();
     currentRsvpFilter = activeFilter;
     const listEl = document.getElementById('rsvp-guests-table-body');
     const emptyStateEl = document.getElementById('rsvp-empty-state');

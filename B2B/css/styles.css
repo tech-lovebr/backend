@@ -13136,3 +13136,10 @@ body[data-theme="dark"] .love-pop-ficha-linha.is-feita { background: #2A2A2A !im
   html body[data-theme="dark"] .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b) { background: #181D24; border-bottom-color: #404040; }
   html body[data-theme="dark"] .b2b-header-bar :is(h1, h2):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
 }
+
+/* Menu lateral na mesma cor do cabeçalho da landing do Hub (--bg #0C1824 em
+   css/hub-landing.css), aberto, recolhido, passando o mouse e no tema escuro. */
+html body .b2b-sidebar:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body[data-theme="dark"] .b2b-sidebar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background-color: #0C1824 !important; }
+html body .sidebar-edge-toggle:not(#love-h-a):not(#love-h-b),
+html body[data-theme="dark"] .sidebar-edge-toggle:not(#love-h-a):not(#love-h-b) { background: #0C1824 !important; }

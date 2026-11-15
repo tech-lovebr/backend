@@ -196,16 +196,20 @@
   const all = $('#all'), luz = $('#all-luz');
   if (all && luz) {
     const itens = $$('#all > a');
-    let ai = 0, timer = null;
+    let ai = 0;
     const por = i => {
       ai = i; const a = itens[i];
       itens.forEach((x, k) => x.classList.toggle('all-on', k === i));
       Object.assign(luz.style, { left: a.offsetLeft + 'px', top: a.offsetTop + 'px', width: a.offsetWidth + 'px', height: a.offsetHeight + 'px' });
     };
-    const girar = () => { clearInterval(timer); if (!reduce) timer = setInterval(() => { if (!document.hidden) por((ai + 1) % itens.length); }, 5000); };
-    itens.forEach((a, i) => a.addEventListener('mouseenter', () => { por(i); girar(); }));
+    // Com o mouse em cima da caixa a troca pausa; ao sair, volta a girar.
+    let pausado = false;
+    all.addEventListener('mouseenter', () => { pausado = true; });
+    all.addEventListener('mouseleave', () => { pausado = false; });
+    itens.forEach((a, i) => a.addEventListener('mouseenter', () => por(i)));
     addEventListener('resize', () => por(ai));
-    por(0); girar();
+    por(0);
+    if (!reduce) setInterval(() => { if (!pausado && !document.hidden) por((ai + 1) % itens.length); }, 5000);
   }
 
   const chips = $$('#chips .chip'); let ci = 0;

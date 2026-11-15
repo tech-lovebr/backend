@@ -400,3 +400,6 @@
 @media (prefers-reduced-motion:reduce){#view-public-site#view-public-site .lv-all-luz{transition:none}}
 #view-public-site#view-public-site .lv-all.lv-all-carrossel > a > span:not(.lv-ic){color:var(--mute) !important;transition:color .5s var(--ease)}
 #view-public-site#view-public-site .lv-all.lv-all-carrossel > a.lv-all-on > span:not(.lv-ic){color:var(--deep) !important}
+
+/* Tudo num só lugar: o texto abaixo do título fica numa linha só no computador. */
+@media (min-width: 769px){#view-public-site#view-public-site .lv-head .lv-p.lv-uma-linha{max-width:none !important;white-space:nowrap}}

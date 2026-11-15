@@ -4668,3 +4668,17 @@ body.login-page .login-versao { margin: 0; text-align: center; font-size: 12px; 
   body.login-page .login-area { place-items: start center; align-content: start; padding-top: 24px; }
   body.login-page .login-cartao { border-radius: 24px; padding: 28px 22px; }
 }
+
+/* Cabeçalho com o nome da página: branco, da altura do topo da sidebar (onde
+   fica o logotipo) e com a mesma linha embaixo, que continua a linha da
+   sidebar e corre por todo o cabeçalho. */
+.admin-main .admin-header-bar {
+  box-sizing: border-box;
+  min-height: var(--topbar-h);
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--topbar-border);
+  margin-bottom: 1.5rem;
+}
+body[data-theme="dark"] .admin-main .admin-header-bar { background: #181D24; border-bottom-color: rgba(255, 255, 255, .08); }

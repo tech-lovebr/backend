@@ -13291,3 +13291,12 @@ html body .b2b-content :is(input[type="search"], input[placeholder^="Pesquisar"]
 html body .b2b-content :is(.category-tab, .settings-info-aba):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { font-size: 13px !important; font-weight: 700 !important; }
 html body .dash-saldo-celular-nome:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #5B6779 !important; }
 body[data-theme="dark"] .dash-saldo-celular-nome { color: #D4D4D8 !important; }
+
+/* Ícone (coração) do topo do menu lateral na cor pétala da landing do Hub
+   (#F2D3C6), mesmo tamanho: a própria imagem vira máscara e a cor é o fundo. */
+html body .sidebar-brand-link img.sidebar-brand-icon:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  background-color: #F2D3C6 !important;
+  -webkit-mask: url("../assets/icon-white1.png?v=5") center / contain no-repeat;
+          mask: url("../assets/icon-white1.png?v=5") center / contain no-repeat;
+  object-position: -9999px 0;
+}

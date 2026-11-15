@@ -13321,12 +13321,29 @@ html body #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love
    como funciona" da landing (.btn-o): vidro bem leve, contorno claro a 22% e
    texto #EAF1F8. Os atalhos seguem o mesmo botão. */
 @media (min-width: 769px) {
-  html body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card, .dashboard-help-card, .btn-secondary.dashboard-quick-action-btn):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+  html body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card, .dashboard-help-card):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
     background: rgba(255, 255, 255, 0.04) !important; background-image: none !important;
     border: 1px solid rgba(234, 241, 248, 0.22) !important; box-shadow: none !important;
     -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
     color: #EAF1F8 !important;
   }
-  html body[data-page="dashboard"] .b2b-content .btn-secondary.dashboard-quick-action-btn:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-color: rgba(234, 241, 248, 0.6) !important; }
   html body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card, .dashboard-help-card, .dashboard-quick-action-btn) :is(h1, h2, h3, h4, p, span, strong, small, a:not(.dash-saldo-celular-botao), li, div, svg, button:not(.btn-primary)):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #EAF1F8 !important; }
+}
+
+/* Home (computador): atalhos sem caixa em volta, cada um independente — a
+   bolinha em rosa clarinho (cor do coração do sidebar, #F2D3C6) com o ícone
+   escuro (#0C1824); no hover só uma linha rosa em volta da bolinha. A data de
+   hoje em Sua agenda volta para o texto do Sacar disponível (#183b54). */
+@media (min-width: 769px) {
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    background: transparent !important; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    background: #F2D3C6 !important; color: #0C1824 !important; box-shadow: none !important;
+    outline: 1.5px solid transparent; outline-offset: 3px; transition: outline-color .15s ease;
+  }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:hover svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e),
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:focus-visible svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { outline-color: #F2D3C6; background: #F2D3C6 !important; }
+  html body[data-page="dashboard"] .dash-home-caixa > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-left-color: rgba(234, 241, 248, 0.22) !important; }
+  html body[data-page="dashboard"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b) :is(.dow, .dom):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { color: #183b54 !important; }
 }

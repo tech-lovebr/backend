@@ -49,8 +49,8 @@ function pagina({ slug, titulo, conteudo, atualizadoEm }) {
   <title>${escapar(titulo)} — Love</title>
   <meta name="description" content="${escapar(titulo)} da Love — plataforma para organizar casamentos e eventos.">
   <link rel="canonical" href="https://love.com.br${CAMINHOS[slug]}">
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon-love.svg?v=1">
-  <link rel="alternate icon" type="image/png" href="/assets/love-logo-google-120.png?v=1">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon-love.svg?v=2">
+  <link rel="alternate icon" type="image/png" href="/assets/love-logo-google-120.png?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">

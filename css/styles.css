@@ -16054,3 +16054,5 @@ html body #view-event-os-dashboard :is(.btn-hire-supplier, #btn-b2b-profile-hire
 /* Favoritar marcado: coração preenchido, sem linha de contorno. */
 html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { stroke: none !important; }
 html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"] path:not(#love-h-a):not(#love-h-b):not(#love-h-c) { stroke: none !important; stroke-width: 0 !important; }
+/* Favoritar marcado: a bolinha também sem contorno. */
+html body #view-event-os-dashboard :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite):has(svg[class*="c7305b"]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-color: transparent !important; border-width: 0 !important; box-shadow: none !important; }

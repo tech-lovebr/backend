@@ -1,0 +1,126 @@
+/* ==========================================================================
+   CADASTRO (cadastro.html): mesmo padrão do login (css/login-novo.css).
+   Céu da landing no fundo, cabeçalho fixo com o logo, cartão branco com a
+   janela de fotos à esquerda e as etapas à direita, e o "Voltar" embaixo,
+   fora do cartão. Outfit nos textos e Fraunces leve só nos títulos.
+   Prefixo cd- e o id repetido (#cd#cd) para vencer as classes do Tailwind.
+   ========================================================================== */
+#cd#cd {
+  --cd-papel: #FFFFFF; --cd-tinta: #16202F; --cd-mudo: #5B6779; --cd-suave: #8A95A5;
+  --cd-linha: #E3E8EF; --cd-campo: #F2F4F7; --cd-azul: #183B54;
+  --cd-sans: "Outfit", "Helvetica Neue", Arial, sans-serif;
+  --cd-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --cd-ease: cubic-bezier(.22, .61, .36, 1);
+  position: relative; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column;
+  color: var(--cd-tinta); font-family: var(--cd-sans) !important; font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+}
+body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetica Neue", Arial, sans-serif; }
+#cd#cd * { font-family: inherit; }
+
+/* Fundo: o céu do primeiro banner da landing, com o grão */
+#cd#cd .cd-fundo { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(55% 70% at 15% 20%, #FFFFFF 0%, transparent 60%), radial-gradient(60% 75% at 85% 15%, #F5E6DE 0%, transparent 62%), radial-gradient(70% 80% at 70% 90%, #B9D1EE 0%, transparent 70%), radial-gradient(60% 70% at 20% 85%, #DCE9F8 0%, transparent 70%), #E9F1FB; }
+#cd#cd .cd-fundo::after { content: ""; position: absolute; inset: 0; opacity: .42; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+/* Cabeçalho fixo, translúcido, com o logo no meio (igual ao login) */
+#cd#cd .cd-cabecalho { position: sticky; top: 0; z-index: 20; width: 100%; height: 72px; display: flex; align-items: center; justify-content: center; padding-top: env(safe-area-inset-top, 0px); background: rgba(247,248,250,.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0 var(--cd-linha); }
+#cd#cd .cd-logo { display: block; width: 102px; }
+#cd#cd .cd-logo img { display: block; width: 100%; height: auto; }
+
+#cd#cd .cd-pagina { position: relative; z-index: 1; flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: clamp(16px, 3vh, 32px) max(16px, env(safe-area-inset-right, 0px)) clamp(20px, 4vw, 40px) max(16px, env(safe-area-inset-left, 0px)); }
+
+/* Cartão */
+#cd#cd .cd-cartao { width: min(1120px, 100%); min-height: min(680px, calc(100vh - 160px)); display: grid; grid-template-columns: 1fr 1fr; background: var(--cd-papel); border-radius: 28px; overflow: hidden; box-shadow: 0 40px 100px rgba(24,59,84,.22), 0 1px 0 rgba(255,255,255,.9) inset; }
+
+/* Janela de fotos */
+#cd#cd .cd-janela { position: relative; margin: 10px; border-radius: 20px; overflow: hidden; isolation: isolate; background: #C9D6E4; min-height: 260px; }
+#cd#cd .cd-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.05); transition: opacity 1.4s var(--cd-ease), transform 7s linear; }
+#cd#cd .cd-foto.is-ativa { opacity: 1; transform: scale(1); z-index: 1; }
+#cd#cd .cd-foto.is-anterior { opacity: 1; transform: scale(1); transition: none; z-index: 0; }
+#cd#cd .cd-janela::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(0deg, rgba(12,22,32,.62) 0%, rgba(12,22,32,.12) 45%, rgba(12,22,32,0) 70%); }
+#cd#cd .cd-janela::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: .14; mix-blend-mode: multiply; background-size: 220px 220px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .28 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+#cd#cd .cd-legenda { position: absolute; left: clamp(20px, 3vw, 36px); right: clamp(20px, 3vw, 36px); bottom: clamp(20px, 3vw, 32px); z-index: 3; display: grid; gap: 18px; justify-items: start; margin: 0; }
+#cd#cd .cd-frase { margin: 0; font-family: var(--cd-serif); font-weight: 300; font-size: clamp(28px, 2.6vw, 38px); line-height: 1.08; letter-spacing: -.02em; color: #FFFFFF; text-wrap: balance; transition: opacity .42s var(--cd-ease), transform .42s var(--cd-ease); }
+#cd#cd .cd-frase.is-trocando { opacity: 0; transform: translateY(6px); }
+#cd#cd .cd-pontos { display: inline-flex; gap: 5px; padding: 9px 12px; border-radius: 999px; background: rgba(255,255,255,.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#cd#cd .cd-pontos i { display: block; width: 6px; height: 6px; border-radius: 50%; background: rgba(24,59,84,.25); transition: background .6s, width .6s var(--cd-ease); }
+#cd#cd .cd-pontos i.is-ativo { background: var(--cd-azul); width: 16px; border-radius: 999px; }
+
+/* Lado das etapas */
+#cd#cd .cd-lado { position: relative; isolation: isolate; display: flex; flex-direction: column; padding: clamp(24px, 3.2vw, 40px) clamp(24px, 4.2vw, 64px); min-width: 0; }
+#cd#cd .cd-relevo { position: absolute; z-index: -1; right: -14%; bottom: -10%; width: 78%; pointer-events: none; }
+#cd#cd .cd-relevo svg { display: block; width: 100%; height: auto; }
+#cd#cd .cd-painel { width: 100%; max-width: 400px; margin: auto; display: flex; flex-direction: column; }
+#cd#cd .cd-painel > .flex-1 { max-width: none !important; }
+
+/* Indicador de etapas */
+#cd#cd #onboard-steps { margin: 0 0 clamp(24px, 4vh, 36px) !important; max-width: none !important; }
+#cd#cd .step-circle { width: 24px; height: 24px; border: 1px solid var(--cd-linha); color: var(--cd-suave); font-size: 12px; }
+#cd#cd .step-circle.is-active { background: var(--cd-azul); border-color: var(--cd-azul); color: #FFFFFF; }
+#cd#cd .step-circle.is-done { background: #EAF0F5; border-color: #EAF0F5; color: var(--cd-azul); }
+#cd#cd .step-label { font-size: 12.5px; color: var(--cd-suave); }
+#cd#cd .step-label.is-active, #cd#cd .step-label.is-done { color: var(--cd-tinta); }
+#cd#cd .step-line { height: 1px; background: var(--cd-linha); }
+#cd#cd .step-line.is-done { background: #B9C7D6; }
+
+/* Títulos e textos */
+#cd#cd .onboard-step h1 { font-family: var(--cd-serif) !important; font-weight: 300 !important; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -.02em !important; font-size: clamp(30px, 2.8vw, 40px) !important; line-height: 1.06 !important; color: var(--cd-azul) !important; text-wrap: balance; margin-bottom: 12px !important; }
+#cd#cd .onboard-step h1 + p { font-size: 15.5px !important; line-height: 1.5 !important; color: var(--cd-mudo) !important; margin-bottom: 24px !important; text-wrap: pretty; }
+#cd#cd .onboard-step label.block { font-size: 12.5px !important; color: var(--cd-mudo) !important; margin-bottom: 6px !important; }
+
+/* Tipos de evento e campos: cinza do campo do login, cantos de 14px */
+#cd#cd .type-card { border: 1px solid transparent !important; background: var(--cd-campo) !important; border-radius: 14px !important; padding: 14px 18px !important; font-size: 15px !important; color: var(--cd-tinta) !important; transition: border-color .3s, background .3s; }
+#cd#cd .type-card:hover { border-color: var(--cd-linha) !important; background: #FFFFFF !important; }
+#cd#cd .type-card.is-selected, #cd#cd .type-card.is-selected:hover { background: #EAF0F5 !important; border-color: rgba(24,59,84,.35) !important; color: var(--cd-azul) !important; }
+#cd#cd #onboard-type-list { display: grid; gap: 8px; }
+#cd#cd #onboard-type-list > * + * { margin-top: 0 !important; }
+#cd#cd #onboard-outro-input { height: 52px; border-radius: 14px !important; background: var(--cd-campo) !important; font: 400 15px var(--cd-sans); color: var(--cd-tinta); padding: 0 18px; }
+#cd#cd #onboard-outro-input::placeholder { color: var(--cd-suave); }
+#cd#cd #onboard-outro-input.is-selected { background: #EAF0F5 !important; color: var(--cd-azul); }
+#cd#cd .cadastro-outro-opcao { font: 400 14px var(--cd-sans); }
+#cd#cd .onboard-step :is(input[type="text"], input[type="email"], input[type="date"], select):not(#onboard-outro-input) { height: 52px; padding: 0 16px !important; border: 1px solid transparent !important; border-radius: 14px !important; background: var(--cd-campo) !important; font-size: 15px !important; color: var(--cd-tinta) !important; box-shadow: none !important; outline: none !important; transition: border-color .3s, background .3s, box-shadow .3s; }
+#cd#cd .onboard-step :is(input[type="text"], input[type="email"], input[type="date"], select):not(#onboard-outro-input):focus { background: #FFFFFF !important; border-color: rgba(83,123,174,.5) !important; box-shadow: 0 0 0 4px rgba(83,123,174,.12) !important; }
+#cd#cd .onboard-step input::placeholder { color: var(--cd-suave); }
+#cd#cd .campo-senha-com-olho input { padding-right: 52px !important; }
+#cd#cd .olho-senha { right: 8px; width: 36px; height: 36px; border-radius: 10px; color: var(--cd-mudo); }
+#cd#cd .olho-senha:hover { color: var(--cd-tinta); background: rgba(22,32,47,.05); }
+#cd#cd #onboard-eventdate-unknown { accent-color: var(--cd-azul); }
+#cd#cd .password-strength-panel { border-color: var(--cd-linha); border-radius: 14px; background: #FAFBFC; }
+
+/* Botões: Próximo e Criar conta em pílula azul; Google e Apple claros */
+#cd#cd :is(#btn-onboard-next-1, #btn-onboard-next-2, #btn-onboard-submit) { height: 52px; padding: 0 26px !important; border-radius: 999px !important; background: var(--cd-azul) !important; color: #F5F8FC !important; font-size: 15px !important; font-weight: 500 !important; box-shadow: none !important; transition: background .4s var(--cd-ease), box-shadow .4s; }
+#cd#cd :is(#btn-onboard-next-1, #btn-onboard-next-2, #btn-onboard-submit):not(:disabled):hover { background: #10293C !important; box-shadow: 0 14px 34px rgba(24,59,84,.22) !important; }
+#cd#cd #btn-onboard-next-1:disabled { background: #E6EBF1 !important; color: var(--cd-suave) !important; }
+#cd#cd .onboard-step .mt-8 { margin-top: 24px !important; }
+#cd#cd :is(#btn-onboard-google, #btn-onboard-apple) { height: 48px; padding: 0 26px !important; border-radius: 999px !important; border: 1px solid var(--cd-linha) !important; background: transparent !important; color: var(--cd-tinta) !important; font-size: 14.5px !important; font-weight: 500 !important; transition: border-color .4s; }
+#cd#cd :is(#btn-onboard-google, #btn-onboard-apple):hover { border-color: var(--cd-tinta) !important; }
+#cd#cd .cd-sociais { display: grid; gap: 10px; margin: 0 !important; }
+#cd#cd .cd-sociais > * + * { margin-top: 0 !important; }
+#cd#cd .cd-ou { display: flex; align-items: center; gap: 14px; margin: 18px 0 12px; font-size: 12.5px; color: var(--cd-suave); }
+#cd#cd .cd-ou::before, #cd#cd .cd-ou::after { content: ""; flex: 1; height: 1px; background: var(--cd-linha); }
+#cd#cd #form-onboard-register { margin-top: 0 !important; }
+
+/* "Já tem uma conta?" */
+#cd#cd .cd-ja-tem { margin-top: 18px !important; font-size: 14px !important; color: var(--cd-mudo) !important; text-align: left !important; }
+#cd#cd .cd-ja-tem a { color: var(--cd-azul) !important; font-weight: 500 !important; text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 25% 1px no-repeat; padding-bottom: 2px; transition: background-size .45s var(--cd-ease); }
+#cd#cd .cd-ja-tem a:hover { background-size: 100% 1px; text-decoration: none !important; }
+
+/* Voltar: embaixo do cartão, fora dele */
+#cd#cd .cd-voltar { display: inline-flex; align-items: center; gap: 8px; padding: 6px 4px; background: none; border: 0; font-size: 14px; font-weight: 500; color: var(--cd-mudo); cursor: pointer; transition: color .3s; }
+#cd#cd .cd-voltar svg { width: 16px; height: 16px; transition: transform .4s var(--cd-ease); }
+#cd#cd .cd-voltar:hover { color: var(--cd-tinta); }
+#cd#cd .cd-voltar:hover svg { transform: translateX(-3px); }
+
+/* Tablet: o cartão vira uma coluna */
+@media (max-width: 860px) {
+  #cd#cd .cd-cartao { grid-template-columns: 1fr; min-height: 0; border-radius: 24px; }
+  #cd#cd .cd-janela { height: 34vh; min-height: 220px; }
+  #cd#cd .cd-frase { font-size: 26px; }
+  #cd#cd .cd-relevo { width: 110%; right: -30%; bottom: -6%; }
+}
+/* Celular: sem a janela de fotos, como no login */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #cd#cd .cd-janela { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #cd#cd .cd-foto { transition: opacity .01s; }
+}

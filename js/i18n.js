@@ -125,6 +125,7 @@
       criarConta: { pt: 'Criar conta', en: 'Create account' },
       criando: { pt: 'Criando...', en: 'Creating...' },
       ouContinueCom: { pt: 'ou continue com', en: 'or continue with' },
+      ouComEmail: { pt: 'ou crie com seu e-mail', en: 'or sign up with your email' },
       continuarComGoogle: { pt: 'Continuar com o Google', en: 'Continue with Google' },
       continuarComApple: { pt: 'Continuar com a Apple', en: 'Continue with Apple' },
       jaTemContaEntrar: { pt: 'Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a>', en: 'Already have an account? <a href="/login" class="text-[#537bae] font-bold hover:underline">Log in</a>' },

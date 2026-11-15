@@ -31,10 +31,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=20261105_googlecontanova"></script>
-  <script src="js/i18n.js?v=20261114_login4"></script>
+  <script src="js/i18n.js?v=20261115_cd1"></script>
   <script src="js/tipos-evento.js?v=20261031_cadastro"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap">
+  <link rel="stylesheet" href="css/cadastro-novo.css?v=20261115_cd1">
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
+    body { font-family: 'Outfit', system-ui, sans-serif; }
     .onboard-step { display: none; }
     .onboard-step.is-active { display: block; }
     /* Selecionado e botões de avançar: as cores dos atalhos redondos da Home
@@ -102,15 +106,48 @@
     .olho-senha .hidden { display: none; }
   </style>
 </head>
-<body class="bg-white">
+<body class="cd-corpo">
+<div id="cd">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <g id="lg-b1" transform="matrix(.935 0 0 .935 0 0)"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g>
+        <filter id="lg-eb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation=".8" result="b"/><feOffset in="b" dx="-.8" dy=".8" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#7A4535" flood-opacity=".07"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx=".8" dy="-.8" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#C9D3DF" flood-opacity=".55"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter>
+      </defs>
+    </svg>
 
-  <div class="min-h-screen w-full flex">
 
-    <!-- Coluna esquerda: formulário em etapas -->
-    <div class="w-full lg:w-1/2 flex flex-col items-center px-6 sm:px-14 py-10 relative">
+  <div class="cd-fundo" aria-hidden="true"></div>
+
+  <!-- Cabeçalho: logo centralizado, igual ao login (css/cadastro-novo.css) -->
+  <header class="cd-cabecalho">
+    <a class="cd-logo" href="/" aria-label="Love"><img src="assets/love-logo-tinta.svg?v=1" alt="Love"></a>
+  </header>
+
+  <div class="cd-pagina">
+    <section class="cd-cartao">
+
+      <!-- Janela de fotos (a mesma do login): troca sozinha, cada tipo com a sua frase -->
+      <figure class="cd-janela" id="cd-janela">
+        <img class="cd-foto is-ativa" src="assets/login-banner.jpg?v=20261022" alt="" data-frase="Para o dia em|que tudo começa" data-frase-en="For the day|it all begins">
+        <img class="cd-foto" src="assets/criar-aniversario.jpg" alt="" loading="lazy" decoding="async" data-frase="Para celebrar mais|um ano de vida" data-frase-en="To celebrate another|year of life">
+        <img class="cd-foto" src="assets/criar-cha-de-bebe.jpg" alt="" loading="lazy" decoding="async" data-frase="Para esperar quem|já é tanto amor" data-frase-en="For the little one|already so loved">
+        <img class="cd-foto" src="assets/criar-bodas.jpg" alt="" loading="lazy" decoding="async" data-frase="Para celebrar cada|ano lado a lado" data-frase-en="To celebrate every|year side by side">
+        <img class="cd-foto" src="assets/criar-revelacao.jpg" alt="" loading="lazy" decoding="async" data-frase="Para descobrir juntos|a maior surpresa" data-frase-en="To discover together|the biggest surprise">
+        <img class="cd-foto" src="assets/criar-cha-de-panela.jpg" alt="" loading="lazy" decoding="async" data-frase="Para montar a casa|onde a história mora" data-frase-en="To build the home|where your story lives">
+        <img class="cd-foto" src="assets/criar-casamento.jpg" alt="" loading="lazy" decoding="async" data-frase="Para dizer sim|a quem você ama" data-frase-en="To say yes|to the one you love">
+        <figcaption class="cd-legenda">
+          <p id="cd-frase" class="cd-frase">Para o dia em<br>que tudo começa</p>
+          <span class="cd-pontos" id="cd-pontos" aria-hidden="true"></span>
+        </figcaption>
+      </figure>
+
+    <!-- Etapas do cadastro -->
+    <div class="cd-lado">
+      <div class="cd-relevo" aria-hidden="true"><svg viewBox="-6 -6 405 325"><g filter="url(#lg-eb)" fill="#fff"><use href="#lg-b1"/></g></svg></div>
+     <div class="cd-painel">
 
       <!-- Indicador de etapas -->
-      <div class="flex items-center mt-4 max-w-md w-full" id="onboard-steps">
+      <div class="flex items-center w-full" id="onboard-steps">
         <div class="flex items-center gap-2" data-step-indicator="1">
           <div class="step-circle is-active">1</div>
           <span class="step-label is-active" data-love-i18n="cadastro.etapaComecar">Começar</span>
@@ -166,14 +203,11 @@
             <button type="button" id="btn-onboard-next-1" disabled class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed transition-opacity" data-love-i18n="cadastro.proximo">Próximo</button>
           </div>
 
-          <p class="text-sm text-zinc-500 text-center mt-5" data-love-i18n-html="cadastro.jaTemContaEntre">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entre por aqui</a></p>
-          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><a href="/" class="hover:underline" data-love-i18n="cadastro.voltar">Voltar</a></p>
+          <p class="cd-ja-tem" data-love-i18n-html="cadastro.jaTemContaEntre">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entre por aqui</a></p>
         </div>
 
         <!-- Etapa 2: dados pessoais e do evento -->
         <div class="onboard-step" data-step="2">
-          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline" data-love-i18n="cadastro.voltar">Voltar</button></p>
-
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n="cadastro.tituloDadosPessoais">Conte um pouco sobre você.</h1>
           <p class="text-zinc-500 text-sm mb-7" data-love-i18n="cadastro.subTituloDadosPessoais">Isso nos ajuda a personalizar sua experiência.</p>
 
@@ -211,10 +245,27 @@
 
         <!-- Etapa 3: e-mail e senha -->
         <div class="onboard-step" data-step="3">
-          <p class="text-xs text-zinc-400 text-center uppercase tracking-wide absolute bottom-6 sm:bottom-8 left-0 right-0"><button type="button" class="btn-onboard-back uppercase tracking-wide hover:underline" data-love-i18n="cadastro.voltar">Voltar</button></p>
-
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n="cadastro.tituloFinalizar">Finalize seu cadastro.</h1>
           <p class="text-zinc-500 text-sm mb-7" data-love-i18n="cadastro.subTituloFinalizar">Só falta criar seu acesso à plataforma.</p>
+
+          <div class="cd-sociais">
+            <button type="button" id="btn-onboard-google" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-sm font-normal flex items-center justify-center gap-3 transition-all">
+              <svg class="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span data-love-i18n="cadastro.continuarComGoogle">Continuar com o Google</span>
+            </button>
+            <button type="button" id="btn-onboard-apple" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-sm font-normal flex items-center justify-center gap-3 transition-all">
+              <svg class="w-4 h-4 fill-zinc-900" viewBox="0 0 170 170">
+                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.66-7.83-11.87-14.28-5.77-8.91-10.35-18.9-13.74-29.96-3.4-11.06-5.1-21.73-5.1-32.01 0-14.65 3.63-26.68 10.89-36.09 7.26-9.41 16.5-14.23 27.72-14.47 4.58 0 9.87 1.25 15.86 3.76 6 2.5 9.8 3.82 11.41 3.94 1.34-.12 5.37-1.48 12.08-4.08 6.71-2.6 12.19-3.8 16.45-3.6 12.67.63 22.56 5.33 29.68 14.09-11.14 6.78-16.58 16.2-16.32 28.27.24 9.4 3.82 17.15 10.74 23.27 6.92 6.12 15.22 9.53 24.9 10.23-2.12 6.64-4.87 13.43-8.24 20.37zM119.22 31.84c0-7.39 2.66-14.35 7.98-20.89C132.52 4.41 139.19.78 147.21 0c.12 1.03.18 1.94.18 2.74 0 7.39-2.78 14.46-8.33 21.21-5.56 6.75-12.38 10.51-20.47 11.28-.48-1.14-.72-2.27-.72-3.39z"/>
+              </svg>
+              <span data-love-i18n="cadastro.continuarComApple">Continuar com a Apple</span>
+            </button>
+          </div>
+          <p class="cd-ou" data-love-i18n="cadastro.ouComEmail">ou crie com seu e-mail</p>
 
           <form id="form-onboard-register" class="space-y-3.5 mt-5" autocomplete="off">
             <div>
@@ -245,53 +296,17 @@
             <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2" data-love-i18n="cadastro.criarConta">Criar conta</button>
           </form>
 
-          <div class="flex items-center gap-3 my-2">
-            <div class="h-px bg-zinc-200 flex-1"></div>
-            <span class="text-[11px] text-zinc-400 uppercase" data-love-i18n="cadastro.ouContinueCom">ou continue com</span>
-            <div class="h-px bg-zinc-200 flex-1"></div>
-          </div>
-
-          <div class="space-y-2.5 mb-5">
-            <button type="button" id="btn-onboard-google" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-sm font-normal flex items-center justify-center gap-3 transition-all">
-              <svg class="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-              </svg>
-              <span data-love-i18n="cadastro.continuarComGoogle">Continuar com o Google</span>
-            </button>
-            <button type="button" id="btn-onboard-apple" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-sm font-normal flex items-center justify-center gap-3 transition-all">
-              <svg class="w-4 h-4 fill-zinc-900" viewBox="0 0 170 170">
-                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.66-7.83-11.87-14.28-5.77-8.91-10.35-18.9-13.74-29.96-3.4-11.06-5.1-21.73-5.1-32.01 0-14.65 3.63-26.68 10.89-36.09 7.26-9.41 16.5-14.23 27.72-14.47 4.58 0 9.87 1.25 15.86 3.76 6 2.5 9.8 3.82 11.41 3.94 1.34-.12 5.37-1.48 12.08-4.08 6.71-2.6 12.19-3.8 16.45-3.6 12.67.63 22.56 5.33 29.68 14.09-11.14 6.78-16.58 16.2-16.32 28.27.24 9.4 3.82 17.15 10.74 23.27 6.92 6.12 15.22 9.53 24.9 10.23-2.12 6.64-4.87 13.43-8.24 20.37zM119.22 31.84c0-7.39 2.66-14.35 7.98-20.89C132.52 4.41 139.19.78 147.21 0c.12 1.03.18 1.94.18 2.74 0 7.39-2.78 14.46-8.33 21.21-5.56 6.75-12.38 10.51-20.47 11.28-.48-1.14-.72-2.27-.72-3.39z"/>
-              </svg>
-              <span data-love-i18n="cadastro.continuarComApple">Continuar com a Apple</span>
-            </button>
-          </div>
-
-
-          <p class="text-sm text-zinc-500 text-center mt-5" data-love-i18n-html="cadastro.jaTemContaEntrar">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
+          <p class="cd-ja-tem" data-love-i18n-html="cadastro.jaTemContaEntrar">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
         </div>
 
       </div>
+     </div>
     </div>
+    </section>
 
-    <!-- Coluna direita: imagem, sangrando até as bordas -->
-    <div class="hidden lg:flex w-1/2 bg-white">
-      <div class="relative w-full h-full overflow-hidden">
-        <img src="assets/login-banner.jpg?v=20261022" alt="" class="absolute inset-0 w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
-        <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
-          <div></div>
-          <div>
-            <h2 class="text-white text-4xl font-normal leading-tight mb-10" data-love-i18n-html="cadastro.fraseLateral">Para o dia em<br>que tudo começa</h2>
-            <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <button type="button" class="cd-voltar" id="cd-voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span data-love-i18n="cadastro.voltar">Voltar</span></button>
   </div>
+</div>
 
   <script>
     let onboardType = null;
@@ -456,11 +471,11 @@
       if (eventDate) localStorage.setItem('love-pending-event-date', eventDate); else localStorage.removeItem('love-pending-event-date');
       window.location.replace('/');
     }
-    document.querySelectorAll('.btn-onboard-back').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const current = Number(document.querySelector('.onboard-step.is-active').dataset.step);
-        goToStep(current - 1);
-      });
+    // Voltar (embaixo do cartão): etapa anterior; na primeira, volta ao site.
+    document.getElementById('cd-voltar').addEventListener('click', () => {
+      const atual = document.querySelector('.onboard-step.is-active');
+      const current = atual ? Number(atual.dataset.step) : 1;
+      if (current > 1) goToStep(current - 1); else window.location.href = '/';
     });
 
     // Aniversário em listas Dia / Mês / Ano (de 1917 até o ano atual) no
@@ -559,21 +574,6 @@
         alert('Não foi possível continuar com o Google. Tente de novo.');
       }
     });
-    // Botão oficial do Google (a tela do Google mostra love.com.br). Ao
-    // entrar, guarda o tipo de evento escolhido e segue para a plataforma.
-    botaoOficialDoGoogle(document.getElementById('btn-onboard-google'), {
-      texto: 'continue_with',
-      aoEntrar: () => {
-        if (onboardType) {
-          localStorage.setItem('love-pending-event-type', onboardType);
-          localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
-        localStorage.setItem('love-pending-event-type-slug', onboardTypeSlug || '');
-        }
-        window.location.replace('/');
-      },
-      aoFalhar: (motivo) => avisoAbaixoDoBotaoGoogle(document.getElementById('btn-onboard-google'), mensagemErroGoogle(motivo))
-    });
-
     // Apple: ainda não configurado.
     document.getElementById('btn-onboard-apple').addEventListener('click', () => {
       alert(window.LoveI18n ? window.LoveI18n.t('cadastro.appleIndisponivel') : 'Cadastro com a Apple ainda não disponível. Use o Google ou e-mail e senha.');
@@ -654,6 +654,41 @@
   </script>
 
 <script>
+  // Fotos do cadastro (iguais às do login): troca a cada 5s com a frase do tipo.
+  (function () {
+    var janela = document.getElementById('cd-janela');
+    var pontos = document.getElementById('cd-pontos');
+    var frase = document.getElementById('cd-frase');
+    if (!janela) return;
+    var fotos = Array.prototype.slice.call(janela.querySelectorAll('.cd-foto'));
+    pontos.innerHTML = fotos.map(function (_, i) { return '<i' + (i ? '' : ' class="is-ativo"') + '></i>'; }).join('');
+    var bolinhas = Array.prototype.slice.call(pontos.children);
+    var emIngles = function () { return !!(window.LoveI18n && window.LoveI18n.emIngles); };
+    var escrever = function (texto) {
+      frase.textContent = '';
+      texto.split('|').forEach(function (linha, i) {
+        if (i) frase.appendChild(document.createElement('br'));
+        frase.appendChild(document.createTextNode(linha));
+      });
+    };
+    if (emIngles()) escrever(fotos[0].getAttribute('data-frase-en'));
+    if (fotos.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var atual = 0;
+    setInterval(function () {
+      if (document.hidden || !janela.offsetWidth) return;
+      var antes = atual;
+      atual = (atual + 1) % fotos.length;
+      fotos.forEach(function (x) { x.classList.remove('is-anterior'); });
+      fotos[antes].classList.add('is-anterior');
+      fotos[antes].classList.remove('is-ativa');
+      fotos[atual].classList.add('is-ativa');
+      bolinhas.forEach(function (b, i) { b.classList.toggle('is-ativo', i === atual); });
+      var texto = fotos[atual].getAttribute(emIngles() ? 'data-frase-en' : 'data-frase');
+      frase.classList.add('is-trocando');
+      setTimeout(function () { if (texto) escrever(texto); frase.classList.remove('is-trocando'); }, 420);
+    }, 5000);
+  })();
+
   // Olhinho do cadastro: o campo usa bolinhas (text-security) em vez de
   // type=password; mostrar = tirar as bolinhas.
   (function () {

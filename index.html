@@ -99,7 +99,7 @@
   <link rel="stylesheet" href="css/styles.css?v=20261115_olho3">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
-  <link rel="stylesheet" href="css/landing-nova.css?v=20261115_lv11">
+  <link rel="stylesheet" href="css/landing-nova.css?v=20261115_menu">
   <link rel="stylesheet" href="css/login-novo.css?v=20261115_lg11">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
@@ -128,9 +128,27 @@
 
 <header class="lv-nav" id="lv-nav">
   <div class="lv-wrap lv-in">
-    <span><ul><li><a href="#lv-convite" data-en="Digital invitation">Convite digital</a></li><li><a href="#lv-presentes" data-en="Gifts">Presentes</a></li></ul></span>
+    <span class="lv-nav-esq"><button type="button" class="lv-burger" id="lv-burger" aria-label="Abrir menu" data-en-aria-label="Open menu" aria-expanded="false" aria-controls="lv-menu"><i></i><i></i><i></i></button></span>
     <a class="lv-logo" href="/" aria-label="Love, início"><svg viewBox="0 0 1209 333"><use href="#lv-logo"/></svg></a>
     <div class="lv-r"><button type="button" class="lv-ent btn-trigger-login" data-en="Log in">Entrar</button><a class="lv-btn lv-btn-d btn-trigger-register" href="/cadastro" data-en="Create event for free">Criar evento grátis</a></div>
+  </div>
+  <!-- Menu (hambúrguer): Entrar e Criar evento no topo, os recursos da landing
+       no meio e Encontrar evento no fim. -->
+  <div class="lv-menu" id="lv-menu" hidden>
+    <div class="lv-menu-in">
+      <div class="lv-menu-ctas">
+        <button type="button" class="lv-menu-ent btn-trigger-login" data-en="Log in">Entrar</button>
+        <a class="lv-menu-criar btn-trigger-register" href="/cadastro" data-en="Create event">Criar evento</a>
+      </div>
+      <nav class="lv-menu-links" aria-label="Recursos">
+        <a href="#lv-convite" data-en="Digital invitation">Convite digital</a>
+        <a href="#lv-presentes" data-en="Gifts">Presentes</a>
+        <a href="#lv-tudo" data-en="Vendors">Fornecedores</a>
+        <a href="#lv-tudo" data-en="Budget">Orçamento</a>
+        <a href="#lv-mesas" data-en="Seating chart">Mapa do evento</a>
+      </nav>
+      <a class="lv-menu-encontrar" href="/encontrar-evento" data-en="Find an event">Encontrar evento</a>
+    </div>
   </div>
 </header>
 
@@ -161,7 +179,7 @@
 </section>
 
 <!-- TUDO NUM SÓ LUGAR -->
-<section class="lv-sec lv-wrap">
+<section class="lv-sec lv-wrap" id="lv-tudo">
   <div class="lv-head"><h2 class="lv-h2" data-en-html="Everything your event needs, &lt;span class=&quot;lv-it&quot;&gt;in one place&lt;/span&gt;">Tudo o que o seu evento precisa, <span class="lv-it">num só lugar</span></h2><p class="lv-p lv-center lv-uma-linha" data-en="Love takes care of every detail, so you can enjoy every day until the big day.">A Love cuida de cada detalhe, para você aproveitar todos os dias até o grande dia.</p></div>
   <div class="lv-all">
     <a href="#lv-convite"><span class="lv-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg></span><span data-en="Digital invitation">Convite digital</span></a>
@@ -5728,7 +5746,7 @@
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
   <script src="js/app.js?v=20261115_coanf4"></script>
-  <script src="js/landing.js?v=20261115_convitereal"></script>
+  <script src="js/landing.js?v=20261115_menu"></script>
   <script src="js/carteira.js?v=20261115_olho"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
   <script src="js/pedidos-orcamento.js?v=20261115_rfptab3"></script>

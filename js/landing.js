@@ -238,6 +238,21 @@
       }, 5000);
     }
 
+    // Menu (hambúrguer) do topo: abre e fecha; clicar num item, fora ou Esc fecha.
+    var burger = $('#lv-burger'), menu = $('#lv-menu');
+    if (burger && menu) {
+      var abrirMenu = function (abrir) {
+        menu.hidden = !abrir;
+        burger.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+        burger.classList.toggle('lv-aberto', abrir);
+        document.getElementById('lv-nav')?.classList.toggle('lv-menu-aberto', abrir);
+      };
+      burger.addEventListener('click', function (e) { e.stopPropagation(); abrirMenu(menu.hidden); });
+      menu.addEventListener('click', function (e) { if (e.target.closest('a, button')) abrirMenu(false); });
+      document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target) && e.target !== burger) abrirMenu(false); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) abrirMenu(false); });
+    }
+
     // Perguntas frequentes: uma aberta por vez.
     $$('#lv-faq .lv-qa').forEach(function (q) {
       q.querySelector('button').addEventListener('click', function () {

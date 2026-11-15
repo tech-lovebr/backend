@@ -420,3 +420,29 @@
 @media (max-width:560px){#view-public-site#view-public-site .lv-inv-real{width:78%;height:460px}}
 @media (max-width:560px){#view-public-site#view-public-site .lv-tpls{display:grid !important;grid-template-columns:repeat(2,max-content);justify-content:start}
 #view-public-site#view-public-site .lv-inv-real{width:min(100%,300px);height:500px}}
+
+/* Topo: menu (hambúrguer) à esquerda e logotipo no centro, em todas as telas. */
+#view-public-site#view-public-site .lv-nav .lv-in{grid-template-columns:1fr auto 1fr !important}
+#view-public-site#view-public-site .lv-nav .lv-in>span.lv-nav-esq{display:flex !important;align-items:center}
+#view-public-site#view-public-site .lv-burger{width:40px;height:40px !important;margin-left:-8px;display:inline-flex !important;flex-direction:column;justify-content:center;align-items:center;gap:5px !important;background:transparent;border:0;cursor:pointer;color:var(--ink)}
+#view-public-site#view-public-site .lv-burger i{display:block;width:20px;height:1.6px !important;border-radius:2px;background:currentColor;transition:transform .3s var(--ease),opacity .2s}
+#view-public-site#view-public-site .lv-burger.lv-aberto i:nth-child(1){transform:translateY(6.6px) rotate(45deg)}
+#view-public-site#view-public-site .lv-burger.lv-aberto i:nth-child(2){opacity:0}
+#view-public-site#view-public-site .lv-burger.lv-aberto i:nth-child(3){transform:translateY(-6.6px) rotate(-45deg)}
+#view-public-site#view-public-site .lv-nav.lv-menu-aberto{background:#FFFFFF}
+/* Painel do menu: abaixo do topo, encostado à esquerda (no celular, a largura toda). */
+#view-public-site#view-public-site .lv-menu{position:absolute;left:0;right:0;top:100%;z-index:60}
+#view-public-site#view-public-site .lv-menu[hidden]{display:none !important}
+#view-public-site#view-public-site .lv-menu-in{width:min(400px,100%);margin-left:max(0px,calc((100% - var(--wrap,1200px)) / 2));padding:16px 24px 24px;background:#FFFFFF;border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;box-shadow:0 8px 24px rgba(0,0,0,.08);display:flex;flex-direction:column}
+#view-public-site#view-public-site .lv-menu-ctas{display:grid !important;grid-template-columns:1fr 1fr;gap:10px !important;padding:16px 0 !important;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+#view-public-site#view-public-site .lv-menu-ent,#view-public-site#view-public-site .lv-menu-criar{height:52px !important;display:inline-flex !important;align-items:center;justify-content:center;border-radius:999px !important;font-family:inherit;font-size:16px !important;font-weight:600 !important;cursor:pointer;text-decoration:none}
+#view-public-site#view-public-site .lv-menu-ent{background:#FFFFFF !important;border:1px solid #18181B !important;color:#18181B !important}
+#view-public-site#view-public-site .lv-menu-criar{background:#0F0F10 !important;border:1px solid #0F0F10 !important;color:#FFFFFF !important}
+#view-public-site#view-public-site .lv-menu-ent:hover{background:#FFFFFF !important;border-color:#000 !important}
+#view-public-site#view-public-site .lv-menu-links{display:flex !important;flex-direction:column;padding:8px 0 !important}
+#view-public-site#view-public-site .lv-menu-links a{padding:14px 0 !important;font-size:17px !important;font-weight:400 !important;color:var(--ink) !important;border-bottom:1px solid var(--line)}
+#view-public-site#view-public-site .lv-menu-links a:last-child{border-bottom:0}
+#view-public-site#view-public-site .lv-menu-links a:hover,#view-public-site#view-public-site .lv-menu-encontrar:hover{color:var(--deep) !important}
+#view-public-site#view-public-site .lv-menu-encontrar{margin-top:4px;padding:16px 0 0 !important;border-top:1px solid var(--line);font-size:17px !important;font-weight:500 !important;color:var(--deep) !important}
+@media (max-width:860px){#view-public-site#view-public-site .lv-nav .lv-in>span.lv-nav-esq{display:flex !important}
+#view-public-site#view-public-site .lv-menu-in{width:100%;margin-left:0;border-left:0;border-right:0;border-radius:0}}

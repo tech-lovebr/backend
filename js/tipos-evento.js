@@ -27,7 +27,7 @@
     ['despedida_solteiro', 'Despedida de Solteiro(a)', 'casamento', 'other', 'despedida,solteiro,solteira,bachelor'],
     // 2. Maternidade, bebês e infância
     ['cha_revelacao', 'Chá Revelação', 'maternidade', 'gender_reveal', 'revelacao,menino ou menina,sexo do bebe,cha'],
-    ['cha_de_bebe', 'Chá de Bebê', 'maternidade', 'baby_shower', 'bebe,baby shower,gestante,gravidez,cha'],
+    ['cha_de_bebe', 'Chá de Bebê / Fraldas', 'maternidade', 'baby_shower', 'bebe,baby shower,gestante,gravidez,cha'],
     ['cha_de_fraldas', 'Chá de Fraldas', 'maternidade', 'baby_shower', 'fraldas,bebe,cha'],
     ['cha_rifa', 'Chá Rifa', 'maternidade', 'baby_shower', 'rifa,bebe,cha'],
     ['cha_de_apresentacao', 'Chá de Apresentação / Boas-vindas', 'maternidade', 'baby_shower', 'apresentacao,boas-vindas,boas vindas,conhecer o bebe,cha'],

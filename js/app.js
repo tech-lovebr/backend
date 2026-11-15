@@ -2691,7 +2691,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const perfilConta = window.loveClienteProfile || {};
       const nomeConta = String(perfilConta.first_name || perfilConta.full_name || perfilConta.couple_name || '').trim().split(/\s+/)[0];
       const rawName = activeEvent.hostName || activeEvent.title || '';
-      const nomeDoEvento = rawName.split('&')[0].trim().replace(/^(Casamento|Aniversário|Chá de Bebê|Bodas)\s+(d[eo]\s+)?/i, '').split(/\s+/)[0];
+      const nomeDoEvento = rawName.split('&')[0].trim().replace(/^(Casamento|Aniversário|Chá de Bebê \/ Fraldas|Chá de Bebê|Bodas)\s+(d[eo]\s+)?/i, '').split(/\s+/)[0];
       const firstNameBruto = nomeConta || nomeDoEvento || '';
       const firstName = typeof maiusculaNoNome === 'function' ? maiusculaNoNome(firstNameBruto) : firstNameBruto;
       hubTitle.innerHTML = firstName
@@ -8434,7 +8434,7 @@ document.addEventListener('DOMContentLoaded', () => {
           ]
         },
         {
-          "nome": "Chá de bebê",
+          "nome": "Chá de bebê / fraldas",
           "img": "assets/lista6.jpg?v=20261022b",
           "itens": [
             [
@@ -20588,7 +20588,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function tipoDeCelebracaoDoEvento() {
     const ev = getActiveEvent();
     if (!ev) return '';
-    return { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo', baby: 'Chá de bebê' }[ev.type] || 'Outro';
+    return { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo', baby: 'Chá de bebê / fraldas' }[ev.type] || 'Outro';
   }
 
   // "2026-11-20" (ou Date) → "20/11/2026".
@@ -22720,7 +22720,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));
 
-  const TIPOS_DE_EVENTO = { wedding: 'Casamento', birthday: 'Aniversário', anniversary: 'Bodas', baby_shower: 'Chá de bebê', baby: 'Chá de bebê', bridal_shower: 'Chá de panela', gender_reveal: 'Chá revelação', corporate: 'Corporativo', other: 'Outro' };
+  const TIPOS_DE_EVENTO = { wedding: 'Casamento', birthday: 'Aniversário', anniversary: 'Bodas', baby_shower: 'Chá de bebê / fraldas', baby: 'Chá de bebê / fraldas', bridal_shower: 'Chá de panela', gender_reveal: 'Chá revelação', corporate: 'Corporativo', other: 'Outro' };
   const eventosSelecionados = new Set();
 
   // Lixeira e contagem acompanham os checks (como em Meus convidados).

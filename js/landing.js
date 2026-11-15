@@ -69,7 +69,7 @@
         { k: 'Vamos nos casar', a: 'Marina', b: 'Pedro', d: '2027-06-12' },
         { k: 'Vem comemorar comigo', a: 'Rafael', b: '', d: '2027-01-30' },
         { k: 'Bodas de ouro', a: 'Lourdes', b: 'Antônio', d: '2027-09-05' },
-        { k: 'Chá de fraldas', a: 'Lia', b: '', d: '2027-02-14' }
+        { k: 'Chá de bebê / fraldas', a: 'Lia', b: '', d: '2027-02-14' }
       ];
       var auto = !reduce, di = 0;
       var slug = function (v) { return v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); };

@@ -92,7 +92,7 @@
       casamento: { pt: 'Casamento', en: 'Wedding' },
       aniversario: { pt: 'Aniversário', en: 'Birthday' },
       bodas: { pt: 'Bodas', en: 'Anniversary' },
-      chaDeBebe: { pt: 'Chá de Bebê', en: 'Baby Shower' },
+      chaDeBebe: { pt: 'Chá de Bebê / Fraldas', en: 'Baby / Diaper Shower' },
       festaDe15: { pt: 'Festa de 15 Anos', en: 'Quinceañera' },
       outro: { pt: 'Outro', en: 'Other' },
       outroTipoEvento: { pt: 'Outro tipo de evento', en: 'Other event type' },

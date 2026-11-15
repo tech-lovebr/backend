@@ -103,7 +103,7 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
 
 /* "Já tem uma conta?" */
 #cd#cd .cd-ja-tem { margin-top: 18px !important; font-size: 14px !important; color: var(--cd-mudo) !important; text-align: left !important; }
-#cd#cd .cd-ja-tem a { color: var(--cd-azul) !important; font-weight: 500 !important; text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 25% 1px no-repeat; padding-bottom: 2px; transition: background-size .45s var(--cd-ease); }
+#cd#cd .cd-ja-tem a { color: var(--cd-azul) !important; font-weight: 500 !important; text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; padding-bottom: 2px; transition: background-size .45s var(--cd-ease); }
 #cd#cd .cd-ja-tem a:hover { background-size: 100% 1px; text-decoration: none !important; }
 
 /* Voltar: embaixo do cartão, fora dele */

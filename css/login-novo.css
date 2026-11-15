@@ -84,10 +84,10 @@
 #view-login#view-login .lg-erro { font-size: 13.5px !important; line-height: 1.45 !important; color: #A5503F !important; margin: 0 2px; }
 #view-login#view-login .lg-erro a { color: var(--lg-azul) !important; font-weight: 500 !important; text-decoration: underline; }
 #view-login#view-login .lg-linha { display: flex; justify-content: flex-end; margin-top: 2px; }
-#view-login#view-login .lg-link { position: relative; font-size: 13.5px !important; color: var(--lg-mudo) !important; }
+#view-login#view-login .lg-link { text-decoration: none !important; position: relative; font-size: 13.5px !important; color: var(--lg-mudo) !important; }
 #view-login#view-login .lg-link-forte { color: var(--lg-azul) !important; font-weight: 500 !important; }
 #view-login#view-login .lg-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .45s var(--lg-ease); }
-#view-login#view-login .lg-link-forte::after { transform: scaleX(.25); }
+#view-login#view-login .lg-link-forte::after { transform: scaleX(0); } /* sem traço parado: a linha só aparece no hover */
 #view-login#view-login .lg-link:hover::after { transform: scaleX(1); }
 #view-login#view-login .lg-link:hover { color: var(--lg-tinta) !important; }
 #view-login#view-login .lg-link-forte:hover { color: var(--lg-azul) !important; }

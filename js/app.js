@@ -18635,14 +18635,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Botão oficial do Google por cima dos botões acima (a tela do Google
-  // mostra love.com.br). Sem o script do Google, os botões acima seguem.
-  botaoOficialDoGoogle(document.getElementById('btn-google-login'), {
-    texto: 'signin_with',
-    soEntrar: true,
-    aoEntrar: () => window.location.reload(),
-    aoFalhar: (motivo) => { if (typeof showLoginError === 'function') showLoginError(mensagemErroGoogle(motivo)); }
-  });
+  // Login: fica o nosso botão "Continuar com o Google" (igual ao do Hub), sem
+  // o botão oficial que vira "Fazer login como <nome>". No cadastro, o botão
+  // oficial do Google por cima (a tela do Google mostra love.com.br).
   botaoOficialDoGoogle(document.getElementById('btn-google-register'), {
     texto: 'signup_with',
     aoEntrar: () => window.location.reload(),

@@ -21,242 +21,431 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap">
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
-        }
-      }
-    }
-  </script>
+  <style>
+html, body { margin: 0; padding: 0; background: #F7F8FA; }
+/* ==========================================================================
+   LOGIN (index.html > #view-login): mesmo padrão da landing nova. A foto do
+   evento vira o fundo desfocado e a janela da esquerda; o formulário fica
+   num cartão branco, com o logo (coração rosado) centralizado no topo,
+   Outfit leve nos textos e Fraunces só no título. Prefixo lg- e o id
+   repetido no seletor, para as regras gerais da plataforma não entrarem.
+   ========================================================================== */
+#view-login#view-login {
+  --lg-fundo: #F7F8FA; --lg-papel: #FFFFFF; --lg-tinta: #16202F; --lg-mudo: #5B6779; --lg-suave: #8A95A5;
+  --lg-linha: #E3E8EF; --lg-campo: #F2F4F7; --lg-azul: #183B54; --lg-azul2: #537BAE;
+  --lg-sans: "Outfit", "Helvetica Neue", Arial, sans-serif;
+  --lg-serif: "Fraunces", Georgia, "Times New Roman", serif;
+  --lg-ease: cubic-bezier(.22, .61, .36, 1);
+  position: relative; width: 100%; flex-direction: column !important; align-items: stretch !important; min-height: 100vh; min-height: 100dvh;
+  background: var(--lg-fundo); color: var(--lg-tinta);
+  font-family: var(--lg-sans) !important; font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+}
+#view-login#view-login * { box-sizing: border-box; font-family: inherit !important; }
+#view-login#view-login :where(h1, p, a, button, label, span) { font-weight: inherit !important; color: inherit !important; letter-spacing: inherit !important; margin: 0; }
+#view-login#view-login :where(button) { background: none; border: 0; padding: 0; cursor: pointer; font-size: inherit; line-height: inherit; border-radius: 0 !important; }
+#view-login#view-login .hidden { display: none !important; }
 
-  <link rel="stylesheet" href="css/styles.css?v=890">
+/* Fundo: a mesma foto, desfocada e lavada */
+/* Fundo: o mesmo céu do primeiro banner da landing (.lv-sky), com o grão */
+#view-login#view-login .lg-fundo { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(55% 70% at 15% 20%, #FFFFFF 0%, transparent 60%), radial-gradient(60% 75% at 85% 15%, #F5E6DE 0%, transparent 62%), radial-gradient(70% 80% at 70% 90%, #B9D1EE 0%, transparent 70%), radial-gradient(60% 70% at 20% 85%, #DCE9F8 0%, transparent 70%), #E9F1FB; }
+#view-login#view-login .lg-fundo::after { content: ""; position: absolute; inset: 0; opacity: .42; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .7 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
+
+#view-login#view-login .lg-pagina { position: relative; z-index: 1; width: 100%; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); display: grid; place-items: center; padding: 0 max(16px, env(safe-area-inset-right, 0px)) clamp(16px, 4vw, 48px) max(16px, env(safe-area-inset-left, 0px)); }
+
+/* Cartão */
+#view-login#view-login .lg-cartao { width: min(1120px, 100%); min-height: min(680px, calc(100vh - 120px)); display: grid; grid-template-columns: 1fr 1fr; background: var(--lg-papel); border-radius: 28px !important; overflow: hidden; box-shadow: 0 40px 100px rgba(24,59,84,.22), 0 1px 0 rgba(255,255,255,.9) inset; }
+
+/* Janela de fotos */
+#view-login#view-login .lg-janela { position: relative; margin: 10px; border-radius: 20px !important; overflow: hidden; isolation: isolate; background: #C9D6E4; min-height: 260px; }
+#view-login#view-login .lg-foto { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.05); transition: opacity 1.4s var(--lg-ease), transform 7s linear; }
+#view-login#view-login .lg-foto.is-ativa { opacity: 1; transform: scale(1); z-index: 1; }
+#view-login#view-login .lg-foto.is-anterior { opacity: 1; transform: scale(1); transition: none; z-index: 0; }
+#view-login#view-login .lg-janela::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(0deg, rgba(12,22,32,.62) 0%, rgba(12,22,32,.12) 45%, rgba(12,22,32,0) 70%); }
+#view-login#view-login .lg-janela::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: .14; mix-blend-mode: multiply; background-size: 220px 220px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .28 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+#view-login#view-login .lg-legenda { position: absolute; left: clamp(20px, 3vw, 36px); right: clamp(20px, 3vw, 36px); bottom: clamp(20px, 3vw, 32px); z-index: 3; display: grid; gap: 18px; justify-items: start; }
+#view-login#view-login .lg-frase { font-family: var(--lg-serif) !important; font-weight: 300 !important; font-size: clamp(28px, 2.6vw, 38px) !important; line-height: 1.08 !important; letter-spacing: -.02em !important; color: #FFFFFF !important; text-wrap: balance; transition: opacity .42s var(--lg-ease), transform .42s var(--lg-ease); }
+#view-login#view-login .lg-frase.is-trocando { opacity: 0; transform: translateY(6px); }
+#view-login#view-login .lg-pontos { display: inline-flex; gap: 5px; padding: 9px 12px; border-radius: 999px !important; background: rgba(255,255,255,.74); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#view-login#view-login .lg-pontos i { display: block; width: 6px; height: 6px; border-radius: 50%; background: rgba(24,59,84,.25); transition: background .6s, width .6s var(--lg-ease); }
+#view-login#view-login .lg-pontos i.is-ativo { background: var(--lg-azul); width: 16px; border-radius: 999px; }
+
+/* Lado do formulário */
+#view-login#view-login .lg-lado { position: relative; isolation: isolate; display: flex; flex-direction: column; padding: clamp(24px, 3.2vw, 40px) clamp(24px, 4.2vw, 64px) clamp(24px, 3vw, 40px); min-width: 0; }
+#view-login#view-login .lg-relevo { position: absolute; z-index: -1; right: -14%; bottom: -10%; width: 78%; pointer-events: none; }
+#view-login#view-login .lg-relevo svg { display: block; width: 100%; height: auto; }
+/* Cabeçalho acima do cartão: logo centralizado, mesma altura e tamanho da landing */
+#view-login#view-login .lg-cabecalho { position: sticky; top: 0; z-index: 20; width: 100%; background: rgba(247,248,250,.82) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 1px 0 var(--lg-linha) !important; height: 72px; display: flex; align-items: center; justify-content: center; padding-top: env(safe-area-inset-top, 0px); }
+#view-login#view-login .lg-logo { display: block; width: 102px; }
+#view-login#view-login .lg-logo img { display: block; width: 100%; height: auto; }
+
+/* Coluna do formulário em 400px: o botão oficial do Google vai no máximo a
+   400px, então o Entrar e os campos ficam com a mesma largura dele. */
+#view-login#view-login .lg-painel { width: 100%; max-width: 400px; margin: auto; display: flex; flex-direction: column; }
+#view-login#view-login .lg-cabeca { display: grid; gap: 12px; }
+#view-login#view-login .lg-sobre { font-size: 12px !important; font-weight: 500 !important; letter-spacing: .22em !important; text-transform: uppercase; color: var(--lg-suave) !important; }
+#view-login#view-login .lg-titulo { font-family: var(--lg-serif) !important; font-weight: 300 !important; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -.02em !important; font-size: clamp(32px, 3.1vw, 44px) !important; line-height: 1.04 !important; color: var(--lg-azul) !important; text-wrap: balance; }
+#view-login#view-login .lg-sub { color: var(--lg-mudo) !important; font-size: 15.5px !important; line-height: 1.5 !important; max-width: 38ch; text-wrap: pretty; }
+#view-login#view-login .lg-titulo i { font-style: italic; }
+/* Hub: cada frase do título numa linha só ("Mais eventos na agenda." / "Mais dinheiro na conta."),
+   com a fonte das duas diminuindo junto conforme a largura do formulário (400px no computador). */
+#view-login#view-login #auth-view-login { container-type: inline-size; }
+#view-login#view-login #auth-view-login .lg-titulo { white-space: nowrap; font-size: min(38px, 9.5cqi) !important; }
+html.hub-en #view-login#view-login #auth-view-login .lg-titulo { font-size: min(30px, 7.5cqi) !important; }
+
+/* Formulário */
+#view-login#view-login .lg-form { margin-top: clamp(18px, 3vh, 28px); display: grid; gap: 10px; }
+#view-login#view-login .lg-campo { position: relative; }
+#view-login#view-login .lg-campo input { display: block; width: 100%; height: 52px; margin: 0; border: 1px solid transparent !important; border-radius: 14px !important; background: var(--lg-campo) !important; padding: 20px 16px 6px !important; font-size: 15px !important; color: var(--lg-tinta) !important; box-shadow: none !important; outline: none !important; transition: border-color .3s, background .3s, box-shadow .3s; }
+#view-login#view-login .lg-campo label { position: absolute; left: 16px; top: 16px; font-size: 15px !important; color: var(--lg-suave) !important; pointer-events: none; transition: top .25s var(--lg-ease), font-size .25s var(--lg-ease); }
+#view-login#view-login .lg-campo input:focus { background: #FFFFFF !important; border-color: rgba(83,123,174,.5) !important; box-shadow: 0 0 0 4px rgba(83,123,174,.12) !important; }
+#view-login#view-login .lg-campo input:focus + label,
+#view-login#view-login .lg-campo input:not(:placeholder-shown) + label,
+#view-login#view-login .lg-campo input:-webkit-autofill + label,
+#view-login#view-login .lg-campo input:autofill + label { top: 7px; font-size: 11.5px !important; letter-spacing: .02em !important; }
+/* Preenchimento automático do navegador: mesmo cinza do campo */
+#view-login#view-login .lg-campo input:is(:-webkit-autofill, :autofill) { -webkit-box-shadow: 0 0 0 1000px var(--lg-campo) inset !important; box-shadow: 0 0 0 1000px var(--lg-campo) inset !important; -webkit-text-fill-color: var(--lg-tinta) !important; transition: background-color 600000s 0s, color 600000s 0s; }
+#view-login#view-login .lg-campo-senha input { padding-right: 52px !important; }
+#view-login#view-login .lg-olho { position: absolute; right: 8px; top: 8px; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px !important; color: var(--lg-mudo) !important; }
+#view-login#view-login .lg-olho:hover { color: var(--lg-tinta) !important; background: rgba(22,32,47,.05); }
+#view-login#view-login .lg-olho svg { width: 18px; height: 18px; }
+#view-login#view-login .lg-olho svg.hidden { display: none !important; }
+#view-login#view-login .lg-campo-codigo input { letter-spacing: .3em !important; font-variant-numeric: tabular-nums; }
+
+#view-login#view-login .lg-erro { font-size: 13.5px !important; line-height: 1.45 !important; color: #A5503F !important; margin: 0 2px; }
+#view-login#view-login .lg-erro a { color: var(--lg-azul) !important; font-weight: 500 !important; text-decoration: underline; }
+#view-login#view-login .lg-linha { display: flex; justify-content: flex-end; margin-top: 2px; }
+#view-login#view-login .lg-link { position: relative; font-size: 13.5px !important; color: var(--lg-mudo) !important; }
+#view-login#view-login .lg-link-forte { color: var(--lg-azul) !important; font-weight: 500 !important; }
+#view-login#view-login .lg-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .45s var(--lg-ease); }
+#view-login#view-login .lg-link-forte::after { transform: scaleX(.25); }
+#view-login#view-login .lg-link:hover::after { transform: scaleX(1); }
+#view-login#view-login .lg-link:hover { color: var(--lg-tinta) !important; }
+#view-login#view-login .lg-link-forte:hover { color: var(--lg-azul) !important; }
+
+/* Botões */
+#view-login#view-login .lg-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; width: 100%; height: 52px; padding: 0 26px; border-radius: 999px !important; font-size: 15px !important; font-weight: 500 !important; border: 1px solid transparent; white-space: nowrap; transition: background .4s var(--lg-ease), box-shadow .4s, border-color .4s, color .4s; }
+#view-login#view-login .lg-btn-escuro { margin-top: 8px; background: var(--lg-azul) !important; color: #F5F8FC !important; }
+#view-login#view-login .lg-btn-escuro:hover { background: #10293C !important; box-shadow: 0 14px 34px rgba(24,59,84,.22); }
+#view-login#view-login .lg-btn-escuro[disabled] { opacity: .7; cursor: progress; }
+#view-login#view-login .lg-btn-escuro span { color: #F5F8FC !important; }
+#view-login#view-login .lg-btn i { display: block; width: 18px; height: 1px; background: currentColor; position: relative; transition: width .4s var(--lg-ease); }
+#view-login#view-login .lg-btn i::after { content: ""; position: absolute; right: 0; top: -3px; width: 7px; height: 7px; border-top: 1px solid currentColor; border-right: 1px solid currentColor; transform: rotate(45deg); }
+#view-login#view-login .lg-btn:hover i { width: 28px; }
+#view-login#view-login .lg-btn-claro { height: 48px; background: transparent !important; border-color: var(--lg-linha) !important; color: var(--lg-tinta) !important; font-size: 14.5px !important; }
+#view-login#view-login .lg-btn-claro:hover { border-color: var(--lg-tinta) !important; }
+#view-login#view-login .lg-btn-claro svg { width: 18px; height: 18px; flex: none; }
+#view-login#view-login .lg-ou { display: flex; align-items: center; gap: 14px; margin: 18px 0 12px; font-size: 12.5px; color: var(--lg-suave); }
+#view-login#view-login .lg-ou::before, #view-login#view-login .lg-ou::after { content: ""; flex: 1; height: 1px; background: var(--lg-linha); }
+#view-login#view-login .lg-novo { margin-top: 18px; font-size: 14px !important; color: var(--lg-mudo) !important; }
+#view-login#view-login .lg-novo .lg-link { font-size: 14px !important; }
+
+/* Celular: a janela de fotos vai para cima e o cartão vira uma coluna */
+@media (max-width: 860px) {
+  #view-login#view-login .lg-cartao { grid-template-columns: 1fr; min-height: 0; border-radius: 24px !important; }
+  #view-login#view-login .lg-janela { height: 34vh; min-height: 220px; }
+  #view-login#view-login .lg-frase { font-size: 26px !important; }
+  #view-login#view-login .lg-painel { margin-top: 0; }
+  #view-login#view-login .lg-relevo { width: 110%; right: -30%; bottom: -6%; }
+}
+@media (max-width: 420px) {
+}
+@media (prefers-reduced-motion: reduce) {
+  #view-login#view-login .lg-foto { transition: opacity .01s; }
+}
+
+/* Celular: sem a janela de fotos no início; o formulário vem logo abaixo do cabeçalho. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login .lg-janela { display: none !important; }
+}
+
+/* Entrar: Google primeiro, depois "ou entre com seu e-mail" e o formulário. */
+#view-login#view-login #login-panel-signin .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
+#view-login#view-login #login-panel-signin .lg-ou + .lg-form { margin-top: 0; }
+/* Hub: logo com o selo "Hub", aviso cinza de confirmação de e-mail e Termos no rodapé. */
+#view-login#view-login .lg-logo { display: inline-flex; align-items: center; gap: 10px; width: auto; text-decoration: none; }
+#view-login#view-login .lg-logo svg { display: block; width: 102px; height: auto; }
+#view-login#view-login .lg-selo { font-size: 10.5px !important; letter-spacing: .2em !important; text-transform: uppercase; color: var(--lg-azul2) !important; padding: 3px 8px; border: 1px solid rgba(83,123,174,.35); border-radius: 999px !important; line-height: 1.4 !important; }
+#view-login#view-login #auth-view-login .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
+#view-login#view-login #auth-view-login .lg-ou + .lg-form { margin-top: 0; }
+#view-login#view-login .lg-erro.text-zinc-600 { color: var(--lg-mudo) !important; }
+#view-login#view-login .lg-erro strong { font-weight: 500 !important; color: var(--lg-tinta) !important; }
+#view-login#view-login .lg-erro button { color: var(--lg-azul) !important; font-weight: 500 !important; text-decoration: underline; }
+#view-login#view-login .lg-pagina { align-content: center; row-gap: 20px; }
+/* Continuar com o Google: igual ao botão oficial do Google que o login da Love mostra
+   (contorno, grande, retangular): fundo branco, borda #DADCE0, cantos de 4px, 40px de altura. */
+#view-login#view-login :is(#google-login-btn, #google-signup-btn) { height: 40px; padding: 0 12px; gap: 8px; border-radius: 4px !important; background: #FFFFFF !important; border: 1px solid #DADCE0 !important; color: #3C4043 !important; font-family: "Google Sans", Roboto, Arial, sans-serif !important; font-size: 14px !important; font-weight: 500 !important; letter-spacing: .25px; transition: background .218s, border-color .218s; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn) * { font-family: inherit !important; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn):hover { background: rgba(66,133,244,.04) !important; border-color: #D2E3FC !important; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn):focus-visible { outline: none; border-color: #4285F4 !important; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn) svg { width: 18px; height: 18px; }
+#view-login#view-login .lg-termos { max-width: 520px; margin: 0; font-size: 12.5px !important; line-height: 1.5 !important; color: #FFFFFF !important; text-align: center; }
+#view-login#view-login .lg-termos a { color: rgba(247,248,250,.82) !important; text-decoration: underline; text-underline-offset: 2px; }
+  </style>
+  <style>
+/* Cadastro do Hub: o que só o cadastro tem, no mesmo desenho do login. */
+#view-login#view-login [hidden] { display: none !important; }
+body.auth-completar #view-login#view-login .sem-completar { display: none !important; }
+#view-login#view-login #auth-view-signup .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
+#view-login#view-login #auth-view-signup .lg-ou + .lg-form { margin-top: 0; }
+body.auth-completar #view-login#view-login #auth-view-signup .lg-form { margin-top: 0; }
+#view-login#view-login .lg-duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* Categoria e Tipo: mesmo campo cinza do login, com a lista abrindo por baixo. */
+#view-login#view-login .category-select { position: relative; }
+#view-login#view-login .category-select-trigger { width: 100%; height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 14px 0 16px; border: 1px solid transparent !important; border-radius: 14px !important; background: var(--lg-campo) !important; font-size: 15px !important; text-align: left; transition: background .3s, border-color .3s, box-shadow .3s; }
+#view-login#view-login .category-select-trigger span { color: var(--lg-suave) !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#view-login#view-login .category-select:has(.category-tree-row.active) .category-select-trigger span { color: var(--lg-tinta) !important; }
+#view-login#view-login .category-select.is-open .category-select-trigger { background: #FFFFFF !important; border-color: rgba(83,123,174,.5) !important; box-shadow: 0 0 0 4px rgba(83,123,174,.12); }
+#view-login#view-login .category-select-chevron { width: 16px; height: 16px; flex: none; color: var(--lg-suave); transition: transform .3s var(--lg-ease); }
+#view-login#view-login .category-select.is-open .category-select-chevron { transform: rotate(180deg); }
+#view-login#view-login .category-select-panel { position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 30; background: #FFFFFF; border: 1px solid var(--lg-linha); border-radius: 14px !important; box-shadow: 0 8px 24px rgba(0,0,0,.08); padding: 6px; max-height: 240px; overflow-y: auto; }
+#view-login#view-login .category-tree-row { padding: 10px 12px; border-radius: 10px !important; font-size: 14.5px; color: var(--lg-tinta); cursor: pointer; }
+#view-login#view-login .category-tree-row:hover { background: var(--lg-campo); }
+#view-login#view-login .category-tree-row.active { background: #EEF3F9; font-weight: 500; }
+#view-login#view-login .lg-aviso { margin-top: 18px; font-size: 12.5px !important; line-height: 1.5 !important; color: var(--lg-suave) !important; }
+#view-login#view-login .lg-aviso a { color: var(--lg-mudo) !important; text-decoration: underline; }
+/* Voltar: um só, embaixo do cartão, sem caixa. */
+#view-login#view-login .lg-voltar-baixo { justify-self: center; display: inline-flex; align-items: center; gap: 8px; font-size: 14px !important; color: #5B6779 !important; transition: color .3s; }
+#view-login#view-login .lg-voltar-baixo:hover { color: var(--lg-tinta) !important; }
+#view-login#view-login .lg-voltar-baixo svg { width: 16px; height: 16px; transition: transform .3s var(--lg-ease); }
+#view-login#view-login .lg-voltar-baixo:hover svg { transform: translateX(-3px); }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
-  <style>
-    body.auth-completar .sem-completar { display: none !important; }
-    /* CEP do local na mesma altura do Tipo, que fica ao lado. */
-    .so-locacao #signup-cep { height: var(--altura-tipo, 43px); padding-top: 0; padding-bottom: 0; }
-  </style>
 </head>
-<body class="font-sans bg-white" data-auth-view="signup">
+<body data-auth-view="signup">
 
-  <div class="auth-tela min-h-screen w-full flex">
+  <div id="view-login">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <g id="lg-b1" transform="matrix(.935 0 0 .935 0 0)"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g>
+        <filter id="lg-eb" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation=".8" result="b"/><feOffset in="b" dx="-.8" dy=".8" result="o1"/><feComposite in="SourceAlpha" in2="o1" operator="out" result="e1"/><feFlood flood-color="#7A4535" flood-opacity=".07"/><feComposite in2="e1" operator="in" result="s1"/><feOffset in="b" dx=".8" dy="-.8" result="o2"/><feComposite in="SourceAlpha" in2="o2" operator="out" result="e2"/><feFlood flood-color="#C9D3DF" flood-opacity=".55"/><feComposite in2="e2" operator="in" result="s2"/><feMerge><feMergeNode in="s1"/><feMergeNode in="s2"/></feMerge></filter>
+      </defs>
+    </svg>
 
-    <nav class="login-barra-previa" aria-hidden="true">
-      <span class="login-barra-item is-ativo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M14 5a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M4 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /><path d="M14 15a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1l0 -4" /></svg><small>Dashboard</small></span>
-      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16l-6.2 7.3v5.4l-3.6 1.8v-7.2L4 5.5Z" /></svg><small>Clientes</small></span>
-      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" /></svg><small>Mensagens</small></span>
-      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2l0 -9" /><path d="M8 7v-2a2 2 0 0 1 2 -2h4a2 2 0 0 1 2 2v2" /><path d="M12 12l0 .01" /><path d="M3 13a20 20 0 0 0 18 0" /></svg><small>Gestão</small></span>
-      <span class="login-barra-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4" /><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" /><path d="M9 13h6" /><path d="M9 17h4" /></svg><small>Contratos</small></span>
-    </nav>
+    <div class="lg-fundo" id="lg-fundo" aria-hidden="true"></div>
 
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-20">
-      <div class="w-full max-w-md">
+    <!-- Cabeçalho: logo centralizado, como no login do Hub -->
+    <header class="lg-cabecalho">
+      <a class="lg-logo" href="/" aria-label="Love Hub"><svg viewBox="0 0 906.75 249.75" aria-hidden="true" focusable="false"><defs><clipPath id="lgc1"><path d="M9 15h236v234.75h-236Z"/></clipPath><clipPath id="lgc2"><path d="M752 61h154.75v152h-154.75Z"/></clipPath></defs><g fill="#16202F"><path d="M233.105 0L233.348 0C233.488 0.203 233.684 0.293 233.836 0.328C281.898 11.043 315.938 54.031 315.004 103.035C314.719 115.832 312.156 128.574 307.16 140.652C306.254 127.016 303.332 113.246 293.57 103.602L289.645 99.727L272.547 82.992L255.422 66.234L238.047 49.227L220.938 32.484L210.664 22.422ZM233.105 0"/><path d="M0.473 108.008L0.258 108.008C0.18 107.336 0.09 106.645 0 105.938L0 101.301C0.57 100.629 -0.027 99.594 0.516 99.105C0.711 99.105 1.016 99.152 1.031 99.285C1.273 101.047 1.184 105.867 0.996 107.699L0.48 108ZM0.473 108.008"/><path clip-path="url(#lgc1)" d="M244.891 214.434L209.695 249.492L9.18 50.27L44.336 15.336L189.777 159.812ZM244.891 214.434"/><path d="M251.449 205.719C253.035 191.207 250.461 179.004 240.645 168.059L234.402 161.617L221.711 148.734L209 135.84L196.039 122.699L183.332 109.816L170.621 96.922L145.199 71.156L132.496 58.27L122.145 47.82C128.422 31.547 140.562 20.895 156.336 13.504L169.598 26.832L194.473 51.828L219.371 76.828L244.266 101.824L269.137 126.812L280.602 138.379L282.754 141.184C286.82 147.707 289.137 155.262 288.684 162.996C288.504 166.094 287.961 169.68 285.727 171.926L264.758 193.066L251.805 206.055C251.617 206.293 251.27 206.039 251.422 205.727ZM251.449 205.719"/><path d="M0.473 108.008L0.516 99.105C0.551 91.957 1.781 84.949 3.531 77.922L58.594 132.477L105.984 179.418L73.887 214.77L70.637 211.734L60.152 201.559L50.031 191.754L39.66 181.711L29.406 171.773C11.195 154.934 1.504 132.547 0.473 108.008ZM0.473 108.008"/><path d="M393.363 183.262L393.391 212.383L369.332 212.367L369.285 82.797L369.242 37.117L393.234 37.109L393.316 53.008ZM393.363 183.262"/><path d="M380.148 189.793h71.668v22.59h-71.668Z"/><path d="M452.488 136.98C452.488 96.309 485.168 61.707 530.863 61.707C576.559 61.707 609.238 96.305 609.238 136.98C609.238 177.66 576.559 212.258 530.863 212.258C485.168 212.258 452.488 177.66 452.488 136.98ZM581.344 136.98C581.344 107.926 559.82 86.27 530.871 86.27C501.922 86.27 480.398 107.926 480.398 136.98C480.398 166.039 501.914 187.695 530.871 187.695C559.828 187.695 581.344 166.039 581.344 136.98ZM581.344 136.98"/><path d="M754.785 61.59L702.348 212.07L661.285 212.07L607.359 61.59L634.078 61.59L678.359 187.441L685.785 187.441L728.828 61.59L754.801 61.59ZM754.785 61.59"/><path clip-path="url(#lgc2)" d="M831.57 61.699C883.102 61.699 906.75 96.305 906.75 136.977L779.227 136.977C779.227 166.031 801.809 188.48 840.328 188.48C863.453 188.48 880.762 181.723 891.48 169.906L900.797 169.906C890.984 194.625 868.988 212.25 834.227 212.25C786.668 212.25 752.664 177.656 752.664 136.977C752.664 96.297 785.348 61.699 831.57 61.699ZM831.031 83.891C805.785 83.891 788.789 97.363 782.414 117.172L878.055 117.172C873.008 97.363 859.191 83.891 831.031 83.891ZM831.031 83.891"/></g></svg><span class="lg-selo">Hub</span></a>
+    </header>
 
-        <div id="auth-view-login" class="hidden">
-          <div class="auth-logo">
-            <img src="assets/logo.png" alt="Love Hub" class="h-12 w-auto object-contain">
-            <h1 class="sr-only">Acesse sua conta</h1>
-          </div>
+    <div class="lg-pagina">
+      <section class="lg-cartao" aria-label="Cadastro no Hub">
 
-          <button type="button" id="google-login-btn" class="w-full py-3 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all cursor-pointer">
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
+        <!-- Janela de fotos de fornecedores (só no computador): troca a cada 5s, cada uma com a sua frase -->
+        <figure class="lg-janela" id="lg-janela">
+          <img class="lg-foto is-ativa" src="assets/login/confeiteira.jpg" alt="" style="object-position:48% 50%" data-frase="Mais eventos|na sua agenda">
+          <img class="lg-foto" src="assets/login/cerimonial.jpg" alt="" loading="lazy" decoding="async" style="object-position:62% 50%" data-frase="Clientes que já estão|organizando o evento">
+          <img class="lg-foto" src="assets/login/dj.jpg" alt="" loading="lazy" decoding="async" style="object-position:50% 50%" data-frase="Do pedido de orçamento|ao dinheiro na conta">
+          <img class="lg-foto" src="assets/login/bufe.jpg" alt="" loading="lazy" decoding="async" style="object-position:58% 50%" data-frase="Cobre por link,|Pix ou cartão">
+          <img class="lg-foto" src="assets/login/decoracao.jpg" alt="" loading="lazy" decoding="async" style="object-position:50% 40%" data-frase="Propostas e contratos|em um só lugar">
+          <img class="lg-foto" src="assets/login/banda.jpg" alt="" loading="lazy" decoding="async" style="object-position:50% 50%" data-frase="Tem uma festa acontecendo.|Faça parte dela.">
+          <figcaption class="lg-legenda">
+            <p id="login-carrossel-frase" class="lg-frase">Mais eventos<br>na sua agenda</p>
+            <span class="lg-pontos" id="lg-pontos" aria-hidden="true"></span>
+          </figcaption>
+        </figure>
+
+        <div class="lg-lado">
+          <div class="lg-relevo" aria-hidden="true"><svg viewBox="-6 -6 405 325"><g filter="url(#lg-eb)" fill="#fff"><use href="#lg-b1"/></g></svg></div>
+
+          <!-- Entrar (quando a pessoa clica em "Entrar" no cadastro) -->
+          <div id="auth-view-login" class="lg-painel hidden">
+            <div class="lg-cabeca">
+              <p class="lg-sobre">Entrar no Hub</p>
+              <h1 class="lg-titulo">Acesse sua conta</h1>
+            </div>
+
+            <button type="button" id="google-login-btn" class="lg-btn lg-btn-claro">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
             </svg>
-            <span>Continuar com o Google</span>
-          </button>
-
-          <div class="auth-ou"><span>ou</span></div>
-
-          <form id="login-form" class="space-y-3.5 text-left" method="post" autocomplete="on">
-            <div>
-              <label for="login-email" class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
-              <input type="email" id="login-email" name="email" autocomplete="username email" required placeholder="seu.email@exemplo.com" class="w-full text-xs sm:text-sm p-3 rounded-xl text-slate-800">
-            </div>
-
-            <div>
-              <label for="login-password" class="block text-xs font-bold text-slate-700 mb-1">Senha</label>
-              <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder="Sua senha secreta" class="w-full text-xs sm:text-sm p-3 rounded-xl text-slate-800">
-              <div class="flex justify-end mt-1.5">
-                <a href="esqueci-senha" class="auth-esqueceu-senha">Esqueceu a senha?</a>
-              </div>
-            </div>
-
-            <p id="login-error" class="text-xs text-red-600 hidden"></p>
-            <p id="login-info" class="text-xs text-zinc-500 hidden"></p>
-
-            <button type="submit" id="login-submit" class="auth-entrar w-full py-3.5 rounded-xl text-sm font-bold cursor-pointer mt-2">
-              <span>Entrar</span>
+              <span>Continuar com o Google</span>
             </button>
-          </form>
 
-          <div class="auth-trocar">
-            <span>Ainda não tem uma conta?</span>
-            <a href="signup" id="go-to-signup">Cadastre-se</a>
+            <div class="lg-ou"><span>ou entre com seu e-mail</span></div>
+
+            <form id="login-form" class="lg-form" method="post" autocomplete="on" novalidate>
+              <div class="lg-campo">
+                <input type="email" id="login-email" name="email" autocomplete="username email" required placeholder=" ">
+                <label for="login-email">E-mail</label>
+              </div>
+              <p id="login-error" class="lg-erro text-red-600 hidden"></p>
+              <p id="login-info" class="lg-erro text-zinc-600 hidden"></p>
+              <div class="lg-campo lg-campo-senha">
+                <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder=" ">
+                <label for="login-password">Senha</label>
+                <button type="button" id="login-ver-senha" class="lg-olho" data-campo="login-password" aria-label="Mostrar senha" aria-pressed="false"><svg class="olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+              </div>
+              <div class="lg-linha">
+                <a href="esqueci-senha" class="lg-link auth-esqueceu-senha">Esqueceu a senha?</a>
+              </div>
+              <button type="submit" id="login-submit" class="lg-btn lg-btn-escuro"><span>Entrar</span><i aria-hidden="true"></i></button>
+            </form>
+
+            <p class="lg-novo">Ainda não tem uma conta? <a href="signup" id="go-to-signup" class="lg-link lg-link-forte">Cadastre-se</a></p>
           </div>
 
-          <p class="auth-termos">
-            Ao continuar, você concorda com os <a href="termos">Termos de Uso</a> e a <a href="privacidade">Política de Privacidade</a>.
-          </p>
-        </div>
-
-        <div id="auth-view-signup">
-          <div class="mb-6">
-            <img src="assets/logo.png" alt="Love" class="h-9 w-auto mb-6 object-contain">
-            <h3 class="text-2xl font-extrabold text-slate-900" id="signup-titulo">Crie sua conta</h3>
-            <p class="text-xs text-slate-500 mt-1" id="signup-subtitulo">100% gratuito. Sem necessidade de cartão de crédito.</p>
-          </div>
-
-          <form id="signup-email-form" class="space-y-3.5 text-left">
-            <div class="so-completar" hidden>
-              <label for="signup-empresa" class="block text-xs font-bold text-slate-700 mb-1">Nome da empresa</label>
-              <input type="text" id="signup-empresa" maxlength="80" autocomplete="organization" placeholder="Como os clientes conhecem a sua empresa" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+          <!-- Cadastro -->
+          <div id="auth-view-signup" class="lg-painel">
+            <div class="lg-cabeca">
+              <p class="lg-sobre">Cadastro no Hub</p>
+              <h1 class="lg-titulo" id="signup-titulo">Crie sua conta</h1>
+              <p class="lg-sub" id="signup-subtitulo">100% gratuito. Sem necessidade de cartão de crédito.</p>
             </div>
-            <div class="sem-completar">
-              <label class="block text-xs font-bold text-slate-700 mb-1">E-mail</label>
-              <input type="email" id="signup-email" required autocomplete="email" placeholder="nome@empresa.com" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-slate-700 mb-1">Categoria</label>
+
+            <button type="button" id="google-signup-btn" class="lg-btn lg-btn-claro sem-completar">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+              <span>Continuar com o Google</span>
+            </button>
+
+            <div class="lg-ou sem-completar"><span>ou crie com seu e-mail</span></div>
+
+            <form id="signup-email-form" class="lg-form">
+              <div class="lg-campo so-completar" hidden>
+                <input type="text" id="signup-empresa" maxlength="80" autocomplete="organization" placeholder=" ">
+                <label for="signup-empresa">Nome da empresa</label>
+              </div>
+              <div class="lg-campo sem-completar">
+                <input type="email" id="signup-email" required autocomplete="email" placeholder=" ">
+                <label for="signup-email">E-mail</label>
+              </div>
               <div class="category-select" id="signup-category-select">
-                <button type="button" class="category-select-trigger" id="signup-category-trigger">
-                  <span id="signup-category-trigger-label">Selecione a categoria...</span>
+                <button type="button" class="category-select-trigger" id="signup-category-trigger" aria-label="Categoria">
+                  <span id="signup-category-trigger-label">Categoria</span>
                   <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
                 </button>
                 <div class="category-select-panel" id="signup-category-panel" hidden>
                   <div class="category-tree category-tree-flat" id="signup-category-tree">
-                    <div class="category-tree-row" data-category-value="Buffet e Gastronomia">Buffet e Gastronomia</div>
-                    <div class="category-tree-row" data-category-value="Bar e Bebidas">Bar e Bebidas</div>
-                    <div class="category-tree-row" data-category-value="Espaços para Locação">Espaços para Locação</div>
-                    <div class="category-tree-row" data-category-value="Staff e Mão de Obra">Staff e Mão de Obra</div>
-                    <div class="category-tree-row" data-category-value="Mídia e Audiovisual">Mídia e Audiovisual</div>
-                    <div class="category-tree-row" data-category-value="Música e Entretenimento">Música e Entretenimento</div>
-                    <div class="category-tree-row" data-category-value="Decoração">Decoração</div>
-                    <div class="category-tree-row" data-category-value="Assessoria e Cerimonialista">Assessoria e Cerimonialista</div>
-                    <div class="category-tree-row" data-category-value="Aluguel de Trajes">Aluguel de Trajes</div>
-                    <div class="category-tree-row" data-category-value="Beleza e Estilo">Beleza e Estilo</div>
-                    <div class="category-tree-row" data-category-value="Aluguel de Carros">Aluguel de Carros</div>
+                      <div class="category-tree-row" data-category-value="Buffet e Gastronomia">Buffet e Gastronomia</div>
+                      <div class="category-tree-row" data-category-value="Bar e Bebidas">Bar e Bebidas</div>
+                      <div class="category-tree-row" data-category-value="Espaços para Locação">Espaços para Locação</div>
+                      <div class="category-tree-row" data-category-value="Staff e Mão de Obra">Staff e Mão de Obra</div>
+                      <div class="category-tree-row" data-category-value="Mídia e Audiovisual">Mídia e Audiovisual</div>
+                      <div class="category-tree-row" data-category-value="Música e Entretenimento">Música e Entretenimento</div>
+                      <div class="category-tree-row" data-category-value="Decoração">Decoração</div>
+                      <div class="category-tree-row" data-category-value="Assessoria e Cerimonialista">Assessoria e Cerimonialista</div>
+                      <div class="category-tree-row" data-category-value="Aluguel de Trajes">Aluguel de Trajes</div>
+                      <div class="category-tree-row" data-category-value="Beleza e Estilo">Beleza e Estilo</div>
+                      <div class="category-tree-row" data-category-value="Aluguel de Carros">Aluguel de Carros</div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="so-locacao grid grid-cols-2 gap-3" hidden>
-              <div>
-                <label for="signup-cep" class="block text-xs font-bold text-slate-700 mb-1">CEP do local</label>
-                <input type="text" id="signup-cep" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder="00000-000" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-              </div>
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">Tipo</label>
+              <div class="so-locacao lg-duas" hidden>
+                <div class="lg-campo">
+                  <input type="text" id="signup-cep" inputmode="numeric" maxlength="9" autocomplete="postal-code" placeholder=" ">
+                  <label for="signup-cep">CEP do local</label>
+                </div>
                 <div class="category-select" id="signup-tipo-select">
-                  <button type="button" class="category-select-trigger" id="signup-tipo-trigger">
-                    <span id="signup-tipo-trigger-label">Selecione...</span>
+                  <button type="button" class="category-select-trigger" id="signup-tipo-trigger" aria-label="Tipo do espaço">
+                    <span id="signup-tipo-trigger-label">Tipo do espaço</span>
                     <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
                   </button>
                   <div class="category-select-panel" id="signup-tipo-panel" hidden>
                     <div class="category-tree category-tree-flat" id="signup-tipo-tree">
-                      <div class="category-tree-row" data-tipo-value="Salão de Festas">Salão de Festas</div>
-                      <div class="category-tree-row" data-tipo-value="Sítio/Chácara">Sítio/Chácara</div>
-                      <div class="category-tree-row" data-tipo-value="Rooftop">Rooftop</div>
-                      <div class="category-tree-row" data-tipo-value="Igreja/Capela">Igreja/Capela</div>
-                      <div class="category-tree-row" data-tipo-value="Praia">Praia</div>
-                      <div class="category-tree-row" data-tipo-value="Hotel">Hotel</div>
-                      <div class="category-tree-row" data-tipo-value="Espaços Exclusivos">Espaços Exclusivos</div>
+                        <div class="category-tree-row" data-tipo-value="Salão de Festas">Salão de Festas</div>
+                        <div class="category-tree-row" data-tipo-value="Sítio/Chácara">Sítio/Chácara</div>
+                        <div class="category-tree-row" data-tipo-value="Rooftop">Rooftop</div>
+                        <div class="category-tree-row" data-tipo-value="Igreja/Capela">Igreja/Capela</div>
+                        <div class="category-tree-row" data-tipo-value="Praia">Praia</div>
+                        <div class="category-tree-row" data-tipo-value="Hotel">Hotel</div>
+                        <div class="category-tree-row" data-tipo-value="Espaços Exclusivos">Espaços Exclusivos</div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="sem-completar">
-              <label class="block text-xs font-bold text-slate-700 mb-1">Senha</label>
-              <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" placeholder="Crie uma senha" class="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
-            </div>
+              <div class="lg-campo lg-campo-senha sem-completar">
+                <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" placeholder=" ">
+                <label for="signup-password">Crie uma senha</label>
+                <button type="button" id="signup-ver-senha" class="lg-olho" data-campo="signup-password" aria-label="Mostrar senha" aria-pressed="false"><svg class="olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+              </div>
 
-            <p id="signup-error" class="text-xs text-red-600 hidden"></p>
+              <p id="signup-error" class="lg-erro text-red-600 hidden"></p>
 
-            <button type="submit" id="signup-email-btn" class="auth-entrar w-full py-3.5 rounded-xl text-sm font-bold cursor-pointer mt-2">
-              <span id="signup-email-btn-texto">Criar conta</span>
-            </button>
-          </form>
+              <button type="submit" id="signup-email-btn" class="lg-btn lg-btn-escuro"><span id="signup-email-btn-texto">Criar conta</span><i aria-hidden="true"></i></button>
+            </form>
 
-          <div class="auth-ou sem-completar"><span>ou</span></div>
+            <p class="lg-novo sem-completar">Já tem uma conta? <a href="login" id="go-to-login" class="lg-link lg-link-forte">Entrar</a></p>
 
-          <button type="button" id="google-signup-btn" class="sem-completar w-full py-3 px-4 rounded-xl border border-slate-200 bg-white text-slate-700 text-xs sm:text-sm font-bold flex items-center justify-center gap-3 transition-all cursor-pointer">
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-            </svg>
-            <span>Continuar com o Google</span>
-          </button>
-
-          <div class="auth-trocar sem-completar">
-            <span>Já tem uma conta?</span>
-            <a href="login" id="go-to-login">Entrar</a>
+            <p class="lg-aviso">Ao continuar, você reconhece a <a href="privacidade">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
           </div>
-
-          <p class="auth-termos">Ao continuar, você reconhece a <a href="privacidade">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
         </div>
+      </section>
 
-      </div>
+      <!-- Voltar: um só, fora do cartão. Volta uma etapa; na primeira, volta para a página anterior. -->
+      <button type="button" id="signup-voltar" class="lg-voltar-baixo"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg><span>Voltar</span></button>
     </div>
-
-    <div class="login-imagem hidden lg:flex w-1/2 relative overflow-hidden">
-      <div class="login-carrossel" aria-hidden="true">
-        <img src="assets/login/confeiteira.jpg" alt="" data-frase="Mais eventos|na sua agenda" style="object-position:48% 50%" class="login-carrossel-foto is-ativa">
-        <img src="assets/login/cerimonial.jpg" alt="" data-frase="Clientes que já estão|organizando o evento" style="object-position:62% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
-        <img src="assets/login/dj.jpg" alt="" data-frase="Do pedido de orçamento|ao dinheiro na conta" style="object-position:50% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
-        <img src="assets/login/bufe.jpg" alt="" data-frase="Cobre por link,|Pix ou cartão" style="object-position:58% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
-        <img src="assets/login/decoracao.jpg" alt="" data-frase="Propostas e contratos|em um só lugar" style="object-position:50% 40%" loading="lazy" decoding="async" class="login-carrossel-foto">
-        <img src="assets/login/banda.jpg" alt="" data-frase="Tem uma festa acontecendo.|Faça parte dela." style="object-position:50% 50%" loading="lazy" decoding="async" class="login-carrossel-foto">
-      </div>
-      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/20"></div>
-      <div class="relative z-10 w-full h-full flex flex-col justify-between p-12">
-        <div></div>
-        <div>
-          <h2 id="login-carrossel-frase" class="text-white text-4xl font-normal leading-tight mb-10">Mais eventos<br>na sua agenda</h2>
-          <img src="assets/logo-white.png" alt="Love" class="h-7 w-auto object-contain">
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    // Carrossel da foto (só no desktop, com a caixa visível): troca a cada 5s
-    // e a frase acompanha a foto, esmaecendo e voltando.
+    // Fotos do login: janela com as fotos e bolinhas embaixo da frase; cada
+    // foto traz a sua frase. Troca a cada 5s (no celular a janela não aparece).
     (function () {
-      var fotos = document.querySelectorAll('.login-carrossel-foto');
+      var janela = document.getElementById('lg-janela');
+      var pontos = document.getElementById('lg-pontos');
+      var frase = document.getElementById('login-carrossel-frase');
+      if (!janela) return;
+      var fotos = Array.prototype.slice.call(janela.querySelectorAll('.lg-foto'));
+      pontos.innerHTML = fotos.map(function (_, i) { return '<i' + (i ? '' : ' class="is-ativo"') + '></i>'; }).join('');
+      var bolinhas = Array.prototype.slice.call(pontos.children);
+      var escrever = function (texto) {
+        frase.textContent = '';
+        texto.split('|').forEach(function (linha, i) {
+          if (i) frase.appendChild(document.createElement('br'));
+          frase.appendChild(document.createTextNode(linha));
+        });
+      };
       if (fotos.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       var atual = 0;
       setInterval(function () {
-        var caixa = document.querySelector('.login-imagem');
-        if (document.hidden || !caixa || !caixa.offsetWidth) return;
-        fotos[atual].classList.remove('is-ativa');
+        if (document.hidden || !janela.offsetWidth) return;
+        var antes = atual;
         atual = (atual + 1) % fotos.length;
+        fotos.forEach(function (x) { x.classList.remove('is-anterior'); });
+        fotos[antes].classList.add('is-anterior');
+        fotos[antes].classList.remove('is-ativa');
         fotos[atual].classList.add('is-ativa');
-        var frase = document.getElementById('login-carrossel-frase');
+        bolinhas.forEach(function (b, i) { b.classList.toggle('is-ativo', i === atual); });
         var texto = fotos[atual].getAttribute('data-frase');
-        if (!frase || !texto) return;
         frase.classList.add('is-trocando');
-        setTimeout(function () {
-          frase.textContent = '';
-          texto.split('|').forEach(function (linha, i) {
-            if (i) frase.appendChild(document.createElement('br'));
-            frase.appendChild(document.createTextNode(linha));
-          });
-          frase.classList.remove('is-trocando');
-        }, 450);
+        setTimeout(function () { if (texto) escrever(texto); frase.classList.remove('is-trocando'); }, 420);
       }, 5000);
     })();
+
+    // Olhinho das senhas.
+    document.querySelectorAll('.lg-olho[data-campo]').forEach(function (btn) {
+      var campo = document.getElementById(btn.dataset.campo);
+      btn.addEventListener('click', function () {
+        var mostrar = campo.type === 'password';
+        campo.type = mostrar ? 'text' : 'password';
+        btn.setAttribute('aria-pressed', String(mostrar));
+        btn.setAttribute('aria-label', mostrar ? 'Esconder senha' : 'Mostrar senha');
+        btn.querySelector('.olho-aberto').classList.toggle('hidden', mostrar);
+        btn.querySelector('.olho-fechado').classList.toggle('hidden', !mostrar);
+      });
+    });
+
+    // Voltar (embaixo do cartão): da tela de Entrar volta ao cadastro; no
+    // cadastro (primeira etapa) volta para a página anterior.
+    document.getElementById('signup-voltar').addEventListener('click', function () {
+      if (document.body.dataset.authView === 'login') {
+        showAuthView('signup');
+        history.replaceState(null, '', 'signup');
+        return;
+      }
+      if (document.referrer && history.length > 1) history.back();
+      else window.location.href = '/';
+    });
 
     function showAuthView(view) {
       document.body.dataset.authView = view;
@@ -573,7 +762,7 @@
     /* Aviso de confirmação de e-mail, em cinza, com "Reenviar e-mail". */
     function avisoConfirmeEmailHub(el, email, frase) {
       const seguro = String(email).replace(/[<>&"]/g, '');
-      el.innerHTML = frase + ' <strong>' + seguro + '</strong>. Confira também o spam. <button type="button" class="font-bold text-[#183b54] hover:underline" data-reenviar-confirmacao>Reenviar e-mail</button>';
+      el.innerHTML = frase + ' <strong>' + seguro + '</strong>. Confira também o spam. <button type="button" data-reenviar-confirmacao>Reenviar e-mail</button>';
       el.classList.remove('text-red-600', 'hidden');
       el.classList.add('text-zinc-600');
       el.querySelector('[data-reenviar-confirmacao]').addEventListener('click', async (e) => {
@@ -584,6 +773,5 @@
       });
     }
   </script>
-  <script src="js/ver-senha.js?v=1"></script>
 </body>
 </html>

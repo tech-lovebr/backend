@@ -178,6 +178,13 @@ html, body { margin: 0; padding: 0; background: #F7F8FA; }
 #view-login#view-login .lg-erro strong { font-weight: 500 !important; color: var(--lg-tinta) !important; }
 #view-login#view-login .lg-erro button { color: var(--lg-azul) !important; font-weight: 500 !important; text-decoration: underline; }
 #view-login#view-login .lg-pagina { align-content: center; row-gap: 20px; }
+/* Continuar com o Google: igual ao botão oficial do Google que o login da Love mostra
+   (contorno, grande, retangular): fundo branco, borda #DADCE0, cantos de 4px, 40px de altura. */
+#view-login#view-login #google-login-btn { height: 40px; padding: 0 12px; gap: 8px; border-radius: 4px !important; background: #FFFFFF !important; border: 1px solid #DADCE0 !important; color: #3C4043 !important; font-family: "Google Sans", Roboto, Arial, sans-serif !important; font-size: 14px !important; font-weight: 500 !important; letter-spacing: .25px; transition: background .218s, border-color .218s; }
+#view-login#view-login #google-login-btn * { font-family: inherit !important; }
+#view-login#view-login #google-login-btn:hover { background: rgba(66,133,244,.04) !important; border-color: #D2E3FC !important; }
+#view-login#view-login #google-login-btn:focus-visible { outline: none; border-color: #4285F4 !important; }
+#view-login#view-login #google-login-btn svg { width: 18px; height: 18px; }
 #view-login#view-login .lg-termos { max-width: 520px; margin: 0; font-size: 12.5px !important; line-height: 1.5 !important; color: #FFFFFF !important; text-align: center; }
 #view-login#view-login .lg-termos a { color: rgba(247,248,250,.82) !important; text-decoration: underline; text-underline-offset: 2px; }
   </style>

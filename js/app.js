@@ -1,3 +1,10 @@
+// Título da aba: português em love.com.br, inglês em planwithlove.com.
+function tituloDaLove() {
+  return document.documentElement.classList.contains('love-en-domain')
+    ? 'Love: Free Wedding & Event Websites, Registry & Planning'
+    : 'Love: Site para Evento Grátis, Lista de Convidados & Presentes';
+}
+
 /**
  * LOVE - Event OS (Event Operating System) & Marketplace
  * Controlador com Double-Sidebar (Ícone de Editar + Sub-drawer), Multi-Comemorações com Isolamento Total & Fintech
@@ -2115,9 +2122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sem isso, o título da aba do navegador ficava preso em "Política de
     // Privacidade" (ou Termos) depois de sair da página legal pra qualquer
     // outro lugar do painel.
-    if (document.title !== 'Love: Site para Evento Grátis, Lista de Convidados & Presentes') {
-      document.title = 'Love: Site para Evento Grátis, Lista de Convidados & Presentes';
-    }
+    if (document.title !== tituloDaLove()) document.title = tituloDaLove();
 
     // Reseta todos os modos especiais do body primeiro
     document.body.classList.remove('editor-split-mode', 'organizadores-sem-previa', 'rsvp-mode', 'b2b-mode', 'b2b-chat-mode', 'page-mode', 'gifts-mode', 'wallet-mode');
@@ -22616,7 +22621,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (elements.dashHeader.eventTitle) elements.dashHeader.eventTitle.textContent = 'Nenhum evento';
       if (elements.dashHeader.countdownBadge) elements.dashHeader.countdownBadge.textContent = '';
       if (window.location.pathname !== '/') history.replaceState({}, '', '/');
-      document.title = 'Love: Site para Evento Grátis, Lista de Convidados & Presentes';
+      document.title = tituloDaLove();
       openCreateEventPage(true, false);
       return null;
     }

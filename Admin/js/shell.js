@@ -112,20 +112,36 @@ window.adminReady = (async () => {
     return null;
   }
 
-  const { data: admin, error } = await supabaseClient
-    .from('admins')
-    .select('id, name, email, role, active')
-    .eq('id', session.user.id)
-    .maybeSingle();
+  // A tabela admins fica longe (cada consulta ~0,3s). A verificação feita
+  // há menos de 10 minutos nesta aba vale: a página já busca os dados e a
+  // confirmação roda por trás. O banco continua barrando quem não é admin.
+  const CHAVE_ADMIN = 'love-admin-verificado';
+  const verificar = async () => {
+    const { data: admin, error } = await supabaseClient
+      .from('admins')
+      .select('id, name, email, role, active')
+      .eq('id', session.user.id)
+      .maybeSingle();
+    if (error) console.error('[admin] não foi possível verificar o papel de administrador:', error.message);
+    if (!admin || !admin.active) {
+      try { sessionStorage.removeItem(CHAVE_ADMIN); } catch (e) { /* ignora */ }
+      await supabaseClient.auth.signOut();
+      window.location.replace('login.html?erro=sem-acesso');
+      return null;
+    }
+    try { sessionStorage.setItem(CHAVE_ADMIN, JSON.stringify({ id: session.user.id, em: Date.now(), admin })); } catch (e) { /* ignora */ }
+    return admin;
+  };
 
-  if (error) {
-    console.error('[admin] não foi possível verificar o papel de administrador:', error.message);
-  }
-
-  if (!admin || !admin.active) {
-    await supabaseClient.auth.signOut();
-    window.location.replace('login.html?erro=sem-acesso');
-    return null;
+  let guardado = null;
+  try { guardado = JSON.parse(sessionStorage.getItem(CHAVE_ADMIN) || 'null'); } catch (e) { /* ignora */ }
+  let admin;
+  if (guardado && guardado.id === session.user.id && Date.now() - guardado.em < 10 * 60 * 1000) {
+    admin = guardado.admin;
+    verificar(); // confirma por trás
+  } else {
+    admin = await verificar();
+    if (!admin) return null;
   }
 
   window.adminUser = { ...admin, email: admin.email || session.user.email };
@@ -329,6 +345,7 @@ function ligarPerfil(host) {
   document.addEventListener('click', fecharMenu);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharMenu(); });
   host.querySelector('#btn-logout').addEventListener('click', async () => {
+    try { sessionStorage.removeItem('love-admin-verificado'); } catch (e) { /* ignora */ }
     await supabaseClient.auth.signOut();
     window.location.replace('login.html');
   });
@@ -450,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
      • MENOR    (1.0.1 → 1.1.0): função ou tela nova, sem quebrar o que existe;
      • MAIOR    (1.1.0 → 2.0.0): mudança que muda o jeito de usar o Admin.
    Ao subir MENOR, a CORREÇÃO volta a 0; ao subir MAIOR, as duas voltam a 0. */
-const VERSAO_ADMIN = '1.11.8';
+const VERSAO_ADMIN = '1.11.9';
 
 /* Rodapé igual ao do Hub e da plataforma: © Love Hub Ltda + "Feito com
    amor…" à esquerda e, no lugar de Privacidade/Termos, a versão do Admin. */

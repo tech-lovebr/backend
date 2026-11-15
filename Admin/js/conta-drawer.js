@@ -385,7 +385,6 @@ const ContaDrawer = (() => {
             ? campoTexto('birthday', fornecedorDe(c.id)?.birthday, '', 'date')
             : escapeHtml(nascimento || 'Não informada'))}
           ${mostrarCanal ? linha('Canal', escapeHtml(origem.rotulo)) : ''}
-          ${linha('Entrou por', escapeHtml(PROVEDORES[c.provedor] || c.provedor))}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
           ${acesso && acesso.exato ? linha('Cadastrou-se em', escapeHtml(acesso.texto)) : ''}
           ${ultimoAparelho(c) ? linha('Último aparelho', escapeHtml(ultimoAparelho(c))) : ''}

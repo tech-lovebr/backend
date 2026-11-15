@@ -191,7 +191,7 @@ function renderSidebar() {
 
   host.innerHTML = `
     <a href="dashboard.html" class="admin-sidebar-brand" aria-label="Love Admin, ir para o Dashboard">
-      <img src="assets/logo-azul.png" alt="Love" class="marca-logo"><em class="marca-etiqueta">Admin</em>
+      <img src="assets/love-logo-tinta.svg?v=1" alt="Love" class="marca-logo"><em class="marca-etiqueta">Admin</em>
     </a>
     <nav class="admin-nav">${sections}</nav>
     ${perfilDoRodape(window.adminUser || {})}`;
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
      • MENOR    (1.0.1 → 1.1.0): função ou tela nova, sem quebrar o que existe;
      • MAIOR    (1.1.0 → 2.0.0): mudança que muda o jeito de usar o Admin.
    Ao subir MENOR, a CORREÇÃO volta a 0; ao subir MAIOR, as duas voltam a 0. */
-const VERSAO_ADMIN = '1.10.1';
+const VERSAO_ADMIN = '1.10.2';
 
 /* Rodapé igual ao do Hub e da plataforma: © Love Hub Ltda + "Feito com
    amor…" à esquerda e, no lugar de Privacidade/Termos, a versão do Admin. */

@@ -15500,3 +15500,33 @@ body[data-theme="dark"] #tab-account-settings #btn-config-listas-salvas { backgr
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-account-settings #btn-config-listas-salvas:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none; }
 }
+
+
+/* Configurações › Contas bancárias: faixa de fotos soltas (inclinadas,
+   algumas desfocadas como ao fundo) com "Para os dias que ficam para
+   sempre." no meio, acima da caixa das contas. Sem logo e sem botão. */
+.contas-faixa { position: relative; height: 340px; margin: 0 0 24px; overflow: hidden; pointer-events: none; user-select: none; }
+.contas-faixa-foto { position: absolute; display: block; object-fit: cover; border-radius: 10px; box-shadow: 0 18px 40px rgba(24, 29, 36, 0.14), 0 2px 6px rgba(24, 29, 36, 0.06); }
+.contas-faixa-f1 { left: 4%;  top: 6%;  width: 15%; height: 66%; transform: rotate(-6deg); }
+.contas-faixa-f2 { left: 21%; top: 2%;  width: 9%;  height: 38%; transform: rotate(3deg); filter: blur(1.5px); }
+.contas-faixa-f3 { left: 0%;  top: 62%; width: 14%; height: 34%; transform: rotate(2deg); filter: blur(4px); opacity: .85; }
+.contas-faixa-f4 { left: 18%; top: 56%; width: 13%; height: 48%; transform: rotate(4deg); }
+.contas-faixa-f5 { right: 21%; top: 8%;  width: 12%; height: 56%; transform: rotate(-3deg); filter: blur(3px); opacity: .9; }
+.contas-faixa-f6 { right: 8%;  top: 2%;  width: 13%; height: 50%; transform: rotate(5deg); }
+.contas-faixa-f7 { right: 13%; top: 56%; width: 14%; height: 46%; transform: rotate(-8deg); }
+.contas-faixa-f8 { right: 1%;  top: 48%; width: 9%;  height: 44%; transform: rotate(6deg); filter: blur(4px); opacity: .85; }
+.contas-faixa-frase { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; width: auto; white-space: nowrap; text-align: center; font-family: var(--fonte-love, 'Outfit', sans-serif); font-size: clamp(26px, 2.6vw, 40px); font-weight: 400; line-height: 1.12; letter-spacing: -0.025em; color: #181D24; }
+.contas-faixa-frase span { color: #3E6A93; }
+body[data-theme="dark"] .contas-faixa-frase { color: #FFFFFF; }
+body[data-theme="dark"] .contas-faixa-frase span { color: #9CC0E4; }
+/* Celular: quatro fotos lado a lado no alto e a frase embaixo delas. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  .contas-faixa { height: 230px; margin-bottom: 16px; }
+  .contas-faixa :is(.contas-faixa-f2, .contas-faixa-f4, .contas-faixa-f5, .contas-faixa-f8) { display: none; }
+  .contas-faixa :is(.contas-faixa-f1, .contas-faixa-f3, .contas-faixa-f6, .contas-faixa-f7) { top: 6%; right: auto; width: 22%; height: 52%; filter: none; opacity: 1; }
+  .contas-faixa-f1 { left: 2%; transform: rotate(-5deg); }
+  .contas-faixa-f6 { left: 27%; transform: rotate(3deg); }
+  .contas-faixa-f7 { left: 52%; transform: rotate(-3deg); }
+  .contas-faixa-f3 { left: 76%; transform: rotate(5deg); }
+  .contas-faixa-frase { top: auto; bottom: 6px; transform: translateX(-50%); font-size: 22px; }
+}

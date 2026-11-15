@@ -22980,7 +22980,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
     if (aba === 'eventos') renderMeuEvento();
     document.getElementById('config-painel-contas')?.classList.toggle('hidden', aba !== 'contas');
-    if (aba === 'contas') /** @type {any} */ (window).LoveCarteira?.contasBancarias();
+    if (aba === 'contas') {
+      // Fotos da faixa de Contas bancárias: só carregam quando a aba abre.
+      document.querySelectorAll('#config-painel-contas img[data-src]').forEach(img => {
+        const foto = /** @type {HTMLImageElement} */ (img);
+        foto.src = foto.dataset.src || '';
+        foto.removeAttribute('data-src');
+      });
+      /** @type {any} */ (window).LoveCarteira?.contasBancarias();
+    }
   }
   document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));
 

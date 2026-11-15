@@ -10495,7 +10495,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const itens = !listasSalvas
       ? '<p class="listas-salvas-vazio">Carregando…</p>'
       : !listasSalvas.length
-        ? '<p class="listas-salvas-vazio">Nenhuma lista salva ainda. Salve os convidados deste evento para usar em outros eventos.</p>'
+        ? '<p class="listas-salvas-vazio">Você ainda não tem nenhuma lista salva.</p>'
         : '<ul class="listas-salvas-itens">' + listasSalvas.map(l => {
           const qtd = Array.isArray(l.convidados) ? l.convidados.length : 0;
           return `<li data-lista-id="${escaparHtml(l.id)}">

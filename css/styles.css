@@ -16015,3 +16015,6 @@ body[data-theme="dark"] :is(#btn-host-add-gift, #builder-publish) { background: 
 /* Favoritar marcado: o coração todo preenchido na cor do contorno. */
 html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { fill: #C9937E !important; stroke: #C9937E !important; color: #C9937E !important; }
 html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"] path:not(#love-h-a) { fill: #C9937E !important; stroke: #C9937E !important; }
+/* Favoritar marcado: coração preenchido com contorno branco. */
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { stroke: #FFFFFF !important; }
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"] path:not(#love-h-a):not(#love-h-b) { stroke: #FFFFFF !important; stroke-width: 1.5px !important; }

@@ -1,5 +1,3 @@
-/* Outfit (títulos dos cabeçalhos das páginas, no padrão do index). */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300..600&display=swap');
 /* ==========================================================================
    LOVE B2B — Portal de Assessores & Fornecedores
    Design System (reaproveita os tokens oficiais da Love, layout próprio)
@@ -115,11 +113,11 @@ html, body { height: 100%; }
 html { -webkit-font-smoothing: antialiased; }
 
 body, button, input, select, textarea, p, span, a, label {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--fonte-love);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--fonte-love);
 }
 
 body {
@@ -4922,7 +4920,7 @@ ul.be-list:not(.be-list-custom-marker) { list-style-type: disc; }
   cursor: pointer;
 }
 .inspector-textarea { min-height: 90px; resize: vertical; font-family: ui-monospace, monospace; font-size: 0.75rem; }
-.inspector-textarea-plain { min-height: 64px; font-family: 'Inter', -apple-system, sans-serif; font-size: 0.8125rem; }
+.inspector-textarea-plain { min-height: 64px; font-family: var(--fonte-love); font-size: 0.8125rem; }
 .inspector-input:focus, .inspector-select:focus, .inspector-textarea:focus { outline: none; border-color: var(--primary-blue); }
 .inspector-color-row { display: flex; align-items: center; gap: 0.5rem; }
 #builder-elements-panel input[type="color"] { width: 30px; height: 30px; border: 1px solid var(--border-light); border-radius: 7px; padding: 2px; background: #fff; cursor: pointer; flex-shrink: 0; }
@@ -7530,7 +7528,7 @@ body[data-theme="dark"] .b2b-breadcrumb-atual { color: #F4F4F5; }
 /* Editor de site › abas ELEMENTOS / URL: mesmo tamanho do rótulo
    "Elementos" do Convite digital no index (11px, caixa alta). */
 html body .builder-panel-tabs .builder-panel-tab:not(#love-h-a) {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--fonte-love);
   font-size: 11px; font-weight: 700; letter-spacing: 0.04em; line-height: 16.5px;
   text-transform: uppercase; height: auto; min-height: 0;
 }
@@ -8356,7 +8354,7 @@ html body .greeting-date-side:not(#love-h-a) { display: none !important; }
 html body .greeting-title:not(#love-h-a),
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   letter-spacing: -0.02em;
 }
 
@@ -8366,16 +8364,16 @@ html body .b2b-header-bar h2:not(#love-h-a) {
    cliente (canvas do Construtor e a página pública), que usa as fontes
    escolhidas no editor, e o SKU/código, que continua em mono.
    ========================================================================== */
-html body.font-sans:not([data-page="site-preview"]) { font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+html body.font-sans:not([data-page="site-preview"]) { font-family: var(--fonte-love); }
 html body:not([data-page="site-preview"]) :is(button, input, select, textarea, p, span, a, label, h1, h2, h3, h4, h5, h6, li, td, th, div, strong, small, .font-sans):not(.builder-canvas):not(.builder-canvas *):not(.produto-sku):not([data-item-code]) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--fonte-love);
 }
 /* Valores (ex.: "R$ 50 / pessoa" nos cards de Produtos, totais, Analytics) também em Albert Sans. */
 html body #products-grid .product-card .text-base.font-bold:not(#love-h-a),
 html body #proposal-total:not(#love-h-a),
 html body .proposal-cell-total:not(#love-h-a),
 html body .dash-analytics-metric-value:not(#love-h-a) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; letter-spacing: -0.01em;
+  font-family: var(--fonte-love); letter-spacing: -0.01em;
 }
 
 /* Meus produtos: "Ativo" num verde mais claro e vivo (próprio, fora da
@@ -8390,7 +8388,7 @@ body[data-theme="dark"] #products-grid .status-badge.status-ativo::before { back
 html body .greeting-title:not(#love-h-a),
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) {
-  font-family: 'EB Garamond', Georgia, 'Times New Roman', serif !important;
+  font-family: var(--fonte-love) !important;
   font-weight: 700 !important;
   letter-spacing: 0;
 }
@@ -8400,7 +8398,7 @@ html body .b2b-header-bar h2:not(#love-h-a) {
 html body .greeting-title:not(#love-h-a),
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) {
-  font-family: 'Figtree', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-weight: 800 !important;
   letter-spacing: -0.025em;
   line-height: 1.12;
@@ -8412,14 +8410,14 @@ html body .b2b-header-bar h2:not(#love-h-a) {
 html body .greeting-title:not(#love-h-a),
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) {
-  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-weight: 800 !important;
   letter-spacing: -0.025em;
   line-height: 1.12;
 }
 html body .dashboard-panel-header .dashboard-help-title:not(#love-h-a),
 html body .dashboard-help-header .dashboard-help-title:not(#love-h-a) {
-  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -8438,21 +8436,21 @@ body[data-theme="dark"] .btn-secondary.dashboard-quick-action-btn { background: 
 
 /* Painel: "Boas-vindas, …" em Clash Display Bold (Fontshare). */
 html body .greeting-title:not(#love-h-a) {
-  font-family: 'Clash Display', 'Hanken Grotesk', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-weight: 700 !important;
   letter-spacing: -0.01em;
 }
 
 /* Painel: "Boas-vindas, …" volta para Hanken Grotesk (como os cabeçalhos). */
 html body .greeting-title:not(#love-h-a) {
-  font-family: 'Hanken Grotesk', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-weight: 800 !important;
   letter-spacing: -0.025em;
 }
 
 /* Painel: "Boas-vindas, …" em Plus Jakarta Sans Bold 700. */
 html body .greeting-title:not(#love-h-a) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-weight: 700 !important;
   letter-spacing: -0.02em;
 }
@@ -8575,7 +8573,7 @@ html body .dashboard-help-card-title:not(#love-h-a),
 html body:not([data-page="site-preview"]) button:not(.builder-canvas *):not(#love-h-a),
 html body:not([data-page="site-preview"]) .btn-primary:not(.builder-canvas *):not(#love-h-a),
 html body:not([data-page="site-preview"]) .btn-secondary:not(.builder-canvas *):not(#love-h-a) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
 }
 html body .b2b-header-bar h1:not(#love-h-a),
 html body .b2b-header-bar h2:not(#love-h-a) { font-weight: 700 !important; letter-spacing: -0.02em; }
@@ -8635,7 +8633,7 @@ html body #product-category-search:not(#love-h-a),
 html body #chat-search-input:not(#love-h-a),
 html body #command-input:not(#love-h-a),
 html body input[type="search"]:not(#love-h-a) {
-  font-family: 'Albert Sans', 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--fonte-love);
 }
 
 /* Sombra suave (igual à caixa "Saldos" de referência) em todas as caixas e
@@ -9198,7 +9196,7 @@ html body[data-theme="dark"] #settings-tabs .category-tab.active:not(#love-h-a),
    e item ativo no mesmo cinza clarinho #F4F4F5. Modo escuro não muda. */
 html body #settings-tabs .category-tab:not(#love-h-a),
 html body .guias-menu-table .guide-link:not(#love-h-a) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-size: 13px !important; font-weight: 600 !important; color: #475569 !important; letter-spacing: -0.16px !important;
   border-radius: 0 8px 8px 0 !important;
 }
@@ -9771,7 +9769,7 @@ body[data-theme="dark"] .profile-dropdown-header .profile-dropdown-email { color
 
 /* Dica dos ícones do topo (data-dica): caixinha branca com borda fina e sombra
    de overlay, no lugar da caixinha preta do navegador (igual ao love.com.br). */
-.love-dica { position: fixed; z-index: 10000; padding: 6px 10px; background: #FFFFFF; border: 1px solid var(--borda-suave); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; font-weight: 500; line-height: 1.35; color: #18181B; white-space: pre-line; max-width: 320px; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
+.love-dica { position: fixed; z-index: 10000; padding: 6px 10px; background: #FFFFFF; border: 1px solid var(--borda-suave); border-radius: 8px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); font-family: var(--fonte-love); font-size: 13px; font-weight: 500; line-height: 1.35; color: #18181B; white-space: pre-line; max-width: 320px; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity .12s ease; }
 .love-dica.is-visivel { opacity: 1; visibility: visible; }
 body[data-theme="dark"] .love-dica { background: #1F2329; border-color: rgba(255, 255, 255, 0.1); color: #F4F4F5; }
 
@@ -10116,7 +10114,7 @@ body[data-theme="dark"] #avatar-dropdown .topbar-dropdown-item, body[data-theme=
    gráfico cinza do saldo, sem caixa em volta. */
 html body .dash-saldo-total:not(#love-h-a) { display: block; text-decoration: none; color: inherit; }
 html body .dash-saldo-total-rotulo:not(#love-h-a) { margin: 0 0 0.35rem; font-size: 0.875rem; font-weight: 400; color: #18181B; }
-html body .dash-saldo-total-valor:not(#love-h-a) { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 2.25rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; color: #18181B; font-variant-numeric: tabular-nums; }
+html body .dash-saldo-total-valor:not(#love-h-a) { margin: 0; font-family: var(--fonte-love); font-size: 2.25rem; font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; color: #18181B; font-variant-numeric: tabular-nums; }
 html body .dash-saldo-total-grafico:not(#love-h-a) { margin-top: 1.25rem; height: 200px; }
 html body .dash-saldo-total-grafico svg:not(#love-h-a) { display: block; width: 100%; height: 100%; }
 body[data-theme="dark"] .dash-saldo-total-rotulo, body[data-theme="dark"] .dash-saldo-total-valor { color: #FFFFFF !important; }
@@ -10171,7 +10169,7 @@ html body #avatar-dropdown .topbar-dropdown-divider:not(#love-h-a) { margin: 2px
 html body #avatar-dropdown .topbar-dropdown-item:not(#love-h-a),
 html body #avatar-dropdown .profile-empresa-item:not(#love-h-a) {
   display: flex; align-items: center; justify-content: flex-start; gap: 12px; width: 100%; padding: 10px 14px; border-radius: 8px;
-  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 14.5px; font-weight: 500; line-height: 1.4; color: #334155; background: transparent;
+  font-family: var(--fonte-love); font-size: 14.5px; font-weight: 500; line-height: 1.4; color: #334155; background: transparent;
 }
 html body #avatar-dropdown .profile-empresa-item .profile-empresa-linha:not(#love-h-a) { display: flex; align-items: center; gap: 12px; min-width: 0; }
 html body #avatar-dropdown .profile-empresa-item .profile-empresa-nome:not(#love-h-a) { font-size: 14.5px; font-weight: 500; color: inherit; }
@@ -10668,7 +10666,7 @@ html body button.cart-link span:not(#love-h-a) { text-decoration: underline; tex
 .cart-resumo-col { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 4px 24px; border-left: 1px solid var(--borda-suave); }
 .cart-resumo-col:first-child { border-left: 0; padding-left: 0; }
 html body .cart-rotulo:not(#love-h-a) { margin: 0; font-size: 13px; font-weight: 500; color: #52525B; }
-html body .cart-numero:not(#love-h-a) { margin: 0; font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; font-variant-numeric: tabular-nums; }
+html body .cart-numero:not(#love-h-a) { margin: 0; font-family: var(--fonte-love); font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: #18181B; font-variant-numeric: tabular-nums; }
 .cart-numero.is-escondido { letter-spacing: 0.08em; }
 html body .cart-dica:not(#love-h-a) { margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: #71717A; }
 html body :is(button, a).cart-link-texto:not(#love-h-a) { padding: 0; background: none; border: 0; font: inherit; font-size: 13px; font-weight: 600; color: #183b54; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
@@ -11092,7 +11090,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a)::before { display: none !important; }
   html body .mobile-bottom-nav .mobile-nav-item > span:last-child:not(.nav-badge):not(#love-h-a) {
     display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    font-family: Inter, sans-serif; font-size: 11px; font-weight: 500; line-height: 1.2; letter-spacing: 0; color: currentColor;
+    font-family: var(--fonte-love); font-size: 11px; font-weight: 500; line-height: 1.2; letter-spacing: 0; color: currentColor;
   }
   html body .mobile-bottom-nav .mobile-nav-item.active > span:last-child:not(#love-h-a) { font-weight: 600; }
   body[data-theme="dark"] .mobile-bottom-nav .mobile-nav-item { color: rgba(255, 255, 255, 0.6) !important; }
@@ -11116,7 +11114,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body .submenu-celular .submenu-celular-item:not(#love-h-a) {
     flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
     min-height: 38px; padding: 0 14px; background: transparent; border: 1px solid transparent; border-radius: 8px;
-    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1; letter-spacing: -0.01em;
+    font-family: var(--fonte-love); font-size: 13px; font-weight: 500; line-height: 1; letter-spacing: -0.01em;
     color: #52525B; white-space: nowrap; cursor: pointer; box-shadow: none; transform: none; -webkit-tap-highlight-color: transparent;
   }
   html body .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a) { background: #FFFFFF; border-color: #E4E4E7; color: #18181B; font-weight: 600; }
@@ -11174,7 +11172,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body .mobile-bottom-nav .mobile-nav-item.active:not(#love-h-a):not(#love-h-b) svg { stroke-width: 2.25px !important; }
   html body .mobile-bottom-nav .mobile-nav-item > span:last-child:not(.nav-badge):not(#love-h-a):not(#love-h-b) {
     display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
-    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-family: var(--fonte-love) !important;
     font-size: 10.5px !important; font-weight: 500 !important; line-height: 1.2 !important; letter-spacing: normal !important; color: currentColor !important;
   }
   html body .mobile-bottom-nav .mobile-nav-item.active > span:last-child:not(.nav-badge):not(#love-h-a):not(#love-h-b) { font-weight: 600 !important; }
@@ -11236,7 +11234,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body .b2b-content > .b2b-header-bar > :first-child:not(#love-h-a):not(#love-h-b) { flex: 1 1 auto; min-width: 0; }
   html body .b2b-content > .b2b-header-bar :is(h1, h2):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     display: flex; align-items: center; min-height: 44px; margin: 0 !important;
-    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-family: var(--fonte-love) !important;
     font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important; letter-spacing: -0.4px !important; color: #18181B !important;
     overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
   }
@@ -11285,7 +11283,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     position: relative; flex: 1 0 auto; min-width: 33.333%; min-height: 46px; display: inline-flex; align-items: center; justify-content: center;
     padding: 0 14px; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none;
     background: #FFFFFF !important; color: #52525B !important;
-    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-family: var(--fonte-love) !important;
     font-size: 14px !important; font-weight: 500 !important; line-height: 1 !important; letter-spacing: -0.01em !important;
     white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
@@ -11310,7 +11308,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   .menu-celular-fundo.is-aberta, .menu-conta-fundo.is-aberta { opacity: 1; pointer-events: auto; }
   .menu-celular {
     display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0; z-index: 90;
-    width: min(80vw, 330px); background: #FFFFFF; font-family: Inter, sans-serif;
+    width: min(80vw, 330px); background: #FFFFFF; font-family: var(--fonte-love);
     padding-top: env(safe-area-inset-top, 0px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     transform: translateX(-100%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .26s;
   }
@@ -11345,7 +11343,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   .menu-conta {
     display: flex; flex-direction: column; position: fixed; left: 8px; right: 8px; bottom: 8px; z-index: 94; max-height: calc(100dvh - 72px);
     padding: 6px 20px calc(16px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; -webkit-overflow-scrolling: touch;
-    background: #FFFFFF; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-family: Inter, sans-serif;
+    background: #FFFFFF; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); font-family: var(--fonte-love);
     transform: translateY(calc(100% + 16px)); visibility: hidden; transition: transform .28s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .28s;
   }
   .menu-conta.is-aberta { transform: translateY(0); visibility: visible; transition: transform .28s cubic-bezier(.2, .8, .2, 1); }
@@ -11400,7 +11398,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body #notifications-list .notif-tempo-longo:not(#love-h-a) { display: none !important; }
   html body #notifications-list .notif-tempo-curto:not(#love-h-a) {
     display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
-    font-family: Inter, sans-serif; font-size: 12px; font-weight: 500; line-height: 1.2; color: #A1A1AA; font-variant-numeric: tabular-nums; white-space: nowrap;
+    font-family: var(--fonte-love); font-size: 12px; font-weight: 500; line-height: 1.2; color: #A1A1AA; font-variant-numeric: tabular-nums; white-space: nowrap;
   }
   html body #notifications-list .notification-row > div:last-child > div:last-child:not(#love-h-a) { align-items: flex-start !important; padding-top: 2px; }
 }
@@ -11414,7 +11412,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #b2b-toast.toast:not(#love-h-a) {
     left: 16px; right: 16px; bottom: auto; top: calc(env(safe-area-inset-top, 0px) + 12px); max-width: 480px; margin: 0 auto;
-    padding: 12px 14px; border-radius: 8px; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; line-height: 1.3;
+    padding: 12px 14px; border-radius: 8px; font-family: var(--fonte-love); font-size: 14px; font-weight: 600; line-height: 1.3;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); transform: translateY(-12px); z-index: 300;
   }
   html body #b2b-toast.toast.show:not(#love-h-a) { transform: translateY(0); }
@@ -11437,7 +11435,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     box-shadow: none !important; background: #FFFFFF !important; padding: 16px 0 0 !important; overflow: visible !important;
   }
   html body .dash-card.lista-celular > .tabela-total-celular:not(#love-h-a):not(#love-h-b) {
-    display: block; margin: 0; padding: 0 16px 12px; font-family: Inter, sans-serif;
+    display: block; margin: 0; padding: 0 16px 12px; font-family: var(--fonte-love);
     font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
   }
   /* Barra: busca e o filtro na mesma linha, linha fina embaixo. */
@@ -11457,7 +11455,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body .dash-card.lista-celular [data-tabela-filtrar] > :not(.tabela-filtro-contador):not(#love-h-a):not(#love-h-b) { display: none !important; }
   html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b)::before {
     content: attr(data-rotulo-celular); max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    font-family: Inter, sans-serif; font-size: 15px; font-weight: 500;
+    font-family: var(--fonte-love); font-size: 15px; font-weight: 500;
   }
   html body .dash-card.lista-celular [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b)::after {
     content: ''; width: 18px; height: 18px; flex-shrink: 0;
@@ -11480,7 +11478,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body .dash-card.lista-celular tr.lc-linha > td:not(#love-h-a):not(#love-h-b) { padding: 0 !important; border: 0 !important; height: auto !important; background: transparent !important; }
   html body .dash-card.lista-celular tr.lc-linha > td.lc-nome:not(#love-h-a):not(#love-h-b) {
     display: flex !important; align-items: center; gap: 14px; flex: 1 1 auto; min-width: 0; padding: 11px 0 !important;
-    font-family: Inter, sans-serif; font-size: 17px !important; font-weight: 400 !important; color: #18181B !important;
+    font-family: var(--fonte-love); font-size: 17px !important; font-weight: 400 !important; color: #18181B !important;
     white-space: nowrap; overflow: hidden;
   }
   html body .dash-card.lista-celular td.lc-nome *:not(.lc-iniciais):not(#love-h-a):not(#love-h-b) {
@@ -11489,11 +11487,11 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   }
   html body .dash-card.lista-celular .lc-iniciais:not(#love-h-a):not(#love-h-b) {
     display: inline-flex; align-items: center; justify-content: center; flex: 0 0 38px; width: 38px; height: 38px; border-radius: 50%;
-    background: #FFFFFF; border: 1px solid #E4E4E7; color: #183b54; font-family: Inter, sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0;
+    background: #FFFFFF; border: 1px solid #E4E4E7; color: #183b54; font-family: var(--fonte-love); font-size: 13px; font-weight: 600; letter-spacing: 0;
   }
   html body .dash-card.lista-celular tr.lc-linha > td.lc-info:not(#love-h-a):not(#love-h-b) {
     display: block !important; flex: 0 0 auto; max-width: 42%; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    font-family: Inter, sans-serif; font-size: 13px !important; color: #71717A !important;
+    font-family: var(--fonte-love); font-size: 13px !important; color: #71717A !important;
   }
   html body .dash-card.lista-celular tr.lc-vazia > td:not(#love-h-a):not(#love-h-b) { display: block; border: 0 !important; }
 
@@ -11516,7 +11514,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     border: 0 !important; border-bottom: 1px solid #E4E4E7 !important; border-radius: 0 !important; box-shadow: none !important; background: #FFFFFF !important;
   }
   html body #produtos-barra-caixa .produtos-total:not(#love-h-a):not(#love-h-b) {
-    order: -1; margin: 0; font-family: Inter, sans-serif; font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
+    order: -1; margin: 0; font-family: var(--fonte-love); font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
   }
   html body #produtos-barra-caixa .produtos-total b:not(#love-h-a) { font-weight: 600; color: inherit; }
   html body #produtos-barra-caixa .tabela-busca:not(#love-h-a):not(#love-h-b) { width: 100% !important; max-width: none !important; }
@@ -11563,7 +11561,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body[data-page="chat"] .chat-shell:not(#love-h-a):not(#love-h-b) { margin: 0 -16px !important; width: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #FFFFFF !important; }
   html body[data-page="chat"] .b2b-chat-contacts-column:not(#love-h-a):not(#love-h-b) { width: 100% !important; min-width: 0 !important; border-right: 0 !important; }
   html body[data-page="chat"] .chat-total-celular:not(#love-h-a):not(#love-h-b) {
-    display: block; margin: 0; padding: 16px 16px 12px; font-family: Inter, sans-serif;
+    display: block; margin: 0; padding: 16px 16px 12px; font-family: var(--fonte-love);
     font-size: 17px; font-weight: 600; letter-spacing: 0; line-height: 1.3; color: #52525B;
   }
   html body[data-page="chat"] .b2b-chat-contacts-header:not(#love-h-a):not(#love-h-b) { height: auto !important; padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
@@ -11579,7 +11577,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   }
   html body #conv-list .conv-item.active:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
   html body #conv-list .conv-item .b2b-avatar-square:not(#love-h-a):not(#love-h-b) { width: 44px !important; height: 44px !important; border-radius: 50% !important; }
-  html body #conv-list .conv-item h4:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 16px !important; font-weight: 600 !important; color: #18181B !important; }
+  html body #conv-list .conv-item h4:not(#love-h-a):not(#love-h-b) { font-family: var(--fonte-love); font-size: 16px !important; font-weight: 600 !important; color: #18181B !important; }
   html body #conv-list .conv-item p:not(#love-h-a):not(#love-h-b) { font-size: 14px !important; line-height: 1.35 !important; }
   html body #conv-list .conv-item p.text-zinc-500:not(#love-h-a):not(#love-h-b) { color: #71717A !important; }
   html body #conv-list .conv-item-mais:not(#love-h-a):not(#love-h-b) { display: none !important; }
@@ -11605,7 +11603,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   html body[data-page="chat"] .chat-voltar-celular svg:not(#love-h-a) { width: 20px; height: 20px; }
-  html body[data-page="chat"] #chat-header-name:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 16px !important; font-weight: 600 !important; }
+  html body[data-page="chat"] #chat-header-name:not(#love-h-a):not(#love-h-b) { font-family: var(--fonte-love); font-size: 16px !important; font-weight: 600 !important; }
   html body[data-page="chat"] #chat-messages:not(#love-h-a):not(#love-h-b) { padding: 16px !important; }
   html body[data-page="chat"] .chat-coluna-conversa > div:last-child:not(#love-h-a):not(#love-h-b) { padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) !important; }
   html body[data-page="chat"] #chat-input:not(#love-h-a):not(#love-h-b) { font-size: 16px !important; height: 44px; border-radius: 8px !important; }
@@ -11645,7 +11643,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   }
   html body .form-drawer.ficha-celular .form-drawer-header-main > :not(h1):not(h2):not(h3):not(#love-h-a):not(#love-h-b) { display: none !important; }
   html body .form-drawer.ficha-celular .form-drawer-header :is(h1, h2, h3):not(#love-h-a):not(#love-h-b) {
-    margin: 0 !important; font-family: 'Plus Jakarta Sans', Inter, sans-serif; font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important;
+    margin: 0 !important; font-family: var(--fonte-love); font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important;
     letter-spacing: -0.4px; color: #18181B !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   html body .ficha-voltar-celular:not(#love-h-a):not(#love-h-b) {
@@ -11656,7 +11654,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
   html body .ficha-salvar-celular:not([hidden]):not(#love-h-a):not(#love-h-b) {
     display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; height: 40px; padding: 0 16px; margin: 0 0 0 8px;
     background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; box-shadow: none;
-    font-family: Inter, sans-serif; font-size: 15px; font-weight: 600; color: #183b54; cursor: pointer; -webkit-tap-highlight-color: transparent;
+    font-family: var(--fonte-love); font-size: 15px; font-weight: 600; color: #183b54; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
   html body .ficha-salvar-celular:active:not(#love-h-a) { border-color: #181D24; }
 
@@ -11671,7 +11669,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     background: transparent !important; border: 0 !important; box-shadow: none !important; padding-left: 0 !important; padding-right: 0 !important;
   }
   html body .form-drawer.ficha-celular .form-drawer-body .grid.grid-cols-2:not(#love-h-a):not(#love-h-b) { grid-template-columns: 1fr !important; gap: 24px !important; }
-  html body .form-drawer.ficha-celular .field-label:not(#love-h-a):not(#love-h-b) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #71717A; margin-bottom: 6px; }
+  html body .form-drawer.ficha-celular .field-label:not(#love-h-a):not(#love-h-b) { font-family: var(--fonte-love); font-size: 13px; font-weight: 500; color: #71717A; margin-bottom: 6px; }
   html body .form-drawer.ficha-celular :is(.field-input, .field-select, input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], input[type="search"], select):not(.ficha-salvar-celular):not(#love-h-a):not(#love-h-b) {
     height: 46px !important; min-height: 46px; padding-left: 12px; padding-right: 12px; font-size: 16px !important;
     background-color: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
@@ -11726,12 +11724,12 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; text-align: center;
     min-height: 420px; margin: 16px; padding: 24px 20px; box-sizing: border-box;
     background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 10px; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03);
-    font-family: Inter, sans-serif;
+    font-family: var(--fonte-love);
   }
   html body .vazio-celular .vazio-celular-lottie:not(#love-h-a) { display: block; width: 140px; height: 140px; margin: 0 0 12px; }
   html body .vazio-celular .vazio-celular-icone:not(#love-h-a) { display: block; width: 72px; height: 72px; margin: 0 0 16px; }
   html body .vazio-celular .vazio-celular-titulo:not(#love-h-a):not(#love-h-b) {
-    margin: 0; padding: 0; background: none; border: 0; font-family: Inter, sans-serif; font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: #18181B;
+    margin: 0; padding: 0; background: none; border: 0; font-family: var(--fonte-love); font-size: 16px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; color: #18181B;
   }
   html body .vazio-celular button.vazio-celular-titulo:not(#love-h-a):not(#love-h-b) { color: #183b54; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   html body .vazio-celular .vazio-celular-texto:not(#love-h-a) { max-width: 280px; margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: #71717A; }
@@ -11746,7 +11744,7 @@ html body .settings-info-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
    sombra só na gaveta. E o "+" de Clientes, que abre essa gaveta.
    ========================================================================== */
 .so-celular-clientes { display: none; }
-.gaveta-opcoes { position: fixed; inset: 0; z-index: 140; font-family: Inter, sans-serif; }
+.gaveta-opcoes { position: fixed; inset: 0; z-index: 140; font-family: var(--fonte-love); }
 .gaveta-opcoes-fundo { position: absolute; inset: 0; background: rgba(24, 29, 36, 0.32); opacity: 0; transition: opacity .2s ease; }
 .gaveta-opcoes-folha {
   position: absolute; left: 0; right: 0; bottom: 0; max-width: 560px; margin: 0 auto;
@@ -11810,7 +11808,7 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
     display: inline-flex; align-items: center; gap: 6px; padding: 0; background: transparent; border: none;
   }
   html body.construtor-celular #builder-page-select-label:not(#love-h-a):not(#love-h-b) {
-    display: inline !important; line-height: 1.2 !important; height: auto !important; font-family: 'Inter', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+    display: inline !important; line-height: 1.2 !important; height: auto !important; font-family: var(--fonte-love); font-size: 20px; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
   }
   html body.construtor-celular #builder-page-select-btn .site-seletor-seta:not(#love-h-a) {
     display: block; width: 20px; height: 20px; color: #183b54; flex-shrink: 0;
@@ -11912,11 +11910,11 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   }
   html body[data-page="dashboard"] .dashboard-greeting > :not(.dashboard-greeting-text):not(#love-h-a) { display: none !important; }
   html body[data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b) {
-    margin: 0; font-family: Inter, sans-serif !important; font-size: 22px !important; font-weight: 600 !important; letter-spacing: -0.025em !important; line-height: 1.25; color: #18181B;
+    margin: 0; font-family: var(--fonte-love) !important; font-size: 22px !important; font-weight: 600 !important; letter-spacing: -0.025em !important; line-height: 1.25; color: #18181B;
     white-space: normal; text-align: center;
   }
   html body[data-page="dashboard"] #greeting-date:not(#love-h-a):not(#love-h-b) {
-    display: block; margin: 6px 0 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 400; color: #52525B; text-align: center;
+    display: block; margin: 6px 0 0; font-family: var(--fonte-love); font-size: 15px; font-weight: 400; color: #52525B; text-align: center;
   }
   html body[data-page="dashboard"] .grid > .dashboard-side-stack > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b) {
     order: 1; position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 8px;
@@ -11929,7 +11927,7 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
     display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
     min-height: 44px; height: auto; width: auto; padding: 0; margin: 0;
     background: transparent; border: 0; border-radius: 0; box-shadow: none;
-    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center;
+    font-family: var(--fonte-love); font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center;
   }
   html body[data-page="dashboard"] .dashboard-quick-actions > .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
     box-sizing: border-box; width: 56px; height: 56px; padding: 15px; border-radius: 50%;
@@ -11947,13 +11945,13 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   html body[data-page="dashboard"] .dash-saldo-celular-colunas > div:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px; text-align: center; min-width: 0; }
   html body[data-page="dashboard"] .dash-saldo-celular-colunas > div + div:not(#love-h-a) { border-left: 1px solid #F4F4F5; }
   html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a) {
-    font-family: Inter, sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+    font-family: var(--fonte-love); font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
     font-variant-numeric: tabular-nums; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
   }
-  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: var(--fonte-love); font-size: 13px; font-weight: 500; color: #52525B; }
   html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b) {
     display: flex; align-items: center; justify-content: center; height: 44px; margin: 0 16px 16px; padding: 0 16px;
-    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none;
+    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: var(--fonte-love); font-size: 14px; font-weight: 600; text-decoration: none;
   }
   html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):active { background: #122c3f; }
 
@@ -12025,11 +12023,11 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   }
   html body[data-page="dashboard"] .dash-home-caixa > .dashboard-greeting-text:not(#love-h-a) { display: contents; }
   html body[data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b) {
-    grid-column: 1; align-self: end; margin: 0; font-family: Inter, sans-serif !important; font-size: 26px !important; font-weight: 600 !important;
+    grid-column: 1; align-self: end; margin: 0; font-family: var(--fonte-love) !important; font-size: 26px !important; font-weight: 600 !important;
     letter-spacing: -0.025em !important; line-height: 1.2; color: #18181B; white-space: normal;
   }
   html body[data-page="dashboard"] .dash-home-caixa #greeting-date:not(#love-h-a):not(#love-h-b) {
-    display: block !important; grid-column: 1; align-self: start; margin: -6px 0 0; font-family: Inter, sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+    display: block !important; grid-column: 1; align-self: start; margin: -6px 0 0; font-family: var(--fonte-love); font-size: 15px; font-weight: 400; color: #52525B;
   }
   html body[data-page="dashboard"] .dash-home-caixa > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b) {
     grid-column: 2; grid-row: 1 / span 2; display: grid; grid-template-columns: repeat(4, minmax(56px, 112px)); justify-content: end; gap: 8px;
@@ -12039,7 +12037,7 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
     display: flex !important; flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px;
     width: auto; height: auto; min-height: 0; padding: 0; margin: 0; cursor: pointer;
     background: transparent !important; border: 0 !important; border-radius: 0; box-shadow: none !important; outline: none;
-    font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center; transition: color .15s ease;
+    font-family: var(--fonte-love); font-size: 13px; font-weight: 500; line-height: 1.3; color: #3F3F46; text-align: center; transition: color .15s ease;
   }
   html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b) {
     box-sizing: border-box; width: 56px; height: 56px; padding: 16px; border-radius: 50%; flex-shrink: 0;
@@ -12058,13 +12056,13 @@ body[data-theme="dark"] .gaveta-opcoes-alca { background: #52525B; }
   html body[data-page="dashboard"] .dash-saldo-celular-colunas > div:not(#love-h-a) { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0 12px; text-align: center; min-width: 0; }
   html body[data-page="dashboard"] .dash-saldo-celular-colunas > div + div:not(#love-h-a) { border-left: 1px solid #F4F4F5; }
   html body[data-page="dashboard"] .dash-saldo-celular-valor:not(#love-h-a) {
-    font-family: Inter, sans-serif; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
+    font-family: var(--fonte-love); font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.025em; color: #183b54;
     font-variant-numeric: tabular-nums; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
   }
-  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: Inter, sans-serif; font-size: 13px; font-weight: 500; color: #52525B; }
+  html body[data-page="dashboard"] .dash-saldo-celular-nome:not(#love-h-a) { font-family: var(--fonte-love); font-size: 13px; font-weight: 500; color: #52525B; }
   html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b) {
     display: flex; align-items: center; justify-content: center; height: 42px; margin: 0 20px 20px; padding: 0 16px;
-    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; text-decoration: none; transition: background-color .15s ease;
+    background: #183b54; border: 0; border-radius: 8px; color: #FFFFFF; font-family: var(--fonte-love); font-size: 14px; font-weight: 600; text-decoration: none; transition: background-color .15s ease;
   }
   html body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):hover { background: #122c3f; }
 
@@ -12170,7 +12168,7 @@ html body .produtos-vazio-texto b:not(#love-h-a) { font-weight: 700; color: #181
 html body .produtos-vazio-cards:not(#love-h-a) { display: grid; grid-template-columns: minmax(0, 260px); width: 100%; justify-content: center; }
 html body .produtos-vazio-criar:not(#love-h-a) {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 240px; padding: 24px;
-  background: #FFFFFF; border: 1px dashed #E4E4E7; border-radius: 10px; text-align: center; cursor: pointer; font-family: Inter, sans-serif; transition: border-color .15s;
+  background: #FFFFFF; border: 1px dashed #E4E4E7; border-radius: 10px; text-align: center; cursor: pointer; font-family: var(--fonte-love); transition: border-color .15s;
 }
 html body .produtos-vazio-criar:not(#love-h-a):hover { border-color: #A1A1AA; }
 html body .produtos-vazio-criar-icone:not(#love-h-a) { width: 48px; height: 48px; border-radius: 999px; background: #F4F6F7; display: inline-flex; align-items: center; justify-content: center; color: #18181B; margin-bottom: 6px; }
@@ -12315,11 +12313,11 @@ body[data-theme="dark"] .produtos-vazio-texto .produtos-vazio-link { color: #FFF
 /* Home do Hub: "Olá, empresa!" e a data na mesma fonte do "Olá, nome!" do
    anfitrião — Plus Jakarta Sans normal (400), 26px, cinza #52525B. */
 html body[data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  font-family: var(--fonte-love) !important;
   font-size: 26px !important; font-weight: 400 !important; letter-spacing: -0.025em !important; line-height: 1.2 !important; color: #52525B !important;
 }
 html body[data-page="dashboard"] .dash-home-caixa #greeting-date:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
-  font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+  font-family: var(--fonte-love); font-size: 15px; font-weight: 400; color: #52525B;
 }
 html body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
 body[data-theme="dark"][data-page="dashboard"] .dash-home-caixa #greeting-date { color: #D4D4D8 !important; }
@@ -12360,11 +12358,11 @@ html body #op-propostas-card[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c
    celular — Plus Jakarta Sans normal (400), 22px, cinza #52525B. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body[data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
-    font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-family: var(--fonte-love) !important;
     font-size: 22px !important; font-weight: 400 !important; letter-spacing: -0.025em !important; line-height: 1.25 !important; color: #52525B !important;
   }
   html body[data-page="dashboard"] #greeting-date:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
-    font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 15px; font-weight: 400; color: #52525B;
+    font-family: var(--fonte-love); font-size: 15px; font-weight: 400; color: #52525B;
   }
   html body[data-theme="dark"][data-page="dashboard"] #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
   body[data-theme="dark"][data-page="dashboard"] #greeting-date { color: #D4D4D8 !important; }
@@ -12412,7 +12410,7 @@ html body .dash-ads-carousel:not(#love-h-a) { touch-action: pan-y; }
     position: relative; flex: 1 0 auto !important; min-width: 0 !important; min-height: 46px; height: auto !important; display: inline-flex; align-items: center; justify-content: center;
     margin: 0 !important; padding: 0 6px !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; transform: none;
     background: #FFFFFF !important; color: #52525B !important;
-    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-family: var(--fonte-love) !important;
     font-size: 14px !important; font-weight: 500 !important; line-height: 1 !important; letter-spacing: -0.01em !important;
     white-space: nowrap; cursor: pointer; -webkit-tap-highlight-color: transparent;
   }
@@ -12475,7 +12473,7 @@ html body #op-header-acoes[hidden]:not(#love-h-a):not(#love-h-b):not(#love-h-c) 
   }
   html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card > div.flex.items-center.justify-between:first-child > h3:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
     display: flex; align-items: center; min-height: 44px; margin: 0 !important;
-    font-family: "Plus Jakarta Sans", Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    font-family: var(--fonte-love) !important;
     font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important; letter-spacing: -0.4px !important; color: #18181B !important;
   }
   html body .modal-backdrop:not(.hub-confirmar):not(#unsaved-changes-modal):not(.op-foto-modal) > .modal-card > div.flex.items-center.justify-between:first-child > button:not(#love-h-a):not(#love-h-b) {
@@ -12538,7 +12536,7 @@ html body .dash-saldo-celular .dash-saldo-celular-topo:not(#love-h-a) {
 html body .dash-saldo-celular .dash-saldo-celular-abas:not(#love-h-a) { display: flex; align-items: stretch; gap: 20px; min-width: 0; }
 html body .dash-saldo-celular .dash-saldo-celular-aba:not(#love-h-a):not(#love-h-b) {
   height: 46px; margin: 0 0 -1px; padding: 0; background: transparent; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
-  font-family: Inter, sans-serif; font-size: 14px; font-weight: 500; color: #71717A; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  font-family: var(--fonte-love); font-size: 14px; font-weight: 500; color: #71717A; cursor: pointer; -webkit-tap-highlight-color: transparent;
 }
 html body .dash-saldo-celular .dash-saldo-celular-aba:not(#love-h-a):not(#love-h-b):hover { color: #181D24; }
 html body .dash-saldo-celular .dash-saldo-celular-aba.active:not(#love-h-a):not(#love-h-b) { border-bottom-color: #183b54; color: #183b54; font-weight: 600; }
@@ -13042,7 +13040,7 @@ html body .love-pop-etiqueta-foto--icone svg:not(#love-h-a) { width: 18px; heigh
 html body .love-pop-etiqueta-nome:not(#love-h-a) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 500 14px Inter, sans-serif; color: #18181B; }
 html body .love-pop-etiqueta-selo:not(#love-h-a) { flex-shrink: 0; padding: 2px 8px; border-radius: 6px; background: #E3EDF5; color: #183b54; font: 500 11px Inter, sans-serif; }
 html body .love-pop-etiqueta-selo--pendente:not(#love-h-a) { background: #FEF3C7; color: #92400E; }
-html body .love-pop-titulo:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 26px; line-height: 1.2; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+html body .love-pop-titulo:not(#love-h-a) { margin: 0; font-family: var(--fonte-love); font-size: 26px; line-height: 1.2; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
 html body .love-pop-texto:not(#love-h-a) { margin: 10px auto 0; max-width: 340px; font-size: 15px; line-height: 1.55; color: #71717A; }
 html body .love-pop-botao:not(#love-h-a) { width: 100%; height: 44px; margin-top: 24px; justify-content: center; border-radius: 8px; }
 html body .love-pop-depois:not(#love-h-a) { margin-top: 12px; padding: 4px 8px; border: 0; background: none; font: 500 14px Inter, sans-serif; color: #71717A; cursor: pointer; }
@@ -13078,7 +13076,7 @@ html body .construtor-celular-aviso:not(#love-h-a) { display: none; }
   }
   html body .construtor-celular-aviso-icone:not(#love-h-a) { width: 56px; height: 56px; margin-bottom: 16px; border-radius: 999px; background: #E9EFF4; color: #183b54; display: inline-flex; align-items: center; justify-content: center; }
   html body .construtor-celular-aviso-icone svg:not(#love-h-a) { width: 28px; height: 28px; }
-  html body .construtor-celular-aviso-titulo:not(#love-h-a) { margin: 0; font-family: Inter, sans-serif; font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
+  html body .construtor-celular-aviso-titulo:not(#love-h-a) { margin: 0; font-family: var(--fonte-love); font-size: 20px; line-height: 1.3; font-weight: 600; letter-spacing: -0.025em; color: #18181B; }
   html body .construtor-celular-aviso-texto:not(#love-h-a) { margin: 8px 0 0; max-width: 300px; font-size: 14px; line-height: 1.55; color: #71717A; }
   body[data-theme="dark"] .construtor-celular-aviso { background: #1F1F1F !important; border-color: #333333 !important; }
   body[data-theme="dark"] .construtor-celular-aviso-icone { background: #333333 !important; color: #FFFFFF !important; }
@@ -13230,3 +13228,66 @@ html body :is(.b2b-shell, .b2b-main, .b2b-content):not(#love-h-a):not(#love-h-b)
   html body .b2b-content :is(.profile-logo-hint, .settings-zola-sub):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #A1A1AA !important; }
   html body .b2b-content .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; }
 }
+
+/* ==========================================================================
+   Tipografia igual à da plataforma do anfitrião (index): Outfit em tudo,
+   Fraunces leve só nos destaques (saudação e saldos grandes). Fica de fora o
+   site do cliente (canvas do Construtor e a prévia pública), quem tem fonte
+   escolhida no próprio elemento e os códigos em mono. Cores mantidas.
+   ========================================================================== */
+:root {
+  --fonte-love: "Outfit", "Helvetica Neue", Arial, sans-serif;
+  --fonte-love-serifa: "Fraunces", Georgia, "Times New Roman", serif;
+}
+html body:not([data-page="site-preview"]),
+html body:not([data-page="site-preview"]) :is(button, input, select, textarea, p, span, a, label, h1, h2, h3, h4, h5, h6, li, td, th, div, strong, small, b, .font-sans):not(.builder-canvas):not(.builder-canvas *):not([style*="font-family"]):not(.produto-sku):not(.product-sku-input):not(.inspector-textarea):not([data-item-code]):not(code):not(pre):not(kbd) {
+  font-family: var(--fonte-love) !important;
+}
+
+/* Títulos sempre peso 500 (nada de 600/700), no computador e no celular. */
+html body:not([data-page="site-preview"]) :is(h1, h2, h3, .greeting-title):not(.builder-canvas *):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-weight: 500 !important; }
+
+/* Título de cada página no topo: 20px / 500 / -0.02em / 26px. */
+html body .b2b-header-bar :is(h1, h2):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { font-size: 20px !important; line-height: 26px !important; letter-spacing: -0.02em !important; }
+
+/* Títulos de seção/cards (Sua agenda, Precisa de ajuda?, Analytics…): 18px / 500 / -0.02em. */
+html body :is(.dashboard-help-title, .cart-lista-titulo):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 18px !important; letter-spacing: -0.02em !important; }
+
+/* Saudação do Painel em Fraunces leve: 20px no computador, 26px no celular. */
+html body .greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+  font-family: var(--fonte-love-serifa) !important; font-weight: 400 !important;
+  font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -0.02em !important;
+  font-size: 20px !important;
+}
+/* Saldos grandes de Ganhos e Pagamentos em Fraunces leve. */
+html body :is(.cart-numero, .ganhos-valor):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: var(--fonte-love-serifa) !important; font-weight: 400 !important;
+  font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -0.02em !important;
+}
+html body .cart-numero.is-escondido:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { letter-spacing: 0.08em !important; }
+
+/* Texto logo abaixo da saudação: 15px / 400 / 24px. */
+html body #greeting-date:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 15px !important; font-weight: 400 !important; line-height: 24px !important; }
+
+/* Valores dos cartões (saldo, contagens): Outfit 300, -0.02em, tabulares;
+   34px no computador (28px no celular, com o ajuste automático). */
+html body :is(.dash-saldo-celular-valor, .dash-saldo-total-valor, .dash-analytics-metric-value):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-weight: 300 !important; letter-spacing: -0.02em !important; font-variant-numeric: tabular-nums; }
+html body .dash-saldo-celular-nome:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 12.5px !important; font-weight: 400 !important; }
+
+/* Abas 13px/700; tabela: cabeçalho 13px/700, células 14px/400; busca 14px. */
+html body .b2b-content :is(.category-tab, .settings-info-aba):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { font-size: 13px !important; font-weight: 700 !important; }
+html body .b2b-content table th:not(.builder-canvas *):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 13px !important; font-weight: 700 !important; }
+html body .b2b-content table td:not(.builder-canvas *):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 14px !important; font-weight: 400 !important; }
+html body .b2b-content :is(input[type="search"], input[placeholder^="Pesquisar"]):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 14px !important; }
+
+@media (min-width: 769px) {
+  html body :is(.dash-saldo-celular-valor, .dash-saldo-total-valor):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 34px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { font-size: 26px !important; color: #52525B !important; }
+  html body .b2b-content :is(input[type="search"], input[placeholder^="Pesquisar"]):not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 16px !important; }
+}
+/* Abas 13px/700 também onde o celular já tinha regra própria; nome embaixo do valor #5B6779. */
+html body .b2b-content :is(.category-tab, .settings-info-aba):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { font-size: 13px !important; font-weight: 700 !important; }
+html body .dash-saldo-celular-nome:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #5B6779 !important; }
+body[data-theme="dark"] .dash-saldo-celular-nome { color: #D4D4D8 !important; }

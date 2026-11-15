@@ -25,7 +25,7 @@
   const ESTILO = `
     .love-balao { position: fixed; z-index: 70; bottom: 24px; left: 24px; width: 360px; max-width: calc(100vw - 32px);
       display: flex; background: #FFFFFF; border: 0; border-radius: 10px; overflow: hidden;
-      box-shadow: 0 12px 40px rgba(15,23,32,0.14), 0 2px 8px rgba(15,23,32,0.06); font-family: Inter, system-ui, sans-serif;
+      box-shadow: 0 12px 40px rgba(15,23,32,0.14), 0 2px 8px rgba(15,23,32,0.06); font-family: var(--fonte-love, "Outfit", sans-serif);
       opacity: 0; transform: translateY(12px); transition: opacity .25s ease, transform .25s ease; }
     .love-balao.is-visivel { opacity: 1; transform: none; }
     .love-balao-imagem { flex: 0 0 112px; background: #F4F4F5 center / cover no-repeat; }

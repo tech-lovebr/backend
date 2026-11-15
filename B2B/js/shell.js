@@ -887,7 +887,7 @@ async function mostrarBalaoDoHub() {
   if (!window.LoveBalao) {
     await new Promise(ok => {
       const s = document.createElement('script');
-      s.src = 'js/balao-aviso.js?v=3';
+      s.src = 'js/balao-aviso.js?v=4';
       s.onload = ok; s.onerror = ok;
       document.head.appendChild(s);
     });

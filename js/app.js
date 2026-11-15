@@ -22432,6 +22432,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (el) el.textContent = `${n} ${n === 1 ? 'conversa' : 'conversas'}`;
   }
 
+  // Celular: tocar numa conversa abre o chat na tela inteira (como no
+  // computador, com a conversa e o campo de mensagem); a seta volta à lista.
+  const CHAT_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  function abrirConversaNoCelular() {
+    if (!CHAT_CELULAR.matches) return;
+    document.body.classList.add('chat-conversa-aberta');
+    const caixa = document.getElementById('b2b-chat-messages-container');
+    if (caixa) requestAnimationFrame(() => { caixa.scrollTop = caixa.scrollHeight; });
+  }
+  function fecharConversaNoCelular() { document.body.classList.remove('chat-conversa-aberta'); }
+  document.getElementById('b2b-chat-voltar')?.addEventListener('click', fecharConversaNoCelular);
+  // Trocar de menu fecha a conversa.
+  document.addEventListener('click', (e) => { if (/** @type {HTMLElement} */ (e.target).closest?.('.rail-icon-btn, #submenu-celular')) fecharConversaNoCelular(); }, true);
+
   function renderB2BChatContacts(filterQuery = buscaDoChat()) {
     const list = document.getElementById('b2b-chat-contacts-list');
     if (!list) return;
@@ -22520,6 +22534,7 @@ document.addEventListener('DOMContentLoaded', () => {
           activeB2BConversationId = conv.id;
           conv.unread = 0;
           renderB2BChat();
+          abrirConversaNoCelular();
         });
         acoes.querySelector('.conv-acao-remover')?.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -22541,6 +22556,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeB2BConversationId = conv.id;
         conv.unread = 0;
         renderB2BChat();
+        abrirConversaNoCelular();
       });
 
       list.appendChild(linha);

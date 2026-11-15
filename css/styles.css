@@ -15829,3 +15829,35 @@ html body #tab-overview .home-saldo-nome .love-olho:not(#love-h-a):not(#love-h-b
   #btn-rsvp-minhas-listas svg { width: 22px; height: 22px; }
   body[data-theme="dark"] #view-event-os-dashboard #btn-rsvp-minhas-listas { color: #FFFFFF; }
 }
+
+
+/* Celular › Mensagens: tocar numa conversa abre o chat na tela inteira, igual
+   ao computador (cabeçalho branco encostado no topo, com a seta de voltar,
+   as mensagens e o campo de escrever embaixo). */
+.b2b-chat-voltar { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.chat-conversa-aberta #b2b-chat-area:not(#love-h-a):not(#love-h-b) {
+    position: fixed !important; inset: 0 !important; z-index: 80 !important;
+    width: 100% !important; height: 100dvh !important; max-height: none !important;
+    display: flex !important; flex-direction: column !important; background: #FFFFFF !important;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html body.chat-conversa-aberta #b2b-chat-area > div:first-child:not(#love-h-a):not(#love-h-b) { height: 60px !important; padding: 0 12px 0 4px !important; gap: 8px; }
+  html body.chat-conversa-aberta #b2b-chat-area > div:first-child > div:first-child:not(#love-h-a) { gap: 10px !important; }
+  html body #view-event-os-dashboard button.b2b-chat-voltar:not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0; padding: 0;
+    background: transparent !important; border: 0 !important; color: #18181B; cursor: pointer;
+  }
+  .b2b-chat-voltar svg { width: 22px; height: 22px; }
+  html body.chat-conversa-aberta #b2b-chat-messages-container:not(#love-h-a):not(#love-h-b) { padding: 16px !important; }
+  html body.chat-conversa-aberta #b2b-chat-area > div:last-child:not(#love-h-a):not(#love-h-b) { padding: 10px 12px !important; }
+  html body.chat-conversa-aberta #b2b-chat-input:not(#love-h-a) { font-size: 16px !important; }
+  body.chat-conversa-aberta .sidebar-icon-rail { visibility: hidden; }
+  body[data-theme="dark"].chat-conversa-aberta #b2b-chat-area { background: #1A1A1A !important; }
+  body[data-theme="dark"] button.b2b-chat-voltar { color: #FFFFFF !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  /* A animação de entrada da aba deixa um transform que prende o "fixed" na aba. */
+  html body.chat-conversa-aberta #tab-b2b:not(#love-h-a):not(#love-h-b) { animation: none !important; transform: none !important; }
+  html body.chat-conversa-aberta .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) { display: none !important; }
+}

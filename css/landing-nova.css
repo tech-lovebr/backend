@@ -379,3 +379,7 @@
 #view-public-site#view-public-site .lp-legal-titulo { font-size: clamp(32px, 4vw, 48px) !important; font-weight: 200 !important; letter-spacing: -0.025em !important; line-height: 1.1 !important; color: var(--ink) !important; }
 #view-public-site#view-public-site .lp-legal-data { color: var(--soft) !important; }
 
+
+/* Abertura: a parte em destaque do título ("para suas celebrações." /
+   "planned with love.") um pouco mais forte que o resto (200). */
+#view-public-site#view-public-site .lv-dis .lv-it { font-weight: 350 !important; }

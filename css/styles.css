@@ -16051,3 +16051,6 @@ html body #view-event-os-dashboard :is(.btn-hire-supplier, #btn-b2b-profile-hire
   font-family: var(--fonte-love, 'Outfit'), sans-serif !important; font-size: 13px !important; font-weight: 500 !important; line-height: 1 !important; border-radius: 8px !important; white-space: nowrap;
 }
 html body #view-event-os-dashboard :is(.btn-hire-supplier, #btn-b2b-profile-hire, #btn-b2b-profile-message):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) * { font-size: inherit !important; font-weight: inherit !important; }
+/* Favoritar marcado: coração preenchido, sem linha de contorno. */
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { stroke: none !important; }
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"] path:not(#love-h-a):not(#love-h-b):not(#love-h-c) { stroke: none !important; stroke-width: 0 !important; }

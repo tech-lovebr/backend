@@ -2,7 +2,7 @@
 function tituloDaLove() {
   return document.documentElement.classList.contains('love-en-domain')
     ? 'Love: Free Wedding & Event Websites, Registry & Planning'
-    : 'Love: Site para Evento Grátis, Lista de Convidados & Presentes';
+    : 'Love: Crie seu Site Grátis, Lista de Convidados & Presentes';
 }
 
 /**

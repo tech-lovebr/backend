@@ -1842,8 +1842,8 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'pedidos', label: 'Minhas solicitações' },
         { id: 'explore', label: 'Explorar' },
+        { id: 'pedidos', label: 'Minhas solicitações' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Contratos' },
         // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).
@@ -1937,8 +1937,8 @@ document.addEventListener('DOMContentLoaded', () => {
     gifts: { 'my-gifts': '', 'gift-messages': 'recados', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento' },
-    // Fornecedores abre em Minhas solicitações (/fornecedores); Explorar em /fornecedores/explorar.
-    b2b: { pedidos: '', explore: 'explorar', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
+    // Fornecedores abre em Explorar (/fornecedores); Minhas solicitações em /fornecedores/solicitacoes.
+    b2b: { explore: '', pedidos: 'solicitacoes', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
   };
 
   // Ligado enquanto a tela está sendo montada a partir da URL (voltar/avançar
@@ -1983,7 +1983,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return { tab, subId: null, perfilId: decodeURIComponent(partes[2]) };
     }
     const subs = SUB_ROUTES[tab] || {};
-    const subId = Object.keys(subs).find(id => subs[id] === slug);
+    // Link antigo /fornecedores/explorar continua abrindo o Explorar.
+    const subId = tab === 'b2b' && slug === 'explorar' ? 'explore' : Object.keys(subs).find(id => subs[id] === slug);
     if (subId === undefined) {
       const mPerfil = tab === 'b2b' ? /-([0-9a-f]{8})$/i.exec(decodeURIComponent(slug)) : null;
       if (mPerfil) {
@@ -2275,7 +2276,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (document.body.classList.contains('b2b-chat-mode')) {
         switchB2BView('messages');
       } else {
-        switchB2BView('pedidos');
+        // Fornecedores abre sempre em Explorar (o primeiro do submenu).
+        switchB2BView('explore');
       }
       aplicandoRotaDoHistorico = aplicandoAntes;
     } else if (tabKey === 'info-event') {
@@ -11577,8 +11579,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (state.currentTab === tab) { abrirSubItem(tab, sub); registrarRota(caminhoSubRota(tab, sub)); return; }
     pendingSubItemId = sub;
     switchRailTab(tab);
-    // Fornecedores já abre em Criar solicitação: abrir de novo apagaria o serviço já marcado.
-    if (!(tab === 'b2b' && sub === 'pedidos')) abrirSubItem(tab, sub);
+    abrirSubItem(tab, sub);
   };
 
   window.loveAbrirExplorarNaCategoria = (/** @type {string} */ categoria) => {

@@ -20,6 +20,23 @@ const AUTH_OPTIONAL_PAGES = ['termos', 'privacidade'];
 // tinha escolhido o escuro volta para o claro).
 localStorage.removeItem('b2b-theme');
 document.body.dataset.theme = 'light';
+// Visual do Hub: o escuro (azul-noite) é o padrão, inclusive em conta nova;
+// o fornecedor liga o claro (igual ao index) em Perfil › Tema claro.
+try { if (localStorage.getItem('b2b-visual') === 'claro') document.documentElement.classList.add('hub-claro'); } catch (e) {}
+function initTemaClaro() {
+  const chave = document.getElementById('hub-tema-claro');
+  if (!chave || chave.dataset.pronto) return;
+  chave.dataset.pronto = '1';
+  const mostrar = () => chave.setAttribute('aria-checked', document.documentElement.classList.contains('hub-claro') ? 'true' : 'false');
+  mostrar();
+  chave.addEventListener('click', e => {
+    e.preventDefault(); e.stopPropagation();
+    const claro = !document.documentElement.classList.contains('hub-claro');
+    document.documentElement.classList.toggle('hub-claro', claro);
+    try { localStorage.setItem('b2b-visual', claro ? 'claro' : 'escuro'); } catch (err) {}
+    mostrar();
+  });
+}
 // Computador (mouse): o menu fica sempre recolhido e abre ao passar o mouse
 // (ver initSidebarHover). Telas de toque mantêm o recolher/expandir salvo.
 const SIDEBAR_HOVER = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;
@@ -521,6 +538,7 @@ async function loadShell() {
   ]);
   if (sidebarMount) sidebarMount.innerHTML = sidebarHtml;
   if (topbarMount) topbarMount.innerHTML = topbarHtml;
+  initTemaClaro();
 
   const content = document.querySelector('.b2b-content');
   if (content && !content.querySelector('.b2b-footer')) {
@@ -1343,7 +1361,7 @@ function montarMenuDoCelular() {
   };
   const desenharItensConta = () => {
     itensConta.innerHTML = '';
-    document.querySelectorAll('#avatar-dropdown > .topbar-dropdown-item:not(.topbar-item-adicionar-empresa):not(.topbar-item-sair):not([href="configuracoes"])').forEach(orig => {
+    document.querySelectorAll('#avatar-dropdown > .topbar-dropdown-item:not(.topbar-item-adicionar-empresa):not(.topbar-item-sair):not(.topbar-item-tema):not([href="configuracoes"])').forEach(orig => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'menu-conta-item';

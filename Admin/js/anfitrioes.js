@@ -2,8 +2,8 @@
    LOVE ADMIN — Anfitriões (contas da plataforma dos noivos)
    ========================================================================== */
 
-// Período pela data de cadastro; abre em "Este mês", como o Dashboard.
-const PERIODO = periodoEsteMes();
+// Período pela data de cadastro; abre nos últimos 30 dias, como o Dashboard.
+const PERIODO = periodoUltimos30();
 const noPeriodo = c => dentroDoPeriodo(PERIODO, c.created_at);
 
 let CLIENTES = [];

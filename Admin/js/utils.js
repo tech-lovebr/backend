@@ -373,6 +373,12 @@ function periodoEsteMes() {
   return { de: new Date(h.getFullYear(), h.getMonth(), 1), ate: new Date(h.getFullYear(), h.getMonth(), h.getDate(), 23, 59, 59, 999) };
 }
 
+/** Padrão do Admin (cadastros e dashboard): os últimos 30 dias, contando hoje. */
+function periodoUltimos30() {
+  const h = new Date();
+  return { de: new Date(h.getFullYear(), h.getMonth(), h.getDate() - 29), ate: new Date(h.getFullYear(), h.getMonth(), h.getDate(), 23, 59, 59, 999) };
+}
+
 function dentroDoPeriodo(estado, data) {
   if (!estado.de && !estado.ate) return true;
   if (!data) return false;
@@ -388,6 +394,10 @@ function rotuloDePeriodo(estado) {
   if (de && ate && de.getDate() === 1 && de.getMonth() === hoje.getMonth() && de.getFullYear() === hoje.getFullYear()
       && dia(ate) === dia(hoje)) return 'Este mês';
   if (de && ate && dia(de) === dia(ate) && dia(de) === dia(hoje)) return 'Hoje';
+  if (de && ate && dia(ate) === dia(hoje)) {
+    const dias = Math.round((new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate()) - new Date(de.getFullYear(), de.getMonth(), de.getDate())) / 864e5) + 1;
+    if (dias === 7 || dias === 30) return `Últimos ${dias} dias`;
+  }
   if (de && ate && dia(de) === dia(ate)) return dia(de);
   if (de && ate) return `${dia(de)} – ${dia(ate)}`;
   return de ? `A partir de ${dia(de)}` : `Até ${dia(ate)}`;

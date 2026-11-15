@@ -6,8 +6,8 @@
 let FORNECEDORES = [];
 let METRICAS = new Map();
 
-// Período pela data de cadastro; abre em "Este mês", como o Dashboard.
-const PERIODO = periodoEsteMes();
+// Período pela data de cadastro; abre nos últimos 30 dias, como o Dashboard.
+const PERIODO = periodoUltimos30();
 const noPeriodo = f => dentroDoPeriodo(PERIODO, f.created_at);
 
 /** Contas marcadas na tabela, para as ações em massa. */

@@ -17,12 +17,8 @@ let DADOS = null;
    com o histórico inteiro: ele é sobre a pessoa, não sobre o recorte.
    ====================================================================== */
 
-// Abre em "Este mês"; o calendário do filtro recorta um dia ou intervalo.
-const HOJE_ABERTURA = new Date();
-let PERIODO = {
-  de: new Date(HOJE_ABERTURA.getFullYear(), HOJE_ABERTURA.getMonth(), 1),
-  ate: new Date(HOJE_ABERTURA.getFullYear(), HOJE_ABERTURA.getMonth(), HOJE_ABERTURA.getDate(), 23, 59, 59, 999)
-};
+// Abre nos últimos 30 dias (padrão do Admin); o calendário do filtro recorta um dia ou intervalo.
+let PERIODO = periodoUltimos30();
 
 /** "AAAA-MM-DD" → início ou fim daquele dia no fuso de quem está vendo. */
 function diaLocal(valor, fimDoDia) {

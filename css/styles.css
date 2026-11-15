@@ -15417,3 +15417,21 @@ html body #btn-rsvp-minhas-listas:not(#love-h-a) { display: none; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top :is(#sidebar-brand-icon-light, #sidebar-brand-icon-dark):not(#love-h-a):not(#love-h-b) { display: none !important; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .sidebar-brand-top #sidebar-brand-icon-simbolo:not(#love-h-a):not(#love-h-b) { display: block !important; width: 36px !important; height: auto !important; max-width: none !important; }
 }
+
+/* Computador, tema claro: fundo da plataforma igual ao do Admin (degradê azul
+   claro — branco no alto à esquerda, azul embaixo à direita — parado ao rolar).
+   As camadas que pintavam o cinza #F4F6F7 ficam transparentes; cards e tabelas
+   continuam brancos por cima. Topo no mesmo tom, translúcido com desfoque. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body:not([data-theme="dark"]) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b) {
+    background:
+      radial-gradient(ellipse 45% 40% at 15% 20%, rgba(255, 255, 255, .95) 0%, rgba(255, 255, 255, 0) 100%),
+      radial-gradient(ellipse 60% 55% at 70% 92%, rgba(184, 207, 236, .95) 0%, rgba(184, 207, 236, 0) 100%),
+      #E8EFFA !important;
+    background-attachment: fixed !important;
+  }
+  html body:not([data-theme="dark"]) #view-event-os-dashboard :is(.dashboard-main-area, .dashboard-main-area > div, .dashboard-tab-content):not(#love-h-a):not(#love-h-b) { background: transparent !important; }
+  html body:not([data-theme="dark"]) #view-event-os-dashboard .dashboard-top-navbar:not(#love-h-a):not(#love-h-b) {
+    background: rgba(236, 242, 251, .82) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  }
+}

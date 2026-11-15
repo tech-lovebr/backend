@@ -9,7 +9,7 @@
   const EN = document.documentElement.classList.contains('hub-en');
   const D = {
     'Love Hub | Clientes e cobranças para quem trabalha com eventos': 'Love Hub | Clients and payments for event professionals',
-    'Encontre clientes': 'Find clients', 'Pagamentos': 'Payments', 'Entrar': 'Log in', 'Cadastre-se grátis': 'Sign up free',
+    'Encontre clientes': 'Find clients', 'Receba pagamentos': 'Get paid', 'Entrar': 'Log in', 'Cadastre-se grátis': 'Sign up free',
     'Love Hub, início': 'Love Hub, home', 'Escolha seu perfil': 'Choose your profile',
     'Para anfitriões': 'For hosts', 'Para fornecedores': 'For vendors',
     'Clientes e cobranças num lugar só': 'Clients and payments in one place',

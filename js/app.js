@@ -10445,6 +10445,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let painelDasListas = null;
   /** @type {HTMLElement|null} */
   let ancoraDasListas = null;
+  // Configurações › Meu evento: o painel só mostra e remove as listas (vale
+  // para todos os eventos da conta); sem "usar" nem "salvar" daqui.
+  let painelSoGerenciar = false;
 
   function fecharPainelDasListas() {
     if (painelDasListas) painelDasListas.remove();
@@ -10466,9 +10469,10 @@ document.addEventListener('DOMContentLoaded', () => {
    * do nome para salvar os convidados do evento como lista nova.
    * @param {HTMLElement} ancora @param {boolean} [salvando]
    */
-  async function abrirPainelDasListas(ancora, salvando = false) {
+  async function abrirPainelDasListas(ancora, salvando = false, soGerenciar = false) {
     if (painelDasListas && ancoraDasListas === ancora && !salvando) { fecharPainelDasListas(); return; }
     fecharPainelDasListas();
+    painelSoGerenciar = soGerenciar;
     fecharMenuDoPresente();
     const painel = document.createElement('div');
     painel.className = 'listas-salvas-painel';
@@ -10498,16 +10502,19 @@ document.addEventListener('DOMContentLoaded', () => {
         ? '<p class="listas-salvas-vazio">Você ainda não tem nenhuma lista salva.</p>'
         : '<ul class="listas-salvas-itens">' + listasSalvas.map(l => {
           const qtd = Array.isArray(l.convidados) ? l.convidados.length : 0;
+          const textos = `<span class="listas-salvas-nome">${escaparHtml(l.nome)}</span>
+              <span class="listas-salvas-qtd">${qtd} convidado${qtd === 1 ? '' : 's'}</span>`;
           return `<li data-lista-id="${escaparHtml(l.id)}">
-            <button type="button" class="listas-salvas-usar" data-dica="Usar neste evento">
-              <span class="listas-salvas-nome">${escaparHtml(l.nome)}</span>
-              <span class="listas-salvas-qtd">${qtd} convidado${qtd === 1 ? '' : 's'}</span>
-            </button>
+            ${painelSoGerenciar
+              ? `<div class="listas-salvas-usar listas-salvas-so-ver">${textos}</div>`
+              : `<button type="button" class="listas-salvas-usar" data-dica="Usar neste evento">${textos}</button>`}
             <button type="button" class="listas-salvas-remover" aria-label="Remover lista" data-dica="Remover lista"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
           </li>`;
         }).join('') + '</ul>';
     const sugestao = `Convidados · ${(ev && (ev.title || ev.name)) || 'meu evento'}`;
-    const rodape = !convidados.length ? '' : salvando
+    const rodape = painelSoGerenciar
+      ? '<p class="listas-salvas-aviso">As listas valem para todos os seus eventos. Para usar uma, abra Meus convidados no evento.</p>'
+      : !convidados.length ? '' : salvando
       ? `<form class="listas-salvas-form">
           <label class="listas-salvas-rotulo" for="listas-salvas-nome-novo">Nome da lista (${convidados.length} convidado${convidados.length === 1 ? '' : 's'})</label>
           <input type="text" id="listas-salvas-nome-novo" maxlength="80" value="${escaparHtml(sugestao)}" autocomplete="off">
@@ -10520,7 +10527,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     painel.querySelectorAll('li[data-lista-id]').forEach(li => {
       const id = /** @type {HTMLElement} */ (li).dataset.listaId || '';
-      li.querySelector('.listas-salvas-usar')?.addEventListener('click', (e) => usarListaSalva(id, /** @type {HTMLButtonElement} */ (e.currentTarget)));
+      li.querySelector('button.listas-salvas-usar')?.addEventListener('click', (e) => usarListaSalva(id, /** @type {HTMLButtonElement} */ (e.currentTarget)));
       li.querySelector('.listas-salvas-remover')?.addEventListener('click', () => removerListaSalva(id));
     });
     painel.querySelector('.listas-salvas-novo')?.addEventListener('click', () => desenharPainelDasListas(true));
@@ -10636,6 +10643,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.getElementById('btn-rsvp-listas-salvas')?.addEventListener('click', (e) => { e.stopPropagation(); abrirPainelDasListas(/** @type {HTMLElement} */ (e.currentTarget)); });
+  document.getElementById('btn-config-listas-salvas')?.addEventListener('click', (e) => { e.stopPropagation(); abrirPainelDasListas(/** @type {HTMLElement} */ (e.currentTarget), false, true); });
   document.getElementById('btn-rsvp-minhas-listas')?.addEventListener('click', (e) => { e.stopPropagation(); abrirPainelDasListas(/** @type {HTMLElement} */ (e.currentTarget)); });
   document.getElementById('btn-rsvp-salvar-lista')?.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -22968,6 +22976,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('config-painel-preferencias')?.classList.toggle('hidden', aba !== 'preferencias');
     if (aba === 'preferencias') desenharPreferencias();
     document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
+    document.getElementById('btn-config-listas-salvas')?.toggleAttribute('hidden', aba !== 'eventos');
     document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
     if (aba === 'eventos') renderMeuEvento();
     document.getElementById('config-painel-contas')?.classList.toggle('hidden', aba !== 'contas');

@@ -15463,3 +15463,18 @@ html body #btn-rsvp-minhas-listas:not(#love-h-a) { display: none; }
   }
   html body:not([data-theme="dark"]) #view-event-os-dashboard :is(.dashboard-main-area, .dashboard-main-area > div, .dashboard-tab-content):not(#love-h-a):not(#love-h-b) { background: transparent !important; }
 }
+
+/* Computador, tema claro: um azul só na navegação. O hover dos ícones da
+   barra lateral fica no mesmo #EBF4FF do item ativo (sem o vidro cinza), e o
+   submenu (Meus convidados, Mapa do evento, Checklist…) usa esse mesmo azul
+   no item ativo e no hover, com o texto na primária. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn:not(.active):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):hover {
+    background-color: #EBF4FF !important; color: #183b54 !important;
+    -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none !important;
+  }
+  html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item.active:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body:not([data-theme="dark"]) #sidebar-sub-drawer .sub-drawer-item:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover {
+    background-color: #EBF4FF !important; color: #183b54 !important;
+  }
+}

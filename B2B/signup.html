@@ -119,7 +119,7 @@ html.hub-en #view-login#view-login #auth-view-login .lg-titulo { font-size: min(
 #view-login#view-login .lg-link { position: relative; font-size: 13.5px !important; color: var(--lg-mudo) !important; }
 #view-login#view-login .lg-link-forte { color: var(--lg-azul) !important; font-weight: 500 !important; }
 #view-login#view-login .lg-link::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .45s var(--lg-ease); }
-#view-login#view-login .lg-link-forte::after { transform: scaleX(.25); }
+#view-login#view-login .lg-link-forte::after { transform: scaleX(0); } /* sem traço parado: a linha só aparece no hover */
 #view-login#view-login .lg-link:hover::after { transform: scaleX(1); }
 #view-login#view-login .lg-link:hover { color: var(--lg-tinta) !important; }
 #view-login#view-login .lg-link-forte:hover { color: var(--lg-azul) !important; }

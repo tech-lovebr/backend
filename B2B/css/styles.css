@@ -13180,3 +13180,20 @@ html body:not([data-theme="dark"]) :is(.b2b-shell, .b2b-main, .b2b-content):not(
   html body[data-theme="dark"] .b2b-footer:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; border-top-color: #404040 !important; }
   html body[data-theme="dark"] .b2b-footer :is(.b2b-footer-bottom--enxuto p, .b2b-footer-legal-links a):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
 }
+
+/* Cabeçalho do topo (computador) na mesma cor do menu lateral (#0C1824), com a
+   mesma linha fina dele; ícones de Mensagens, Produtos, Notificações e o
+   Upgrade na cor dos ícones do menu (#C4C4CC), brancos ao passar o mouse.
+   Nome da empresa em branco e a busca em vidro escuro, para ler no fundo. */
+@media (min-width: 769px) {
+  html body .b2b-topbar:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body[data-theme="dark"] .b2b-topbar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #0C1824 !important; border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; box-shadow: none !important; }
+  html body .b2b-topbar :is(.topbar-icon-plain, .topbar-upgrade-btn, .topbar-upgrade-btn span):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #C4C4CC !important; }
+  html body .b2b-topbar :is(.topbar-icon-plain, .topbar-upgrade-btn):not(#love-h-a):not(#love-h-b):not(#love-h-c) :is(svg, span) { color: inherit; }
+  html body .b2b-topbar :is(.topbar-icon-plain, .topbar-upgrade-btn):hover:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body .b2b-topbar .topbar-upgrade-btn:hover span:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; background: transparent !important; }
+  html body .b2b-topbar .topbar-account-name:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+  html body .b2b-topbar .topbar-search-trigger:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #C4C4CC !important; }
+  html body .b2b-topbar .topbar-search-trigger:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(255, 255, 255, 0.24) !important; color: #FFFFFF !important; }
+  html body .b2b-topbar .topbar-search-trigger kbd:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #A1A1AA !important; }
+}

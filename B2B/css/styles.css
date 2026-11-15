@@ -13197,3 +13197,36 @@ html body:not([data-theme="dark"]) :is(.b2b-shell, .b2b-main, .b2b-content):not(
   html body .b2b-topbar .topbar-search-trigger:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(255, 255, 255, 0.24) !important; color: #FFFFFF !important; }
   html body .b2b-topbar .topbar-search-trigger kbd:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(255, 255, 255, 0.06) !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #A1A1AA !important; }
 }
+
+/* Fundo da plataforma logada no azul-noite do Hub (o mesmo degradê do
+   destaque da landing): luz azul no alto à direita, azul mais fundo embaixo
+   à esquerda, um brilho quente bem leve no meio. Parado ao rolar. */
+@media (min-width: 769px) {
+html body:has(> .b2b-shell):not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body[data-theme="dark"]:has(> .b2b-shell):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  background:
+    radial-gradient(ellipse 40% 38% at 74% 24%, #2C5A85 0%, rgba(44, 90, 133, 0) 100%),
+    radial-gradient(ellipse 42% 34% at 18% 86%, #1B4166 0%, rgba(27, 65, 102, 0) 100%),
+    radial-gradient(ellipse 26% 26% at 50% 55%, rgba(242, 211, 198, 0.12) 0%, rgba(242, 211, 198, 0) 100%),
+    #0F1F2F !important;
+  background-attachment: fixed !important;
+}
+html body :is(.b2b-shell, .b2b-main, .b2b-content):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+}
+
+/* Rodapé sobre o fundo escuro: textos claros e a linha fina branca a 8%. */
+@media (min-width: 769px) {
+  html body .b2b-footer:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-top-color: rgba(255, 255, 255, 0.08) !important; }
+  html body .b2b-footer :is(.b2b-footer-bottom--enxuto p, .b2b-footer-legal-links a):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #C4C4CC !important; }
+  html body .b2b-footer .b2b-footer-legal-links a:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
+
+  /* Textos que ficam direto sobre o fundo escuro (abas, títulos de seção,
+     saudação, dicas): claros. Atalhos da Home em botão branco. */
+  html body .b2b-content :is(.category-tab, .settings-info-aba):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #C4C4CC !important; }
+  html body .b2b-content :is(.category-tab, .settings-info-aba):hover:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body .b2b-content :is(.category-tab.active, .settings-info-aba.is-ativa):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; border-bottom-color: #FFFFFF !important; }
+  html body .b2b-content .category-tabs-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-bottom-color: rgba(255, 255, 255, 0.08) !important; }
+  html body .b2b-content :is(.greeting-title, .dashboard-help-title, .cart-lista-titulo, .settings-secao-titulo):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+  html body .b2b-content :is(.profile-logo-hint, .settings-zola-sub):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #A1A1AA !important; }
+  html body .b2b-content .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; }
+}

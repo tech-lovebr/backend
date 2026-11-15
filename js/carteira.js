@@ -195,7 +195,7 @@
   const SITUACOES = { solicitado: 'Solicitado', processando: 'Em andamento', realizado: 'Realizado', recusado: 'Recusado' };
 
   /** @param {number} v */
-  const valor = (v) => `<span class="cart-valor${esconder ? ' is-escondido' : ''}">${esconder ? 'R$ ••••' : esc(reais(v))}</span>`;
+  const valor = (v) => `<span class="cart-valor love-saldo-valor">${esc(reais(v))}</span>`;
 
   function htmlSaque() {
     const n = numeros();
@@ -205,7 +205,7 @@
     return `
       <section class="cart-caixa cart-resumo">
         <div class="cart-resumo-topo">
-          <button type="button" class="cart-link" data-cart-esconder>${ICONE_OLHO}<span>${esconder ? 'Mostrar valores' : 'Esconder valores'}</span></button>
+          <button type="button" class="love-olho" data-love-olho aria-label="${document.documentElement.classList.contains('love-saldo-oculto') ? 'Mostrar saldo' : 'Esconder saldo'}" aria-pressed="${document.documentElement.classList.contains('love-saldo-oculto')}"><svg class="love-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="love-olho-fechado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
         </div>
         <div class="cart-resumo-cols">
           <div class="cart-resumo-col">

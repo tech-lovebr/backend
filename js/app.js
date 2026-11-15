@@ -194,6 +194,31 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Helper para obter a comemoração ativa
+  // Olhinho do saldo (Início › Saldo arrecadado e Carteira): esconde ou mostra
+  // os valores com um desfoque; a escolha fica guardada no navegador e vale
+  // para as duas telas.
+  (function olhoDoSaldo() {
+    const raiz = document.documentElement;
+    try { if (localStorage.getItem('love-saldo-oculto') === '1') raiz.classList.add('love-saldo-oculto'); } catch (e) { /* sem armazenamento */ }
+    const marcar = () => {
+      const oculto = raiz.classList.contains('love-saldo-oculto');
+      document.querySelectorAll('[data-love-olho]').forEach(b => {
+        b.setAttribute('aria-pressed', String(oculto));
+        b.setAttribute('aria-label', oculto ? 'Mostrar saldo' : 'Esconder saldo');
+      });
+    };
+    document.addEventListener('click', (ev) => {
+      const alvo = /** @type {HTMLElement} */ (ev.target);
+      if (!alvo.closest || !alvo.closest('[data-love-olho]')) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      const oculto = raiz.classList.toggle('love-saldo-oculto');
+      try { localStorage.setItem('love-saldo-oculto', oculto ? '1' : '0'); } catch (e) { /* sem armazenamento */ }
+      marcar();
+    }, true);
+    marcar();
+  })();
+
   function getActiveEvent() {
     return state.events.find(e => e.id === state.activeEventId) || state.events[0];
   }

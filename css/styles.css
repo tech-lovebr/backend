@@ -15706,3 +15706,51 @@ html body .floorplan-el.is-item.item-pista:not(#love-h-a):not(#love-h-b) {
 html body .floorplan-pista-rotulo:not(#love-h-a) { font-family: var(--fonte-love, 'Outfit'), sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: #8A97A8; pointer-events: none; user-select: none; }
 body[data-theme="dark"] .floorplan-el.is-item.item-pista { background: repeating-linear-gradient(135deg, #252B33 0 12px, #1E2329 12px 24px) !important; }
 body[data-theme="dark"] .floorplan-pista-rotulo { color: #A1A1AA; }
+
+
+/* Valores de saldo e contagens (Início: Saldo arrecadado, Presentes recebidos,
+   Convidados, Confirmados; Carteira: Saldo disponível e Saldo pendente) na
+   fonte do saldo da landing: Outfit leve, grande, com o rótulo pequeno em
+   cinza acima do número. */
+html body #tab-overview :is(.home-presentes-valor, #kpi-invites-sent, #kpi-rsvp-confirmed):not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body #carteira-raiz .cart-numero:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body #carteira-raiz .cart-numero .cart-valor:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: var(--fonte-love, 'Outfit'), sans-serif !important;
+  font-size: 34px !important; line-height: 1.15 !important;
+  font-weight: 300 !important; letter-spacing: -0.02em !important;
+  color: #16202F !important; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+html body #tab-overview .home-presentes-celular > div:not(#love-h-a):not(#love-h-b) { flex-direction: column-reverse !important; gap: 6px; }
+html body #tab-overview .home-kpis .grid.grid-cols-2 > div:not(#love-h-a):not(#love-h-b) { flex-direction: column !important; }
+html body #tab-overview :is(.home-presentes-nome, .home-kpis .grid.grid-cols-2 h4):not(#love-h-a):not(#love-h-b):not(#love-h-c),
+html body #carteira-raiz .cart-rotulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  font-family: var(--fonte-love, 'Outfit'), sans-serif !important; font-size: 12.5px !important; font-weight: 400 !important; color: #5B6779 !important; letter-spacing: 0 !important;
+}
+body[data-theme="dark"] #tab-overview :is(.home-presentes-valor, #kpi-invites-sent, #kpi-rsvp-confirmed),
+body[data-theme="dark"] #carteira-raiz :is(.cart-numero, .cart-numero .cart-valor) { color: #FFFFFF !important; }
+body[data-theme="dark"] #tab-overview :is(.home-presentes-nome, .home-kpis .grid.grid-cols-2 h4),
+body[data-theme="dark"] #carteira-raiz .cart-rotulo { color: #A1A1AA !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview :is(.home-presentes-valor, #kpi-invites-sent, #kpi-rsvp-confirmed):not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #carteira-raiz .cart-numero:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #carteira-raiz .cart-numero .cart-valor:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 28px !important; }
+}
+
+/* Olhinho do saldo: o mesmo da landing (caixinha clara com o olho); com o
+   saldo escondido, o valor fica desfocado e o ícone vira o olho riscado. */
+html body .home-saldo-nome:not(#love-h-a) { display: inline-flex !important; align-items: center; gap: 8px; }
+html body button.love-olho:not(#love-h-a):not(#love-h-b) {
+  width: 32px; height: 32px; flex-shrink: 0; padding: 0; display: inline-grid; place-items: center;
+  background: #FFFFFF !important; border: 1px solid #E3E8EF !important; border-radius: 8px !important; box-shadow: none !important;
+  color: #16202F; cursor: pointer; transition: border-color .15s, color .15s;
+}
+html body button.love-olho:not(#love-h-a):not(#love-h-b):hover { border-color: #181D24 !important; color: #181D24; }
+html body #carteira-raiz button.love-olho:not(#love-h-a):not(#love-h-b) { width: 38px; height: 38px; }
+.love-olho svg { width: 16px; height: 16px; }
+#carteira-raiz .love-olho svg { width: 17px; height: 17px; }
+.love-olho .love-olho-fechado, .love-saldo-oculto .love-olho .love-olho-aberto { display: none; }
+.love-saldo-oculto .love-olho .love-olho-fechado { display: block; }
+.love-saldo-valor { transition: filter .3s; }
+html.love-saldo-oculto .love-saldo-valor { filter: blur(9px); user-select: none; }
+body[data-theme="dark"] button.love-olho { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+html body #tab-overview .home-presentes-celular .home-presentes-nome:not(#love-h-a):not(#love-h-b) { min-height: 32px; display: inline-flex !important; align-items: center; }

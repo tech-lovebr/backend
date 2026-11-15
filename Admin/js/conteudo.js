@@ -582,7 +582,7 @@ function renderFaq() {
       </div>` + categorias.map(cat => {
         const perguntas = perguntasDe(cat);
         if (!perguntas.length) return '';
-        const aberta = !CATEGORIAS_FECHADAS.has(cat.toLowerCase());
+        const aberta = CATEGORIAS_ABERTAS.has(cat.toLowerCase());
         const ids = perguntas.map(q => q.id);
         const marcadas = ids.filter(id => SEL_FAQ.has(id)).length;
         return `
@@ -593,9 +593,10 @@ function renderFaq() {
               <button type="button" class="faq-cat-toggle" data-alternar-categoria="${escapeHtml(cat)}" aria-expanded="${aberta}">
                 <svg class="faq-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
                 <span class="faq-cat-nome">${escapeHtml(cat)}</span>
+                <span class="faq-cat-qtd">(${formatNumber(perguntas.length)})</span>
               </button>
               <button type="button" class="btn-icone-linha btn-editar-faq" data-renomear-categoria="${escapeHtml(cat)}" title="Renomear categoria" aria-label="Renomear categoria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" /><path d="M13.5 6.5l4 4" /></svg></button>
-              <button type="button" class="btn btn-ghost btn-sm faq-cat-nova" data-nova-pergunta="${escapeHtml(cat)}">+ Pergunta</button>
+              <button type="button" class="btn-icone-linha faq-cat-nova" data-nova-pergunta="${escapeHtml(cat)}" title="Adicionar pergunta" aria-label="Adicionar pergunta em ${escapeHtml(cat)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg></button>
             </div>
             ${aberta ? `<div class="faq-cat-corpo">
               ${perguntas.map(q => {
@@ -641,9 +642,8 @@ function renderFaq() {
   lista.querySelectorAll('[data-alternar-categoria]').forEach(btn => {
     btn.addEventListener('click', () => {
       const chave = btn.dataset.alternarCategoria.toLowerCase();
-      if (CATEGORIAS_FECHADAS.has(chave)) CATEGORIAS_FECHADAS.delete(chave);
-      else CATEGORIAS_FECHADAS.add(chave);
-      guardarCategoriasFechadas();
+      if (CATEGORIAS_ABERTAS.has(chave)) CATEGORIAS_ABERTAS.delete(chave);
+      else CATEGORIAS_ABERTAS.add(chave);
       renderFaq();
     });
   });
@@ -684,14 +684,8 @@ function renderFaq() {
 /* --------------------------------------------- Ajuda/FAQ: estado da tela */
 
 const SEL_FAQ = new Set();
-const CHAVE_FECHADAS = `love-admin-faq-fechadas-${PLATAFORMA}`;
-const CATEGORIAS_FECHADAS = (() => {
-  try { return new Set(JSON.parse(localStorage.getItem(CHAVE_FECHADAS) || '[]')); } catch { return new Set(); }
-})();
-
-function guardarCategoriasFechadas() {
-  try { localStorage.setItem(CHAVE_FECHADAS, JSON.stringify([...CATEGORIAS_FECHADAS])); } catch { /* sem armazenamento: só não lembra */ }
-}
+// Todos os acordeões começam fechados; abre o que a pessoa clicar.
+const CATEGORIAS_ABERTAS = new Set();
 
 /* Troca o nome da categoria no próprio cabeçalho; vale para todas as
    perguntas dela, e é esse nome que aparece na página Ajuda. */
@@ -726,7 +720,7 @@ function renomearCategoria(atual) {
     }
 
     FAQ.forEach(q => { if (ids.includes(q.id)) q.categoria = novo; });
-    if (CATEGORIAS_FECHADAS.delete(atual.toLowerCase())) { CATEGORIAS_FECHADAS.add(novo.toLowerCase()); guardarCategoriasFechadas(); }
+    if (CATEGORIAS_ABERTAS.delete(atual.toLowerCase())) CATEGORIAS_ABERTAS.add(novo.toLowerCase());
     renderFaq();
     toast('Categoria renomeada.');
   };

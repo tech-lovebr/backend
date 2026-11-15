@@ -1752,7 +1752,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const footerLogosLight = document.querySelectorAll('.footer-logo-light');
     const footerLogosDark = document.querySelectorAll('.footer-logo-dark');
 
-    if (logoLight) logoLight.src = 'assets/love-logo-escuro.svg?v=2';
+    if (logoLight) logoLight.src = 'assets/love-tipografia-profundo.svg?v=1';
     if (logoDark) logoDark.src = 'assets/love-logo-branco.svg?v=2';
 
     if (isDark) {

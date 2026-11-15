@@ -383,3 +383,6 @@
 /* Abertura: a parte em destaque do título ("para suas celebrações." /
    "planned with love.") um pouco mais forte que o resto (200). */
 #view-public-site#view-public-site .lv-dis .lv-it { font-weight: 350 !important; }
+
+/* Seções que o menu do topo abre: param abaixo do cabeçalho fixo (72px). */
+#view-public-site#view-public-site :is(#lv-convite, #lv-presentes) { scroll-margin-top: 96px; }

@@ -47,8 +47,8 @@
 
   const ILUSTRACAO_DOCUMENTOS = `
     <svg viewBox="0 0 140 140" aria-hidden="true">
-      <circle cx="70" cy="70" r="64" fill="#F2D3C6"/>
-      <circle cx="70" cy="70" r="52" fill="none" stroke="#EBC3B2" stroke-width="1.75"/>
+      <circle cx="70" cy="70" r="64" fill="#EAF1F8"/>
+      <circle cx="70" cy="70" r="52" fill="none" stroke="#D6E3F1" stroke-width="1.75"/>
       <rect x="40" y="30" width="60" height="76" rx="8" fill="#183b54"/>
       <rect x="49" y="39" width="42" height="26" rx="5" fill="#27394f"/>
       <circle cx="70" cy="48" r="7" fill="#FFFFFF"/>

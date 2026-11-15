@@ -24,9 +24,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=153">
+  <link rel="stylesheet" href="css/admin.css?v=154">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/carregamento.js?v=1"></script>
@@ -34,55 +34,30 @@
 </head>
 <body class="login-page">
 
-  <!-- Traço de fundo: formas soltas de painel, sem concorrer com o cartão. -->
-  <svg class="login-arte" viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="90" y="120" width="190" height="130" rx="8" />
-      <path d="M120 215h26v-45h-26zM162 215h26v-72h-26zM204 215h26v-28h-26z" />
+  <!-- Mesmo céu do login da plataforma (index), com o grão. -->
+  <div class="login-fundo" aria-hidden="true"></div>
 
-      <rect x="330" y="168" width="150" height="90" rx="8" />
-      <path d="M352 232l24-26 20 16 32-38" />
-      <circle cx="428" cy="184" r="5" />
-
-      <circle cx="560" cy="196" r="34" />
-      <path d="M560 196v-22M560 196l16 12" />
-
-      <rect x="650" y="150" width="170" height="108" rx="8" />
-      <path d="M672 178h78M672 198h126M672 218h54" />
-
-      <path d="M900 250c0-30 22-54 50-54s50 24 50 54" />
-      <path d="M925 250h100" />
-      <circle cx="950" cy="166" r="18" />
-
-      <rect x="1080" y="176" width="130" height="82" rx="8" />
-      <path d="M1100 222l20-18 16 12 24-26" />
-
-      <circle cx="1300" cy="208" r="26" />
-      <path d="M1319 227l20 20" />
-
-      <path d="M40 258h1360" opacity=".5" />
-      <path d="M300 258v-16M620 258v-28M1050 258v-20" opacity=".5" />
-    </g>
-  </svg>
+  <header class="login-cabecalho">
+    <span class="login-marca"><img src="assets/love-logo-tinta.svg?v=1" alt="Love"><em>Admin</em></span>
+  </header>
 
   <main class="login-area">
     <div class="login-cartao">
-      <img class="login-logo" src="assets/logo-preto.png" alt="Love">
+      <p class="login-sobre">Love Admin</p>
       <h1>Painel Administrativo</h1>
 
       <form id="login-form" novalidate>
-        <label class="login-rotulo" for="login-email">E-mail</label>
         <div class="login-campo">
-          <input id="login-email" type="email" placeholder="seu.email@exemplo.com" autocomplete="username" required>
+          <input id="login-email" type="email" placeholder=" " autocomplete="username" required>
+          <label class="login-rotulo" for="login-email">E-mail</label>
         </div>
-
-        <div class="login-rotulo-linha">
+        <div class="login-campo">
+          <input id="login-password" type="password" placeholder=" " autocomplete="current-password" required>
           <label class="login-rotulo" for="login-password">Senha</label>
-          <a href="#" class="login-esqueci" id="login-esqueci">Esqueceu a senha?</a>
-        </div>
-        <div class="login-campo">
-          <input id="login-password" type="password" placeholder="Sua senha secreta" autocomplete="current-password" required>
           <button type="button" class="login-ver-senha" id="btn-ver-senha">Mostrar</button>
+        </div>
+        <div class="login-linha">
+          <a href="#" class="login-esqueci" id="login-esqueci">Esqueceu a senha?</a>
         </div>
 
         <button type="submit" class="login-botao" id="login-submit">Entrar</button>
@@ -93,9 +68,9 @@
       <!-- Esqueceu a senha: pede o e-mail e manda o link de redefinição. -->
       <form id="esqueci-form" novalidate hidden>
         <p class="login-texto">Informe o e-mail de acesso. Enviaremos um link para você criar uma nova senha.</p>
-        <label class="login-rotulo" for="esqueci-email">E-mail</label>
         <div class="login-campo">
-          <input id="esqueci-email" type="email" placeholder="seu.email@exemplo.com" autocomplete="username" required>
+          <input id="esqueci-email" type="email" placeholder=" " autocomplete="username" required>
+          <label class="login-rotulo" for="esqueci-email">E-mail</label>
         </div>
         <button type="submit" class="login-botao" id="esqueci-submit">Enviar link</button>
         <p id="esqueci-aviso" class="login-erro" style="display:none"></p>
@@ -105,13 +80,13 @@
       <!-- Aberto pelo link do e-mail: a pessoa escreve a nova senha. -->
       <form id="nova-senha-form" novalidate hidden>
         <p class="login-texto">Crie uma nova senha para entrar no painel.</p>
-        <label class="login-rotulo" for="nova-senha">Nova senha</label>
         <div class="login-campo">
-          <input id="nova-senha" type="password" placeholder="Mínimo de 8 caracteres" autocomplete="new-password" required>
+          <input id="nova-senha" type="password" placeholder=" " autocomplete="new-password" required>
+          <label class="login-rotulo" for="nova-senha">Nova senha (mínimo de 8 caracteres)</label>
         </div>
-        <label class="login-rotulo" for="nova-senha-confirmar">Confirmar nova senha</label>
         <div class="login-campo">
-          <input id="nova-senha-confirmar" type="password" placeholder="Repita a nova senha" autocomplete="new-password" required>
+          <input id="nova-senha-confirmar" type="password" placeholder=" " autocomplete="new-password" required>
+          <label class="login-rotulo" for="nova-senha-confirmar">Confirmar nova senha</label>
         </div>
         <button type="submit" class="login-botao" id="nova-senha-submit">Salvar e entrar</button>
         <p id="nova-senha-erro" class="login-erro" style="display:none"></p>

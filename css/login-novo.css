@@ -131,3 +131,11 @@
 /* Entrar: Google primeiro, depois "ou entre com seu e-mail" e o formulário. */
 #view-login#view-login #login-panel-signin .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
 #view-login#view-login #login-panel-signin .lg-ou + .lg-form { margin-top: 0; }
+
+/* Continuar com o Google: igual ao botão oficial do Google (contorno, grande,
+   retangular): fundo branco, borda #DADCE0, cantos de 4px, 40px de altura. */
+#view-login#view-login #btn-google-login { height: 40px; padding: 0 12px; gap: 8px; border-radius: 4px !important; background: #FFFFFF !important; border: 1px solid #DADCE0 !important; color: #3C4043 !important; font-family: "Google Sans", Roboto, Arial, sans-serif !important; font-size: 14px !important; font-weight: 500 !important; letter-spacing: .25px; transition: background .218s, border-color .218s; }
+#view-login#view-login #btn-google-login * { font-family: inherit !important; }
+#view-login#view-login #btn-google-login:hover { background: rgba(66,133,244,.04) !important; border-color: #D2E3FC !important; }
+#view-login#view-login #btn-google-login:focus-visible { outline: none; border-color: #4285F4 !important; }
+#view-login#view-login #btn-google-login svg { width: 18px; height: 18px; }

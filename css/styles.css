@@ -16011,3 +16011,7 @@ html body :is(#btn-host-add-gift, #builder-publish):not(#love-h-a):not(#love-h-b
 html body :is(#btn-host-add-gift, #builder-publish):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) * { color: inherit !important; font-size: inherit !important; font-weight: inherit !important; }
 html body :is(#btn-host-add-gift, #builder-publish):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):hover:not(:disabled) { background: #FFFFFF !important; border-color: #181D24 !important; color: #181D24 !important; }
 body[data-theme="dark"] :is(#btn-host-add-gift, #builder-publish) { background: transparent !important; border-color: #3F3F46 !important; color: #E4E4E7 !important; }
+
+/* Favoritar marcado: o coração todo preenchido na cor do contorno. */
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { fill: #C9937E !important; stroke: #C9937E !important; color: #C9937E !important; }
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"] path:not(#love-h-a) { fill: #C9937E !important; stroke: #C9937E !important; }

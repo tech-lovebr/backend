@@ -2249,14 +2249,24 @@
       ? menuDaLinha(loteDosDados(it.r.dados || {}).categorias.length > 1 ? [['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']] : [['editar-titulo', 'Editar título'], ['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])
       : menuDaLinha([['ver-propostas', 'Ver propostas'], ['editar-titulo', 'Editar título'], ['duplicar', 'Duplicar'], ['excluir', 'Remover']]);
     const botao = '';
+    // Celular (como Meus convidados): ícone do serviço numa bolinha e, embaixo
+    // do título, evento · data · situação.
+    const idCat = it.tipo === 'rascunho' ? loteDosDados(it.r.dados || {}).categorias[0] : it.p.categoria;
+    const catIcone = idCat ? categoriaPorId(/** @type {any} */ (idCat)) : null;
+    const subCelular = [c.evento !== '—' ? c.evento : '', c.quando, c.situacao].filter(Boolean).join(' · ');
+    const bolinha = catIcone
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${catIcone.icone}</svg>`
+      : esc(String(c.titulo || '?').charAt(0).toUpperCase());
     return `
       <tr class="rfp-post" ${attr}>
         <td>
           <span class="rfp-col-sol">
             <input type="checkbox" class="gifts-select-all-check rfp-select-check" data-rfp-sel="${esc(chave)}"${selecionadas.has(chave) ? ' checked' : ''} aria-label="Selecionar ${esc(c.titulo)}">
+            <span class="rfp-avatar-celular" aria-hidden="true">${bolinha}</span>
             <span class="rfp-col-sol-texto">
               <button type="button" class="rfp-post-titulo rfp-post-link" data-rfp-detalhe="${esc(it.id)}">${esc(c.titulo)}</button>
               <span class="rfp-col-sub">${esc(c.sub)}</span>
+              <span class="rfp-sub-celular">${esc(subCelular)}</span>
             </span>
           </span>
         </td>
@@ -2373,6 +2383,12 @@
     const daPagina = lista.slice((pagina - 1) * porPagina, pagina * porPagina);
     // Sem nenhuma solicitação: o vazio de Meus convidados. Só a busca sem resultado: uma linha avisando.
     vazioDaLista(!itensDaLista.length);
+    // Celular: "N solicitações" acima da busca (como "N convidados").
+    const totalCelular = document.getElementById('rfp-total-celular');
+    if (totalCelular) {
+      totalCelular.textContent = itensDaLista.length ? `${total} ${total === 1 ? 'solicitação' : 'solicitações'}` : '';
+      totalCelular.hidden = !itensDaLista.length;
+    }
     caixa.innerHTML = total ? daPagina.map(it => linhaDaSolicitacao(it)).join('') : (itensDaLista.length ? listaVazia('Nenhuma solicitação encontrada.') : '');
     if (rodape) {
       rodape.hidden = !total;

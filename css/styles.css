@@ -15333,3 +15333,36 @@ html body #home-capa-celular-ola:not(#love-h-a):not(#love-h-b):not(#love-h-c):no
     letter-spacing: -0.025em !important;
   }
 }
+
+
+/* Listas salvas (Lista de convidados › Listas salvas): mesma caixa de Meus
+   convidados. "Usar neste evento" é um botão claro; Cancelar só texto.
+   No celular não há aba: "Minhas listas" fica no topo de Meus convidados. */
+html body #tab-rsvp-listas .listas-salvas-nome:not(#love-h-a) { font-weight: 500; color: #18181B; }
+html body #tab-rsvp-listas :is(.listas-salvas-qtd, .listas-salvas-data):not(#love-h-a) { color: #52525B; font-variant-numeric: tabular-nums; }
+html body #tab-rsvp-listas .listas-salvas-col-usar:not(#love-h-a) { text-align: right; white-space: nowrap; }
+html body #tab-rsvp-listas :is(.listas-salvas-usar, .listas-salvas-confirmar):not(#love-h-a) {
+  height: 34px; padding: 0 14px; border-radius: 8px; background: #FFFFFF; border: 1px solid #E4E4E7;
+  font-size: 13px; font-weight: 500; color: #183b54; cursor: pointer; white-space: nowrap; transition: border-color .15s, color .15s;
+}
+html body #tab-rsvp-listas :is(.listas-salvas-usar, .listas-salvas-confirmar):not(#love-h-a):hover { border-color: #181D24; color: #181D24; }
+html body #tab-rsvp-listas :is(.listas-salvas-usar, .listas-salvas-confirmar):not(#love-h-a):disabled { cursor: default; color: #71717A; border-color: #E4E4E7; }
+html body #tab-rsvp-listas .listas-salvas-acoes:not(#love-h-a) { display: inline-flex; align-items: center; gap: 14px; }
+html body #tab-rsvp-listas .listas-salvas-cancelar:not(#love-h-a) { background: none; border: 0; padding: 0; font-size: 13px; font-weight: 500; color: #71717A; cursor: pointer; }
+html body #tab-rsvp-listas .listas-salvas-cancelar:not(#love-h-a):hover { color: #181D24; }
+html body #tab-rsvp-listas .listas-salvas-nova .suas-listas-campo:not(#love-h-a) { width: 100%; max-width: 360px; }
+body[data-theme="dark"] #tab-rsvp-listas .listas-salvas-nome { color: #FFFFFF; }
+body[data-theme="dark"] #tab-rsvp-listas :is(.listas-salvas-usar, .listas-salvas-confirmar) { background: transparent; border-color: #3F3F46; color: #EBF4FF; }
+
+html body #btn-rsvp-minhas-listas:not(#love-h-a) { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #btn-rsvp-minhas-listas:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; height: 40px; padding: 0 4px; margin-right: 6px;
+    background: none; border: 0; font-size: 15px; font-weight: 500; color: #183b54; cursor: pointer; white-space: nowrap;
+  }
+  body[data-theme="dark"] #view-event-os-dashboard #btn-rsvp-minhas-listas { color: #EBF4FF; }
+  /* Tabela das listas no celular: nome em cima, quantidade e data menores. */
+  html body #tab-rsvp-listas .listas-salvas-data:not(#love-h-a),
+  html body #tab-rsvp-listas th:nth-child(3):not(#love-h-a) { display: none; }
+  html body #tab-rsvp-listas .listas-salvas-usar:not(#love-h-a) { padding: 0 10px; }
+}

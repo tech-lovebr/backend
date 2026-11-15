@@ -13331,19 +13331,19 @@ html body #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love
 }
 
 /* Home (computador): atalhos sem caixa em volta, cada um independente — a
-   bolinha em rosa clarinho (cor do coração do sidebar, #F2D3C6) com o ícone
-   escuro (#0C1824); no hover só uma linha rosa em volta da bolinha. A data de
+   bolinha no fundo da data de hoje e do Sacar disponível (#EAF0F5) com o
+   ícone #183b54; no hover só uma linha da mesma cor em volta da bolinha. A data de
    hoje em Sua agenda volta para o texto do Sacar disponível (#183b54). */
 @media (min-width: 769px) {
   html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
     background: transparent !important; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: none; backdrop-filter: none;
   }
   html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
-    background: #F2D3C6 !important; color: #0C1824 !important; box-shadow: none !important;
+    background: #EAF0F5 !important; color: #183b54 !important; box-shadow: none !important;
     outline: 1.5px solid transparent; outline-offset: 3px; transition: outline-color .15s ease;
   }
   html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:hover svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e),
-  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:focus-visible svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { outline-color: #F2D3C6; background: #F2D3C6 !important; }
+  html body[data-page="dashboard"] .dash-home-caixa .dashboard-quick-action-btn:focus-visible svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { outline-color: #EAF0F5; background: #EAF0F5 !important; }
   html body[data-page="dashboard"] .dash-home-caixa > .dashboard-quick-actions:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-left-color: rgba(234, 241, 248, 0.22) !important; }
   html body[data-page="dashboard"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b) :is(.dow, .dom):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { color: #183b54 !important; }
 }

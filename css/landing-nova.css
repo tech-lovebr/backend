@@ -213,10 +213,6 @@
 #view-public-site#view-public-site .lv-tpl:hover{transform:translateY(-2px)}
 #view-public-site#view-public-site .lv-tpl.lv-on{border-color:var(--deep);box-shadow:0 0 0 3px rgba(24,59,84,.08) !important}
 #view-public-site#view-public-site .lv-tpl .lv-th{width:28px;height:28px !important;border-radius:50% !important;display:grid !important;place-items:center;background:var(--sky);font-size:11px !important;color:var(--deep) !important}
-#view-public-site#view-public-site .lv-inks{display:flex !important;align-items:center;gap:10px !important;font-size:12px !important;letter-spacing:.14em !important;text-transform:uppercase !important;color:var(--soft) !important}
-#view-public-site#view-public-site .lv-ink{width:24px;height:24px !important;border-radius:50% !important;border:0 !important;cursor:pointer;box-shadow:0 0 0 1px rgba(22,32,47,.1) !important;transition:transform .3s var(--ease),box-shadow .3s}
-#view-public-site#view-public-site .lv-ink:hover{transform:scale(1.1)}
-#view-public-site#view-public-site .lv-ink.lv-on{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px currentColor !important}
 #view-public-site#view-public-site .lv-rsvp{width:min(100%,400px);padding:22px !important;display:grid !important;gap:14px !important}
 #view-public-site#view-public-site .lv-rsvp .lv-hd{display:flex !important;justify-content:space-between;align-items:baseline}
 #view-public-site#view-public-site .lv-rsvp .lv-hd b{font-size:30px !important;font-weight:300 !important;letter-spacing:-.02em !important}
@@ -383,7 +379,3 @@
 #view-public-site#view-public-site .lp-legal-titulo { font-size: clamp(32px, 4vw, 48px) !important; font-weight: 200 !important; letter-spacing: -0.025em !important; line-height: 1.1 !important; color: var(--ink) !important; }
 #view-public-site#view-public-site .lp-legal-data { color: var(--soft) !important; }
 
-/* Celular: sem as opções de modelo do convite digital (Monograma, Clássico, Moderno, Data). */
-@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  #view-public-site#view-public-site .lv-tpls { display: none !important; }
-}

@@ -61,15 +61,15 @@
       setTimeout(function () { trocarTexto($('#lv-hs2'), h2[hi][0], h2[hi][1]); }, 900);
     }, 3400);
 
-    // Convite: modelos, cores e exemplos.
-    var inv = $('#lv-inv'), modelos = $$('#lv-tpls .lv-tpl'), tintas = $$('.lv-inks .lv-ink');
+    // Convite: um botão por tipo de evento; cada um mostra o seu exemplo
+    // (texto, nomes, data e estilo). Passa sozinho até a pessoa tocar.
+    var inv = $('#lv-inv'), modelos = $$('#lv-tpls .lv-tpl');
     if (inv && modelos.length) {
       var demo = [
-        { t: 0, k: 'Vamos nos casar', a: 'Marina', b: 'Pedro', d: '2027-06-12' },
-        { t: 1, k: 'Vem comemorar comigo', a: 'Rafael', b: '', d: '2027-01-30' },
-        { t: 2, k: 'Meus quinze anos', a: 'Helena', b: '', d: '2027-03-20' },
-        { t: 3, k: 'Chá de bebê', a: 'Lia', b: '', d: '2027-02-14' },
-        { t: 1, k: 'Bodas de ouro', a: 'Lourdes', b: 'Antônio', d: '2027-09-05' }
+        { k: 'Vamos nos casar', a: 'Marina', b: 'Pedro', d: '2027-06-12' },
+        { k: 'Vem comemorar comigo', a: 'Rafael', b: '', d: '2027-01-30' },
+        { k: 'Bodas de ouro', a: 'Lourdes', b: 'Antônio', d: '2027-09-05' },
+        { k: 'Chá de fraldas', a: 'Lia', b: '', d: '2027-02-14' }
       ];
       var auto = !reduce, di = 0;
       var slug = function (v) { return v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); };
@@ -92,15 +92,8 @@
         var dias = Math.ceil((d - Date.now()) / 864e5);
         $('#lv-left').textContent = dias > 1 ? 'faltam ' + dias + ' dias' : 'é hoje';
       };
-      var passo = function (k) { var x = demo[k]; inv.style.opacity = '.3'; setTimeout(function () { usarModelo(x.t); mostrar(x); inv.style.opacity = '1'; }, 250); };
-      modelos.forEach(function (b, i) { b.addEventListener('click', function () { auto = false; usarModelo(i); }); });
-      tintas.forEach(function (b) {
-        b.addEventListener('click', function () {
-          auto = false;
-          tintas.forEach(function (x) { x.classList.toggle('lv-on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-          inv.style.setProperty('--ink-i', b.dataset.c);
-        });
-      });
+      var passo = function (k) { inv.style.opacity = '.3'; setTimeout(function () { usarModelo(k); mostrar(demo[k]); inv.style.opacity = '1'; }, 250); };
+      modelos.forEach(function (b, i) { b.addEventListener('click', function () { auto = false; di = i; passo(i); }); });
       usarModelo(0); mostrar(demo[0]);
       setInterval(function () { if (auto && visivel()) { di = (di + 1) % demo.length; passo(di); } }, 3800);
     }

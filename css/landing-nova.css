@@ -446,3 +446,10 @@
 #view-public-site#view-public-site .lv-menu-encontrar{margin-top:4px;padding:16px 0 0 !important;border-top:1px solid var(--line);font-size:17px !important;font-weight:500 !important;color:var(--deep) !important}
 @media (max-width:860px){#view-public-site#view-public-site .lv-nav .lv-in>span.lv-nav-esq{display:flex !important}
 #view-public-site#view-public-site .lv-menu-in{width:100%;margin-left:0;border-left:0;border-right:0;border-radius:0}}
+/* Menu: Criar evento na cor do "Criar meu evento grátis" (#183b54); Mapa do
+   evento com a mesma linha e o mesmo respiro dos outros itens. */
+#view-public-site#view-public-site .lv-menu-criar{background:var(--deep,#183b54) !important;border-color:var(--deep,#183b54) !important;color:#FFFFFF !important}
+#view-public-site#view-public-site .lv-menu-criar:hover{background:#122c3f !important;border-color:#122c3f !important}
+#view-public-site#view-public-site .lv-menu-links{padding:8px 0 0 !important}
+#view-public-site#view-public-site .lv-menu-links a:last-child{border-bottom:1px solid var(--line) !important}
+#view-public-site#view-public-site .lv-menu-encontrar{display:block;margin-top:0 !important;padding:14px 0 0 !important;border-top:0 !important}

@@ -344,3 +344,11 @@ footer{padding-block:64px 36px}
 .menu-cel-links a:last-child{border-bottom:0}
 .menu-cel-links a:hover{color:#A9C6EA}
 }
+/* Celular: o logotipo fica no centro exato da tela (102px, como na landing
+   da Love); o selo Hub fica pendurado à direita dele, fora da conta do centro. */
+@media (max-width:768px){
+.nav .brand{position:relative;gap:0}
+.nav .logo{width:102px}
+.nav .brand em{position:absolute;left:calc(100% + 8px);top:50%;transform:translateY(-50%);font-size:10px;letter-spacing:.16em;padding:3px 7px;white-space:nowrap}
+}
+@media (max-width:370px){.nav .brand em{display:none}}

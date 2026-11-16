@@ -4731,3 +4731,21 @@ body[data-theme="dark"] .admin-main .admin-header-bar { background: #181D24; bor
 body[data-theme="dark"] .admin-main .admin-header-bar h1 { color: #F4F4F5; }
 .admin-sidebar .admin-nav-subitem { font-weight: 500; }
 .admin-sidebar .admin-nav-subitem.is-active { font-weight: 600; }
+
+/* Caixa de bloquear/excluir: branca como o fundo, borda tracejada, um X para
+   fechar no canto; Excluir só com texto e contorno em vermelho. */
+.drawer-acoes-conta { position: relative; background: transparent; border: 1px dashed #D4D4D8; }
+.drawer-acoes-conta .drawer-acoes-titulo { padding-right: 2rem; }
+.drawer-acoes-fechar {
+  position: absolute; top: .625rem; right: .625rem; width: 28px; height: 28px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: var(--radius-control); background: none; color: #71717A; cursor: pointer;
+}
+.drawer-acoes-fechar svg { width: 16px; height: 16px; }
+.drawer-acoes-fechar:hover { color: #181D24; }
+.drawer-acoes-botoes .btn-neutro { background: #FFFFFF; border: 1px solid #E4E4E7; color: #3F3F46; }
+.drawer-acoes-botoes .btn-neutro:hover:not(:disabled) { background: #FFFFFF; border-color: #181D24; color: #181D24; }
+.drawer-acoes-botoes .btn-danger,
+.drawer-acoes-botoes .btn-danger:hover:not(:disabled) { background: #FFFFFF; color: var(--danger); border: 1px solid var(--danger); }
+.drawer-acoes-botoes .btn-danger:hover:not(:disabled) { color: #951d13; border-color: #951d13; }
+body[data-theme="dark"] .drawer-acoes-botoes :is(.btn-neutro, .btn-danger) { background: transparent; }

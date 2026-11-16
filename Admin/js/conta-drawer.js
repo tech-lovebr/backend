@@ -467,13 +467,13 @@ const ContaDrawer = (() => {
     const aviso = document.createElement('div');
     aviso.className = 'drawer-acoes-conta';
     aviso.innerHTML = `
+      <button type="button" class="drawer-acoes-fechar" id="btn-cancelar-acao" aria-label="Fechar" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
       <p class="drawer-acoes-titulo">${acao} ${escapeHtml(c.nome || c.email || 'esta conta')}?</p>
       <p class="drawer-acoes-texto drawer-acoes-texto--perigo">
         Atenção: Excluir é definitivo, a conta é excluída, assim como tudo que ela
         criou. Esta ação não pode ser desfeita.
       </p>
       <div class="drawer-acoes-botoes">
-        <button type="button" class="btn btn-ghost btn-sm" id="btn-cancelar-acao">Cancelar</button>
         <button type="button" class="btn btn-neutro btn-sm" id="btn-confirmar-bloqueio">${acao}</button>
         <button type="button" class="btn btn-danger btn-sm" id="btn-confirmar-exclusao">Excluir</button>
       </div>`;

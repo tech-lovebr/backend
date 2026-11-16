@@ -195,3 +195,16 @@
   #view-login#view-login .lg-cab-entrar { display: none !important; }
   #view-login#view-login .lg-pagina { padding-top: clamp(16px, 3vh, 32px) !important; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
 }
+
+/* Celular: sem o "Entrar na Love" no topo da caixa; "Ainda não tem uma
+   conta? Cadastre-se" centralizado; caixa um pouco translúcida (o céu
+   aparece por trás) com as linhas do relevo e o grão mais discretos; e a
+   caixa no meio da tela. Desktop não muda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login .lg-cabeca .lg-sobre { display: none !important; }
+  #view-login#view-login .lg-novo { text-align: center; }
+  #view-login#view-login .lg-cartao { background: rgba(255, 255, 255, .78) !important; -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); }
+  #view-login#view-login .lg-relevo { opacity: .35; }
+  #view-login#view-login .lg-fundo::after { opacity: .2; }
+  #view-login#view-login .lg-pagina { align-items: center !important; align-content: center; padding-top: 16px !important; padding-bottom: 16px !important; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
+}

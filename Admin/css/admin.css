@@ -4749,3 +4749,11 @@ body[data-theme="dark"] .admin-main .admin-header-bar h1 { color: #F4F4F5; }
 .drawer-acoes-botoes .btn-danger:hover:not(:disabled) { background: #FFFFFF; color: var(--danger); border: 1px solid var(--danger); }
 .drawer-acoes-botoes .btn-danger:hover:not(:disabled) { color: #951d13; border-color: #951d13; }
 body[data-theme="dark"] .drawer-acoes-botoes :is(.btn-neutro, .btn-danger) { background: transparent; }
+
+/* Sidebar um nível mais fino: itens 500 (aberto 600), subitens 400 (aberto 500). */
+.admin-sidebar .admin-nav-item,
+.admin-sidebar .admin-nav-grupo-toggle { font-weight: 500; }
+.admin-sidebar .admin-nav-item.is-active,
+.admin-sidebar .admin-nav-grupo-linha.is-active .admin-nav-item { font-weight: 600; }
+.admin-sidebar .admin-nav-subitem { font-weight: 400; }
+.admin-sidebar .admin-nav-subitem.is-active { font-weight: 500; }

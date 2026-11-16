@@ -18855,7 +18855,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       setSidebarLocked(false);
-      window.location.reload();
+      // Recarregar ainda em /login mostrava o login de novo por um instante
+      // antes do painel: sai do /login (a home, já com a sessão, abre o painel).
+      if (window.location.pathname === '/login' || window.location.hash === '#login') window.location.replace('/');
+      else window.location.reload();
     });
   }
 
@@ -18983,7 +18986,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       setSidebarLocked(false);
-      window.location.reload();
+      // Recarregar ainda em /login mostrava o login de novo por um instante
+      // antes do painel: sai do /login (a home, já com a sessão, abre o painel).
+      if (window.location.pathname === '/login' || window.location.hash === '#login') window.location.replace('/');
+      else window.location.reload();
     });
   }
 
@@ -24419,7 +24425,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try { return !!localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token'); } catch (e) { return false; }
   })();
 
-  if (isLoginRoute) {
+  // /login com sessão salva: não mostra o login (initClienteSession abre o
+  // painel; se a sessão não se confirmar, volta para o login).
+  if (isLoginRoute && !hasPlausibleSession) {
     switchView('login');
   } else if (!hasPlausibleSession) {
     switchView('public');
@@ -24457,7 +24465,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // chegou a rodar (ela mesma se encarrega de removê-la), e sem isso
       // aqui quem tivesse um token velho/inválido ficava travado na tela
       // escondida pelo CSS do <head>, sem nunca cair de volta pra home.
-      if (document.documentElement.classList.contains('love-likely-logged-in')) switchView('public');
+      if (document.documentElement.classList.contains('love-likely-logged-in')) switchView(isLoginRoute ? 'login' : 'public');
       return;
     }
 

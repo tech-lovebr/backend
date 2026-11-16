@@ -13017,7 +13017,7 @@ html body .floorplan-wrap.is-expandida .floorplan-voltar:not(#love-h-a) { displa
   html body #tab-b2b #b2b-chat-search:not(#love-h-a) { height: 40px !important; font-size: 16px !important; border-radius: 8px !important; }
   /* Mesmo alinhamento/padding da busca de Meus Convidados (.love-tabela-barra). */
   html body #tab-b2b #b2b-messages-view .b2b-chat-contacts-column > div:first-of-type:not(#love-h-a) { height: auto !important; padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
-  body:has(#b2b-messages-view:not(.hidden)) #submenu-celular { display: none !important; }
+  body:has(#tab-b2b.active #b2b-messages-view:not(.hidden)) #submenu-celular { display: none !important; }
 
   /* Convite digital: prévia na tela toda */
   html body #tab-edit-site .builder-narrow-notice:not(#love-h-a) { display: none !important; }

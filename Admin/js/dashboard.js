@@ -658,7 +658,7 @@ function renderContas() {
   tbody.innerHTML = pagina.map(c => `
     <tr data-id="${c.id}">
       <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(c))}</td>
-      <td class="cell-strong">${dash(c.email)}</td>
+      <td class="cell-strong"><span class="celula-com-perfil">${miniaturaDePerfil(c.foto)}<span>${dash(c.email)}</span></span></td>
       <td>${canalDaConta(c)}</td>
       <td class="cell-muted">${escapeHtml(formatDate(c.criado_em))}</td>
       <td class="cell-muted">${escapeHtml(c.ultimo_acesso ? formatRelative(c.ultimo_acesso) : 'nunca')}</td>

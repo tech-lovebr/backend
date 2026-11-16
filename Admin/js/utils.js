@@ -1267,3 +1267,19 @@ function restaurarEvento(evento, depois) {
     ]
   });
 }
+
+
+/**
+ * Miniatura redonda da foto de perfil (do Google ou do cadastro) para as
+ * tabelas; sem foto, ou se o link quebrar, o ícone de perfil.
+ * @param {string | null | undefined} url
+ */
+function miniaturaDePerfil(url) {
+  const link = String(url || '').trim();
+  const valida = link.toLowerCase().startsWith('https://');
+  const icone = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></svg>';
+  const foto = valida
+    ? `<img src="${escapeHtml(link)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.parentNode.classList.remove('tem-foto');this.remove()">`
+    : '';
+  return `<span class="mini-perfil${valida ? ' tem-foto' : ''}" aria-hidden="true">${foto}${icone}</span>`;
+}

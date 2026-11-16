@@ -13,6 +13,8 @@ let METRICAS = new Map();
 /* O último acesso mora em auth.users, que o PostgREST não expõe — vem pela
    admin_listar_contas(), a mesma função que alimenta Últimos cadastros. */
 let ULTIMO_ACESSO = new Map();
+/** Foto de perfil (Google ou cadastro), também da admin_listar_contas(). */
+let FOTOS = new Map();
 
 /** Contas marcadas na tabela, para as ações em massa. */
 let SELECIONADAS = new Set();
@@ -38,6 +40,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   CLIENTES = clientes.data;
   // Sem a função no banco a coluna fica vazia, em vez de derrubar a página.
   ULTIMO_ACESSO = new Map((contas.data || []).map(c => [c.id, c.ultimo_acesso]));
+  FOTOS = new Map((contas.data || []).map(c => [c.id, c.foto]));
   EVENTOS = eventos.data;
   METRICAS = montarMetricas({
     eventos: eventos.data,
@@ -274,7 +277,7 @@ function render() {
                  aria-label="Selecionar ${escapeHtml(c.couple_name || c.email || '')}">
         </td>
         <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(c.id))}</td>
-        <td class="cell-strong">${dash(c.couple_name)}</td>
+        <td class="cell-strong"><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(c.id) || c.avatar_url)}<span>${dash(c.couple_name)}</span></span></td>
         <td class="cell-muted">${celulaEmail(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>
         <td class="cell-muted">${escapeHtml(ultimoAcessoDe(c.id))}</td>

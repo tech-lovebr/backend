@@ -327,6 +327,10 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login .lg-campo:has(.lg-olho) input { padding-right: 48px !important; }
 #view-login#view-login .lg-olho { width: 36px !important; padding: 0 !important; justify-content: center; }
 #view-login#view-login .lg-olho svg { width: 18px; height: 18px; display: block; }
+/* Continuar com o Google: mesma cor do fundo, só com a linha fina em volta. */
+#view-login#view-login :is(#google-login-btn, #google-signup-btn) { background: transparent !important; border: 1px solid rgba(234,241,248,.2) !important; color: #EAF1F8 !important; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn):hover { background: transparent !important; border-color: rgba(234,241,248,.45) !important; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn):focus-visible { border-color: rgba(234,241,248,.6) !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>

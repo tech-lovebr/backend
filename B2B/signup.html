@@ -505,13 +505,12 @@ html, body { background: #0C1824 !important; }
 
             <p class="lg-novo sem-completar">Já tem uma conta? <a href="login" id="go-to-login" class="lg-link lg-link-forte">Entrar</a></p>
 
-            <p class="lg-aviso">Ao continuar, você reconhece a <a href="privacidade">Política de privacidade</a> da Love e concorda em receber atualizações ocasionais de produtos e e-mails promocionais.</p>
+            <p class="lg-aviso">Ao continuar, você reconhece a <a href="privacidade">Política de privacidade</a>.</p>
           </div>
         </div>
       </section>
 
       <!-- Voltar: um só, fora do cartão. Volta uma etapa; na primeira, volta para a página anterior. -->
-      <button type="button" id="signup-voltar" class="lg-voltar-baixo"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M13 8H3M7 4L3 8l4 4"/></svg><span>Voltar</span></button>
     </div>
   </div>
 
@@ -561,18 +560,6 @@ html, body { background: #0C1824 !important; }
         btn.textContent = mostrar ? 'Ocultar' : 'Mostrar';
         campo.focus();
       });
-    });
-
-    // Voltar (embaixo do cartão): da tela de Entrar volta ao cadastro; no
-    // cadastro (primeira etapa) volta para a página anterior.
-    document.getElementById('signup-voltar').addEventListener('click', function () {
-      if (document.body.dataset.authView === 'login') {
-        showAuthView('signup');
-        history.replaceState(null, '', 'signup');
-        return;
-      }
-      if (document.referrer && history.length > 1) history.back();
-      else window.location.href = '/';
     });
 
     function showAuthView(view) {

@@ -53,22 +53,28 @@ function pagina({ slug, titulo, conteudo, atualizadoEm }) {
   <link rel="alternate icon" type="image/png" href="/assets/love-logo-google-120.png?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta name="theme-color" content="#F7F8FA">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
-    body { margin: 0; background: #FFFFFF; color: #27272A; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.7; }
-    header { border-bottom: 1px solid #EEEEF0; }
-    .barra { max-width: 820px; margin: 0 auto; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-    .barra img { height: 30px; width: auto; display: block; }
-    .barra a.voltar { font-size: 0.875rem; font-weight: 600; color: #183B54; text-decoration: none; }
+    html { background: #F7F8FA; }
+    body { margin: 0; background: #FFFFFF; color: #27272A; font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif; line-height: 1.7; }
+    /* Topo igual ao do cadastro: cinza claro, seta de voltar à esquerda e o logo no centro. */
+    header { position: sticky; top: 0; z-index: 20; padding-top: env(safe-area-inset-top, 0px); background: rgba(247,248,250,.82); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 1px 0 #E3E8EF; }
+    .barra { position: relative; height: 72px; display: flex; align-items: center; justify-content: center; }
+    .barra .logo img { width: 102px; height: auto; display: block; }
+    .barra a.voltar { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); top: 50%; transform: translateY(-50%); display: inline-flex; color: #5B6779; text-decoration: none; }
+    .barra a.voltar:hover { color: #16202F; }
+    .barra a.voltar svg { width: 20px; height: 20px; display: block; }
+    @media (max-width: 768px) { .barra a.voltar { left: max(16px, env(safe-area-inset-left, 0px)); } }
     main { max-width: 820px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
-    h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.02em; color: #18181B; margin: 0 0 0.25rem; line-height: 1.2; }
+    h1 { font-size: 2rem; font-weight: 300; letter-spacing: -0.025em; color: #18181B; margin: 0 0 0.25rem; line-height: 1.2; }
     .data { font-size: 0.875rem; color: #A1A1AA; margin: 0 0 2.5rem; }
     .conteudo { font-size: 0.9375rem; }
     .conteudo h2, .conteudo h3 { color: #18181B; line-height: 1.3; margin: 2rem 0 0.75rem; }
     .conteudo a { color: #183B54; }
     .conteudo p { margin: 0 0 1rem; }
-    footer { border-top: 1px solid #EEEEF0; }
+    footer { background: #F7F8FA; border-top: 1px solid #E3E8EF; }
     .rodape { max-width: 820px; margin: 0 auto; padding: 1.5rem; font-size: 0.8125rem; color: #71717A; display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; justify-content: space-between; }
     .rodape a { color: #52525B; text-decoration: none; }
   </style>
@@ -76,8 +82,8 @@ function pagina({ slug, titulo, conteudo, atualizadoEm }) {
 <body>
   <header>
     <div class="barra">
-      <a href="/" aria-label="Love — página inicial"><img src="/assets/logo.png?v=2" alt="Love"></a>
-      <a class="voltar" href="/">Voltar para a Love</a>
+      <a class="voltar" href="/" id="voltar" aria-label="Voltar" title="Voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></a>
+      <a class="logo" href="/" aria-label="Love — página inicial"><img src="/assets/love-logo-tinta.svg?v=1" alt="Love"></a>
     </div>
   </header>
   <main>
@@ -91,6 +97,14 @@ function pagina({ slug, titulo, conteudo, atualizadoEm }) {
       <span><a href="${CAMINHOS[outro]}">${escapar(TITULOS[outro])}</a> · <a href="mailto:contato@love.com.br">contato@love.com.br</a></span>
     </div>
   </footer>
+  <script>
+    // Voltar: retorna para onde a pessoa estava (login, cadastro, site); se abriu o link direto, vai para a página inicial.
+    document.getElementById('voltar').addEventListener('click', function (e) {
+      try {
+        if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { e.preventDefault(); history.back(); }
+      } catch (err) {}
+    });
+  </script>
 </body>
 </html>`;
 }

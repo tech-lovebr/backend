@@ -475,3 +475,22 @@
   /* Sem ☰ (ex.: Encontrar evento): o logo começa na margem. */
   #view-public-site#view-public-site .lv-nav .lv-in:not(:has(.lv-burger)){column-gap:0 !important}
 }
+
+/* Política de Privacidade e Termos: fundo branco com o cinza claro da
+   plataforma (topo e faixa cinza, texto no branco). No celular o topo fica
+   igual ao do cadastro: seta de voltar à esquerda, logo no centro, sem a
+   faixa azul, o ☰ e o Entrar. */
+#view-public-site#view-public-site .lv-legal-voltar{display:none !important}
+#view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lp-legal{background:#FFFFFF !important}
+#view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-nav{transition:none !important;background:rgba(247,248,250,.82) !important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--line) !important}
+@media (max-width:860px){
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-bar{display:none !important}
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-nav{top:0 !important;padding-top:env(safe-area-inset-top,0px)}
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-nav .lv-in{grid-template-columns:1fr auto 1fr !important;column-gap:0 !important}
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-nav .lv-burger,
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-nav .lv-r{display:none !important}
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-nav .lv-logo{justify-self:center !important}
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-legal-voltar{display:inline-flex !important;align-items:center;justify-content:center;width:40px;height:40px;margin-left:-18px;padding:0;background:none;border:0;color:var(--mute) !important;cursor:pointer}
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-legal-voltar svg{width:20px;height:20px}
+  #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-legal-voltar:hover{color:var(--ink) !important}
+}

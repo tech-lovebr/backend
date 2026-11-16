@@ -24172,6 +24172,34 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Página legal no celular: seta de voltar à esquerda do topo. Volta para
+  // onde a pessoa estava (login, cadastro, landing); se abriu o link direto,
+  // vai para a página inicial.
+  // Barra do navegador no cinza claro enquanto a página legal está aberta;
+  // ao sair dela volta a cor original.
+  const paginaLegalPublica = document.getElementById('legal-doc-page');
+  if (paginaLegalPublica) {
+    const pintarBarraLegal = () => {
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) return;
+      if (!meta.dataset.original) meta.dataset.original = meta.getAttribute('content') || '';
+      if (!paginaLegalPublica.classList.contains('hidden')) meta.setAttribute('content', '#F7F8FA');
+      else if (meta.getAttribute('content') === '#F7F8FA') meta.setAttribute('content', meta.dataset.original);
+    };
+    new MutationObserver(pintarBarraLegal).observe(paginaLegalPublica, { attributes: true, attributeFilter: ['class'] });
+    pintarBarraLegal();
+  }
+  const botaoVoltarLegal = document.getElementById('lv-legal-voltar');
+  if (botaoVoltarLegal) {
+    botaoVoltarLegal.addEventListener('click', () => {
+      let veioDaLove = false;
+      try { veioDaLove = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
+      if ((history.state && history.state.legalDoc) || (veioDaLove && history.length > 1)) { history.back(); return; }
+      switchView('public');
+      history.pushState({}, '', '/');
+    });
+  }
+
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
   document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {
     if (!el.closest('.modal-container-custom')) {

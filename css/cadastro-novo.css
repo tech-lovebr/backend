@@ -248,3 +248,10 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 /* Continuar do acesso bloqueado até a senha cumprir as 4 regras: mesmo
    visual apagado do Próximo bloqueado. */
 #cd#cd #btn-onboard-submit:disabled { background: #E6EBF1 !important; color: var(--cd-suave) !important; box-shadow: none !important; cursor: not-allowed; }
+
+/* "Crie sua nova conta." no mesmo tamanho do "Acesse sua conta" do login:
+   32–44px no computador e min(38px, 9.5cqi) no celular, numa linha. */
+#cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloAcesso"] { font-size: clamp(32px, 3.1vw, 44px) !important; line-height: 1.02 !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloAcesso"] { font-size: min(38px, 9.5cqi) !important; }
+}

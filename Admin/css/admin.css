@@ -4720,3 +4720,14 @@ body[data-theme="dark"] .admin-main .admin-header-bar { background: #181D24; bor
 .admin-sidebar .admin-nav-item.is-active,
 .admin-sidebar .admin-nav-grupo-linha.is-active .admin-nav-item,
 .admin-sidebar .admin-nav-subitem.is-active { font-weight: 700; }
+
+/* Título do topo igual ao do Hub e do Index (Oportunidades, Meus convidados):
+   Outfit 20px peso 500. Subitens do menu mais finos: 500, o aberto em 600. */
+.admin-main .admin-header-bar h1 {
+  font-family: "Outfit", "Helvetica Neue", Arial, sans-serif;
+  font-size: 20px; line-height: 26px; font-weight: 500;
+  letter-spacing: -0.02em; color: #18181B;
+}
+body[data-theme="dark"] .admin-main .admin-header-bar h1 { color: #F4F4F5; }
+.admin-sidebar .admin-nav-subitem { font-weight: 500; }
+.admin-sidebar .admin-nav-subitem.is-active { font-weight: 600; }

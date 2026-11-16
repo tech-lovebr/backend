@@ -312,7 +312,7 @@ function render() {
                aria-label="Selecionar ${escapeHtml(f.company_name || f.email || '')}">
       </td>
       <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(f.id))}</td>
-      <td><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(f.id) || f.avatar_url)}<button type="button" class="nome-clicavel" data-ver="${escapeHtml(f.id)}" title="Ver cadastro">${dash(f.company_name)}</button></span></td>
+      <td><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(f.id) || f.avatar_url)}<button type="button" class="nome-clicavel" data-ver="${escapeHtml(f.id)}">${dash(f.company_name)}</button></span></td>
       <td class="cell-muted">${celulaEmail(f.email)}</td>
       <td class="cell-muted">${celulaCopiavel(f.cnpj, f.document_type === 'cpf' ? 'CPF' : 'CNPJ')}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>

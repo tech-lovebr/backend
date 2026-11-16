@@ -277,7 +277,7 @@ function render() {
                  aria-label="Selecionar ${escapeHtml(c.couple_name || c.email || '')}">
         </td>
         <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(c.id))}</td>
-        <td class="cell-strong"><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(c.id) || c.avatar_url)}<button type="button" class="nome-clicavel" data-ver="${escapeHtml(c.id)}" title="Ver cadastro">${dash(c.couple_name)}</button></span></td>
+        <td class="cell-strong"><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(c.id) || c.avatar_url)}<button type="button" class="nome-clicavel" data-ver="${escapeHtml(c.id)}">${dash(c.couple_name)}</button></span></td>
         <td class="cell-muted">${celulaEmail(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>
         <td class="cell-muted">${escapeHtml(ultimoAcessoDe(c.id))}</td>

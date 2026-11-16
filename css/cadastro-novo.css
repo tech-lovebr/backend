@@ -216,3 +216,8 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
 #cd#cd .olho-senha:hover { background: none !important; color: var(--cd-tinta); }
 body[data-theme="dark"] #cd#cd .olho-senha { color: rgba(255, 255, 255, .7); }
 body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
+
+/* Sem as bolinhas do carrossel na foto (como no login). */
+#cd#cd .cd-pontos { display: none !important; }
+/* Campos do cadastro no mesmo cinza bem claro do login (#F8FAFC). */
+#cd#cd { --cd-campo: #F8FAFC; }

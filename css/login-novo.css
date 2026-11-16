@@ -287,3 +287,6 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 #view-login#view-login .lg-campo:has(.lg-olho) input { padding-right: 48px !important; }
 body[data-theme="dark"] #view-login#view-login .lg-olho { color: rgba(255, 255, 255, .7) !important; }
 body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !important; }
+
+/* Campos (e-mail, senha) no cinza bem claro #F8FAFC. */
+#view-login#view-login { --lg-campo: #F8FAFC; }

@@ -2963,7 +2963,7 @@ body[data-theme="dark"] #floorplan-guests-panel .builder-panel-tab.active { back
 }
 .builder-fixed-footer-logo { display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
 .builder-fixed-footer-madewith { font-size: 0.75rem; font-weight: 500; color: #FFFFFF; }
-.builder-fixed-footer-word { height: 22px; width: auto; object-fit: contain; }
+.builder-fixed-footer-word { height: 22px; width: auto; object-fit: contain; flex-shrink: 0; display: block; }
 .builder-fixed-footer-divider { font-size: 0.75rem; color: #FFFFFF; }
 .builder-fixed-footer-text p, .builder-fixed-footer-text span {
   display: block;

@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300,50,0;1,9..144,300,50,0&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/hub-landing.css?v=18">
+  <link rel="stylesheet" href="css/hub-landing.css?v=19">
 </head>
 <body>
 
@@ -55,9 +55,24 @@
 
 <header class="nav" id="nav">
   <div class="wrap in">
-    <span><ul><li><a href="#pedidos">Encontre clientes</a></li><li><a href="#saldo">Receba pagamentos</a></li></ul></span>
+    <span class="nav-esq"><button type="button" class="burger" id="burger" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu-cel"><i></i><i></i><i></i></button><ul><li><a href="#pedidos">Encontre clientes</a></li><li><a href="#saldo">Receba pagamentos</a></li></ul></span>
     <a class="brand" href="/" aria-label="Love Hub, início"><span class="logo"><svg viewBox="0 0 1209 333"><use href="#logog"/></svg></span><em>Hub</em></a>
     <div class="r"><a class="ent" href="login">Entrar</a><a class="btn btn-l" href="signup">Cadastre-se grátis</a></div>
+  </div>
+  <!-- Menu do celular (☰): Entrar e Cadastre-se grátis no topo e as seções da página. -->
+  <div class="menu-cel" id="menu-cel" hidden>
+    <div class="menu-cel-in">
+      <div class="menu-cel-ctas"><a class="menu-cel-ent" href="login">Entrar</a><a class="menu-cel-criar" href="signup">Cadastre-se grátis</a></div>
+      <nav class="menu-cel-links" aria-label="Seções">
+        <a href="#pedidos">Encontre clientes</a>
+        <a href="#saldo">Receba pagamentos</a>
+        <a href="#propostas">Propostas e contratos</a>
+        <a href="#cobranca">Link de cobrança</a>
+        <a href="#agenda">Agenda e tarefas</a>
+        <a href="#seguranca">Segurança</a>
+        <a href="#faq">Perguntas frequentes</a>
+      </nav>
+    </div>
   </div>
 </header>
 
@@ -239,7 +254,7 @@
 </section>
 
 <!-- FAQ -->
-<section class="wrap faq" style="padding-bottom:clamp(56px,7vw,104px)">
+<section class="wrap faq" id="faq" style="padding-bottom:clamp(56px,7vw,104px)">
   <div style="display:grid;gap:16px;align-content:start"><h2 class="h2">Perguntas <span class="it">frequentes</span></h2><p class="p">Não achou o que procurava? Fale com a gente pela <a class="tlink" href="central-de-ajuda" style="display:inline">Central de ajuda</a>.</p></div>
   <div id="faq">
     <div class="qa open"><button aria-expanded="true">Quanto custa para começar?<span class="pm"></span></button><div class="ans"><div><p>O cadastro é grátis. Você monta a vitrine, cadastra seus produtos e começa a receber pedidos de orçamento sem pagar nada para começar.</p></div></div></div>
@@ -279,6 +294,6 @@
   </div>
 </footer>
 
-<script src="js/hub-landing.js?v=11"></script>
+<script src="js/hub-landing.js?v=12"></script>
 </body>
 </html>

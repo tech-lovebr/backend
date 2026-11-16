@@ -9,7 +9,7 @@
   const EN = document.documentElement.classList.contains('hub-en');
   const D = {
     'Love Hub: CRM para Encontrar Clientes & Gerenciar Eventos': 'Love Hub: CRM to Find Clients & Manage Events',
-    'Encontre clientes': 'Find clients', 'Receba pagamentos': 'Get paid', 'Entrar': 'Log in', 'Cadastre-se grátis': 'Sign up free',
+    'Encontre clientes': 'Find clients', 'Perguntas frequentes': 'FAQ', 'Abrir menu': 'Open menu', 'Fechar menu': 'Close menu', 'Seções': 'Sections', 'Receba pagamentos': 'Get paid', 'Entrar': 'Log in', 'Cadastre-se grátis': 'Sign up free',
     'Love Hub, início': 'Love Hub, home', 'Escolha seu perfil': 'Choose your profile',
     'Para anfitriões': 'For hosts', 'Para fornecedores': 'For vendors',
     'Clientes e cobranças num lugar só': 'Clients and payments in one place',
@@ -122,6 +122,21 @@
   }
 
   const swapText = (el, b, s) => { el.classList.add('out'); setTimeout(() => { el.querySelector('b').textContent = tr(b); el.querySelector('small').textContent = tr(s); el.classList.remove('out'); }, 450); };
+
+  /* Menu do celular (☰): abre/fecha o painel; tocar numa seção leva até ela e fecha. */
+  (() => {
+    const bt = $('#burger'), menu = $('#menu-cel'), topo = $('#nav');
+    if (!bt || !menu) return;
+    const abrir = on => {
+      menu.hidden = !on; bt.classList.toggle('aberto', on); topo.classList.toggle('menu-aberto', on);
+      bt.setAttribute('aria-expanded', String(on)); bt.setAttribute('aria-label', tr(on ? 'Fechar menu' : 'Abrir menu'));
+    };
+    bt.addEventListener('click', () => abrir(menu.hidden));
+    menu.addEventListener('click', e => { if (e.target.closest('a')) abrir(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { abrir(false); bt.focus(); } });
+    document.addEventListener('click', e => { if (!menu.hidden && !e.target.closest('#nav')) abrir(false); });
+    matchMedia('(max-width: 768px)').addEventListener('change', e => { if (!e.matches) abrir(false); });
+  })();
 
   const nav = $('#nav'); const sc = () => nav.classList.toggle('on', scrollY > 40);
   addEventListener('scroll', sc, {passive:true}); sc();

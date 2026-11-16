@@ -314,3 +314,33 @@ footer{padding-block:64px 36px}
 @media (prefers-reduced-motion:reduce){.all-luz{transition:none}}
 /* Botões das seções (Quero receber pedidos, Enviar minha proposta, Criar meu primeiro link): mesmo formato do Cadastre-se grátis. */
 .txt > .btn{width:fit-content;justify-self:start}
+/* Celular (até 768px): ☰ à esquerda, logo no meio e "Entrar" em branco à
+   direita (sem o Cadastre-se grátis), como no topo da landing da Love. O ☰
+   abre o painel com Entrar / Cadastre-se grátis e as seções da página. */
+.burger,.menu-cel{display:none}
+@media (max-width:768px){
+.nav .in{grid-template-columns:1fr auto 1fr}
+.nav .in>span.nav-esq{display:flex;align-items:center}
+.nav .in>span.nav-esq ul{display:none}
+.nav .r .ent{display:inline-flex;align-items:center;font-size:15px;font-weight:500;color:#FFFFFF}
+.nav .r .btn{display:none}
+.burger{width:40px;height:40px;margin-left:-8px;display:inline-flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:0;background:transparent;border:0;cursor:pointer;color:#FFFFFF}
+.burger i{display:block;width:20px;height:1.6px;border-radius:2px;background:currentColor;transition:transform .3s var(--ease),opacity .2s}
+.burger.aberto i:nth-child(1){transform:translateY(6.6px) rotate(45deg)}
+.burger.aberto i:nth-child(2){opacity:0}
+.burger.aberto i:nth-child(3){transform:translateY(-6.6px) rotate(-45deg)}
+.nav.menu-aberto{background:#0C1824;box-shadow:0 1px 0 var(--line)}
+.menu-cel{display:block;position:absolute;left:0;right:0;top:100%;z-index:60}
+.menu-cel[hidden]{display:none}
+.menu-cel-in{padding:8px 24px 24px;background:#0C1824;border-bottom:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;flex-direction:column;max-height:calc(100dvh - 72px);overflow-y:auto}
+.menu-cel-ctas{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.menu-cel-ent,.menu-cel-criar{height:52px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-size:16px;font-weight:500;white-space:nowrap}
+.menu-cel-ent{background:transparent;border:1px solid rgba(234,241,248,.35);color:#FFFFFF}
+.menu-cel-ent:hover{border-color:#EAF1F8}
+.menu-cel-criar{background:#EAF1F8;border:1px solid #EAF1F8;color:#0C1824}
+.menu-cel-criar:hover{background:#FFFFFF}
+.menu-cel-links{display:flex;flex-direction:column;padding-top:8px}
+.menu-cel-links a{padding:14px 0;font-size:17px;color:#EAF1F8;border-bottom:1px solid var(--line)}
+.menu-cel-links a:last-child{border-bottom:0}
+.menu-cel-links a:hover{color:#A9C6EA}
+}

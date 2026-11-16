@@ -5,6 +5,8 @@
 
 let FORNECEDORES = [];
 let METRICAS = new Map();
+/** Foto de perfil (Google ou cadastro), da admin_listar_contas() (migration 130). */
+let FOTOS = new Map();
 
 // Período pela data de cadastro; abre nos últimos 30 dias, como o Dashboard.
 const PERIODO = periodoUltimos30();
@@ -26,21 +28,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 8);
+  renderLoading(tbody, 7);
 
-  const [fornecedores, carteira, conversas, leads, produtos, contratos, links] = await Promise.all([
+  const [fornecedores, carteira, conversas, leads, produtos, contratos, links, contas] = await Promise.all([
     safeSelect('fornecedores', '*'),
     safeSelect('wallet_transactions', 'fornecedor_id, type, amount'),
     safeSelect('conversations', 'fornecedor_id, cliente_id, last_message_at'),
     safeSelect('leads', 'id, fornecedor_id, status, value, cliente_id'),
     safeSelect('products', 'fornecedor_id, active'),
     safeSelect('contracts', 'fornecedor_id, valor_total, valor_pago, status, lead_id'),
-    safeSelect('payment_links', 'fornecedor_id, amount, status')
+    safeSelect('payment_links', 'fornecedor_id, amount, status'),
+    supabaseClient.rpc('admin_listar_contas')
   ]);
 
   if (fornecedores.error) return renderError(tbody, 7, fornecedores.error);
 
   FORNECEDORES = fornecedores.data;
+  // Sem a função no banco fica só a foto do cadastro (ou o ícone).
+  FOTOS = new Map((contas.data || []).map(c => [c.id, c.foto]));
   METRICAS = montarMetricas({
     carteira: carteira.data,
     conversas: conversas.data,
@@ -291,7 +296,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 8, 'Nenhum fornecedor encontrado',
+    renderEmpty(tbody, 7, 'Nenhum fornecedor encontrado',
       FORNECEDORES.length ? 'Ajuste a busca, os filtros ou o período acima.' : 'Nenhuma conta B2B foi criada ainda.');
     return;
   }
@@ -307,12 +312,11 @@ function render() {
                aria-label="Selecionar ${escapeHtml(f.company_name || f.email || '')}">
       </td>
       <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(f.id))}</td>
-      <td>${dash(f.company_name)}</td>
+      <td><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(f.id) || f.avatar_url)}<button type="button" class="nome-clicavel" data-ver="${escapeHtml(f.id)}" title="Ver cadastro">${dash(f.company_name)}</button></span></td>
       <td class="cell-muted">${celulaEmail(f.email)}</td>
       <td class="cell-muted">${celulaCopiavel(f.cnpj, f.document_type === 'cpf' ? 'CPF' : 'CNPJ')}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
       <td class="col-numero">${formatNumber(metricas(f.id).contratosPlataforma)}</td>
-      <td class="col-acoes">${botaoVerMais(f.id)}</td>
     </tr>`;
   }).join('');
 

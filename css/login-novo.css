@@ -295,3 +295,9 @@ body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !
    102px até 860px de largura (onde a landing também usa 102px). */
 #view-login#view-login .lg-logo { width: 118px !important; }
 @media (max-width: 860px) { #view-login#view-login .lg-logo { width: 102px !important; } }
+
+/* Esqueci minha senha: X no canto de cima, à direita, da parte branca; fecha
+   e volta para o login. Só o ícone, sem caixa; no hover só escurece. */
+#view-login#view-login .lg-fechar { position: absolute; top: 16px; right: 16px; z-index: 2; width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: none !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; outline: none; color: var(--lg-mudo) !important; cursor: pointer; }
+#view-login#view-login .lg-fechar svg { width: 20px; height: 20px; display: block; }
+#view-login#view-login .lg-fechar:hover { color: var(--lg-tinta) !important; }

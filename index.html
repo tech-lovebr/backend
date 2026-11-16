@@ -40,7 +40,7 @@
        corpo da página (ex.: o carrossel do login) que já chama LoveI18n.t()
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
-  <script src="js/i18n.js?v=20261116_novaconta"></script>
+  <script src="js/i18n.js?v=20261116_esqueci"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -102,7 +102,7 @@
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261116_legal2">
-  <link rel="stylesheet" href="css/login-novo.css?v=20261116_logo118">
+  <link rel="stylesheet" href="css/login-novo.css?v=20261116_esqueci">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -561,10 +561,12 @@
 
           <!-- Painel: Esqueci a senha -->
           <div id="login-panel-forgot" class="lg-painel hidden">
+            <!-- X no canto de cima da parte branca: fecha e volta para o login. -->
+            <button type="button" id="btn-forgot-to-login" class="lg-fechar" aria-label="Fechar e voltar para o login" data-love-i18n-aria-label="login.fecharVoltarLogin" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
             <div class="lg-cabeca">
               <p class="lg-sobre" data-love-i18n="login.entrarNaLove">Entrar na Love</p>
-              <h1 class="lg-titulo" data-love-i18n="login.recuperarSenha">Recuperar senha</h1>
-              <p class="lg-sub" data-love-i18n="login.recuperarSenhaDesc">Digite seu e-mail e enviaremos um link para você criar uma nova senha.</p>
+              <h1 class="lg-titulo" data-love-i18n="login.recuperarSenha">Esqueci minha senha</h1>
+              <p class="lg-sub" data-love-i18n="login.recuperarSenhaDesc">Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>
             </div>
             <form id="form-login-forgot" class="lg-form" novalidate>
               <div class="lg-campo">
@@ -573,7 +575,6 @@
               </div>
               <button type="submit" id="btn-do-forgot-password" class="lg-btn lg-btn-escuro"><span data-love-i18n="login.reenviarSenha">Reenviar senha</span><i aria-hidden="true"></i></button>
             </form>
-            <p class="lg-novo"><button type="button" id="btn-forgot-to-login" class="lg-link lg-link-forte" data-love-i18n="login.voltarParaLogin">← Voltar para o login</button></p>
           </div>
 
           <!-- Painel: Código de dois fatores -->

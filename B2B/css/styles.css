@@ -13418,3 +13418,6 @@ body.sidebar-collapsed .sidebar-brand-link .sidebar-marca-hub { display: none; }
   html:not(.hub-claro) body .b2b-topbar .topbar-logo-texto:not(#love-h-a) { display: inline-flex; align-items: center; flex-shrink: 0; order: -1; margin: 0; color: #FFFFFF; line-height: 0; }
   html:not(.hub-claro) .b2b-topbar .topbar-logo-texto-svg { display: block; height: 23px; width: 70px; }
 }
+/* Menu lateral aberto (mouse em cima): o logotipo "Love Hub" do topo some,
+   porque já aparece no menu. Volta quando o menu recolhe. */
+html body:not(.sidebar-collapsed) .b2b-topbar .topbar-logo-texto:not(#love-h-a):not(#love-h-b) { display: none !important; }

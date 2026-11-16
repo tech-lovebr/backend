@@ -62,7 +62,7 @@
       recuperarSenha: { pt: 'Esqueceu a senha?', en: 'Forgot your password?' },
       lembrouSenha: { pt: 'Lembrou a senha?', en: 'Remembered your password?' },
       fecharVoltarLogin: { pt: 'Fechar e voltar para o login', en: 'Close and go back to login' },
-      recuperarSenhaDesc: { pt: 'Informe seu e-mail e enviaremos um link para criar uma nova senha.', en: "Enter your email and we'll send you a link to create a new password." },
+      recuperarSenhaDesc: { pt: 'Informe seu e-mail e enviaremos um link para você configurar uma nova senha.', en: "Enter your email and we'll send you a link to set up a new password." },
       reenviarSenha: { pt: 'Reenviar senha', en: 'Send reset link' },
       voltarParaLogin: { pt: '← Voltar para o login', en: '← Back to login' },
       verificacaoDuasEtapas: { pt: 'Verificação em duas etapas', en: 'Two-factor verification' },

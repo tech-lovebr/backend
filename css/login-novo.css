@@ -179,3 +179,19 @@
   #view-login#view-login .lg-cabecalho { margin: 8px 0 0 !important; }
   #view-login#view-login .lg-pagina { padding-top: 8px !important; }
 }
+
+/* Celular: o topo do login é o mesmo do cadastro (onboarding) — colado em
+   cima, 72px, fundo claro com desfoque e a linha fina embaixo (o mesmo do
+   topo fixo da landing), logo de 102px no centro, sem o "Entrar". A caixa
+   começa no mesmo respiro do cadastro (3vh, entre 16 e 32px). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login .lg-cabecalho {
+    margin: 0 !important; top: 0; padding-top: env(safe-area-inset-top, 0px);
+    background: rgba(247,248,250,.82) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 1px 0 var(--lg-linha, #E3E8EF) !important;
+  }
+  #view-login#view-login .lg-cab-in { height: 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  #view-login#view-login .lg-logo { width: 102px; }
+  #view-login#view-login .lg-cab-entrar { display: none !important; }
+  #view-login#view-login .lg-pagina { padding-top: clamp(16px, 3vh, 32px) !important; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
+}

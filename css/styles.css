@@ -16210,3 +16210,31 @@ html body #b2b-chat-send-btn.chat-enviar-icone svg:not(#love-h-a) { width: 20px;
   body[data-theme="dark"] #organizadores-tabela .org-avatar-celular { background: #1F1F1F !important; border-color: #404040 !important; color: #EBF4FF !important; }
   body[data-theme="dark"] #view-event-os-dashboard #organizadores-caixa .love-tabela-barra { border-bottom-color: #404040 !important; }
 }
+
+/* ==========================================================================
+   Celular: o fundo (céu azul) fica parado atrás de todas as telas, como em
+   Encontrar fornecedor — no iPhone o "background-attachment: fixed" não
+   funciona e o céu esticava pela página inteira; agora é uma camada fixa
+   que copia o fundo da tela (céu ou branco). Sem o "puxão" branco no fim da
+   rolagem e sem o rodapé do painel. Configurações: Preferências antes de
+   Privacidade (as duas juntas na mesma aba). Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard:not(#love-h-a) { isolation: isolate; }
+  html body #view-event-os-dashboard:not(#love-h-a)::before {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: inherit; background-attachment: scroll !important;
+  }
+  html:has(> body.dashboard-mode), html body.dashboard-mode { overscroll-behavior-y: none; }
+  html:has(> body.dashboard-mode:not([data-theme="dark"])) { background-color: #E4EDF8; }
+  html:has(> body.dashboard-mode[data-theme="dark"]) { background-color: #1A1A1A; }
+  html body #view-event-os-dashboard #dashboard-footer:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { display: none !important; }
+
+  html body #tab-account-settings :has(> #config-painel-conta):not(#love-h-a) { display: flex; flex-direction: column; gap: 24px; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade, #config-painel-preferencias, #config-painel-contas, #config-painel-eventos):not(#love-h-a) { margin: 0 !important; }
+  html body #config-painel-conta:not(#love-h-a) { order: 1; }
+  html body #config-painel-eventos:not(#love-h-a) { order: 2; }
+  html body #config-painel-preferencias:not(#love-h-a) { order: 3; }
+  html body #config-painel-privacidade:not(#love-h-a) { order: 4; }
+  html body #config-painel-contas:not(#love-h-a) { order: 5; }
+}

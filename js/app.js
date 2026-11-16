@@ -1223,10 +1223,29 @@ document.addEventListener('DOMContentLoaded', () => {
   // Saque sem conta → Configurações › Contas bancárias.
   window.loveAbrirContasBancarias = () => openAccountSettingsPage({ aba: 'contas' });
 
+  const CONFIG_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  /** @type {Record<string, string>} */
+  const CONFIG_ABA_NO_CELULAR = { eventos: 'conta', privacidade: 'preferencias' };
+  /** @type {Record<string, string[]>} */
+  const CONFIG_GRUPOS_CELULAR = { conta: ['conta', 'eventos'], preferencias: ['preferencias', 'privacidade'], contas: ['contas'] };
+  // Girar a tela / mudar a largura com Configurações aberta: refaz as abas.
+  CONFIG_CELULAR.addEventListener?.('change', () => {
+    if (state.currentTab !== 'tab-account-settings') return;
+    const ativa = /** @type {HTMLElement|null} */ (document.querySelector('#config-abas [data-config-aba].active'));
+    openAccountSettingsPage({ aba: ativa?.dataset.configAba || 'conta' });
+  });
+
   function openAccountSettingsPage(opts = {}) {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
-    const abaInicial = opts.aba || 'conta';
-    abrirSubmenuDaPagina('Configurações', [
+    const celular = CONFIG_CELULAR.matches;
+    const abaInicial = celular ? (CONFIG_ABA_NO_CELULAR[opts.aba || ''] || opts.aba || 'conta') : (opts.aba || 'conta');
+    // Celular: só 3 abas (como no Hub). Informações junta Meu evento;
+    // Preferências junta Privacidade; Contas bancárias fica sozinha.
+    abrirSubmenuDaPagina('Configurações', celular ? [
+      { id: 'conta', rotulo: 'Informações' },
+      { id: 'preferencias', rotulo: 'Preferências' },
+      { id: 'contas', rotulo: 'Contas bancárias' }
+    ] : [
       { id: 'conta', rotulo: 'Informações' },
       { id: 'privacidade', rotulo: 'Privacidade' },
       { id: 'preferencias', rotulo: 'Preferências' },
@@ -23167,6 +23186,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Configurações › abas "Minha conta" / "Meus eventos".
   function mostrarAbaDeConfiguracoes(aba) {
+    if (CONFIG_CELULAR.matches) aba = CONFIG_ABA_NO_CELULAR[aba] || aba;
+    const grupo = CONFIG_CELULAR.matches ? (CONFIG_GRUPOS_CELULAR[aba] || [aba]) : [aba];
+    const ve = (/** @type {string} */ p) => grupo.includes(p);
     document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.classList.toggle('active', b.dataset.configAba === aba));
     // Submenu lateral acompanha a aba (quando a troca vem de outro lugar).
     if (state.currentTab === 'tab-account-settings') {
@@ -23174,16 +23196,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const tituloDaPagina = document.getElementById('account-settings-header-title');
     if (tituloDaPagina) tituloDaPagina.textContent = aba === 'eventos' ? 'Meu evento' : aba === 'contas' ? 'Contas bancárias' : aba === 'privacidade' ? 'Privacidade' : aba === 'preferencias' ? 'Preferências' : 'Suas informações';
-    document.getElementById('config-painel-conta')?.classList.toggle('hidden', aba !== 'conta');
-    document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', aba !== 'privacidade');
-    if (aba === 'privacidade') refreshMfaStatus();
-    document.getElementById('config-painel-preferencias')?.classList.toggle('hidden', aba !== 'preferencias');
-    if (aba === 'preferencias') desenharPreferencias();
-    document.getElementById('config-painel-eventos')?.classList.toggle('hidden', aba !== 'eventos');
-    document.getElementById('btn-config-listas-salvas')?.toggleAttribute('hidden', aba !== 'eventos');
-    document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', aba !== 'conta');
-    if (aba === 'eventos') renderMeuEvento();
-    document.getElementById('config-painel-contas')?.classList.toggle('hidden', aba !== 'contas');
+    document.getElementById('config-painel-conta')?.classList.toggle('hidden', !ve('conta'));
+    document.getElementById('config-painel-privacidade')?.classList.toggle('hidden', !ve('privacidade'));
+    if (ve('privacidade')) refreshMfaStatus();
+    document.getElementById('config-painel-preferencias')?.classList.toggle('hidden', !ve('preferencias'));
+    if (ve('preferencias')) desenharPreferencias();
+    document.getElementById('config-painel-eventos')?.classList.toggle('hidden', !ve('eventos'));
+    document.getElementById('btn-config-listas-salvas')?.toggleAttribute('hidden', !ve('eventos'));
+    document.getElementById('btn-save-user-settings')?.classList.toggle('hidden', !ve('conta'));
+    if (ve('eventos')) renderMeuEvento();
+    document.getElementById('config-painel-contas')?.classList.toggle('hidden', !ve('contas'));
     if (aba === 'contas') /** @type {any} */ (window).LoveCarteira?.contasBancarias();
   }
   document.querySelectorAll('#config-abas [data-config-aba]').forEach(b => b.addEventListener('click', () => mostrarAbaDeConfiguracoes(b.dataset.configAba)));

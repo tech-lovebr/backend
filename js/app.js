@@ -22394,6 +22394,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Celular: tocar numa conversa abre o chat na tela inteira (como no
   // computador, com a conversa e o campo de mensagem); a seta volta à lista.
   const CHAT_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+  // Celular: o campo de escrever diz só "Escrever..." (no computador, o texto completo).
+  const textoDoCampoDoChat = () => {
+    const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('b2b-chat-input'));
+    if (campo) campo.placeholder = CHAT_CELULAR.matches ? 'Escrever...' : 'Escreva uma mensagem para o fornecedor...';
+  };
+  textoDoCampoDoChat();
+  CHAT_CELULAR.addEventListener?.('change', textoDoCampoDoChat);
   function abrirConversaNoCelular() {
     if (!CHAT_CELULAR.matches) return;
     document.body.classList.add('chat-conversa-aberta');

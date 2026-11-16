@@ -60,6 +60,7 @@
       aindaNaoTemConta: { pt: 'Ainda não tem uma conta?', en: "Don't have an account yet?" },
       cadastreSe: { pt: 'Cadastre-se', en: 'Sign up' },
       recuperarSenha: { pt: 'Esqueci minha senha', en: 'I forgot my password' },
+      lembrouSenha: { pt: 'Lembrou a senha?', en: 'Remembered your password?' },
       fecharVoltarLogin: { pt: 'Fechar e voltar para o login', en: 'Close and go back to login' },
       recuperarSenhaDesc: { pt: 'Informe seu e-mail e enviaremos um link para criar uma nova senha.', en: "Enter your email and we'll send you a link to create a new password." },
       reenviarSenha: { pt: 'Reenviar senha', en: 'Send reset link' },

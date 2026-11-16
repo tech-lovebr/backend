@@ -19042,6 +19042,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnForgotToLogin) {
     btnForgotToLogin.addEventListener('click', showLoginSigninPanel);
   }
+  // "Lembrou a senha? Entrar" (embaixo do Reenviar senha): também volta para o login.
+  document.getElementById('btn-forgot-lembrou')?.addEventListener('click', showLoginSigninPanel);
 
   const formLoginForgot = document.getElementById('form-login-forgot');
   if (formLoginForgot) {

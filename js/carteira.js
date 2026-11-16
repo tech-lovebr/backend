@@ -205,7 +205,7 @@
     return `
       <section class="cart-caixa cart-resumo">
         <div class="cart-resumo-topo">
-          <button type="button" class="love-olho" data-love-olho aria-label="${document.documentElement.classList.contains('love-saldo-oculto') ? 'Mostrar saldo' : 'Ocultar saldo'}" aria-pressed="${document.documentElement.classList.contains('love-saldo-oculto')}">${document.documentElement.classList.contains('love-saldo-oculto') ? 'Mostrar' : 'Ocultar'}</button>
+          <button type="button" class="love-olho" data-love-olho aria-label="${document.documentElement.classList.contains('love-saldo-oculto') ? 'Mostrar saldo' : 'Ocultar saldo'}" aria-pressed="${document.documentElement.classList.contains('love-saldo-oculto')}">${document.documentElement.classList.contains('love-saldo-oculto') ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>'}</button>
         </div>
         <div class="cart-resumo-cols">
           <div class="cart-resumo-col">

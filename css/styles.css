@@ -16243,3 +16243,18 @@ html body #b2b-chat-send-btn.chat-enviar-icone svg:not(#love-h-a) { width: 20px;
    que abre no topo fica por cima do submenu (a barra de cima cria a própria
    camada, então ela sobe junto). */
 html body #site-builder-root > .builder-toolbar:not(#love-h-a):not(#love-h-b) { position: relative; z-index: 30; }
+
+/* Olhinhos (saldo e senha do cadastro antigo): só o ícone, sem caixa nem
+   anel de foco. Saldo à mostra = olho inteiro; oculto = olho cortado. */
+html body button.love-olho:not(#love-h-a):not(#love-h-b) { width: 32px; height: 32px; padding: 0; justify-content: center; background: none !important; box-shadow: none !important; outline: none !important; }
+html body #carteira-raiz button.love-olho:not(#love-h-a):not(#love-h-b) { height: 32px; }
+html body button.love-olho:not(#love-h-a):not(#love-h-b) svg { width: 16px; height: 16px; display: block; }
+html body button.love-olho:not(#love-h-a):not(#love-h-b):hover { background: none !important; color: #16202F !important; }
+.login-campo-com-icone input { padding-right: 48px !important; }
+html body button.login-campo-icone.login-ver-senha:not(#love-h-a) { width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; box-shadow: none; outline: none; }
+html body button.login-campo-icone.login-ver-senha:not(#love-h-a) svg { width: 18px; height: 18px; display: block; }
+html body button.login-campo-icone.login-ver-senha:not(#love-h-a):hover { background: none; color: #16202F; }
+body[data-theme="dark"] button.love-olho:not(#love-h-a):not(#love-h-b) { background: none !important; color: rgba(255, 255, 255, .7) !important; }
+body[data-theme="dark"] button.love-olho:not(#love-h-a):not(#love-h-b):hover { background: none !important; color: #FFFFFF !important; }
+body[data-theme="dark"] button.login-campo-icone.login-ver-senha:not(#love-h-a) { color: rgba(255, 255, 255, .7); }
+body[data-theme="dark"] button.login-campo-icone.login-ver-senha:not(#love-h-a):hover { color: #FFFFFF; }

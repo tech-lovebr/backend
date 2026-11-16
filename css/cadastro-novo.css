@@ -208,3 +208,11 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
   #cd#cd .cd-relevo { inset: 0; width: auto; right: 0; bottom: 0; overflow: hidden; border-radius: 24px; }
   #cd#cd .cd-relevo svg { position: absolute; width: 110%; right: -30%; bottom: -6%; }
 }
+
+/* Olhinho da senha: só o ícone, sem caixa; no hover só escurece. */
+#cd#cd .onboard-step .campo-senha-com-olho input#onboard-password-input[type] { padding-right: 48px !important; }
+#cd#cd .olho-senha { width: 36px !important; height: 36px !important; padding: 0 !important; justify-content: center; background: none !important; border: 0 !important; box-shadow: none !important; outline: none !important; }
+#cd#cd .olho-senha svg { width: 18px; height: 18px; display: block; }
+#cd#cd .olho-senha:hover { background: none !important; color: var(--cd-tinta); }
+body[data-theme="dark"] #cd#cd .olho-senha { color: rgba(255, 255, 255, .7); }
+body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }

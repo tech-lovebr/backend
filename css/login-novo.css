@@ -278,3 +278,12 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 /* Computador também: título e descrição centralizados, como no login do Hub
    (a fonte continua a da Love). */
 #view-login#view-login .lg-cabeca :is(.lg-titulo, .lg-sub) { text-align: center !important; margin-left: auto; margin-right: auto; }
+
+/* Olhinho da senha: só o ícone (cortado = escondida, inteiro = à mostra),
+   sem caixa nem anel; no hover só escurece o ícone. */
+#view-login#view-login .lg-olho { width: 36px !important; height: 36px; padding: 0 !important; justify-content: center; background: none !important; box-shadow: none !important; outline: none !important; }
+#view-login#view-login .lg-olho svg { width: 18px; height: 18px; display: block; }
+#view-login#view-login .lg-olho:hover { background: none !important; }
+#view-login#view-login .lg-campo:has(.lg-olho) input { padding-right: 48px !important; }
+body[data-theme="dark"] #view-login#view-login .lg-olho { color: rgba(255, 255, 255, .7) !important; }
+body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !important; }

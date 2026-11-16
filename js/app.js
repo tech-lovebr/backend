@@ -198,17 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // os valores com um desfoque; a escolha fica guardada no navegador e vale
   // para as duas telas.
   (function olhoDoSaldo() {
+    const OLHO_ABERTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const OLHO_CORTADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg>';
     const raiz = document.documentElement;
     try { if (localStorage.getItem('love-saldo-oculto') === '1') raiz.classList.add('love-saldo-oculto'); } catch (e) { /* sem armazenamento */ }
     const marcar = () => {
       const oculto = raiz.classList.contains('love-saldo-oculto');
-      // Texto no lugar do olho, como no login do Admin: "Mostrar" com os
-      // valores escondidos e "Ocultar" com eles à vista.
-      const t = (/** @type {string} */ chave, /** @type {string} */ pt) => (window.LoveI18n ? window.LoveI18n.t(chave) : pt);
+      // Olho inteiro com os valores à mostra; olho cortado com eles ocultos.
       document.querySelectorAll('[data-love-olho]').forEach(b => {
         b.setAttribute('aria-pressed', String(oculto));
         b.setAttribute('aria-label', oculto ? 'Mostrar saldo' : 'Ocultar saldo');
-        b.textContent = oculto ? t('login.mostrar', 'Mostrar') : t('login.ocultar', 'Ocultar');
+        b.innerHTML = oculto ? OLHO_CORTADO : OLHO_ABERTO;
       });
     };
     document.addEventListener('click', (ev) => {
@@ -19066,6 +19066,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Login e cadastro: o olhinho mostra ou esconde a senha (data-ver-senha = id do campo).
+  // Senha escondida = olho cortado; senha à mostra = olho inteiro.
+  const OLHO_ABERTO_SENHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const OLHO_CORTADO_SENHA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg>';
   document.querySelectorAll('[data-ver-senha]').forEach(botao => {
     botao.addEventListener('click', (e) => {
       const btn = /** @type {HTMLButtonElement} */ (e.currentTarget);
@@ -19075,7 +19078,7 @@ document.addEventListener('DOMContentLoaded', () => {
       campo.type = mostrar ? 'text' : 'password';
       btn.setAttribute('aria-pressed', String(mostrar));
       btn.setAttribute('aria-label', window.LoveI18n ? window.LoveI18n.t(mostrar ? 'login.esconderSenha' : 'login.mostrarSenha') : (mostrar ? 'Ocultar senha' : 'Mostrar senha'));
-      btn.textContent = window.LoveI18n ? window.LoveI18n.t(mostrar ? 'login.ocultar' : 'login.mostrar') : (mostrar ? 'Ocultar' : 'Mostrar');
+      btn.innerHTML = mostrar ? OLHO_ABERTO_SENHA : OLHO_CORTADO_SENHA;
       campo.focus();
     });
   });

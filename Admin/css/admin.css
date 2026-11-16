@@ -4702,3 +4702,21 @@ body[data-theme="dark"] .admin-main .admin-header-bar { background: #181D24; bor
 
 /* Central de ajuda: quantidade de perguntas ao lado do nome da categoria. */
 .faq-cat-qtd { margin-left: .375rem; font-size: 1rem; font-weight: 400; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------ Menu lateral como no Index e no Hub
+   Mesma fonte (Outfit) e mesma grossura dos menus da plataforma e do Hub
+   (Meus convidados, Meus presentes…): itens 14px/600, subitens 13px/600,
+   o aberto em 700. */
+.admin-sidebar .admin-nav-item,
+.admin-sidebar .admin-nav-grupo-toggle,
+.admin-sidebar .admin-nav-subitem,
+.admin-sidebar .admin-nav-label,
+.admin-sidebar .sidebar-perfil-nome {
+  font-family: "Outfit", "Helvetica Neue", Arial, sans-serif;
+}
+.admin-sidebar .admin-nav-item,
+.admin-sidebar .admin-nav-grupo-toggle { font-size: .875rem; font-weight: 600; }
+.admin-sidebar .admin-nav-subitem { font-size: .8125rem; font-weight: 600; }
+.admin-sidebar .admin-nav-item.is-active,
+.admin-sidebar .admin-nav-grupo-linha.is-active .admin-nav-item,
+.admin-sidebar .admin-nav-subitem.is-active { font-weight: 700; }

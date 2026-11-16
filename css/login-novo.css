@@ -253,3 +253,6 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 /* Voltar só com a seta (sem o texto). */
 #view-login#view-login .lg-voltar :is(.lg-voltar-longo, .lg-voltar-curto) { display: none !important; }
 #view-login#view-login .lg-voltar svg { width: 20px; height: 20px; }
+
+/* Login: sem as bolinhas do carrossel de fotos (a foto continua trocando sozinha). */
+#view-login#view-login .lg-pontos { display: none !important; }

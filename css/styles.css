@@ -14053,7 +14053,7 @@ html body #b2b-vendor-profile-view .b2b-perfil-sobre-endereco:not(.hidden):not(#
   body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo { background: #1A1A1A !important; }
 
   html body #tab-rsvp-tables .floorplan-wrap:not(.is-expandida) > .aviso-computador-celular:not(#love-h-a) {
-    display: flex; align-items: flex-start; gap: 10px; margin: 0 16px 16px; padding: 10px 12px;
+    display: flex; align-items: flex-start; gap: 10px; margin: 24px 16px 16px; padding: 10px 12px;
     border: 1px solid #E4E4E7; border-radius: 8px; background: #FFFFFF;
     font-family: Inter, sans-serif; font-size: 13px; line-height: 1.45; color: #52525B;
   }
@@ -16170,3 +16170,13 @@ html body #view-event-os-dashboard #btn-open-add-table-modal:not(#love-h-a):not(
 html body #view-event-os-dashboard #btn-open-add-table-modal:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) * { color: inherit !important; font-size: inherit !important; font-weight: inherit !important; }
 html body #view-event-os-dashboard #btn-open-add-table-modal:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):is(:hover, [aria-expanded="true"]) { background: #FFFFFF !important; border-color: #181D24 !important; color: #181D24 !important; }
 html body[data-theme="dark"] #view-event-os-dashboard #btn-open-add-table-modal:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+
+/* Chat: Enviar só com o ícone do aviãozinho, num quadrado azul #537BAE (a cor
+   das bolinhas de Benefícios na Início), ícone branco. */
+html body #b2b-chat-send-btn.chat-enviar-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+  width: 42px; min-width: 42px; height: 42px; padding: 0 !important; gap: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background-color: #537BAE !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #FFFFFF !important;
+}
+html body #b2b-chat-send-btn.chat-enviar-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background-color: #456A99 !important; }
+html body #b2b-chat-send-btn.chat-enviar-icone svg:not(#love-h-a) { width: 20px; height: 20px; margin-left: -2px; }

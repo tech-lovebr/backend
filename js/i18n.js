@@ -89,7 +89,7 @@
       etapaComecar: { pt: 'Começar', en: 'Start' },
       etapaSeusDados: { pt: 'Seus dados', en: 'Your info' },
       etapaFinalizar: { pt: 'Finalizar', en: 'Finish' },
-      tituloTipoEvento: { pt: 'Vamos planejar<br><i>o seu grande dia?</i>', en: "Let's plan<br><i>your big day?</i>" },
+      tituloTipoEvento: { pt: 'Vamos planejar <br><i>o seu grande dia?</i>', en: "Let's plan <br><i>your big day?</i>" },
       subTituloTipoEvento: { pt: 'Para começar, que tipo de evento você quer celebrar?', en: "To start, what kind of event do you want to celebrate?" },
       casamento: { pt: 'Casamento', en: 'Wedding' },
       aniversario: { pt: 'Aniversário', en: 'Birthday' },

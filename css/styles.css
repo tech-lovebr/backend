@@ -16065,6 +16065,6 @@ html body #b2b-cards-list-container h4:not(#love-h-a):not(#love-h-b):not(#love-h
 html body .ficha-convidado .ficha-opcional:not(#love-h-a):not(#love-h-b) { font-size: 12px; font-weight: 400; color: #A1A1AA; text-transform: none; letter-spacing: 0; }
 
 /* Início › Benefícios (Viagens, Hotéis, Papelaria, Fornecedores): bolinhas em
-   pêssego (#EECFC2) com o ícone em azul escuro para ler bem. */
-html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #EECFC2 !important; color: #183b54 !important; }
-html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #183b54 !important; stroke: currentColor; }
+   azul (#537BAE) com o ícone em branco para ler bem. */
+html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #537BAE !important; color: #FFFFFF !important; }
+html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; stroke: currentColor; }

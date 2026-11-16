@@ -13393,3 +13393,12 @@ html.hub-claro body .b2b-sidebar .upgrade-card-desc:not(#love-h-a):not(#love-h-b
 @media (min-width: 769px) {
   html.hub-claro body[data-page="dashboard"] .b2b-content :is(.dash-card, .dashboard-help-card):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; border-color: rgba(0, 0, 0, 0.06) !important; }
 }
+
+/* Tema claro (computador): o logotipo escrito "Love" do menu lateral, em
+   azul #183b54, à esquerda da busca. Com o menu fixado ele some do topo
+   (já aparece no menu lateral). No escuro e no celular não aparece. */
+.topbar-logo-texto { display: none; }
+@media (min-width: 769px) {
+  html.hub-claro body:not(.sidebar-fixo) .b2b-topbar .topbar-logo-texto:not(#love-h-a) { display: inline-flex; align-items: center; flex-shrink: 0; order: -1; margin: 0; color: #183b54; line-height: 0; }
+  html.hub-claro .b2b-topbar .topbar-logo-texto-svg { display: block; height: 23px; width: 70px; }
+}

@@ -537,6 +537,10 @@ const cinza = c => Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b) < 45 && luz
 const precisaClarear = c => c && c.a > 0.2 && (luz(c) < 0.45 || cinza(c));
 function fundoEfetivo(el) {
   for (let e = el; e && e.nodeType === 1; e = e.parentElement) {
+    // Já convertidos: decide pela classe (a cor calculada pode estar no meio
+    // da transição e ainda parecer branca).
+    if (e.classList.contains('hub-vidro')) continue;
+    if (e.classList.contains('hub-vidro-solido') || e.classList.contains('hub-campo')) return { r: 12, g: 24, b: 36, a: 1 };
     const c = corRGBA(getComputedStyle(e).backgroundColor);
     if (c && c.a >= 0.5) return c;
     if (getComputedStyle(e).backgroundImage !== 'none' && e !== document.body) return null;
@@ -565,7 +569,7 @@ function varrerVidro(raiz) {
     // Caixas grandes em tom claro (ex.: plano em destaque #EAF1F8) também viram vidro.
     const caixaClara = luz(c) > 0.85 && el.offsetWidth > 200 && el.offsetHeight > 120;
     if (!branco && !cinzaClaro && !caixaClara) continue;
-    if (!branco && el.offsetWidth <= 48 && el.offsetHeight <= 24) continue;
+    if (!branco && el.offsetWidth <= 48 && el.offsetHeight <= 24 && !el.textContent.trim()) continue;
     if (el.matches('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), select, textarea, [contenteditable="true"]')) el.classList.add('hub-campo');
     else if (/^(fixed|absolute|sticky)$/.test(st.position) || el.classList.contains('b2b-header-bar')) el.classList.add('hub-vidro-solido');
     else el.classList.add('hub-vidro');
@@ -603,10 +607,20 @@ function initVidroEscuro() {
   new MutationObserver(muts => {
     for (const m of muts) {
       if (m.type === 'childList') m.addedNodes.forEach(n => n.nodeType === 1 && fila.add(n));
-      else if (m.type === 'attributes' && !/hub-(vidro|campo|borda|txt)/.test(m.target.className && m.target.className.baseVal === undefined ? m.target.className : '')) fila.add(m.target);
+      else if (m.type === 'attributes') {
+        // Ignora quando só mudaram as classes hub-* que a própria varredura põe.
+        if (m.attributeName === 'class') {
+          // Classes do corpo e das molduras (ex.: menu lateral abrindo no mouse) não pedem nova varredura.
+          if (m.target === document.body || m.target.matches('.b2b-shell, .b2b-main, .b2b-content, .b2b-sidebar, .b2b-sidebar *')) continue;
+          const limpa = s => String(s || '').split(/\s+/).filter(c => c && !c.startsWith('hub-')).sort().join(' ');
+          const atual = typeof m.target.className === 'string' ? m.target.className : (m.target.getAttribute('class') || '');
+          if (limpa(m.oldValue) === limpa(atual)) continue;
+        }
+        fila.add(m.target);
+      }
     }
     if (fila.size && !agendado) { agendado = true; requestAnimationFrame(rodar); }
-  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'style'] });
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeOldValue: true, attributeFilter: ['hidden', 'style', 'class', 'disabled'] });
 }
 
 async function loadShell() {

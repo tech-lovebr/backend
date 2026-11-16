@@ -13531,3 +13531,8 @@ html:not(.hub-claro) body .builder-elements-panel .hub-borda:not(#love-h-a):not(
 /* O template do site herda as cores do claro em qualquer tema (o fornecedor
    edita o site que vai ser publicado, que não muda com o tema do Hub). */
 html:not(.hub-claro) body :is(.builder-canvas-frame, .builder-mobile-menu-root):not(#love-h-a):not(#love-h-b) { color: #18181B; }
+
+/* Menus do topo (perfil), escuro: ao passar o mouse o item ganha um fundo um
+   tom mais escuro que o do menu (#0C1824), sem ficar branco; texto segue branco. */
+html:not(.hub-claro) body .topbar-dropdown :is(.topbar-dropdown-item, .theme-toggle-btn):hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; }
+html:not(.hub-claro) body .topbar-dropdown .theme-toggle-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; }

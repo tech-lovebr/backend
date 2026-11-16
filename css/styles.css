@@ -16238,3 +16238,8 @@ html body #b2b-chat-send-btn.chat-enviar-icone svg:not(#love-h-a) { width: 20px;
   html body #config-painel-privacidade:not(#love-h-a) { order: 4; }
   html body #config-painel-contas:not(#love-h-a) { order: 5; }
 }
+
+/* Personalizar › troca de página (Convite digital / Save the Date): o menu
+   que abre no topo fica por cima do submenu (a barra de cima cria a própria
+   camada, então ela sobe junto). */
+html body #site-builder-root > .builder-toolbar:not(#love-h-a):not(#love-h-b) { position: relative; z-index: 30; }

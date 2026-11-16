@@ -1533,8 +1533,8 @@ const STD_FORMATOS = [
 
 // "Gerar com IA" do Save the Date: na verdade sorteia um texto pronto do tipo
 // do evento (casamento, aniversário, bodas…). {DATA} vira a data em negrito e
-// {CASAL:…} vira a assinatura entre colchetes ([Nome] & [Nome] ou [Nome]),
-// para a pessoa completar — nunca o nome cadastrado.
+// {CASAL:…} vira a assinatura com o primeiro nome da conta (casal: os dois
+// primeiros nomes, quando o evento tem "Nome & Nome"). Sem nome: [Nome].
 const STD_TEXTOS_PRONTOS = {
   wedding: [
     "Olá! Tudo bem?\n\nCom muito carinho, queremos compartilhar com você uma notícia muito especial: vamos nos casar!\n\nGostaríamos imensamente de ter você ao nosso lado nesse momento inesquecível.\n\nPor isso, já queremos reservar a data na sua agenda para que possa se programar:\n\n{DATA}\n\nEm breve, enviaremos o convite oficial com todos os detalhes da cerimônia e da celebração.\n\nPor enquanto, pedimos uma confirmação prévia da sua presença, junto com o envio do seu nome completo (e acompanhantes, se houver) — essas informações são essenciais para o cadastro e envio do convite digital interativo.\n\nSerá uma alegria imensa ter você conosco.\n\nCom carinho,\n\n{CASAL:[Nome do Noivo(a)] & [Nome do Noivo(a)]}",
@@ -1572,12 +1572,21 @@ function textoProntoDoSaveTheDate(anterior) {
   const ev = getActiveEventForBuilder() || {};
   const lista = STD_TEXTOS_PRONTOS[ev.type] || STD_TEXTOS_PRONTOS.birthday;
   const data = dataDoEventoPorExtenso(ev) || '[Data do Evento]';
-  // Assinatura sempre com o espaço entre colchetes (nunca o nome cadastrado):
-  // casal = "[Nome] & [Nome]"; aniversário = um nome só, "[Nome]".
-  const assinatura = (padrao) => {
-    if (['wedding', 'bridal_shower', 'anniversary'].includes(ev.type)) return '[Nome] & [Nome]';
-    if (!ev.type || ev.type === 'birthday' || !STD_TEXTOS_PRONTOS[ev.type]) return '[Nome]';
-    return padrao;
+  const maiuscula = (/** @type {string} */ n) => n ? n.charAt(0).toLocaleUpperCase('pt-BR') + n.slice(1) : '';
+  const primeiro = (/** @type {any} */ v) => String(v || '').trim().split(/s+/)[0] || '';
+  const perfil = /** @type {any} */ (window).loveClienteProfile || {};
+  const nomesDoEvento = String(ev.hostName || '').split('&').map(primeiro).filter(Boolean);
+  const meuNome = maiuscula(primeiro(perfil.first_name || perfil.full_name || perfil.couple_name) || nomesDoEvento[0] || '');
+  const outroNome = maiuscula(nomesDoEvento.find(n => n.toLocaleLowerCase('pt-BR') !== meuNome.toLocaleLowerCase('pt-BR')) || '');
+  // Assinatura com o nome de quem está criando (já sabemos o nome dela).
+  const assinatura = (/** @type {string} */ padrao) => {
+    if (!meuNome) {
+      if (['wedding', 'bridal_shower', 'anniversary'].includes(ev.type)) return '[Nome] & [Nome]';
+      if (!ev.type || ev.type === 'birthday' || !STD_TEXTOS_PRONTOS[ev.type]) return '[Nome]';
+      return padrao;
+    }
+    if (['wedding', 'bridal_shower', 'anniversary'].includes(ev.type) && outroNome) return `${meuNome} & ${outroNome}`;
+    return meuNome;
   };
   const montar = (modelo) => modelo
     .replace('{DATA}', `*${data}*`)
@@ -2787,19 +2796,12 @@ function renderElementBlockHtml(el, mode, device) {
 
   // Save the Date: a mensagem é um bloco só, editado no painel "Editar texto".
   if (mode !== 'preview' && currentPageKey === 'savethedate') {
-    // Aparece como uma conversa no celular: barra do WhatsApp em cima e o
-    // papel de parede com a mensagem num balão verde de "enviada". Sem a
-    // seta de voltar e sem a barra de digitar (nada ali é clicável).
+    // Só o papel de parede com a mensagem num balão verde de "enviada": sem a
+    // barra do celular, sem o "Convidado" e sem a barra de digitar.
     const agora = new Date();
     const hora = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
     return `
       <div class="builder-element std-celular" aria-label="Prévia no WhatsApp">
-        <div class="std-celular-status"><span>${hora}</span><span class="std-celular-status-icones">${STD_CELULAR.sinal}${STD_CELULAR.wifi}${STD_CELULAR.bateria}</span></div>
-        <div class="std-celular-topo">
-          <span class="std-celular-avatar">${STD_CELULAR.pessoa}</span>
-          <span class="std-celular-nome">Convidado</span>
-          <span class="std-celular-acoes">${STD_CELULAR.video}${STD_CELULAR.telefone}</span>
-        </div>
         <div class="std-celular-conversa">
           <div class="std-mensagem-bloco"><div class="std-bolha">${renderElementContent(el, device, 'preview')}<span class="std-bolha-hora">${hora} <span class="std-bolha-lido">✓✓</span></span></div></div>
         </div>

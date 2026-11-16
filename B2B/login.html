@@ -358,6 +358,9 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login #auth-view-esqueci .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
 #view-login#view-login #auth-view-esqueci .lg-titulo { font-family: "Outfit", "Helvetica Neue", Arial, sans-serif !important; font-weight: 200 !important; font-variation-settings: normal !important; letter-spacing: -.03em !important; line-height: 1.02 !important; color: #EAF1F8 !important; font-size: clamp(32px, 3.1vw, 44px) !important; text-align: center !important; }
 #view-login#view-login #auth-view-esqueci .lg-sub { color: #A3B5C8 !important; text-align: center !important; margin: 10px auto 0; }
+/* Depois de enviar: "Recuperação de senha" e só o aviso. */
+#view-login#view-login #auth-view-esqueci .esq-depois, #view-login#view-login #auth-view-esqueci.is-enviado .esq-antes, #view-login#view-login #auth-view-esqueci.is-enviado .lg-sub, #view-login#view-login #auth-view-esqueci.is-enviado .lg-novo { display: none !important; }
+#view-login#view-login #auth-view-esqueci.is-enviado .esq-depois { display: inline !important; }
 #view-login#view-login .lg-esqueci-ok { margin: 0; font-size: 14px; line-height: 1.55; color: #A3B5C8; text-align: center; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -445,7 +448,7 @@ html, body { background: #0C1824 !important; }
           <!-- Esqueci minha senha: mesma caixa do login, só muda o conteúdo. -->
           <div id="auth-view-esqueci" class="lg-painel" hidden>
             <div class="lg-cabeca">
-              <h1 class="lg-titulo" data-en="Forgot my password">Esqueci minha senha</h1>
+              <h1 class="lg-titulo"><span class="esq-antes" data-en="Forgot my password">Esqueci minha senha</span><span class="esq-depois" data-en="Password recovery">Recuperação de senha</span></h1>
               <p class="lg-sub" data-en="Enter your email and we'll send you a link to create a new password.">Informe seu e-mail e enviaremos um link para você criar uma nova senha.</p>
             </div>
             <form id="esqueci-form" class="lg-form" novalidate>
@@ -456,7 +459,7 @@ html, body { background: #0C1824 !important; }
               <p id="esqueci-erro" class="lg-erro text-red-600 hidden"></p>
               <button type="submit" id="esqueci-btn" class="lg-btn lg-btn-escuro"><span data-en="Send link">Enviar link</span><i aria-hidden="true"></i></button>
             </form>
-            <p id="esqueci-ok" class="lg-esqueci-ok" hidden data-en="If this email is registered, you'll receive a recovery link in a moment.">Se esse e-mail estiver cadastrado, você vai receber um link de recuperação em instantes.</p>
+            <p id="esqueci-ok" class="lg-esqueci-ok" hidden data-en="If this email is correct, you'll receive a link to set a new password.">Se este e-mail estiver correto, você receberá um link para configurar uma nova senha.</p>
             <p class="lg-novo"><span data-en="Remembered your password?">Lembrou a senha?</span> <a href="login" id="esqueci-voltar" class="lg-link lg-link-forte" data-en="Log in">Entrar</a></p>
           </div>
         </div>
@@ -640,6 +643,7 @@ html, body { background: #0C1824 !important; }
           if (em && !campo.value) campo.value = em;
           document.getElementById('esqueci-form').hidden = false;
           document.getElementById('esqueci-ok').hidden = true;
+          esqueci.classList.remove('is-enviado');
           if (foco) campo.focus();
         } else if (foco) document.getElementById('login-email').focus();
       }
@@ -669,6 +673,7 @@ html, body { background: #0C1824 !important; }
         btn.disabled = false;
         document.getElementById('esqueci-form').hidden = true;
         document.getElementById('esqueci-ok').hidden = false;
+        document.getElementById('auth-view-esqueci').classList.add('is-enviado');
       });
     })();
   </script>

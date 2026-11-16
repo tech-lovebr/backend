@@ -336,6 +336,11 @@ html, body { background: #0C1824 !important; }
    a caixa fica com o fundo normal (escuro do Hub), sem transparência. */
 #view-login#view-login .lg-relevo { display: none !important; }
 #view-login#view-login .lg-cartao { background: #10202F !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+/* Olhinho no lugar do Mostrar/Ocultar: olho todo quando a senha aparece,
+   olho com a barra quando está oculta. */
+#view-login#view-login .lg-campo:has(.lg-olho) input { padding-right: 48px !important; }
+#view-login#view-login .lg-olho { width: 36px !important; padding: 0 !important; justify-content: center; }
+#view-login#view-login .lg-olho svg { width: 18px; height: 18px; display: block; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -409,7 +414,7 @@ html, body { background: #0C1824 !important; }
               <div class="lg-campo lg-campo-senha">
                 <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder=" ">
                 <label for="login-password">Senha</label>
-                <button type="button" id="login-ver-senha" class="lg-olho" data-campo="login-password" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                <button type="button" id="login-ver-senha" class="lg-olho" data-campo="login-password" aria-label="Mostrar senha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
               <div class="lg-linha">
                 <a href="esqueci-senha" class="lg-link auth-esqueceu-senha">Esqueceu a senha?</a>
@@ -495,7 +500,7 @@ html, body { background: #0C1824 !important; }
               <div class="lg-campo lg-campo-senha sem-completar">
                 <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" placeholder=" ">
                 <label for="signup-password">Crie uma senha</label>
-                <button type="button" id="signup-ver-senha" class="lg-olho" data-campo="signup-password" aria-label="Mostrar senha" aria-pressed="false">Mostrar</button>
+                <button type="button" id="signup-ver-senha" class="lg-olho" data-campo="signup-password" aria-label="Mostrar senha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
 
               <p id="signup-error" class="lg-erro text-red-600 hidden"></p>
@@ -549,7 +554,9 @@ html, body { background: #0C1824 !important; }
       }, 5000);
     })();
 
-    // Mostrar/Ocultar as senhas (texto, como no login do Admin).
+    // Olhinho das senhas: olho todo quando aparece, olho com a barra quando está oculta.
+    var OLHO_ABERTO = '<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>';
+    var OLHO_CORTADO = '<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M4 4l16 16\"/></svg>';
     document.querySelectorAll('.lg-olho[data-campo]').forEach(function (btn) {
       var campo = document.getElementById(btn.dataset.campo);
       btn.addEventListener('click', function () {
@@ -557,7 +564,7 @@ html, body { background: #0C1824 !important; }
         campo.type = mostrar ? 'text' : 'password';
         btn.setAttribute('aria-pressed', String(mostrar));
         btn.setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
-        btn.textContent = mostrar ? 'Ocultar' : 'Mostrar';
+        btn.innerHTML = mostrar ? OLHO_ABERTO : OLHO_CORTADO;
         campo.focus();
       });
     });

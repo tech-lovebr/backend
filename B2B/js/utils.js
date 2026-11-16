@@ -1971,13 +1971,16 @@ function ligarCepAutomatico(cepEl, campos) {
   const CHAVE = 'love-saldo-oculto';
   const raiz = document.documentElement;
   try { if (localStorage.getItem(CHAVE) === '1') raiz.classList.add('love-saldo-oculto'); } catch (e) { /* sem armazenamento */ }
+  // Olho todo = valores à mostra; olho com a barra = valores ocultos.
+  const ABERTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+  const CORTADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg>';
   const atualizar = () => {
     const oculto = raiz.classList.contains('love-saldo-oculto');
     const en = raiz.classList.contains('hub-en');
     document.querySelectorAll('[data-love-olho]').forEach(b => {
       b.setAttribute('aria-pressed', oculto ? 'true' : 'false');
       b.setAttribute('aria-label', en ? (oculto ? 'Show balance' : 'Hide balance') : (oculto ? 'Mostrar saldo' : 'Ocultar saldo'));
-      b.textContent = en ? (oculto ? 'Show' : 'Hide') : (oculto ? 'Mostrar' : 'Ocultar');
+      b.innerHTML = oculto ? CORTADO : ABERTO;
     });
   };
   document.addEventListener('click', e => {

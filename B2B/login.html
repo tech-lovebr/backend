@@ -324,6 +324,11 @@ html, body { background: #0C1824 !important; }
 }
 /* Subtítulo embaixo do Seja bem-vindo(a)! no escuro do Hub. */
 #view-login#view-login .lg-cabeca .lg-sub { color: #A3B5C8 !important; }
+/* Olhinho no lugar do Mostrar/Ocultar: olho todo quando a senha aparece,
+   olho com a barra quando está oculta. */
+#view-login#view-login .lg-campo:has(.lg-olho) input { padding-right: 48px !important; }
+#view-login#view-login .lg-olho { width: 36px !important; padding: 0 !important; justify-content: center; }
+#view-login#view-login .lg-olho svg { width: 18px; height: 18px; display: block; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -396,7 +401,7 @@ html, body { background: #0C1824 !important; }
               <div class="lg-campo lg-campo-senha">
                 <input type="password" id="login-password" name="password" autocomplete="current-password" required placeholder=" ">
                 <label for="login-password" data-en="Password">Senha</label>
-                <button type="button" id="login-ver-senha" class="lg-olho" aria-label="Mostrar senha" data-en-aria="Show password" data-en="Show" aria-pressed="false">Mostrar</button>
+                <button type="button" id="login-ver-senha" class="lg-olho" aria-label="Mostrar senha" data-en-aria="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
               <div class="lg-linha">
                 <a href="esqueci-senha" class="lg-link auth-esqueceu-senha" data-en="Forgot your password?">Esqueceu a senha?</a>
@@ -430,9 +435,7 @@ html, body { background: #0C1824 !important; }
       'Aguarde um minuto e tente de novo': 'Wait a minute and try again',
       'E-mail reenviado': 'Email resent',
       'Mostrar senha': 'Show password',
-      'Ocultar senha': 'Hide password',
-      'Mostrar': 'Show',
-      'Ocultar': 'Hide'
+      'Ocultar senha': 'Hide password'
     };
     function T(s) { return HUB_EN && HUB_EN_TEXTOS[s] ? HUB_EN_TEXTOS[s] : s; }
     (function () {
@@ -481,7 +484,9 @@ html, body { background: #0C1824 !important; }
       }, 5000);
     })();
 
-    // Mostrar/Ocultar a senha (texto, como no login do Admin).
+    // Olhinho da senha: olho todo quando aparece, olho com a barra quando está oculta.
+    var OLHO_ABERTO = '<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>';
+    var OLHO_CORTADO = '<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M4 4l16 16\"/></svg>';
     (function () {
       var btn = document.getElementById('login-ver-senha');
       var campo = document.getElementById('login-password');
@@ -490,7 +495,7 @@ html, body { background: #0C1824 !important; }
         campo.type = mostrar ? 'text' : 'password';
         btn.setAttribute('aria-pressed', String(mostrar));
         btn.setAttribute('aria-label', T(mostrar ? 'Ocultar senha' : 'Mostrar senha'));
-        btn.textContent = T(mostrar ? 'Ocultar' : 'Mostrar');
+        btn.innerHTML = mostrar ? OLHO_ABERTO : OLHO_CORTADO;
         campo.focus();
       });
     })();

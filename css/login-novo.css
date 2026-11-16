@@ -261,3 +261,9 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
    a caixa fica toda branca, sem transparência. */
 #view-login#view-login .lg-relevo { display: none !important; }
 #view-login#view-login .lg-cartao { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+/* Celular: título ("Acesse sua conta") e descrição centralizados, como no
+   login do Hub. O computador continua alinhado à esquerda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login .lg-cabeca :is(.lg-titulo, .lg-sub) { text-align: center !important; margin-left: auto; margin-right: auto; }
+}

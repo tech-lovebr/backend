@@ -900,8 +900,9 @@ html, body { background: #0C1824 !important; }
       }
       if (!error && session) {
         const { error: erroObj } = await supabaseClient.from('fornecedores').update({ objetivos: objetivosEscolhidos }).eq('id', session.user.id);
-        if (erroObj) await supabaseClient.auth.updateUser({ data: { objetivos: objetivosEscolhidos } });
-        else await supabaseClient.auth.updateUser({ data: { precisa_completar: false } });
+        // company_name nos dados da conta: os e-mails do Supabase (Olá, ...) só leem esses dados.
+        if (erroObj) await supabaseClient.auth.updateUser({ data: { objetivos: objetivosEscolhidos, company_name: nome } });
+        else await supabaseClient.auth.updateUser({ data: { precisa_completar: false, company_name: nome } });
       }
       if (error) {
         submitBtn.disabled = false;

@@ -139,3 +139,9 @@
 #view-login#view-login #btn-google-login:hover { background: rgba(66,133,244,.04) !important; border-color: #D2E3FC !important; }
 #view-login#view-login #btn-google-login:focus-visible { outline: none; border-color: #4285F4 !important; }
 #view-login#view-login #btn-google-login svg { width: 18px; height: 18px; }
+
+/* Entrar: "Entrando…" com uma rodinha no lugar da seta enquanto abre a plataforma. */
+#view-login#view-login .lg-btn.is-entrando { opacity: 1; cursor: progress; }
+#view-login#view-login .lg-btn.is-entrando i { width: 16px !important; height: 16px; background: none; border: 2px solid rgba(245, 248, 252, .35); border-top-color: #F5F8FC; border-radius: 50%; animation: lgGira .7s linear infinite; transition: none; box-sizing: border-box; }
+#view-login#view-login .lg-btn.is-entrando i::after { display: none; }
+@keyframes lgGira { to { transform: rotate(360deg); } }

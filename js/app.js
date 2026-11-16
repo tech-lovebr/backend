@@ -18695,9 +18695,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = document.getElementById('login-email-input').value.trim();
       const password = document.getElementById('login-password-input').value;
       const submitBtn = document.getElementById('btn-do-email-login');
+      if (submitBtn.disabled) return; // já está entrando: ignora o segundo clique
 
-      submitBtn.disabled = true;
+      // Resposta na hora: "Entrando…" com a rodinha, e o botão fica assim até
+      // a plataforma abrir (só volta ao normal se der erro).
+      const textoDoBotao = submitBtn.querySelector('span');
+      const textoOriginal = textoDoBotao ? textoDoBotao.textContent : '';
+      const entrando = (/** @type {boolean} */ sim) => {
+        submitBtn.disabled = sim;
+        submitBtn.classList.toggle('is-entrando', sim);
+        submitBtn.setAttribute('aria-busy', sim ? 'true' : 'false');
+        if (textoDoBotao) textoDoBotao.textContent = sim ? 'Entrando…' : textoOriginal;
+      };
+      entrando(true);
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) entrando(false);
 
       if (error) {
         // Conta criada com e-mail e ainda sem clicar no link de confirmação.
@@ -18741,13 +18753,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Senha certa, mas essa plataforma é só pra quem tem cadastro de
       // anfitrião — login/B2B/Admin compartilham o mesmo Supabase Auth.
-      const { data: cliente } = await supabaseClient
-        .from('clientes')
-        .select('id, status')
-        .eq('id', data.user.id)
-        .maybeSingle();
+      // Cadastro de anfitrião, 2FA e "salvar senha" correm juntos (antes eram
+      // um depois do outro, e o botão parecia travar).
+      const [{ data: cliente }, pedeCodigo] = await Promise.all([
+        supabaseClient.from('clientes').select('id, status').eq('id', data.user.id).maybeSingle(),
+        precisaCodigoMfa().catch(() => false),
+        oferecerSalvarSenha(email, password)
+      ]);
 
-      submitBtn.disabled = false;
+      if (!cliente || cliente.status === 'bloqueado') entrando(false);
 
       if (!cliente) {
         await supabaseClient.auth.signOut();
@@ -18767,10 +18781,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Senha certa, mas a conta tem dois fatores ativos: a sessão ainda é
       // aal1 e só vira aal2 depois do código do app autenticador.
-      // Login certo: pede ao navegador para oferecer "Salvar senha".
-      await oferecerSalvarSenha(email, password);
-
-      if (await precisaCodigoMfa()) {
+      if (pedeCodigo) {
+        entrando(false);
         showLoginMfaPanel();
         return;
       }
@@ -18791,7 +18803,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const credencial = new PasswordCredential({ id: email, password, name: email });
       await Promise.race([
         navigator.credentials.store(credencial),
-        new Promise(resolve => setTimeout(resolve, 1500))
+        new Promise(resolve => setTimeout(resolve, 700))
       ]);
     } catch (e) {
       console.warn('Navegador não ofereceu salvar a senha:', e);

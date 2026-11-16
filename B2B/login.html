@@ -459,7 +459,7 @@ html, body { background: #0C1824 !important; }
           <div id="auth-view-esqueci" class="lg-painel" hidden>
             <button type="button" id="esqueci-voltar" class="lg-fechar" aria-label="Fechar e voltar para o login" data-en-aria="Close and go back to login" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
             <div class="lg-cabeca">
-              <h1 class="lg-titulo"><span class="esq-antes" data-en="Forgot my password">Esqueci minha senha</span><span class="esq-depois" data-en="Password recovery">Recuperação de senha</span></h1>
+              <h1 class="lg-titulo"><span class="esq-antes" data-en="Forgot your password?">Esqueceu a senha?</span><span class="esq-depois" data-en="Password recovery">Recuperação de senha</span></h1>
               <p class="lg-sub" data-en="Enter your email and we'll send you a link to create a new password.">Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>
             </div>
             <form id="esqueci-form" class="lg-form" novalidate>
@@ -485,7 +485,7 @@ html, body { background: #0C1824 !important; }
     // e T() traduz as mensagens montadas no JS. No love.com.br nada muda.
     var HUB_EN = document.documentElement.classList.contains('hub-en');
     var HUB_EN_TEXTOS = {
-      'Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueci minha senha" para criar uma senha.': 'This account isn’t linked to Google. Enter your email and click "Forgot your password?" to create a password.',
+      'Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueceu a senha?" para criar uma senha.': 'This account isn’t linked to Google. Enter your email and click "Forgot your password?" to create a password.',
       'Preencha e-mail e senha para continuar.': 'Enter your email and password to continue.',
       'Confirme seu e-mail para entrar. Enviamos um link para': 'Confirm your email to log in. We sent a link to',
       'Este usuário está bloqueado.': 'This user is blocked.',
@@ -569,7 +569,7 @@ html, body { background: #0C1824 !important; }
     // Voltou do Google com a conta desconectada do Google (Contas conectadas).
     if (new URLSearchParams(location.search).get('erro') === 'google-desconectado') {
       const avisoGoogle = document.getElementById('login-error');
-      avisoGoogle.textContent = T('Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueci minha senha" para criar uma senha.');
+      avisoGoogle.textContent = T('Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueceu a senha?" para criar uma senha.');
       avisoGoogle.classList.remove('hidden');
       history.replaceState(null, '', location.pathname);
     }

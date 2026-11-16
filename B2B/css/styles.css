@@ -13402,3 +13402,12 @@ html.hub-claro body .b2b-sidebar .upgrade-card-desc:not(#love-h-a):not(#love-h-b
   html.hub-claro body:not(.sidebar-fixo) .b2b-topbar .topbar-logo-texto:not(#love-h-a) { display: inline-flex; align-items: center; flex-shrink: 0; order: -1; margin: 0; color: #183b54; line-height: 0; }
   html.hub-claro .b2b-topbar .topbar-logo-texto-svg { display: block; height: 23px; width: 70px; }
 }
+
+/* Selo "Hub" ao lado do logotipo escrito (sidebar e topo do tema claro), igual
+   ao da landing (.brand em): 11px, caixa alta, letras 0.2em, pílula com
+   contorno. No escuro na cor da landing (#A9C6EA); no claro em azul #183b54. */
+.marca-hub { display: inline-block; flex-shrink: 0; font-style: normal; font-family: var(--fonte-love); font-size: 11px; font-weight: 400; line-height: 1.2; letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap; color: #A9C6EA; padding: 4px 9px; border: 1px solid rgba(169, 198, 234, 0.35); border-radius: 999px; }
+html body .marca-hub:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-family: var(--fonte-love) !important; color: #A9C6EA !important; }
+html.hub-claro body .marca-hub:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #183b54 !important; border-color: rgba(24, 59, 84, 0.3); }
+body.sidebar-collapsed .sidebar-brand-link .sidebar-marca-hub { display: none; }
+.topbar-logo-texto { gap: 12px; }

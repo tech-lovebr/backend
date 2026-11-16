@@ -467,7 +467,3 @@
   #view-public-site#view-public-site .lv-nav .lv-nav-links{display:none !important}
   #view-public-site#view-public-site .lv-nav .lv-nav-esq .lv-burger{display:inline-flex !important}
 }
-
-/* Rodapé na mesma cor do topo (#F7F8FA, o fundo da landing por trás do vidro do
-   cabeçalho), no lugar do cinza #F3F3F3 que vinha da regra geral de footer. */
-#view-public-site#view-public-site footer#public-landing-footer{background:var(--bg,#F7F8FA) !important;background-color:var(--bg,#F7F8FA) !important}

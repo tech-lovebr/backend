@@ -16148,3 +16148,12 @@ html body button.login-campo-icone.login-ver-senha:not(#love-h-a):hover { color:
   html body #drawer-add-gift.na-pagina > .gift-drawer-cab:not(#love-h-a):not(#love-h-b) { border-radius: 10px 10px 0 0 !important; }
   html body #drawer-add-gift.na-pagina > :last-child:not(#love-h-a):not(#love-h-b) { border-radius: 0 0 10px 10px; }
 }
+
+/* Plataforma logada: o rodapé na mesma cor do topo — o mesmo branco
+   translúcido com desfoque do cabeçalho (e da barra lateral); no escuro,
+   o #181D24 do cabeçalho. */
+html body:not([data-theme="dark"]) #dashboard-footer.rodape-logado:not(#love-h-a):not(#love-h-b) {
+  background: var(--vidro-love, rgba(255, 255, 255, 0.82)) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important; backdrop-filter: blur(16px) saturate(140%) !important;
+}
+html body[data-theme="dark"] #dashboard-footer.rodape-logado:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #181D24 !important; background-color: #181D24 !important; }

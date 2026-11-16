@@ -4776,3 +4776,9 @@ body.login-page .login-rodape {
   font-size: 12px; color: #FFFFFF; letter-spacing: .02em;
 }
 body.login-page .login-rodape .login-versao { text-align: right; }
+
+/* Saudação do login na fonte da headline da landing do Hub: Outfit 200, -0.03em. */
+body.login-page .login-cartao h1 {
+  font-family: "Outfit", "Helvetica Neue", Arial, sans-serif; font-weight: 200;
+  font-variation-settings: normal; font-size: 32px; line-height: 1.1; letter-spacing: -.03em;
+}

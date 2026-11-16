@@ -28,8 +28,9 @@ try { if (localStorage.getItem('b2b-visual') === 'claro') document.documentEleme
 const SIDEBAR_HOVER = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;
 // Menu fixado (botão ao lado do logotipo): fica sempre aberto e o conteúdo
 // vai para a direita, em vez de abrir só com o mouse.
-// Padrão: menu fixado (aberto); só fica recolhido se o fornecedor desafixar.
-const SIDEBAR_FIXO = SIDEBAR_HOVER && localStorage.getItem('b2b-sidebar-fixo') !== '0';
+// Menu sempre fixado (aberto) no computador; sem a opção de desafixar.
+try { localStorage.removeItem('b2b-sidebar-fixo'); } catch (e) {}
+const SIDEBAR_FIXO = SIDEBAR_HOVER;
 if ((SIDEBAR_HOVER && !SIDEBAR_FIXO) || (!SIDEBAR_HOVER && localStorage.getItem('b2b-sidebar-collapsed') === '1')) {
   document.body.classList.add('sidebar-collapsed');
 }

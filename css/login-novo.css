@@ -73,21 +73,11 @@
 #view-login#view-login .lg-cab-entrar:hover { color: var(--lg-azul) !important; }
 #view-login#view-login .lg-cab-criar { display: inline-flex; align-items: center; height: 42px; padding: 0 20px; border-radius: 999px !important; border: 1px solid transparent; background: var(--lg-azul) !important; color: #F5F8FC !important; font-size: 14px !important; font-weight: 500 !important; white-space: nowrap; text-decoration: none; transition: background .4s var(--lg-ease), box-shadow .4s; }
 #view-login#view-login .lg-cab-criar:hover { background: #10293C !important; box-shadow: 0 14px 34px rgba(24,59,84,.22); }
-/* Faixa azul acima do topo, a mesma da landing (.lv-bar). */
-#view-login#view-login .lg-faixa { display: flex; justify-content: center; gap: 14px; align-items: center; font-size: 13.5px !important; line-height: 1.6; padding: 10px 16px; background: var(--lg-azul); color: #E6EEF8 !important; }
-#view-login#view-login .lg-faixa a { font-weight: 500 !important; color: #FFFFFF !important; display: inline-flex; gap: 8px; align-items: center; text-decoration: none; }
-#view-login#view-login .lg-faixa a b { font-weight: 500 !important; }
-#view-login#view-login .lg-faixa a span { transition: transform .3s var(--lg-ease); }
-#view-login#view-login .lg-faixa a:hover span { transform: translateX(3px); }
 #view-login#view-login .lg-cab-entrar { line-height: 1.6; }
-/* A barra de rolagem não empurra o topo para o lado (a landing sempre rola). */
-html:has(#view-login:not(.hidden)) { scrollbar-gutter: stable; }
 @media (max-width: 860px) {
   #view-login#view-login .lg-cab-criar { display: none !important; }
 }
-@media (max-width: 560px) {
-  #view-login#view-login .lg-faixa { font-size: 12.5px !important; white-space: nowrap; gap: 10px; }
-}
+
 
 /* Coluna do formulário em 400px: o botão oficial do Google vai no máximo a
    400px, então o Entrar e os campos ficam com a mesma largura dele. */

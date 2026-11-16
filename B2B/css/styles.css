@@ -13627,3 +13627,11 @@ html:not(.hub-claro) body[data-page="faq"] .guias-sidebar .guide-link :is(span, 
 html:not(.hub-claro) body:has(> .b2b-shell):not(.app-ready):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #0F1F2F !important; }
 html:not(.hub-claro) body[data-page]:not(.app-ready):not(.nav-transition)::before { background: #0F1F2F !important; }
 html:not(.hub-claro) body[data-page]:not(.app-ready):not(.nav-transition)::after { border-color: rgba(255, 255, 255, 0.12) !important; border-top-color: #EAF1F8 !important; }
+
+/* Planos (escuro): plano recomendado na cor do menu lateral (#0C1824) com
+   efeito vitrificado (leve transparência + desfoque), contorno suave. */
+html:not(.hub-claro) body .plan-card.featured:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+  background: rgba(12, 24, 36, 0.72) !important; background-image: none !important;
+  -webkit-backdrop-filter: blur(12px) saturate(140%); backdrop-filter: blur(12px) saturate(140%);
+  border-color: rgba(255, 255, 255, 0.08) !important; box-shadow: none !important;
+}

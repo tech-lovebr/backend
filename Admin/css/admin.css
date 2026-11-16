@@ -4782,3 +4782,6 @@ body.login-page .login-cartao h1 {
   font-family: "Outfit", "Helvetica Neue", Arial, sans-serif; font-weight: 200;
   font-variation-settings: normal; font-size: 32px; line-height: 1.1; letter-spacing: -.03em;
 }
+/* Saudação e frase de apoio alinhadas à esquerda. */
+body.login-page .login-cartao h1,
+body.login-page .login-subtitulo { text-align: left; }

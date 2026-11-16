@@ -208,3 +208,8 @@
   #view-login#view-login .lg-fundo::after { opacity: .2; }
   #view-login#view-login .lg-pagina { align-items: center !important; align-content: center; padding-top: 16px !important; padding-bottom: 16px !important; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
 }
+
+
+/* Barra do navegador no celular (Safari pinta com o fundo da página): no login
+   a página por trás fica na cor do fundo, igual ao cadastro, e não branca. */
+html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), html body.login-mode { background-color: #E9F1FB !important; }

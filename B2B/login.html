@@ -279,6 +279,19 @@ html, body { background: #0C1824 !important; }
    descendo, vidro rgba(12,24,36,.8) com desfoque e a linha fina embaixo. */
 #view-login#view-login .lg-cabecalho { position: sticky !important; top: 0; z-index: 40; transition: background .5s, box-shadow .5s; }
 #view-login#view-login .lg-cabecalho.on { background: rgba(12,24,36,.8) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 1px 0 rgba(234,241,248,.1) !important; }
+/* Celular (igual ao login dos anfitriões, commit 04e46914), no visual escuro do Hub:
+   "Ainda não tem uma conta? Cadastre-se" centralizado; caixa um pouco translúcida
+   (o fundo aparece por trás) na cor do cartão escuro; relevo (.06) e grão (.07) já
+   discretos, mantidos; a caixa no meio da tela (o respiro de cima compensa o
+   texto dos termos embaixo dela). Desktop não muda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login .lg-cabeca .lg-sobre { display: none !important; }
+  #view-login#view-login .lg-novo { text-align: center; }
+  #view-login#view-login .lg-cartao { background: rgba(16, 32, 47, .78) !important; -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); }
+  #view-login#view-login .lg-pagina { align-items: center !important; align-content: center; padding-top: 74px !important; padding-bottom: 16px !important; min-height: calc(100vh - 80px); min-height: calc(100dvh - 80px); }
+  #view-login#view-login { padding-top: 8px; box-sizing: border-box; }
+  #view-login#view-login .lg-cabecalho { margin-top: 0 !important; }
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>

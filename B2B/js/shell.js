@@ -522,7 +522,8 @@ function initThemeToggle() {
 // sobre fundo escuro ficam claros. Vale também para o que a página monta
 // depois (tabelas, listas), via MutationObserver. O site do cliente
 // (construtor e prévias) fica de fora. As classes só pintam fora do claro.
-const VIDRO_FORA = '.builder-canvas, .site-preview, [id="live-preview-container"], .b2b-sidebar, iframe, svg, img, video, canvas, picture';
+const VIDRO_FORA = '.builder-canvas, .site-preview, [id="live-preview-container"], .b2b-sidebar, iframe, img, video, canvas, picture';
+const VIDRO_SVG = 'svg, svg *';
 function corRGBA(txt) {
   const m = (txt || '').match(/rgba?\(([^)]+)\)/);
   if (!m) return null;
@@ -530,6 +531,10 @@ function corRGBA(txt) {
   return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
 }
 const luz = c => (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255;
+// Cinza = pouca saturação e não claro (ex.: #71717A, #A1A1AA, #D4D4D8).
+const cinza = c => Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b) < 45 && luz(c) < 0.86;
+// Texto/ícone que precisa clarear: escuro (inclui o azul primário) ou cinza.
+const precisaClarear = c => c && c.a > 0.2 && (luz(c) < 0.45 || cinza(c));
 function fundoEfetivo(el) {
   for (let e = el; e && e.nodeType === 1; e = e.parentElement) {
     const c = corRGBA(getComputedStyle(e).backgroundColor);
@@ -549,17 +554,23 @@ function varrerVidro(raiz) {
   const todos = [raiz, ...raiz.querySelectorAll('*')].filter(el => el.nodeType === 1 && !el.closest(VIDRO_FORA));
   // 1) Fundos brancos/quase brancos.
   for (const el of todos) {
-    if (el.classList.contains('hub-vidro') || el.classList.contains('hub-vidro-solido') || el.classList.contains('hub-campo')) continue;
+    if (el.matches(VIDRO_SVG) || el.classList.contains('hub-vidro') || el.classList.contains('hub-vidro-solido') || el.classList.contains('hub-campo')) continue;
     const st = getComputedStyle(el);
     const c = corRGBA(st.backgroundColor);
-    if (!c || c.a < 0.6 || Math.min(c.r, c.g, c.b) < 244) continue;
+    if (!c || c.a < 0.6) continue;
+    const branco = Math.min(c.r, c.g, c.b) >= 244;
+    const cinzaClaro = Math.min(c.r, c.g, c.b) >= 212 && Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b) < 12;
+    // Caixas grandes em tom claro (ex.: plano em destaque #EAF1F8) também viram vidro.
+    const caixaClara = luz(c) > 0.85 && el.offsetWidth > 200 && el.offsetHeight > 120;
+    if (!branco && !cinzaClaro && !caixaClara) continue;
+    if (!branco && el.offsetWidth <= 48 && el.offsetHeight <= 24) continue;
     if (el.matches('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), select, textarea, [contenteditable="true"]')) el.classList.add('hub-campo');
     else if (/^(fixed|absolute|sticky)$/.test(st.position) || el.classList.contains('b2b-header-bar')) el.classList.add('hub-vidro-solido');
     else el.classList.add('hub-vidro');
   }
   // 2) Contornos claros → cor do menu lateral.
   for (const el of todos) {
-    if (el.classList.contains('hub-borda')) continue;
+    if (el.matches(VIDRO_SVG) || el.classList.contains('hub-borda')) continue;
     const st = getComputedStyle(el);
     const lados = ['Top', 'Right', 'Bottom', 'Left'].filter(l => parseFloat(st['border' + l + 'Width']) > 0 && st['border' + l + 'Style'] !== 'none');
     if (!lados.length) continue;
@@ -568,13 +579,19 @@ function varrerVidro(raiz) {
   }
   // 3) Texto escuro sobre fundo que agora é escuro → claro.
   for (const el of todos) {
-    if (el.classList.contains('hub-txt-1') || el.classList.contains('hub-txt-2')) continue;
     const st = getComputedStyle(el);
+    const ehSvg = el.matches(VIDRO_SVG);
+    const marcado = el.classList.contains('hub-txt-1') || el.classList.contains('hub-txt-2');
     const c = corRGBA(st.color);
-    if (!c || luz(c) > 0.45) continue;
+    const traco = ehSvg && !el.classList.contains('hub-traco') && st.stroke && st.stroke !== 'none' && !/url\(/.test(st.stroke) ? corRGBA(st.stroke) : null;
+    const preench = ehSvg && el.tagName.toLowerCase() !== 'svg' && !el.classList.contains('hub-preench') && st.fill && st.fill !== 'none' && !/url\(/.test(st.fill) ? corRGBA(st.fill) : null;
+    const precisa = (!marcado && precisaClarear(c)) || precisaClarear(traco) || precisaClarear(preench);
+    if (!precisa) continue;
     const f = fundoEfetivo(el);
     if (f && luz(f) > 0.45) continue;
-    el.classList.add(luz(c) < 0.2 ? 'hub-txt-1' : 'hub-txt-2');
+    if (!marcado && precisaClarear(c)) el.classList.add(luz(c) < 0.2 ? 'hub-txt-1' : 'hub-txt-2');
+    if (precisaClarear(traco)) el.classList.add('hub-traco');
+    if (precisaClarear(preench)) el.classList.add('hub-preench');
   }
 }
 function initVidroEscuro() {

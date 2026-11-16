@@ -13488,7 +13488,11 @@ html:not(.hub-claro) body .hub-campo:not(#love-h-a):not(#love-h-b):not(#love-h-c
 html:not(.hub-claro) body .hub-campo::placeholder { color: rgba(234, 241, 248, 0.5) !important; }
 html:not(.hub-claro) body .hub-borda:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(12, 24, 36, 0.45) !important; }
 html:not(.hub-claro) body .hub-txt-1:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #EAF1F8 !important; }
-html:not(.hub-claro) body .hub-txt-2:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: rgba(234, 241, 248, 0.65) !important; }
+html:not(.hub-claro) body .hub-txt-2:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
+html:not(.hub-claro) body .hub-traco:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { stroke: #FFFFFF !important; }
+html:not(.hub-claro) body .hub-preench:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { fill: #FFFFFF !important; }
+/* Botão desabilitado "Seu plano atual" (Planos): branco cheio, sem o cinza da opacidade. */
+html:not(.hub-claro) body .plan-card-cta:disabled:not(#love-h-a):not(#love-h-b):not(#love-h-c) { opacity: 1 !important; }
 
 /* Menus que abrem do topo (perfil etc.), escuro: divisórias suaves na cor do
    menu lateral a 45% e textos/ícones na cor dos ícones do menu lateral

@@ -16070,12 +16070,12 @@ html body .ficha-convidado .ficha-opcional:not(#love-h-a):not(#love-h-b) { font-
 html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #537BAE !important; color: #FFFFFF !important; }
 html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; stroke: currentColor; }
 
-/* Celular, tema claro: Convidados, Presentes, Convite e Mensagens no mesmo
+/* Celular, tema claro: Convidados (e o Mapa do evento), Presentes, Convite e Mensagens no mesmo
    branco do topo (sem o céu atrás). A contagem, o Pesquisar e as linhas ficam
    no branco, e a lista segue com as linhas até o fim da tela, mesmo vazia,
    como a tabela do computador. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body:not([data-theme="dark"]):has(#tab-rsvp.active, #tab-gifts.active, #tab-edit-site.active, #tab-b2b.active #b2b-messages-view:not(.hidden)) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; }
+  html body:not([data-theme="dark"]):has(#tab-rsvp.active, #tab-rsvp-tables.active, #tab-gifts.active, #tab-edit-site.active, #tab-b2b.active #b2b-messages-view:not(.hidden)) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; }
   html body:not([data-theme="dark"]) :is(#tab-rsvp .love-tabela-busca input, #gifts-search-input, #b2b-chat-search):not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
 
   /* Convidados: linha branca com o divisor embaixo; linhas vazias até o fim. */

@@ -13500,3 +13500,14 @@ html:not(.hub-claro) body .plan-card-cta:disabled:not(#love-h-a):not(#love-h-b):
 html:not(.hub-claro) body .topbar-dropdown .topbar-dropdown-divider:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: rgba(12, 24, 36, 0.45) !important; }
 html:not(.hub-claro) body .topbar-dropdown :is(.topbar-dropdown-item, .topbar-dropdown-item *, .profile-dropdown-name, .profile-dropdown-email, .theme-toggle-btn, .theme-toggle-btn svg, h3, h4, p, span):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #C4C4CC !important; }
 html:not(.hub-claro) body .topbar-dropdown :is(.topbar-dropdown-item:hover, .topbar-dropdown-item:hover *, .profile-dropdown-name:hover, .theme-toggle-btn:hover, .theme-toggle-btn.active, .theme-toggle-btn.active svg):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
+
+/* Oportunidades sem produtos: frase de abertura um pouco maior, colada à explicação. */
+html body .op-sem-produtos p.op-sem-produtos-titulo:not(#love-h-a):not(#love-h-b) { margin: 0 0 -0.5rem !important; font-size: 1.0625rem !important; font-weight: 500 !important; letter-spacing: -0.02em; color: #18181B !important; }
+
+/* Barras de pesquisar das páginas (Meus produtos, Meus ganhos…), escuro: iguais
+   à busca do cabeçalho (branco 6%, contorno branco 12%, texto #C4C4CC). */
+html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search"], input[placeholder^="Pesquisar"]):not(.proposal-cell-input):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+  background-color: rgba(255, 255, 255, 0.06) !important; border: 1px solid rgba(255, 255, 255, 0.12) !important; color: #C4C4CC !important; box-shadow: none !important;
+}
+html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search"], input[placeholder^="Pesquisar"]):not(.proposal-cell-input):is(:hover, :focus):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: rgba(255, 255, 255, 0.24) !important; color: #FFFFFF !important; }
+html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search"], input[placeholder^="Pesquisar"])::placeholder { color: #C4C4CC !important; opacity: 1; }

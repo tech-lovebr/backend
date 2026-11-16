@@ -1339,7 +1339,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Contas conectadas › Desconectar do Google (mesma função do banco do Hub,
   // desconectar_google — migration 073): o Google sai, a conta passa a entrar
-  // pelo e-mail (a senha é criada pelo "Esqueci minha senha") e fica marcada
+  // pelo e-mail (a senha é criada pelo "Esqueceu a senha?") e fica marcada
   // como google_desconectado (ver bloquearGoogleDesconectado).
   function mensagemDaContaGoogle(/** @type {string} */ texto, erro = false) {
     const msg = document.getElementById('settings-google-msg');
@@ -1361,7 +1361,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       await supabaseClient.auth.refreshSession();
       await atualizarCartaoDeLogin();
-      mensagemDaContaGoogle('Google desconectado. Na próxima vez, entre com o seu e-mail e use "Esqueci minha senha" para criar a senha.');
+      mensagemDaContaGoogle('Google desconectado. Na próxima vez, entre com o seu e-mail e use "Esqueceu a senha?" para criar a senha.');
     } finally {
       btn.disabled = false;
     }
@@ -1404,7 +1404,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await supabaseClient.auth.unlinkIdentity(google).catch(err => console.warn('Não foi possível soltar o Google.', err));
     await supabaseClient.auth.signOut();
     switchView('login');
-    showLoginError('Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueci minha senha" para criar uma senha.');
+    showLoginError('Esta conta não está cadastrada com o Google. Digite o seu e-mail e clique em "Esqueceu a senha?" para criar uma senha.');
     return true;
   }
 

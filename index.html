@@ -102,7 +102,7 @@
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261116_legal2">
-  <link rel="stylesheet" href="css/login-novo.css?v=20261116_novasenha2">
+  <link rel="stylesheet" href="css/login-novo.css?v=20261116_regrasnova">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -596,12 +596,27 @@
                 <label for="login-nova-senha-email" data-love-i18n="login.email">E-mail</label>
               </div>
               <div class="lg-campo lg-campo-senha">
-                <input type="password" id="login-nova-senha-input" name="password" autocomplete="new-password" required placeholder=" ">
+                <input type="password" id="login-nova-senha-input" name="password" autocomplete="new-password" required minlength="8" placeholder=" ">
                 <label for="login-nova-senha-input" data-love-i18n="login.novaSenha">Nova senha</label>
                 <button type="button" class="lg-olho login-ver-senha" data-ver-senha="login-nova-senha-input" aria-label="Mostrar senha" data-love-i18n-aria-label="login.mostrarSenha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
+              <!-- Regras da senha: o mesmo quadro do cadastro (cadastro.html,
+                   #password-strength-panel). Aparece enquanto a pessoa está na
+                   Nova senha e ainda falta alguma regra. -->
+              <div id="nova-senha-strength-panel" class="password-strength-panel">
+                <div class="password-strength-bar-track">
+                  <div id="nova-senha-strength-bar-fill" class="password-strength-bar-fill"></div>
+                </div>
+                <p id="nova-senha-strength-label" class="password-strength-label"></p>
+                <ul class="password-strength-checklist">
+                  <li data-rule="length"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaPeloMenos8">Pelo menos 8 caracteres</span></li>
+                  <li data-rule="upper"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMaiuscula">Uma letra maiúscula</span></li>
+                  <li data-rule="lower"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMinuscula">Uma letra minúscula</span></li>
+                  <li data-rule="number"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmNumero">Um número</span></li>
+                </ul>
+              </div>
               <div class="lg-campo lg-campo-senha">
-                <input type="password" id="login-nova-senha-confirmar" name="password-confirm" autocomplete="new-password" required placeholder=" ">
+                <input type="password" id="login-nova-senha-confirmar" name="password-confirm" autocomplete="new-password" required minlength="8" placeholder=" ">
                 <label for="login-nova-senha-confirmar" data-love-i18n="login.confirmarNovaSenha">Confirme a nova senha</label>
                 <button type="button" class="lg-olho login-ver-senha" data-ver-senha="login-nova-senha-confirmar" aria-label="Mostrar senha" data-love-i18n-aria-label="login.mostrarSenha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
@@ -5795,7 +5810,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261116_novasenha2"></script>
+  <script src="js/app.js?v=20261116_regrasnova"></script>
   <script src="js/landing.js?v=20261115_menu"></script>
   <script src="js/carteira.js?v=20261116_olho"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>

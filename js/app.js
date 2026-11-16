@@ -19107,6 +19107,32 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('login-nova-senha-input')?.focus();
   }
 
+  // Quadro de regras da Nova senha: mesmo cálculo e mesmo comportamento do
+  // cadastro (cadastro.html, updatePasswordStrength / mostrarRegrasSeFaltar).
+  const novaSenhaInput = /** @type {HTMLInputElement|null} */ (document.getElementById('login-nova-senha-input'));
+  const novaSenhaPainelRegras = document.getElementById('nova-senha-strength-panel');
+  function atualizarRegrasNovaSenha() {
+    if (!novaSenhaInput || !novaSenhaPainelRegras) return;
+    const valor = novaSenhaInput.value;
+    /** @type {Record<string, boolean>} */
+    const regras = { length: valor.length >= 8, upper: /[A-Z]/.test(valor), lower: /[a-z]/.test(valor), number: /[0-9]/.test(valor) };
+    const cumpridas = Object.values(regras).filter(Boolean).length;
+    novaSenhaPainelRegras.querySelectorAll('li[data-rule]').forEach(li => {
+      li.classList.toggle('is-met', !!regras[/** @type {HTMLElement} */ (li).dataset.rule || '']);
+    });
+    const barra = /** @type {HTMLElement} */ (document.getElementById('nova-senha-strength-bar-fill'));
+    const rotulo = /** @type {HTMLElement} */ (document.getElementById('nova-senha-strength-label'));
+    barra.classList.remove('is-weak', 'is-medium', 'is-strong');
+    if (!valor) { barra.style.width = '0%'; rotulo.textContent = ''; }
+    else if (cumpridas <= 1) { barra.style.width = '25%'; barra.classList.add('is-weak'); rotulo.textContent = tLogin('cadastro.senhaFraca', 'Senha fraca'); }
+    else if (cumpridas <= 3) { barra.style.width = '65%'; barra.classList.add('is-medium'); rotulo.textContent = tLogin('cadastro.senhaMedia', 'Senha média'); }
+    else { barra.style.width = '100%'; barra.classList.add('is-strong'); rotulo.textContent = tLogin('cadastro.senhaForte', 'Senha forte'); }
+    novaSenhaPainelRegras.classList.toggle('is-visible', document.activeElement === novaSenhaInput && cumpridas < 4);
+  }
+  novaSenhaInput?.addEventListener('input', atualizarRegrasNovaSenha);
+  novaSenhaInput?.addEventListener('focus', atualizarRegrasNovaSenha);
+  novaSenhaInput?.addEventListener('blur', () => novaSenhaPainelRegras?.classList.remove('is-visible'));
+
   document.getElementById('btn-nova-senha-pedir-link')?.addEventListener('click', () => {
     novaSenhaAberta = false;
     showLoginForgotPanel('');

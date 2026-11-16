@@ -314,3 +314,19 @@ body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !
 #view-login#view-login .lg-campo-apagado { opacity: .7; }
 #view-login#view-login .lg-campo-apagado input { cursor: default; }
 #view-login#view-login .lg-erro.lg-aviso { color: #183b54 !important; }
+
+/* Crie uma nova senha: o mesmo quadro de regras da senha do cadastro
+   (cadastro.html + o ajuste #cd .password-strength-panel de cadastro-novo.css). */
+#view-login#view-login .password-strength-panel { display: none; margin-top: -4px; background: #FAFBFC; border: 1px solid #E3E8EF; border-radius: 14px; padding: 0.875rem 1rem; }
+#view-login#view-login .password-strength-panel.is-visible { display: block; }
+#view-login#view-login .password-strength-bar-track { height: 4px; border-radius: 999px; background: #E4E4E7; overflow: hidden; margin-bottom: 0.5rem; }
+#view-login#view-login .password-strength-bar-fill { height: 100%; width: 0%; border-radius: 999px; background: #D4D4D8; transition: width .2s ease, background-color .2s ease; }
+#view-login#view-login .password-strength-bar-fill.is-weak { background: #DC2626; }
+#view-login#view-login .password-strength-bar-fill.is-medium { background: #D97706; }
+#view-login#view-login .password-strength-bar-fill.is-strong { background: #16A34A; }
+#view-login#view-login .password-strength-label { font-size: 0.75rem; font-weight: 500; color: #71717A; margin: 0 0 0.625rem; }
+#view-login#view-login .password-strength-checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.375rem; }
+#view-login#view-login .password-strength-checklist li { font-size: 0.75rem; color: #A1A1AA; display: flex; align-items: center; gap: 0.5rem; transition: color .15s ease; }
+#view-login#view-login .password-strength-checklist li.is-met { color: #18181B; }
+#view-login#view-login .password-strength-check { font-size: 0.8rem; line-height: 1; color: #D4D4D8; transition: color .15s ease; }
+#view-login#view-login .password-strength-checklist li.is-met .password-strength-check { color: #16A34A; }

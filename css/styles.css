@@ -14045,7 +14045,8 @@ html body #b2b-vendor-profile-view .b2b-perfil-sobre-endereco:not(.hidden):not(#
 
   html body #dashboard-main-area .submenu-celular:not([hidden]):not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; border-top: 1px solid #E4E4E7 !important; border-bottom: 0 !important; }
   html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
-  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
+  /* Aba ativa do submenu no azul clarinho do hover do submenu no computador. */
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b) { background: #EBF4FF !important; color: #183b54 !important; }
   html body #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b)::before { top: 0; bottom: auto; }
   body[data-theme="dark"] #dashboard-main-area .submenu-celular:not([hidden]) { background: #1F1F1F !important; border-top-color: #333333 !important; }
   body[data-theme="dark"] #dashboard-main-area .submenu-celular .submenu-celular-item { background: #1F1F1F !important; }

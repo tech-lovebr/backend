@@ -683,15 +683,17 @@ html, body { background: #0C1824 !important; }
           return;
         }
         btn.disabled = true;
-        // 1º: nosso e-mail (SES). Se a rota falhar, o Supabase manda o link pelo e-mail dele.
+        // Mesmo caminho do login da Love: o próprio Supabase manda o link (e-mail
+        // dele, pelo SES). A rota /api/esqueci-senha fica só de reserva.
         var enviou = false;
         try {
-          var resp = await fetch('/api/esqueci-senha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) });
-          enviou = resp.ok;
-        } catch (e) { /* cai no Supabase abaixo */ }
+          var r = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/resetar-senha' });
+          enviou = !r.error;
+          if (r.error) console.warn('esqueci-senha (Supabase):', r.error.message);
+        } catch (e) { /* cai na rota abaixo */ }
         if (!enviou) {
           try {
-            await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/resetar-senha' });
+            await fetch('/api/esqueci-senha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) });
           } catch (e) { /* mesma mensagem genérica: não confirma se o e-mail existe */ }
         }
         btn.disabled = false;

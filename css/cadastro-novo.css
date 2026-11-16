@@ -221,3 +221,8 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 #cd#cd .cd-pontos { display: none !important; }
 /* Campos do cadastro no mesmo cinza bem claro do login (#F8FAFC). */
 #cd#cd { --cd-campo: #F8FAFC; }
+
+/* Caixa do cadastro só branca, sem o relevo com o ícone (como no login),
+   no computador e no celular. */
+#cd#cd .cd-relevo { display: none !important; }
+#cd#cd .cd-cartao { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }

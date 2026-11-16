@@ -213,3 +213,8 @@
 /* Barra do navegador no celular (Safari pinta com o fundo da página): no login
    a página por trás fica na cor do fundo, igual ao cadastro, e não branca. */
 html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), html body.login-mode { background-color: #E9F1FB !important; }
+
+/* Título do login: a segunda linha ("ficam para sempre.") na mesma letra da
+   primeira, sem itálico; título e texto de apoio centralizados. */
+#view-login#view-login .lg-titulo i { font-style: normal !important; font-weight: inherit !important; font-family: inherit !important; }
+#view-login#view-login .lg-cabeca :is(.lg-titulo, .lg-sub) { text-align: center !important; margin-left: auto; margin-right: auto; }

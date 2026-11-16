@@ -136,3 +136,8 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
   #cd#cd .cd-relevo { opacity: .35; }
   #cd#cd .cd-fundo::after { opacity: .2; }
 }
+
+/* Títulos do cadastro: a segunda linha ("o seu grande dia?") na mesma letra
+   da primeira, sem itálico; título e texto de apoio centralizados. */
+#cd#cd .onboard-step h1 i { font-style: normal !important; font-weight: inherit !important; font-family: inherit !important; }
+#cd#cd .onboard-step h1, #cd#cd .onboard-step h1 + p { text-align: center !important; margin-left: auto; margin-right: auto; }

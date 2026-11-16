@@ -32,7 +32,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=20261116_16anos"></script>
-  <script src="js/i18n.js?v=20261116_fluxo"></script>
+  <script src="js/i18n.js?v=20261116_novaconta"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -172,7 +172,7 @@
         <!-- Etapa 1: acesso (Google, ou e-mail + senha + confirmar senha). A conta
              só é criada no fim, depois do tipo de evento e dos dados pessoais. -->
         <div class="onboard-step is-active" data-step="1">
-          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n-html="cadastro.tituloAcesso">Crie sua <br><i>conta.</i></h1>
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n-html="cadastro.tituloAcesso">Crie sua <br><i>nova conta.</i></h1>
           <p class="text-zinc-500 text-sm mb-7" data-love-i18n="cadastro.subTituloAcesso">Comece com o Google ou com seu e-mail.</p>
 
           <div class="cd-sociais">
@@ -221,7 +221,7 @@
               <div class="campo-senha-com-olho">
                 <input type="text" id="onboard-password-confirm-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Repita a senha" data-love-i18n-placeholder="cadastro.confirmarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
               </div>
-              <p class="cd-erro" id="onboard-senhas-diferentes" hidden data-love-i18n="cadastro.senhasDiferentes">As senhas não são iguais.</p>
+              <p class="cd-erro" id="onboard-senhas-diferentes" hidden data-love-i18n="cadastro.senhasDiferentes">As senhas não coincidem.</p>
             </div>
             <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2" data-love-i18n="cadastro.continuar">Continuar</button>
           </form>
@@ -596,13 +596,26 @@
     // Confirmar senha: aparece assim que a pessoa começa a digitar a senha.
     const confirmarCampo = document.getElementById('onboard-confirmar-campo');
     const confirmarInput = document.getElementById('onboard-password-confirm-input');
+    const avisoSenhas = document.getElementById('onboard-senhas-diferentes');
+    // "As senhas não coincidem." embaixo do Confirmar senha: aparece quando o
+    // que foi digitado já não bate com a senha (ou ficou do mesmo tamanho e é
+    // diferente); some assim que as duas ficam iguais.
+    function conferirSenhas(final) {
+      const confirmacao = confirmarInput.value;
+      const senha = passwordInput.value;
+      const diferente = !!confirmacao && confirmacao !== senha &&
+        (final || confirmacao.length >= senha.length || !senha.startsWith(confirmacao));
+      avisoSenhas.hidden = !diferente;
+      return !diferente;
+    }
     passwordInput.addEventListener('input', () => {
       const temSenha = !!passwordInput.value;
       confirmarCampo.hidden = !temSenha;
       confirmarInput.required = temSenha;
-      mostrarErro('onboard-senhas-diferentes', '');
+      conferirSenhas(false);
     });
-    confirmarInput.addEventListener('input', () => { document.getElementById('onboard-senhas-diferentes').hidden = true; });
+    confirmarInput.addEventListener('input', () => conferirSenhas(false));
+    confirmarInput.addEventListener('blur', () => conferirSenhas(true));
 
     // Etapa 1 com e-mail: confere a senha e segue para o tipo de evento. A
     // conta só é criada no fim (botão "Criar conta" da etapa 3).
@@ -610,7 +623,7 @@
       e.preventDefault();
       mostrarErro('cd-erro-acesso', '');
       if (confirmarInput.value !== passwordInput.value) {
-        document.getElementById('onboard-senhas-diferentes').hidden = false;
+        avisoSenhas.hidden = false;
         confirmarInput.focus();
         return;
       }

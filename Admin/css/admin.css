@@ -4757,3 +4757,7 @@ body[data-theme="dark"] .drawer-acoes-botoes :is(.btn-neutro, .btn-danger) { bac
 .admin-sidebar .admin-nav-grupo-linha.is-active .admin-nav-item { font-weight: 600; }
 .admin-sidebar .admin-nav-subitem { font-weight: 400; }
 .admin-sidebar .admin-nav-subitem.is-active { font-weight: 500; }
+
+/* Rodapé na mesma cor do cabeçalho: branco com a mesma linha (no escuro, #181D24). */
+.admin-main > .admin-footer { background: #FFFFFF; border-top-color: var(--topbar-border); }
+body[data-theme="dark"] .admin-main > .admin-footer { background: #181D24; border-top-color: rgba(255, 255, 255, .08); }

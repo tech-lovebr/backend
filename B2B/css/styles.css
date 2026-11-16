@@ -13323,7 +13323,7 @@ html body #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love
 @media (min-width: 769px) {
   html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card:not(.dash-ads-card), .dashboard-help-card):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
     background: rgba(255, 255, 255, 0.04) !important; background-image: none !important;
-    border: 1px solid rgba(12, 24, 36, 0.45) !important; box-shadow: none !important;
+    border: 1px solid rgba(12, 24, 36, 0.28) !important; box-shadow: none !important;
     -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
     color: #EAF1F8 !important;
   }
@@ -13486,7 +13486,7 @@ html:not(.hub-claro) body .hub-campo:not(#love-h-a):not(#love-h-b):not(#love-h-c
   background-color: #0C1824 !important; background-image: none !important; color: #EAF1F8 !important; border-color: #0C1824 !important;
 }
 html:not(.hub-claro) body .hub-campo::placeholder { color: rgba(234, 241, 248, 0.5) !important; }
-html:not(.hub-claro) body .hub-borda:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(12, 24, 36, 0.45) !important; }
+html:not(.hub-claro) body .hub-borda:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(12, 24, 36, 0.28) !important; }
 html:not(.hub-claro) body .hub-txt-1:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #EAF1F8 !important; }
 html:not(.hub-claro) body .hub-txt-2:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
 html:not(.hub-claro) body .hub-traco:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { stroke: #FFFFFF !important; }

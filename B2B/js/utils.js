@@ -1973,9 +1973,11 @@ function ligarCepAutomatico(cepEl, campos) {
   try { if (localStorage.getItem(CHAVE) === '1') raiz.classList.add('love-saldo-oculto'); } catch (e) { /* sem armazenamento */ }
   const atualizar = () => {
     const oculto = raiz.classList.contains('love-saldo-oculto');
+    const en = raiz.classList.contains('hub-en');
     document.querySelectorAll('[data-love-olho]').forEach(b => {
       b.setAttribute('aria-pressed', oculto ? 'true' : 'false');
-      b.setAttribute('aria-label', oculto ? 'Mostrar valores' : 'Esconder valores');
+      b.setAttribute('aria-label', en ? (oculto ? 'Show balance' : 'Hide balance') : (oculto ? 'Mostrar saldo' : 'Ocultar saldo'));
+      b.textContent = en ? (oculto ? 'Show' : 'Hide') : (oculto ? 'Mostrar' : 'Ocultar');
     });
   };
   document.addEventListener('click', e => {

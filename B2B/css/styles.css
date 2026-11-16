@@ -8135,8 +8135,6 @@ html body .campo-com-ver-senha > input.campo-senha-com-olho:not(#love-h-a) { pad
   display: inline-flex; align-items: center; justify-content: center; color: #A1A1AA;
 }
 .ver-senha-btn:hover { color: #71717A; }
-.ver-senha-btn svg { width: 18px; height: 18px; }
-.ver-senha-btn svg[hidden] { display: none; }
 
 /* ==========================================================================
    Configurações igual ao love.com.br (Configurações › Minha conta):
@@ -13562,9 +13560,6 @@ html:not(.hub-claro) body .cart-docs-ilustra:not(#love-h-a) { border-color: tran
    ========================================================================== */
 button.love-olho { width: 32px; height: 32px; flex-shrink: 0; padding: 0; display: inline-grid; place-items: center; background: #FFFFFF !important; border: 1px solid #E3E8EF !important; border-radius: 8px !important; box-shadow: none !important; outline: none; color: #16202F; cursor: pointer; transition: border-color .15s, color .15s; }
 button.love-olho:is(:hover, :focus-visible) { border-color: #181D24 !important; color: #181D24; }
-.love-olho svg { width: 16px; height: 16px; }
-.love-olho .love-olho-fechado, .love-saldo-oculto .love-olho .love-olho-aberto { display: none; }
-.love-saldo-oculto .love-olho .love-olho-fechado { display: block; }
 .love-saldo-valor { transition: filter .3s; }
 html.love-saldo-oculto .love-saldo-valor { filter: blur(9px); user-select: none; }
 body[data-theme="dark"] button.love-olho { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
@@ -13576,7 +13571,6 @@ html body .dash-saldo-celular-col-olho button.love-olho:not(#love-h-a):not(#love
 /* Escuro (azul-noite): botão na cor do menu lateral, ícone branco. */
 html:not(.hub-claro) body button.love-olho:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #FFFFFF !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
 html:not(.hub-claro) body button.love-olho:is(:hover, :focus-visible):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: rgba(255, 255, 255, 0.32) !important; }
-html:not(.hub-claro) body button.love-olho svg:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
 
 /* Carrossel da Home (claro): legenda de volta numa caixinha na cor do menu
    lateral (#0C1824) com leve transparência e texto branco, como no escuro. */
@@ -13656,3 +13650,19 @@ html.hub-claro body .plan-card:not(.featured) .plan-card-cta *:not(#love-h-a):no
 html.hub-claro body .plan-card:not(.featured) .plan-card-cta:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #EAF1F8 !important; border-color: #EAF1F8 !important; }
 html.hub-claro body .plan-card.featured:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #FFFFFF !important; background-image: none !important; }
 html.hub-claro body .plan-card:not(.featured) .plan-card-cta:disabled:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { opacity: 1 !important; }
+
+/* ==========================================================================
+   Mostrar/Ocultar em texto (igual ao login do Admin), no lugar do olho:
+   senha (js/ver-senha.js) e saldo do Painel (.love-olho). 13px/500 cinza,
+   hover escurece com fundo bem leve, cantos 10px, sem caixa/borda.
+   No escuro (plataforma logada): texto branco a 70%, hover branco.
+   ========================================================================== */
+html body .campo-com-ver-senha > input.campo-senha-com-olho:not(#love-h-a):not(#love-h-b) { padding-right: 84px; }
+html body .ver-senha-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { width: auto !important; height: 36px; padding: 0 10px; border: 0 !important; border-radius: 10px !important; background: none !important; box-shadow: none !important; font-family: inherit; font-size: 13px !important; font-weight: 500 !important; line-height: 1; color: #5B6779 !important; cursor: pointer; }
+html body .ver-senha-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):hover { color: #16202F !important; background: rgba(22, 32, 47, .05) !important; }
+html body .ver-senha-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; }
+html body button.love-olho:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { width: auto !important; height: 36px; padding: 0 10px; border: 0 !important; border-radius: 10px !important; background: none !important; box-shadow: none !important; font-family: inherit; font-size: 13px !important; font-weight: 500 !important; line-height: 1; color: #5B6779 !important; cursor: pointer; }
+html body button.love-olho:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):hover { color: #16202F !important; background: rgba(22, 32, 47, .05) !important; }
+html body button.love-olho:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { height: 32px; display: inline-flex; align-items: center; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body:has(> .b2b-shell) :is(.ver-senha-btn, button.love-olho):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { color: rgba(255, 255, 255, .7) !important; background: none !important; }
+html:not(.hub-claro) body:has(> .b2b-shell) :is(.ver-senha-btn, button.love-olho):hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { color: #FFFFFF !important; background: rgba(255, 255, 255, .08) !important; }

@@ -13682,3 +13682,13 @@ html body :is(.ver-senha-btn, button.love-olho):not(#love-h-a):not(#love-h-b):no
 html body button.love-olho:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) { width: 32px !important; }
 .ver-senha-btn svg { width: 18px; height: 18px; display: block; }
 .love-olho svg { width: 16px; height: 16px; display: block; }
+
+/* Adicionar novo produto: o título e o texto da etapa (à esquerda no
+   computador, em cima no celular) também numa caixa branca, como o formulário. */
+html body.produto-modo-criar #produto-etapa-intro:not(#love-h-a):not(#love-h-b) { background: #FFFFFF; border: 1px solid var(--borda-suave); border-radius: 10px; padding: 1.5rem; box-sizing: border-box; }
+html body.produto-modo-criar #produto-etapa-intro #produto-etapa-titulo:not(#love-h-a):not(#love-h-b) { margin: 0; }
+@media (max-width: 900px) {
+  html body.produto-modo-criar #produto-etapa-intro:not(#love-h-a):not(#love-h-b) { margin-bottom: 1rem; padding: 1.25rem; }
+  /* As caixas (título e formulário) ocupam a largura toda, alinhadas. */
+  html body.produto-modo-criar #product-drawer.show:not(#love-h-a):not(#love-h-b) { align-items: stretch; }
+}

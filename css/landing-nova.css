@@ -465,3 +465,13 @@
   #view-public-site#view-public-site .lv-nav .lv-nav-links{display:none !important}
   #view-public-site#view-public-site .lv-nav .lv-nav-esq .lv-burger{display:inline-flex !important}
 }
+
+/* Celular (até 860px): como no Love Hub, o logo fica colado ao ☰ (8px depois
+   dele, 102px), e o Entrar continua à direita. */
+@media (max-width:860px){
+  #view-public-site#view-public-site .lv-nav .lv-in{grid-template-columns:auto auto 1fr !important;column-gap:8px !important}
+  #view-public-site#view-public-site .lv-nav .lv-logo{width:102px !important;justify-self:start !important}
+  #view-public-site#view-public-site .lv-nav .lv-r{justify-self:end !important}
+  /* Sem ☰ (ex.: Encontrar evento): o logo começa na margem. */
+  #view-public-site#view-public-site .lv-nav .lv-in:not(:has(.lv-burger)){column-gap:0 !important}
+}

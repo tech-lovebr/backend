@@ -275,6 +275,10 @@ html, body { background: #0C1824 !important; }
   #view-login#view-login .lg-logo-marca { width: 102px; }
   #view-login#view-login .lg-selo { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); font-size: 10px !important; letter-spacing: .16em !important; padding: 3px 7px; white-space: nowrap; }
 }
+/* Topo preso ao rolar, igual ao da landing (.nav.on): transparente no alto e,
+   descendo, vidro rgba(12,24,36,.8) com desfoque e a linha fina embaixo. */
+#view-login#view-login .lg-cabecalho { position: sticky !important; top: 0; z-index: 40; transition: background .5s, box-shadow .5s; }
+#view-login#view-login .lg-cabecalho.on { background: rgba(12,24,36,.8) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 1px 0 rgba(234,241,248,.1) !important; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -522,5 +526,6 @@ html, body { background: #0C1824 !important; }
       });
     }
   </script>
+  <script>(function(){var h=document.querySelector('.lg-cabecalho');if(!h)return;var on=function(){h.classList.toggle('on',window.scrollY>40)};on();window.addEventListener('scroll',on,{passive:true});})();</script>
 </body>
 </html>

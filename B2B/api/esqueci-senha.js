@@ -27,6 +27,17 @@ const sesClient = new SESClient({
   },
 });
 
+// Registro no livro-razão de e-mails (tabela email_envios, aba E-mails do Admin):
+// enviado, falhou ou "sem conta" — assim dá para ver por que um link não chegou.
+async function registrar(linha) {
+  try {
+    const base = { remetente: process.env.EMAIL_FROM || "Love <contato@love.com.br>", assunto: "Redefinir sua senha — Love", template: "Hub · Esqueci minha senha", categoria: "Sistema", provedor: "Amazon SES" };
+    const l = { ...base, ...linha };
+    if (l.message_id) await supabaseAdmin.from("email_envios").upsert(l, { onConflict: "message_id" });
+    else await supabaseAdmin.from("email_envios").insert(l);
+  } catch (e) { console.error("esqueci-senha: falha ao registrar em email_envios", e); }
+}
+
 function buildHtml(link) {
   return `
     <!DOCTYPE html>
@@ -86,6 +97,7 @@ module.exports = async (req, res) => {
   if (error || !data?.properties?.action_link) {
     // E-mail sem conta: resposta genérica (não revela quem está cadastrado).
     const semConta = error && (error.status === 404 || /not.?found/i.test(error.message || ""));
+    await registrar({ destinatario: email, status: "falhou", erro: semConta ? "Sem conta com este e-mail (" + (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "") + ")" : "generateLink: " + (error?.message || "sem link") });
     if (!error || semConta) return res.status(200).json(genericResponse);
     // Falha nossa (chave, configuração): o login cai no envio do próprio Supabase.
     console.error("esqueci-senha: generateLink falhou:", error);
@@ -93,7 +105,8 @@ module.exports = async (req, res) => {
   }
 
   try {
-    await sesClient.send(new SendEmailCommand({
+    const inicio = Date.now();
+    const r = await sesClient.send(new SendEmailCommand({
       Source: process.env.EMAIL_FROM || "Love <contato@love.com.br>",
       Destination: { ToAddresses: [email] },
       Message: {
@@ -101,8 +114,10 @@ module.exports = async (req, res) => {
         Body: { Html: { Charset: "UTF-8", Data: buildHtml(data.properties.action_link) } },
       },
     }));
+    await registrar({ destinatario: email, status: "enviado", message_id: r.MessageId, latencia_ms: Date.now() - inicio, trecho: "Recebemos um pedido para redefinir a senha da sua conta no Love Hub." });
   } catch (err) {
     console.error("Falha ao enviar e-mail de redefinição de senha:", err);
+    await registrar({ destinatario: email, status: "falhou", erro: "SES: " + (err?.message || err?.name || String(err)) });
     return res.status(502).json({ error: "Falha ao enviar o e-mail", detalhe: err?.name || err?.message || "SES" });
   }
 

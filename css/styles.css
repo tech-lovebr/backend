@@ -16068,3 +16068,40 @@ html body .ficha-convidado .ficha-opcional:not(#love-h-a):not(#love-h-b) { font-
    azul (#537BAE) com o ícone em branco para ler bem. */
 html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #537BAE !important; color: #FFFFFF !important; }
 html body #tab-overview .home-atalhos-secao.is-beneficios .home-atalho-bola svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; stroke: currentColor; }
+
+/* Celular, tema claro: Convidados, Presentes, Convite e Mensagens no mesmo
+   branco do topo (sem o céu atrás). A contagem, o Pesquisar e as linhas ficam
+   no branco, e a lista segue com as linhas até o fim da tela, mesmo vazia,
+   como a tabela do computador. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]):has(#tab-rsvp.active, #tab-gifts.active, #tab-edit-site.active, #tab-b2b.active #b2b-messages-view:not(.hidden)) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; }
+  html body:not([data-theme="dark"]) :is(#tab-rsvp .love-tabela-busca input, #gifts-search-input, #b2b-chat-search):not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+
+  /* Convidados: linha branca com o divisor embaixo; linhas vazias até o fim. */
+  html body:not([data-theme="dark"]) #tab-rsvp .guests-table tbody td.guest-celula-arraste > .guest-card-arraste:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+  html body #tab-rsvp .guests-table tbody tr:not(.guest-letra-linha) td.guest-celula-arraste:not(#love-h-a):not(#love-h-b) { box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.06); }
+  html body #tab-rsvp .rsvp-caixa-abaixo-das-abas .tabela-com-linhas-vazias:not(#love-h-a):not(#love-h-b),
+  html body #tab-rsvp .rsvp-caixa-abaixo-das-abas > .overflow-x-auto:not(#love-h-a):not(#love-h-b) {
+    min-height: calc(100dvh - 240px);
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--altura-da-linha, 61px) - 1px), rgba(0, 0, 0, 0.06) calc(var(--altura-da-linha, 61px) - 1px), rgba(0, 0, 0, 0.06) var(--altura-da-linha, 61px)) !important;
+    background-position: 0 var(--fim-das-linhas, 0px) !important; background-size: 100% calc(100% - var(--fim-das-linhas, 0px)) !important; background-repeat: no-repeat !important;
+  }
+  body[data-theme="dark"] #tab-rsvp .rsvp-caixa-abaixo-das-abas > .overflow-x-auto { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--altura-da-linha, 61px) - 1px), rgba(255, 255, 255, 0.06) calc(var(--altura-da-linha, 61px) - 1px), rgba(255, 255, 255, 0.06) var(--altura-da-linha, 61px)) !important; }
+  body[data-theme="dark"] #tab-rsvp .guests-table tbody tr:not(.guest-letra-linha) td.guest-celula-arraste { box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.06) !important; }
+
+  /* Mensagens: lista de conversas no branco, com as linhas até o fim. */
+  html body:not([data-theme="dark"]) #b2b-messages-view :is(.b2b-chat-contacts-column, #b2b-chat-contacts-list):not(#love-h-a):not(#love-h-b) { background-color: #FFFFFF !important; }
+  html body:not([data-theme="dark"]) #b2b-chat-contacts-list .conv-item:not(.is-ativa):not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+  html body #b2b-chat-contacts-list:not(#love-h-a):not(#love-h-b) {
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--altura-da-linha, 69px) - 1px), rgba(0, 0, 0, 0.06) calc(var(--altura-da-linha, 69px) - 1px), rgba(0, 0, 0, 0.06) var(--altura-da-linha, 69px));
+    background-position: 0 var(--fim-das-linhas, 0px); background-size: 100% calc(100% - var(--fim-das-linhas, 0px)); background-repeat: no-repeat; background-attachment: local;
+  }
+  body[data-theme="dark"] #b2b-chat-contacts-list { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--altura-da-linha, 69px) - 1px), rgba(255, 255, 255, 0.06) calc(var(--altura-da-linha, 69px) - 1px), rgba(255, 255, 255, 0.06) var(--altura-da-linha, 69px)) !important; }
+}
+
+/* Chat: sem a foto do fornecedor/cliente ao lado das mensagens; o texto das
+   bolhas fica um pouco maior (14px no celular, 15px no computador). */
+html body #b2b-chat-messages-container .chat-msg-texto:not(#love-h-a):not(#love-h-b) { font-size: 15px; line-height: 1.5; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-chat-messages-container .chat-msg-texto:not(#love-h-a):not(#love-h-b) { font-size: 14px; }
+}

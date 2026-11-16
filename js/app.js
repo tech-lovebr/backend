@@ -11039,6 +11039,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Celular: guarda a altura do ícone para o Mapa vazio usar a mesma.
         if (semNinguem) setTimeout(guardarAlturaDoVazioDeConvidados, 360);
       }
+      // Sem nenhuma linha: as linhas vazias começam logo no topo da caixa.
+      const caixaDasLinhas = /** @type {HTMLElement|null} */ (listEl?.closest('table')?.parentElement || null);
+      caixaDasLinhas?.style.setProperty('--fim-das-linhas', '0px');
       renderRsvpPagination(0);
       return;
     } else {
@@ -22412,6 +22415,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // Trocar de menu fecha a conversa.
   document.addEventListener('click', (e) => { if (/** @type {HTMLElement} */ (e.target).closest?.('.rail-icon-btn, #submenu-celular')) fecharConversaNoCelular(); }, true);
 
+  // Celular: a lista de conversas segue com as linhas até o fim da tela (como
+  // a tabela de convidados); aqui medimos a altura de cada conversa e onde
+  // acabam as conversas para as linhas vazias continuarem alinhadas.
+  (function linhasVaziasDaListaDoChat() {
+    const lista = document.getElementById('b2b-chat-contacts-list');
+    if (!lista || typeof ResizeObserver === 'undefined') return;
+    const medir = () => {
+      const itens = Array.from(lista.children);
+      const conversa = lista.querySelector('.conv-item');
+      const altura = conversa ? Math.round(conversa.getBoundingClientRect().height) : 0;
+      const fim = itens.reduce((t, el) => t + el.getBoundingClientRect().height, 0);
+      lista.style.setProperty('--altura-da-linha', `${altura || 69}px`);
+      lista.style.setProperty('--fim-das-linhas', `${Math.round(fim)}px`);
+    };
+    new MutationObserver(medir).observe(lista, { childList: true });
+    new ResizeObserver(medir).observe(lista);
+  })();
+
   function renderB2BChatContacts(filterQuery = buscaDoChat()) {
     const list = document.getElementById('b2b-chat-contacts-list');
     if (!list) return;
@@ -22613,7 +22634,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (isMe) {
         row.innerHTML = `
-          <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
+          <div class="max-w-[88%] sm:max-w-[75%] space-y-1 text-right">
             <div class="flex items-center justify-end gap-2">
               ${menuHtml}
               <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left min-w-0">
@@ -22627,12 +22648,10 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="text-[#537bae] font-bold">✓✓</span>
             </div>
           </div>
-          ${meuAvatarDoChatHtml()}
         `;
       } else {
         row.innerHTML = `
-          <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200 mb-4">
-          <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
+          <div class="max-w-[88%] sm:max-w-[75%] space-y-1">
             <div class="flex items-center gap-2">
               <div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs min-w-0">
                 ${msg.text ? `<p class="chat-msg-texto whitespace-pre-wrap break-words">${escaparHtml(msg.text)}</p>` : ''}
@@ -22653,7 +22672,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const row = document.createElement('div');
       row.className = 'flex items-end gap-2.5 justify-start';
       row.innerHTML = `
-        <img src="${activeConv.avatar}" alt="${activeConv.name}" class="w-7 h-7 rounded-lg chat-avatar-quadrado ${classeAvatarChat(activeConv.avatar)} flex-shrink-0 border border-zinc-200">
         <div class="chat-digitando" role="status" aria-label="${escaparHtml(activeConv.name)} está digitando"><span></span><span></span><span></span></div>`;
       container.appendChild(row);
     }
@@ -22771,17 +22789,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   })();
-
-  // Avatar das minhas mensagens no chat: a foto da conta ou as iniciais do
-  // nome (ex.: VM) no mesmo estilo do Hub B2B (quadrado, azul-claro).
-  function meuAvatarDoChatHtml() {
-    const perfil = window.loveClienteProfile || {};
-    const foto = perfil.avatar_url;
-    const conteudo = foto
-      ? `<img src="${escaparHtml(foto)}" alt="" class="w-full h-full object-cover">`
-      : `<span class="chat-avatar-iniciais">${escaparHtml(iniciaisDaConta(perfil))}</span>`;
-    return `<span class="w-7 h-7 rounded-lg chat-avatar-quadrado flex-shrink-0 border border-zinc-200 overflow-hidden mb-4 inline-flex">${conteudo}</span>`;
-  }
 
   document.getElementById('b2b-chat-search')?.addEventListener('input', (e) => {
     renderB2BChatContacts(/** @type {HTMLInputElement} */ (e.target).value);

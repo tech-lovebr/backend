@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCommandPalette();
   initNotifications(unreadSnapshot);
   initThemeToggle();
+  initVidroEscuro();
   initLogout();
   document.dispatchEvent(new CustomEvent('shell:ready'));
   shellIsReady = true;
@@ -509,8 +510,84 @@ function initThemeToggle() {
       document.documentElement.classList.toggle('hub-claro', theme === 'light');
       try { localStorage.setItem('b2b-visual', theme === 'light' ? 'claro' : 'escuro'); } catch (err) {}
       setActive(theme);
+      if (theme === 'dark') varrerVidro(document.body);
     });
   });
+}
+
+/* -------------------- Visual escuro: fundos brancos viram vidro -------------------- */
+// No escuro (azul-noite), tudo o que era branco vira o "vidro" das caixas da
+// Home (Sua agenda, Saldo disponível); campos de digitar ficam na cor do menu
+// lateral; contornos claros passam para a cor do menu lateral; textos escuros
+// sobre fundo escuro ficam claros. Vale também para o que a página monta
+// depois (tabelas, listas), via MutationObserver. O site do cliente
+// (construtor e prévias) fica de fora. As classes só pintam fora do claro.
+const VIDRO_FORA = '.builder-canvas, .site-preview, [id="live-preview-container"], .b2b-sidebar, iframe, svg, img, video, canvas, picture';
+function corRGBA(txt) {
+  const m = (txt || '').match(/rgba?\(([^)]+)\)/);
+  if (!m) return null;
+  const p = m[1].split(/[ ,/]+/).filter(Boolean).map(Number);
+  return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+}
+const luz = c => (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255;
+function fundoEfetivo(el) {
+  for (let e = el; e && e.nodeType === 1; e = e.parentElement) {
+    const c = corRGBA(getComputedStyle(e).backgroundColor);
+    if (c && c.a >= 0.5) return c;
+    if (getComputedStyle(e).backgroundImage !== 'none' && e !== document.body) return null;
+  }
+  return null;
+}
+function escuroAtivo() {
+  if (document.documentElement.classList.contains('hub-claro')) return false;
+  if (document.body.dataset.page === 'site-preview' || !document.querySelector('.b2b-shell')) return false;
+  const c = corRGBA(getComputedStyle(document.body).backgroundColor);
+  return !!c && luz(c) < 0.25;
+}
+function varrerVidro(raiz) {
+  if (!raiz || !escuroAtivo()) return;
+  const todos = [raiz, ...raiz.querySelectorAll('*')].filter(el => el.nodeType === 1 && !el.closest(VIDRO_FORA));
+  // 1) Fundos brancos/quase brancos.
+  for (const el of todos) {
+    if (el.classList.contains('hub-vidro') || el.classList.contains('hub-vidro-solido') || el.classList.contains('hub-campo')) continue;
+    const st = getComputedStyle(el);
+    const c = corRGBA(st.backgroundColor);
+    if (!c || c.a < 0.6 || Math.min(c.r, c.g, c.b) < 244) continue;
+    if (el.matches('input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), select, textarea, [contenteditable="true"]')) el.classList.add('hub-campo');
+    else if (/^(fixed|absolute|sticky)$/.test(st.position) || el.classList.contains('b2b-header-bar')) el.classList.add('hub-vidro-solido');
+    else el.classList.add('hub-vidro');
+  }
+  // 2) Contornos claros → cor do menu lateral.
+  for (const el of todos) {
+    if (el.classList.contains('hub-borda')) continue;
+    const st = getComputedStyle(el);
+    const lados = ['Top', 'Right', 'Bottom', 'Left'].filter(l => parseFloat(st['border' + l + 'Width']) > 0 && st['border' + l + 'Style'] !== 'none');
+    if (!lados.length) continue;
+    const c = corRGBA(st['border' + lados[0] + 'Color']);
+    if (c && c.a >= 0.5 && luz(c) > 0.7 && Math.min(c.r, c.g, c.b) >= 200) el.classList.add('hub-borda');
+  }
+  // 3) Texto escuro sobre fundo que agora é escuro → claro.
+  for (const el of todos) {
+    if (el.classList.contains('hub-txt-1') || el.classList.contains('hub-txt-2')) continue;
+    const st = getComputedStyle(el);
+    const c = corRGBA(st.color);
+    if (!c || luz(c) > 0.45) continue;
+    const f = fundoEfetivo(el);
+    if (f && luz(f) > 0.45) continue;
+    el.classList.add(luz(c) < 0.2 ? 'hub-txt-1' : 'hub-txt-2');
+  }
+}
+function initVidroEscuro() {
+  varrerVidro(document.body);
+  let fila = new Set(), agendado = false;
+  const rodar = () => { agendado = false; const lista = [...fila]; fila = new Set(); lista.forEach(n => n.isConnected && varrerVidro(n)); };
+  new MutationObserver(muts => {
+    for (const m of muts) {
+      if (m.type === 'childList') m.addedNodes.forEach(n => n.nodeType === 1 && fila.add(n));
+      else if (m.type === 'attributes' && !/hub-(vidro|campo|borda|txt)/.test(m.target.className && m.target.className.baseVal === undefined ? m.target.className : '')) fila.add(m.target);
+    }
+    if (fila.size && !agendado) { agendado = true; requestAnimationFrame(rodar); }
+  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'style'] });
 }
 
 async function loadShell() {

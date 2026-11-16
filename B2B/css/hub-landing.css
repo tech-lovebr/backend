@@ -42,9 +42,9 @@ img{display:block;max-width:100%}
 .center{text-align:center;margin-inline:auto}
 
 .btn{display:inline-flex;align-items:center;gap:12px;height:52px;padding:0 26px;border-radius:999px;font-size:15px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:background .4s var(--ease),border-color .4s,box-shadow .4s;white-space:nowrap}
-.btn i{display:block;width:18px;height:1px;background:currentColor;position:relative;transition:width .4s var(--ease)}
-.btn i::after{content:"";position:absolute;right:0;top:-3px;width:7px;height:7px;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg)}
-.btn:hover i{width:28px}
+/* Seta igual à da landing da Love (Criar meu evento grátis). */
+.btn i{display:inline-block;flex-shrink:0;width:16px;height:16px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E") center/16px 16px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E") center/16px 16px no-repeat;transition:transform .3s var(--ease)}
+.btn:hover i{transform:translateX(3px)}
 .btn-l{background:#EAF1F8;color:#0C1824}
 .btn-l:hover{background:#fff;box-shadow:0 14px 40px rgba(169,198,234,.25)}
 .btn-o{border-color:rgba(234,241,248,.22);background:rgba(255,255,255,.04);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}

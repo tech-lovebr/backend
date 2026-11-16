@@ -510,7 +510,9 @@ function initThemeToggle() {
       document.documentElement.classList.toggle('hub-claro', theme === 'light');
       try { localStorage.setItem('b2b-visual', theme === 'light' ? 'claro' : 'escuro'); } catch (err) {}
       setActive(theme);
-      if (theme === 'dark') varrerVidro(document.body);
+      // O fundo do body troca com transição: espera ele ficar escuro de fato
+      // (senão escuroAtivo() ainda vê o claro e nada é convertido).
+      if (theme === 'dark') { let n = 0; const tentar = () => { if (escuroAtivo()) varrerVidro(document.body); else if (n++ < 20) setTimeout(tentar, 60); }; requestAnimationFrame(tentar); }
     });
   });
 }

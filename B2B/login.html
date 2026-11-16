@@ -23,7 +23,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Entrar no Hub — Love</title>
+  <title>Entrar no Love Hub — Love</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon-love.svg?v=1">
   <link rel="alternate icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <meta name="description" content="Acesso de assessores e fornecedores parceiros da Love para gestão de leads, contratos e vitrine de serviços.">
@@ -281,7 +281,7 @@ html, body { background: #0C1824 !important; }
     </header>
 
     <div class="lg-pagina">
-      <section class="lg-cartao" aria-label="Entrar no Hub" data-en-aria="Log in to Hub">
+      <section class="lg-cartao" aria-label="Entrar no Love Hub" data-en-aria="Log in to Love Hub">
 
         <!-- Janela de fotos de fornecedores (só no computador): troca a cada 5s, cada uma com a sua frase -->
         <figure class="lg-janela" id="lg-janela">
@@ -300,7 +300,7 @@ html, body { background: #0C1824 !important; }
 
           <div id="auth-view-login" class="lg-painel">
             <div class="lg-cabeca">
-              <p class="lg-sobre" data-en="Log in to Hub">Entrar no Hub</p>
+              <p class="lg-sobre" data-en="Log in to Love Hub">Entrar no Love Hub</p>
               <h1 class="lg-titulo" data-en-html="More events on your calendar.&lt;br&gt;&lt;i&gt;More money in your account.&lt;/i&gt;">Mais eventos na agenda.<br><i>Mais dinheiro na conta.</i></h1>
             </div>
 
@@ -367,7 +367,7 @@ html, body { background: #0C1824 !important; }
     (function () {
       if (!HUB_EN) return;
       try {
-        document.title = 'Log in to Hub — Love';
+        document.title = 'Log in to Love Hub — Love';
         document.querySelectorAll('[data-en]').forEach(function (el) { el.textContent = el.getAttribute('data-en'); });
         document.querySelectorAll('[data-en-html]').forEach(function (el) { el.innerHTML = el.getAttribute('data-en-html'); });
         document.querySelectorAll('[data-en-aria]').forEach(function (el) { el.setAttribute('aria-label', el.getAttribute('data-en-aria')); });

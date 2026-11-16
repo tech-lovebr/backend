@@ -13614,3 +13614,16 @@ html body .chat-msg-texto :is(p, span):not(.proposta-chat *):not(#love-h-a):not(
   html body .chat-msg-coluna:not(#love-h-a) { max-width: 88%; }
   html body .chat-msg-texto:not(#love-h-a):not(#love-h-b) { font-size: 14px !important; }
 }
+
+/* Central de ajuda (escuro): submenu lateral igual ao de Configurações —
+   itens brancos, hover e ativo em #0C1824 com texto branco, sem caixa clara. */
+html:not(.hub-claro) body[data-page="faq"] .guias-sidebar .guide-link:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; border-color: transparent !important; box-shadow: none !important; }
+html:not(.hub-claro) body[data-page="faq"] .guias-sidebar .guide-link:is(:hover, .guide-link--active):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; border-color: transparent !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body[data-page="faq"] .guias-sidebar .guide-link :is(span, svg):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
+
+/* Carregando (escuro): enquanto a página não está pronta, fundo liso no
+   azul-noite (sem as luzes do degradê, que piscavam ao atualizar) e o
+   loading no mesmo tom, em vez da tela branca. */
+html:not(.hub-claro) body:has(> .b2b-shell):not(.app-ready):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #0F1F2F !important; }
+html:not(.hub-claro) body[data-page]:not(.app-ready):not(.nav-transition)::before { background: #0F1F2F !important; }
+html:not(.hub-claro) body[data-page]:not(.app-ready):not(.nav-transition)::after { border-color: rgba(255, 255, 255, 0.12) !important; border-top-color: #EAF1F8 !important; }

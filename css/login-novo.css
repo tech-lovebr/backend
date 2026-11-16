@@ -172,10 +172,11 @@
 #view-login#view-login .lg-btn.is-entrando i::after { display: none; }
 @keyframes lgGira { to { transform: rotate(360deg); } }
 
-/* Topo do login na mesma altura do da landing (lá há a faixa azul de 41,6px
-   em cima): o cabeçalho desce 41,6px e deixa o mesmo respiro embaixo, antes
-   do cartão. Ao rolar, ele gruda no alto como o da landing. */
-#view-login#view-login .lg-cabecalho { margin: 41.6px 0 !important; top: 0; }
+/* Topo do login: um respiro pequeno em cima (aqui não há a faixa azul da
+   landing) e o cartão logo abaixo do cabeçalho, sem sobra no meio. */
+#view-login#view-login .lg-cabecalho { margin: 16px 0 0 !important; top: 0; }
+#view-login#view-login .lg-pagina { align-items: start !important; padding-top: 16px !important; min-height: calc(100vh - 88px); min-height: calc(100dvh - 88px); }
 @media (max-width: 560px) {
-  #view-login#view-login .lg-cabecalho { margin: 40px 0 !important; }
+  #view-login#view-login .lg-cabecalho { margin: 8px 0 0 !important; }
+  #view-login#view-login .lg-pagina { padding-top: 8px !important; }
 }

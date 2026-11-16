@@ -31,13 +31,13 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261116_16anos"></script>
+  <script src="js/supabase-init.js?v=20261116_regrasenha"></script>
   <script src="js/i18n.js?v=20261116_esqueceu"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap">
-  <link rel="stylesheet" href="css/cadastro-novo.css?v=20261116_logo118">
+  <link rel="stylesheet" href="css/cadastro-novo.css?v=20261116_regrasenha">
   <style>
     body { font-family: 'Outfit', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -197,7 +197,7 @@
             <div class="relative">
               <label class="block text-xs font-normal text-zinc-700 mb-1" data-love-i18n="cadastro.senha">Senha</label>
               <div class="campo-senha-com-olho">
-                <input type="text" id="onboard-password-input" required minlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Crie uma senha" data-love-i18n-placeholder="cadastro.criarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+                <input type="text" id="onboard-password-input" required minlength="8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Crie uma senha" data-love-i18n-placeholder="cadastro.criarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
                 <!-- Olhinho: mostra/esconde a senha -->
                 <button type="button" id="btn-onboard-ver-senha" class="olho-senha" aria-label="Mostrar senha" data-love-i18n-aria-label="cadastro.mostrarSenha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
@@ -223,7 +223,7 @@
               </div>
               <p class="cd-erro" id="onboard-senhas-diferentes" hidden data-love-i18n="cadastro.senhasDiferentes">As senhas não coincidem.</p>
             </div>
-            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2" data-love-i18n="cadastro.continuar">Continuar</button>
+            <button type="submit" id="btn-onboard-submit" disabled class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2" data-love-i18n="cadastro.continuar">Continuar</button>
           </form>
 
           <p class="cd-ja-tem" data-love-i18n-html="cadastro.jaTemContaEntrar">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
@@ -568,7 +568,10 @@
       const faltaAlguma = Object.values(regras).some(ok => !ok);
       passwordPanel.classList.toggle('is-visible', document.activeElement === passwordInput && faltaAlguma);
     }
-    passwordInput.addEventListener('input', () => { updatePasswordStrength(); mostrarRegrasSeFaltar(); });
+    // Continuar só fica liberado com as 4 regras cumpridas.
+    const btnContinuarAcesso = document.getElementById('btn-onboard-submit');
+    function liberarContinuar() { btnContinuarAcesso.disabled = !senhaCumpreRegras(passwordInput.value); }
+    passwordInput.addEventListener('input', () => { updatePasswordStrength(); mostrarRegrasSeFaltar(); liberarContinuar(); });
     passwordInput.addEventListener('focus', mostrarRegrasSeFaltar);
     passwordInput.addEventListener('blur', () => passwordPanel.classList.remove('is-visible'));
     updatePasswordStrength();
@@ -633,6 +636,11 @@
     document.getElementById('form-onboard-register').addEventListener('submit', (e) => {
       e.preventDefault();
       mostrarErro('cd-erro-acesso', '');
+      if (!senhaCumpreRegras(passwordInput.value)) {
+        mostrarErro('cd-erro-acesso', MENSAGEM_REGRAS_SENHA);
+        passwordInput.focus();
+        return;
+      }
       if (confirmarInput.value !== passwordInput.value) {
         avisoSenhas.hidden = false;
         confirmarInput.value = '';
@@ -644,6 +652,11 @@
 
     async function criarContaComEmail() {
       mostrarErro('cd-erro-criar', '');
+      if (!senhaCumpreRegras(passwordInput.value)) {
+        goToStep(1);
+        mostrarErro('cd-erro-acesso', MENSAGEM_REGRAS_SENHA);
+        return;
+      }
       const { first_name: firstName, last_name: lastName, full_name: fullName } = montarNomeCliente(
         document.getElementById('onboard-firstname-input').value,
         document.getElementById('onboard-lastname-input').value

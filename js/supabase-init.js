@@ -117,6 +117,15 @@ function criarSeletorData(input, opcoes) {
   return input;
 }
 
+/* Senha obrigatória: pelo menos 8 caracteres, uma letra maiúscula, uma
+   minúscula e um número. Sem isso a senha não é salva (cadastro, redefinir
+   senha e Configurações). */
+const MENSAGEM_REGRAS_SENHA = 'A senha precisa ter pelo menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número.';
+function senhaCumpreRegras(senha) {
+  const v = String(senha || '');
+  return v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v);
+}
+
 function montarNomeCliente(firstName, lastName) {
   const first_name = (firstName || '').trim().replace(/\s+/g, ' ');
   const last_name = (lastName || '').trim().replace(/\s+/g, ' ');

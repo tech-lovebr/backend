@@ -244,3 +244,7 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
    102px até 860px de largura (onde a landing também usa 102px). */
 #cd#cd .cd-logo { width: 118px !important; }
 @media (max-width: 860px) { #cd#cd .cd-logo { width: 102px !important; } }
+
+/* Continuar do acesso bloqueado até a senha cumprir as 4 regras: mesmo
+   visual apagado do Próximo bloqueado. */
+#cd#cd #btn-onboard-submit:disabled { background: #E6EBF1 !important; color: var(--cd-suave) !important; box-shadow: none !important; cursor: not-allowed; }

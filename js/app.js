@@ -19136,6 +19136,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = document.getElementById('register-email-input').value.trim();
       const password = document.getElementById('register-password-input').value;
       const submitBtn = document.getElementById('btn-register-submit');
+      if (!senhaCumpreRegras(password)) { showToast(MENSAGEM_REGRAS_SENHA, '⚠️'); return; }
 
       submitBtn.disabled = true;
       const { data: cadastro, error } = await supabaseClient.auth.signUp({
@@ -23889,7 +23890,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmar = valor('settings-password-confirm');
     if (!atual || !nova || !confirmar) return avisar('Preencha os 3 campos de senha.');
     if (nova !== confirmar) return avisar('A confirmação não coincide com a nova senha.');
-    if (nova.length < 6) return avisar('A nova senha precisa ter pelo menos 6 caracteres.');
+    if (!senhaCumpreRegras(nova)) return avisar(MENSAGEM_REGRAS_SENHA);
     if (!session || !btn) return;
     btn.disabled = true;
     try {

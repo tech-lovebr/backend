@@ -27,7 +27,7 @@
     window.__resetUrl = { hash: window.location.hash, search: window.location.search };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261116_16anos"></script>
+  <script src="js/supabase-init.js?v=20261116_regrasenha"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 9999px; animation: spin .7s linear infinite; }
@@ -60,7 +60,7 @@
             <div>
               <label for="reset-password" class="block text-xs font-bold text-slate-700 mb-1">Nova senha</label>
               <div class="relative">
-                <input type="password" id="reset-password" required minlength="6" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" class="w-full text-xs sm:text-sm p-3 pr-11 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+                <input type="password" id="reset-password" required minlength="8" autocomplete="new-password" placeholder="8+ caracteres, maiúscula, minúscula e número" class="w-full text-xs sm:text-sm p-3 pr-11 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
                 <button type="button" data-toggle="reset-password" class="btn-toggle-pass absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" aria-label="Mostrar senha">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.04 12.32a1 1 0 010-.64C3.42 7.51 7.36 4.5 12 4.5c4.64 0 8.57 3 9.96 7.18.07.2.07.43 0 .64C20.58 16.49 16.64 19.5 12 19.5c-4.64 0-8.57-3-9.96-7.18z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 </button>
@@ -69,7 +69,7 @@
             <div>
               <label for="reset-password-confirm" class="block text-xs font-bold text-slate-700 mb-1">Confirme a nova senha</label>
               <div class="relative">
-                <input type="password" id="reset-password-confirm" required minlength="6" autocomplete="new-password" placeholder="Repita a nova senha" class="w-full text-xs sm:text-sm p-3 pr-11 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
+                <input type="password" id="reset-password-confirm" required minlength="8" autocomplete="new-password" placeholder="Repita a nova senha" class="w-full text-xs sm:text-sm p-3 pr-11 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-slate-800">
                 <button type="button" data-toggle="reset-password-confirm" class="btn-toggle-pass absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" aria-label="Mostrar senha">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.04 12.32a1 1 0 010-.64C3.42 7.51 7.36 4.5 12 4.5c4.64 0 8.57 3 9.96 7.18.07.2.07.43 0 .64C20.58 16.49 16.64 19.5 12 19.5c-4.64 0-8.57-3-9.96-7.18z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 </button>
@@ -205,7 +205,7 @@
 
         errorEl.classList.add('hidden');
 
-        if (password.length < 6) return mostrarErro('A senha precisa ter pelo menos 6 caracteres.');
+        if (!senhaCumpreRegras(password)) return mostrarErro(MENSAGEM_REGRAS_SENHA);
         if (password !== confirm) return mostrarErro('As senhas não coincidem.');
 
         btn.disabled = true;

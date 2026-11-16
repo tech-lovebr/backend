@@ -22473,6 +22473,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('b2b-chat-voltar')?.addEventListener('click', fecharConversaNoCelular);
   // Trocar de menu fecha a conversa.
   document.addEventListener('click', (e) => { if (/** @type {HTMLElement} */ (e.target).closest?.('.rail-icon-btn, #submenu-celular')) fecharConversaNoCelular(); }, true);
+  // Sair da conversa por outro caminho (voltar do navegador, logo, notificação,
+  // girar a tela...) também fecha: senão a barra de baixo fica escondida.
+  const conferirConversaAberta = () => {
+    if (!document.body.classList.contains('chat-conversa-aberta')) return;
+    const aba = document.getElementById('tab-b2b');
+    const vista = document.getElementById('b2b-messages-view');
+    const aberta = CHAT_CELULAR.matches && aba?.classList.contains('active') && vista && !vista.classList.contains('hidden');
+    if (!aberta) fecharConversaNoCelular();
+  };
+  window.addEventListener('popstate', () => setTimeout(conferirConversaAberta, 0));
+  CHAT_CELULAR.addEventListener?.('change', conferirConversaAberta);
+  ['tab-b2b', 'b2b-messages-view'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) new MutationObserver(conferirConversaAberta).observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
 
   // Celular: a lista de conversas segue com as linhas até o fim da tela (como
   // a tabela de convidados); aqui medimos a altura de cada conversa e onde

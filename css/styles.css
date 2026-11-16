@@ -15853,14 +15853,15 @@ html body #tab-overview .home-saldo-nome .love-olho:not(#love-h-a):not(#love-h-b
   html body.chat-conversa-aberta #b2b-chat-messages-container:not(#love-h-a):not(#love-h-b) { padding: 16px !important; }
   html body.chat-conversa-aberta #b2b-chat-area > div:last-child:not(#love-h-a):not(#love-h-b) { padding: 10px 12px !important; }
   html body.chat-conversa-aberta #b2b-chat-input:not(#love-h-a) { font-size: 16px !important; }
-  body.chat-conversa-aberta .sidebar-icon-rail { visibility: hidden; }
+  body.chat-conversa-aberta:has(#tab-b2b.active #b2b-messages-view:not(.hidden)) .sidebar-icon-rail { visibility: hidden; }
   body[data-theme="dark"].chat-conversa-aberta #b2b-chat-area { background: #1A1A1A !important; }
   body[data-theme="dark"] button.b2b-chat-voltar { color: #FFFFFF !important; }
 }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   /* A animação de entrada da aba deixa um transform que prende o "fixed" na aba. */
   html body.chat-conversa-aberta #tab-b2b:not(#love-h-a):not(#love-h-b) { animation: none !important; transform: none !important; }
-  html body.chat-conversa-aberta .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  /* Só some com a conversa realmente na tela (se a classe ficar presa, a barra volta). */
+  html body.chat-conversa-aberta:has(#tab-b2b.active #b2b-messages-view:not(.hidden)) .sidebar-icon-rail:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }
 
 /* Nova solicitação de orçamento: o rodapé (Cancelar / Continuar) fica fora da

@@ -382,13 +382,15 @@ async function initAuthGuard() {
     if (created) { try { localStorage.setItem('b2b-onboarding-empresa', session.user.id); } catch (e) { /* sem armazenamento */ } }
   }
 
-  // Conta nova pelo Google (marcada acima) ainda sem categoria: termina o
+  // Conta nova (Google marcada acima, ou e-mail com precisa_completar) ainda sem categoria: termina o
   // cadastro na página "Crie sua conta" (signup?completar=1), com nome da
   // empresa e categoria, antes de entrar no painel.
   if (fornecedor && !String(fornecedor.category || '').trim() && empresaAtivaId === uid) {
     let marcada = null;
     try { marcada = localStorage.getItem('b2b-onboarding-empresa'); } catch (e) { /* sem armazenamento */ }
-    if (marcada === uid) { window.location.replace('signup?completar=1'); return false; }
+    // Cadastro por e-mail: a marca vem nos dados da conta (vale mesmo abrindo o link de confirmação em outro aparelho).
+    const precisaCompletar = !!((session.user || {}).user_metadata || {}).precisa_completar;
+    if (marcada === uid || precisaCompletar) { window.location.replace('signup?completar=1'); return false; }
   }
 
   if (fornecedor && fornecedor.status === 'bloqueado') {

@@ -371,6 +371,15 @@ html, body { background: #0C1824 !important; }
     text-align: center !important;
   }
 }
+/* 2ª etapa do cadastro: "O que você busca na Love?" — opções clicáveis, até 3. */
+#view-login#view-login .lg-objetivos { border: 0; margin: 4px 0 0; padding: 0; min-width: 0; }
+#view-login#view-login .lg-objetivos legend { padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500; color: #EAF1F8; }
+#view-login#view-login .lg-objetivos legend span { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: rgba(163,181,200,.8); }
+#view-login#view-login .lg-objetivos-lista { display: flex; flex-wrap: wrap; gap: 8px; }
+#view-login#view-login .lg-objetivo { height: 36px; padding: 0 14px; border-radius: 8px !important; border: 1px solid rgba(234,241,248,.2); background: transparent; color: #EAF1F8; font: inherit; font-size: 14px; cursor: pointer; }
+#view-login#view-login .lg-objetivo:hover { border-color: rgba(234,241,248,.45); }
+#view-login#view-login .lg-objetivo[aria-pressed="true"] { background: #EAF1F8; border-color: #EAF1F8; color: #0C1824; }
+#view-login#view-login .lg-objetivo.is-limite { opacity: .45; cursor: default; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -483,9 +492,9 @@ html, body { background: #0C1824 !important; }
                 <input type="email" id="signup-email" required autocomplete="email" placeholder=" ">
                 <label for="signup-email">E-mail</label>
               </div>
-              <div class="category-select" id="signup-category-select">
-                <button type="button" class="category-select-trigger" id="signup-category-trigger" aria-label="Qual é o seu ramo?">
-                  <span id="signup-category-trigger-label">Qual é o seu ramo?</span>
+              <div class="category-select so-completar" id="signup-category-select" hidden>
+                <button type="button" class="category-select-trigger" id="signup-category-trigger" aria-label="O que a sua empresa faz?">
+                  <span id="signup-category-trigger-label">O que a sua empresa faz?</span>
                   <svg class="category-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg>
                 </button>
                 <div class="category-select-panel" id="signup-category-panel" hidden>
@@ -532,6 +541,26 @@ html, body { background: #0C1824 !important; }
                 <label for="signup-password">Crie uma senha</label>
                 <button type="button" id="signup-ver-senha" class="lg-olho" data-campo="signup-password" aria-label="Mostrar senha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
+
+              <div class="lg-campo lg-campo-senha sem-completar">
+                <input type="password" id="signup-password2" required autocomplete="new-password" minlength="6" placeholder=" ">
+                <label for="signup-password2">Confirme a senha</label>
+                <button type="button" id="signup-ver-senha2" class="lg-olho" data-campo="signup-password2" aria-label="Mostrar senha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
+              </div>
+
+              <fieldset class="lg-objetivos so-completar" id="signup-objetivos" hidden>
+                <legend>O que você busca na Love? <span>Escolha até 3</span></legend>
+                <div class="lg-objetivos-lista">
+                  <button type="button" class="lg-objetivo" data-objetivo="Gestão de eventos" aria-pressed="false">Gestão de eventos</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="CRM de clientes" aria-pressed="false">CRM de clientes</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Captação de clientes" aria-pressed="false">Captação de clientes</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Gestão de tarefas" aria-pressed="false">Gestão de tarefas</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Agenda" aria-pressed="false">Agenda</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Propostas e contratos" aria-pressed="false">Propostas e contratos</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Receber pagamentos" aria-pressed="false">Receber pagamentos</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Site da empresa" aria-pressed="false">Site da empresa</button>
+                </div>
+              </fieldset>
 
               <p id="signup-error" class="lg-erro text-red-600 hidden"></p>
 
@@ -744,10 +773,12 @@ html, body { background: #0C1824 !important; }
       document.querySelectorAll('.so-completar').forEach(el => { el.hidden = false; });
       document.querySelectorAll('.sem-completar input').forEach(el => { el.disabled = true; el.required = false; });
       document.getElementById('signup-titulo').textContent = 'Complete seu cadastro';
-      document.getElementById('signup-subtitulo').textContent = 'Falta pouco. Conte o nome e a categoria da sua empresa.';
+      document.getElementById('signup-subtitulo').textContent = 'Falta pouco. Conte um pouco sobre a sua empresa.';
       document.getElementById('signup-email-btn-texto').textContent = 'Continuar';
       const meta = session.user.user_metadata || {};
       const { data: f } = await supabaseClient.from('fornecedores').select('company_name, category').eq('id', session.user.id).maybeSingle();
+      // Nome sugerido: o da conta Google; no cadastro por e-mail fica em branco.
+      if (f && f.company_name && session.user.email && f.company_name === session.user.email.split('@')[0]) f.company_name = '';
       const nome = document.getElementById('signup-empresa');
       nome.required = true;
       nome.value = (f && f.company_name) || meta.full_name || meta.name || '';
@@ -756,6 +787,21 @@ html, body { background: #0C1824 !important; }
         if (linha) linha.click();
       }
     })();
+
+    /* O que você busca na Love? — até 3 opções. */
+    let objetivosEscolhidos = [];
+    const botoesObjetivo = Array.from(document.querySelectorAll('#signup-objetivos [data-objetivo]'));
+    const pintarObjetivos = () => botoesObjetivo.forEach(b => {
+      const on = objetivosEscolhidos.includes(b.dataset.objetivo);
+      b.setAttribute('aria-pressed', String(on));
+      b.classList.toggle('is-limite', !on && objetivosEscolhidos.length >= 3);
+    });
+    botoesObjetivo.forEach(b => b.addEventListener('click', () => {
+      const v = b.dataset.objetivo;
+      if (objetivosEscolhidos.includes(v)) objetivosEscolhidos = objetivosEscolhidos.filter(x => x !== v);
+      else if (objetivosEscolhidos.length < 3) objetivosEscolhidos.push(v);
+      pintarObjetivos();
+    }));
 
     /* Espaços para Locação (só no completar): CEP do local e o tipo do espaço,
        lado a lado. Os tipos são as subcategorias de Meus produtos
@@ -816,7 +862,12 @@ html, body { background: #0C1824 !important; }
         return;
       }
       if (!signupCategoryValue) {
-        errorEl.textContent = 'Escolha a categoria da sua empresa.';
+        errorEl.textContent = 'Escolha o que a sua empresa faz.';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (!objetivosEscolhidos.length) {
+        errorEl.textContent = 'Escolha o que você busca na Love (até 3).';
         errorEl.classList.remove('hidden');
         return;
       }
@@ -847,6 +898,11 @@ html, body { background: #0C1824 !important; }
           if (!error) await supabaseClient.auth.updateUser({ data: { subcategoria: signupTipoValue } });
         }
       }
+      if (!error && session) {
+        const { error: erroObj } = await supabaseClient.from('fornecedores').update({ objetivos: objetivosEscolhidos }).eq('id', session.user.id);
+        if (erroObj) await supabaseClient.auth.updateUser({ data: { objetivos: objetivosEscolhidos } });
+        else await supabaseClient.auth.updateUser({ data: { precisa_completar: false } });
+      }
       if (error) {
         submitBtn.disabled = false;
         errorEl.textContent = 'Não foi possível salvar agora. Tente de novo.';
@@ -874,9 +930,13 @@ html, body { background: #0C1824 !important; }
 
       errorEl.classList.add('hidden');
 
-      if (!signupCategoryValue) {
-        errorEl.textContent = 'Escolha a categoria da sua empresa.';
+      // Senhas diferentes: avisa e apaga a confirmação (igual ao cadastro da Love).
+      const confirma = document.getElementById('signup-password2');
+      if (password !== confirma.value) {
+        errorEl.textContent = 'As senhas não coincidem. Digite a confirmação de novo.';
         errorEl.classList.remove('hidden');
+        confirma.value = '';
+        confirma.focus();
         return;
       }
 
@@ -887,7 +947,7 @@ html, body { background: #0C1824 !important; }
         password,
         options: {
           emailRedirectTo: window.location.origin + '/dashboard',
-          data: { role: 'fornecedor', category: signupCategoryValue, ...dadosDoDispositivo() }
+          data: { role: 'fornecedor', precisa_completar: true, ...dadosDoDispositivo() }
         }
       });
 
@@ -901,13 +961,16 @@ html, body { background: #0C1824 !important; }
         return;
       }
 
+      // A 2ª etapa (nome da empresa, o que faz e o que busca) vem logo depois.
+      try { if (cadastro?.user?.id) localStorage.setItem('b2b-onboarding-empresa', cadastro.user.id); } catch (err) { /* sem armazenamento */ }
+
       // Confirmação de e-mail ligada no Supabase: só entra depois do link.
       if (!cadastro?.session) {
         avisoConfirmeEmailHub(errorEl, email, 'Conta criada! Para entrar, clique no link que enviamos para');
         return;
       }
 
-      window.location.href = 'dashboard';
+      window.location.href = 'signup?completar=1';
     });
 
     /* Aviso de confirmação de e-mail, em cinza, com "Reenviar e-mail". */

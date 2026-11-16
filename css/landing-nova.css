@@ -454,5 +454,16 @@
 #view-public-site#view-public-site .lv-menu-links a:last-child{border-bottom:1px solid var(--line) !important}
 #view-public-site#view-public-site .lv-menu-encontrar{display:block;margin-top:0 !important;padding:14px 0 0 !important;border-top:0 !important}
 
-/* Logo do topo da landing: exatamente o do login (102px de largura, tinta #16202F). */
-#view-public-site#view-public-site .lv-nav .lv-logo{width:102px !important;color:#16202F !important}
+/* Logo do topo: o mesmo tamanho do logo do Love Hub (118px), tinta #16202F;
+   o login usa o mesmo. */
+#view-public-site#view-public-site .lv-nav .lv-logo{width:118px !important;color:#16202F !important}
+/* Computador: Convite digital e Presentes à esquerda, no lugar do ☰.
+   Celular (até 860px): só o ☰. */
+#view-public-site#view-public-site .lv-nav .lv-nav-links{display:flex !important;gap:28px !important;margin:0;padding:0;list-style:none;font-size:14px !important;line-height:1.6}
+#view-public-site#view-public-site .lv-nav .lv-nav-links a{color:var(--mute) !important;transition:color .3s}
+#view-public-site#view-public-site .lv-nav .lv-nav-links a:hover{color:var(--ink) !important}
+#view-public-site#view-public-site .lv-nav .lv-nav-esq .lv-burger{display:none !important}
+@media (max-width:860px){
+  #view-public-site#view-public-site .lv-nav .lv-nav-links{display:none !important}
+  #view-public-site#view-public-site .lv-nav .lv-nav-esq .lv-burger{display:inline-flex !important}
+}

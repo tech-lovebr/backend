@@ -18618,13 +18618,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Topo do login (igual ao da landing): o ☰ volta para a landing com o menu
-  // aberto; "Entrar" já é esta página; o vidro aparece ao rolar, como lá.
-  document.getElementById('lg-burger')?.addEventListener('click', (e) => {
-    e.stopPropagation();
+  // Topo do login (igual ao da landing): "← Voltar para a home" à esquerda;
+  // "Entrar" já é esta página; o vidro aparece ao rolar, como lá.
+  document.getElementById('lg-voltar')?.addEventListener('click', (e) => {
+    e.preventDefault();
     switchView('public');
     history.pushState({ loveView: 'public' }, '', '/');
-    setTimeout(() => document.getElementById('lv-burger')?.click(), 0);
+    window.scrollTo(0, 0);
   });
   document.querySelector('#lg-cabecalho .lg-cab-entrar')?.addEventListener('click', (e) => e.preventDefault());
   document.querySelector('#lg-cabecalho .lg-logo')?.addEventListener('click', (e) => {

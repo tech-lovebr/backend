@@ -31,7 +31,7 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261105_googlecontanova"></script>
+  <script src="js/supabase-init.js?v=20261116_16anos"></script>
   <script src="js/i18n.js?v=20261116_olho"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -483,9 +483,9 @@
       if (current > 1) goToStep(current - 1); else window.location.href = '/';
     });
 
-    // Aniversário em listas Dia / Mês / Ano (de 1917 até o ano atual) no
-    // lugar do calendário — o id continua guardando "AAAA-MM-DD".
-    criarSeletorData(document.getElementById('onboard-birthday-input'));
+    // Aniversário em listas Dia / Mês / Ano (de 1917 até quem tem 16 anos
+    // hoje) no lugar do calendário — o id continua guardando "AAAA-MM-DD".
+    criarSeletorData(document.getElementById('onboard-birthday-input'), { idadeMinima: 16 });
 
     // Ano só pode começar com 19 ou 20 (ex: não aceita "3" como primeiro
     // dígito) — min/max do input não impede digitar fora da faixa, então

@@ -41,8 +41,17 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 const MESES_PT = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 const ANO_MINIMO_ANIVERSARIO = 1917;
 
-function criarSeletorData(input) {
+/**
+ * @param {HTMLInputElement} input
+ * @param {{ idadeMinima?: number }} [opcoes] idadeMinima: só datas de quem já
+ *   tem essa idade hoje (ex.: 16 no cadastro → o ano mais recente é o atual − 16).
+ */
+function criarSeletorData(input, opcoes) {
   if (!input || input.definirData) return input;
+  const idadeMinima = (opcoes && opcoes.idadeMinima) || 0;
+  const hoje = new Date();
+  // Data mais recente aceita: hoje menos a idade mínima.
+  const limite = new Date(hoje.getFullYear() - idadeMinima, hoje.getMonth(), hoje.getDate());
 
   const classe = input.className;
   input.type = 'hidden';
@@ -60,9 +69,9 @@ function criarSeletorData(input) {
     return select;
   }
 
-  const anoAtual = new Date().getFullYear();
+  const anoMaisRecente = limite.getFullYear();
   const anos = [];
-  for (let a = anoAtual; a >= ANO_MINIMO_ANIVERSARIO; a--) anos.push([a, a]);
+  for (let a = anoMaisRecente; a >= ANO_MINIMO_ANIVERSARIO; a--) anos.push([a, a]);
 
   const dia = criarSelect('Dia', Array.from({ length: 31 }, (_, i) => [i + 1, i + 1]));
   const mes = criarSelect('Mês', MESES_PT.map((nome, i) => [i + 1, nome]));
@@ -71,7 +80,16 @@ function criarSeletorData(input) {
 
   // Esconde os dias que não existem no mês/ano escolhido (31/04, 29/02…).
   function ajustarDias() {
-    const ultimoDia = new Date(Number(ano.value) || 2000, Number(mes.value) || 1, 0).getDate();
+    // No ano mais recente, só os meses/dias até a data limite (quem faz a
+    // idade mínima ainda este ano só entra depois do aniversário).
+    const noAnoLimite = idadeMinima > 0 && Number(ano.value) === anoMaisRecente;
+    const ultimoMes = noAnoLimite ? limite.getMonth() + 1 : 12;
+    Array.from(mes.options).forEach(opt => {
+      if (opt.value) opt.hidden = opt.disabled = Number(opt.value) > ultimoMes;
+    });
+    if (Number(mes.value) > ultimoMes) mes.value = '';
+    let ultimoDia = new Date(Number(ano.value) || 2000, Number(mes.value) || 1, 0).getDate();
+    if (noAnoLimite && Number(mes.value) === ultimoMes) ultimoDia = Math.min(ultimoDia, limite.getDate());
     Array.from(dia.options).forEach(opt => {
       if (opt.value) opt.hidden = opt.disabled = Number(opt.value) > ultimoDia;
     });

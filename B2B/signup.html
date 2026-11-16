@@ -343,6 +343,12 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login .lg-olho svg { width: 18px; height: 18px; display: block; }
 /* Já tem uma conta? Entrar — centralizado. */
 #view-login#view-login .lg-novo { text-align: center !important; justify-content: center; margin-left: auto; margin-right: auto; }
+/* Celular: título no mesmo formato da headline da landing do Hub (Outfit 200,
+   segunda linha/itálico 350 em #A9C6EA), como no Entrar. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login .lg-titulo { font-family: var(--lg-sans) !important; font-weight: 200 !important; font-variation-settings: normal !important; letter-spacing: -.03em !important; line-height: 1.02 !important; color: #EAF1F8 !important; }
+  #view-login#view-login .lg-titulo i { font-family: inherit !important; font-style: normal !important; font-weight: 350 !important; color: #A9C6EA !important; }
+}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>

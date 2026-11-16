@@ -648,14 +648,13 @@ function renderActiveChat() {
     }
 
     if (isMe) {
-      const myPhoto = typeof B2B_DATA !== 'undefined' && B2B_DATA.professional && B2B_DATA.professional.profilePhoto;
       // ⋮ (vertical) à esquerda da bolha, na mesma linha dela: Editar /
       // Copiar / Salvar comando (js/chat-modelos.js). A hora fica embaixo.
       row.innerHTML = `
-        <div class="max-w-[80%] sm:max-w-[70%] space-y-1 text-right">
+        <div class="chat-msg-coluna space-y-1 text-right">
           <div class="chat-msg-linha chat-msg-linha--minha">
           ${msg.text && !activeConv.isSuporte && !msg.proposta ? `<button type="button" class="chat-msg-acao-btn chat-msg-menu-btn" data-msg-menu="${msgIndex}" title="Opções" aria-label="Opções da mensagem"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>` : ''}
-          <div class="chat-bubble-user-glass p-3.5 rounded-2xl rounded-br-xs text-xs sm:text-sm leading-relaxed text-left">
+          <div class="chat-bubble-user-glass chat-msg-texto p-3.5 rounded-2xl rounded-br-xs text-left">
             ${msg.id && msg.id === mensagemEmEdicaoId
               ? `<div class="chat-msg-edicao">
                   <textarea class="chat-msg-edicao-campo" data-edicao-campo rows="2">${escapeMsg(msg.text || '')}</textarea>
@@ -674,17 +673,15 @@ function renderActiveChat() {
             <span>${msg.time || 'Agora'}</span>
           </div>
         </div>
-        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(myPhoto, B2B_DATA.professional.company || B2B_DATA.professional.name)}</span>
       `;
     } else {
       // Pedido de orçamento enviado pelo love.com.br vira um card destacado
       // com o botão "Criar orçamento".
       const pedido = typeof lerPedidoOrcamento === 'function' ? lerPedidoOrcamento(msg.text) : null;
       row.innerHTML = `
-        <span class="w-7 h-7 b2b-avatar-square border border-zinc-200 mb-4">${b2bAvatarHtml(activeConv.avatar, activeConv.name)}</span>
-        <div class="max-w-[80%] sm:max-w-[70%] space-y-1">
+        <div class="chat-msg-coluna space-y-1">
           <div class="chat-msg-linha">
-          ${msg.proposta ? propostaCardChatHtml(msg.proposta, msg.text) : pedido ? pedidoOrcamentoCardHtml(pedido, `data-criar-orcamento="${msgIndex}"`) : `<div class="bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs text-xs sm:text-sm leading-relaxed shadow-2xs">
+          ${msg.proposta ? propostaCardChatHtml(msg.proposta, msg.text) : pedido ? pedidoOrcamentoCardHtml(pedido, `data-criar-orcamento="${msgIndex}"`) : `<div class="chat-msg-texto bg-white border border-zinc-200/80 text-zinc-800 p-3.5 rounded-2xl rounded-bl-xs shadow-2xs">
             ${msg.text ? `<p class="whitespace-pre-wrap break-words">${escapeMsg(msg.text)}</p>` : ''}
             ${attachmentHTML}
           </div>`}
@@ -703,7 +700,6 @@ function renderActiveChat() {
     const row = document.createElement('div');
     row.className = 'flex items-end gap-2.5 justify-start';
     row.innerHTML = `
-      <span class="w-7 h-7 b2b-avatar-square border border-zinc-200">${b2bAvatarHtml(activeConv.avatar, activeConv.name)}</span>
       <div class="chat-digitando" role="status" aria-label="${escapeMsg(activeConv.name)} está digitando"><span></span><span></span><span></span></div>`;
     container.appendChild(row);
   }

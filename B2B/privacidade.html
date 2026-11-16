@@ -16,7 +16,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon-love.svg?v=1">
   <link rel="alternate icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#537bae">
+  <meta name="theme-color" content="#FFFFFF">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,7 +29,32 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=939"><script>try{if(localStorage.getItem("b2b-visual")==="claro")document.documentElement.classList.add("hub-claro")}catch(e){}</script>
+  <link rel="stylesheet" href="css/styles.css?v=939"><script>document.documentElement.classList.add("hub-claro")</script>
+  <style>
+    /* Termos e Política (deslogado): fundo claro padrão — cinza bem claro com o
+       documento numa caixa branca. Topo com Voltar à esquerda (volta ao login ou
+       ao cadastro) e o logotipo do Hub no centro. */
+    html.hub-claro, html.hub-claro body.legal-logged-out:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { background: #F4F5F7 !important; background-image: none !important; }
+    .legal-topo { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.92); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid #E4E4E7; padding-top: env(safe-area-inset-top, 0px); }
+    .legal-topo-in { height: 72px; max-width: 1280px; margin: 0 auto; padding: 0 max(24px, env(safe-area-inset-right, 0px)) 0 max(24px, env(safe-area-inset-left, 0px)); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; }
+    .legal-voltar { justify-self: start; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 4px; margin-left: -4px; background: none; border: 0; font: inherit; font-size: 15px; font-weight: 500; color: #16202F; cursor: pointer; text-decoration: none; }
+    .legal-voltar svg { width: 20px; height: 20px; }
+    .legal-voltar:hover { color: #181D24; }
+    .legal-logo { display: inline-flex; align-items: center; gap: 10px; color: #16202F; text-decoration: none; }
+    .legal-logo-marca { display: block; width: 102px; }
+    .legal-logo-marca svg { display: block; width: 100%; height: auto; }
+    .legal-selo { font-size: 10.5px; letter-spacing: .2em; line-height: 1.4; text-transform: uppercase; color: #537BAE; padding: 3px 8px; border: 1px solid rgba(83,123,174,.35); border-radius: 999px; }
+    .legal-pagina { width: 100%; padding: 32px 24px 64px; }
+    .legal-caixa { max-width: 760px; margin: 0 auto; background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 10px; padding: 40px 48px; }
+    @media (max-width: 768px) {
+      .legal-topo-in { padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); }
+      .legal-voltar-txt { display: none; }
+      .legal-logo { position: relative; gap: 0; }
+      .legal-selo { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); font-size: 10px; letter-spacing: .16em; padding: 3px 7px; }
+      .legal-pagina { padding: 16px 16px 40px; }
+      .legal-caixa { padding: 24px 20px; }
+    }
+  </style>
   <script src="js/data.js?v=24"></script>
   <script src="js/utils.js?v=56"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -55,22 +80,34 @@
   </div>
 
   <div id="legal-standalone-view" hidden>
-    <header style="padding:1.5rem 1.5rem 0;">
-      <a href="/" style="display:inline-flex;">
-        <img src="assets/logo.png" alt="Love" style="height:28px;">
-      </a>
+    <header class="legal-topo">
+      <div class="legal-topo-in">
+        <a class="legal-voltar" href="login" id="legal-voltar" aria-label="Voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg><span class="legal-voltar-txt">Voltar</span></a>
+        <a class="legal-logo" href="/" aria-label="Love Hub"><span class="legal-logo-marca"><svg viewBox="0 0 1209 333" aria-hidden="true" focusable="false"><defs><linearGradient id="legal-coracao" gradientUnits="userSpaceOnUse" x1="8.5" y1="322.9" x2="449.3" y2="32.4"><stop offset="0" stop-color="#FFDDD2"/><stop offset="1" stop-color="#F09A81"/></linearGradient></defs><g fill="url(#legal-coracao)"><path d="M310.807 0H311.128C311.318 0.271365 311.579 0.38935 311.78 0.436544C375.867 14.7245 421.249 72.0416 420.003 137.382C419.624 154.442 416.206 171.432 409.548 187.537C408.337 169.356 404.445 150.997 391.426 138.137L386.192 132.969L363.394 110.658L340.56 88.3117L317.394 65.635L294.584 43.3123L280.888 29.8974L310.807 0Z"/><path d="M0.628996 144.012H0.344168C0.237357 143.116 0.118678 142.195 0 141.252V135.069C0.759542 134.172 -0.0356036 132.792 0.688335 132.143C0.949428 132.143 1.35293 132.202 1.37667 132.379C1.6971 134.727 1.57842 141.157 1.3292 143.599L0.640864 144.001L0.628996 144.012Z"/><path d="M326.522 285.913L279.596 332.658L12.2373 67.0272L59.1153 20.4468L253.036 213.081L326.522 285.913Z"/><path d="M335.266 274.292C337.378 254.943 333.948 238.673 320.858 224.078L312.539 215.489L295.615 198.31L278.668 181.12L261.388 163.599L244.441 146.42L227.494 129.23L210.546 112.051L193.599 94.8725L176.664 77.6939L162.861 63.7599C171.228 42.0625 187.416 27.8571 208.446 18.0054L226.129 35.7739L259.299 69.1046L292.494 102.435L325.688 135.766L358.847 169.085L374.133 184.506L377.005 188.246C382.428 196.941 385.514 207.017 384.909 217.329C384.671 221.459 383.947 226.237 380.969 229.234L353.008 257.42L335.74 274.741C335.491 275.059 335.028 274.717 335.23 274.304L335.266 274.292Z"/><path d="M0.628174 144.011L0.687513 132.142C0.734984 122.609 2.37275 113.264 4.71071 103.896L78.1252 176.634L141.31 239.225L98.5142 286.36L94.1824 282.313L80.2021 268.745L66.7084 255.672L52.8823 242.281L39.2106 229.031C14.9289 206.579 2.00484 176.729 0.628174 144.011Z"/></g><g fill="currentColor"><path d="M524.486 244.349L524.523 283.179L492.445 283.155L492.38 110.395L492.325 49.4918L524.311 49.48L524.422 70.6791L524.486 244.349Z"/><path d="M602.423 283.178V253.057H506.866V283.178H602.423Z"/><path d="M603.319 182.643C603.319 128.414 646.891 82.2754 707.818 82.2754C768.746 82.2754 812.318 128.404 812.318 182.643C812.318 236.881 768.746 283.01 707.818 283.01C646.891 283.01 603.319 236.881 603.319 182.643ZM775.127 182.643C775.127 143.902 746.429 115.027 707.829 115.027C669.228 115.027 640.531 143.902 640.531 182.643C640.531 221.383 669.218 250.258 707.829 250.258C746.439 250.258 775.127 221.383 775.127 182.643Z"/><path d="M1006.38 82.1177L936.465 282.759H881.716L809.815 82.1177H845.44L904.481 249.921H914.378L971.769 82.1177H1006.4H1006.38Z"/><path d="M1108.76 82.2681C1177.47 82.2681 1209 128.407 1209 182.635H1038.97C1038.97 221.375 1069.08 251.306 1120.44 251.306C1151.27 251.306 1174.35 242.296 1188.64 226.542H1201.06C1187.98 259.498 1158.65 283.002 1112.3 283.002C1048.89 283.002 1003.55 236.874 1003.55 182.635C1003.55 128.397 1047.13 82.2682 1108.76 82.2681ZM1108.04 111.854C1074.38 111.854 1051.72 129.818 1043.22 156.227H1170.74C1164.01 129.818 1145.59 111.854 1108.04 111.854Z"/></g></svg></span><span class="legal-selo">Hub</span></a>
+        <span></span>
+      </div>
     </header>
 
-    <main class="w-full px-6 py-12 sm:py-16">
-      <div class="max-w-[760px] mx-auto">
+    <main class="legal-pagina">
+      <div class="legal-caixa">
         <div id="legal-doc-loading" class="text-sm text-zinc-400">Carregando...</div>
         <h1 id="legal-doc-title" class="text-3xl sm:text-4xl font-extrabold text-zinc-900 tracking-tight"></h1>
         <p id="legal-doc-date" class="text-sm text-zinc-400 mt-2 mb-10"></p>
         <div id="legal-doc-body" class="legal-doc-body"></div>
-        <a href="login" class="text-sm font-semibold text-[#537bae] hover:underline mt-10 inline-block">← Voltar</a>
       </div>
     </main>
   </div>
+  <script>
+    /* Voltar: volta para a página de onde veio (login ou cadastro); se abriu direto, vai para o login. */
+    (function () {
+      var v = document.getElementById('legal-voltar');
+      v.addEventListener('click', function (e) {
+        var mesmoSite = false;
+        try { mesmoSite = document.referrer && new URL(document.referrer).origin === location.origin; } catch (err) {}
+        if (mesmoSite && history.length > 1) { e.preventDefault(); history.back(); }
+      });
+    })();
+  </script>
 
   <script src="js/shell.js?v=94"></script>
   <script src="js/legal-doc.js?v=2"></script>

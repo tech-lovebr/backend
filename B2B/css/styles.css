@@ -13425,8 +13425,8 @@ html body:not(.sidebar-collapsed) .b2b-topbar .topbar-logo-texto:not(#love-h-a):
 /* Tema escuro (computador): tons do próprio fundo.
    - Menu ativo do menu lateral: caixinha do ícone na cor do fundo da
      plataforma (#0F1F2F), ícone branco.
-   - Sacar disponível e a data de hoje em Sua agenda: na cor do menu lateral
-     (#0C1824), texto #EAF1F8.
+   - Sacar disponível e a data de hoje em Sua agenda: na mesma cor das
+     bolinhas dos atalhos (#0F1F2F), texto #EAF1F8.
    - Bolinhas dos atalhos (Gerar cobrança, Meus produtos, Meus ganhos, Editar
      meu site): na cor do fundo (#0F1F2F), ícone #EAF1F8; no hover a linha em
      volta clareia (#EAF1F8 a 60%, como o contorno do Ver como funciona). */
@@ -13435,9 +13435,9 @@ html body:not(.sidebar-collapsed) .b2b-topbar .topbar-logo-texto:not(#love-h-a):
   html:not(.hub-claro) body .b2b-sidebar .sidebar-nav-item.active svg:not(.sidebar-chevron):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
 
   html:not(.hub-claro) body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e),
-  html:not(.hub-claro) body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):is(:hover, :focus-visible) { background: #0C1824 !important; color: #EAF1F8 !important; }
+  html:not(.hub-claro) body[data-page="dashboard"] .dash-saldo-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):is(:hover, :focus-visible) { background: #0F1F2F !important; color: #EAF1F8 !important; }
 
-  html:not(.hub-claro) body[data-page="dashboard"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #0C1824 !important; }
+  html:not(.hub-claro) body[data-page="dashboard"] .day-strip-cell.today:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #0F1F2F !important; }
   html:not(.hub-claro) body[data-page="dashboard"] .day-strip-cell.today :is(.dow, .dom):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { color: #EAF1F8 !important; }
   html:not(.hub-claro) body[data-page="dashboard"] .day-strip-cell.today .day-strip-dot:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #EAF1F8 !important; }
 

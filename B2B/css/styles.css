@@ -13595,3 +13595,11 @@ html:not(.hub-claro) body .topbar-dropdown .profile-empresa-item :is(span, p, sm
 html:not(.hub-claro) body .topbar-dropdown .profile-empresa-item:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; }
 html:not(.hub-claro) body .topbar-dropdown .profile-empresa-item:hover :is(span, p, small, strong, div, svg):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
 html:not(.hub-claro) body .topbar-dropdown :is(.profile-empresas-titulo, .profile-dropdown-email):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #C4C4CC !important; }
+
+/* Menu recolhido: o card de upgrade some e fica só o botão redondo com a
+   setinha (sem a caixa retangular em volta). No claro, círculo e seta no azul
+   da Love para aparecer no menu branco. */
+html body.sidebar-collapsed .b2b-sidebar .upgrade-card:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
+html.hub-claro body.sidebar-collapsed .b2b-sidebar .upgrade-card-icon:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(24, 59, 84, 0.35) !important; color: #183b54 !important; background: transparent !important; }
+html.hub-claro body.sidebar-collapsed .b2b-sidebar .upgrade-card-icon:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: #183b54 !important; }
+html.hub-claro body.sidebar-collapsed .b2b-sidebar .upgrade-card-icon svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #183b54 !important; }

@@ -15739,20 +15739,19 @@ body[data-theme="dark"] #carteira-raiz .cart-rotulo { color: #A1A1AA !important;
 /* Olhinho do saldo: o mesmo da landing (caixinha clara com o olho); com o
    saldo escondido, o valor fica desfocado e o ícone vira o olho riscado. */
 html body .home-saldo-nome:not(#love-h-a) { display: inline-flex !important; align-items: center; gap: 8px; }
+/* "Mostrar" / "Ocultar" em texto no lugar do olho (como no login do Admin). */
 html body button.love-olho:not(#love-h-a):not(#love-h-b) {
-  width: 32px; height: 32px; flex-shrink: 0; padding: 0; display: inline-grid; place-items: center;
-  background: #FFFFFF !important; border: 1px solid #E3E8EF !important; border-radius: 8px !important; box-shadow: none !important;
-  color: #16202F; cursor: pointer; transition: border-color .15s, color .15s;
+  width: auto; height: 32px; flex-shrink: 0; padding: 0 10px; display: inline-flex; align-items: center;
+  background: none !important; border: 0 !important; border-radius: 10px !important; box-shadow: none !important;
+  font-family: inherit; font-size: 13px !important; font-weight: 500 !important; line-height: 1; letter-spacing: 0;
+  color: #5B6779 !important; cursor: pointer; transition: color .15s, background-color .15s;
 }
-html body button.love-olho:not(#love-h-a):not(#love-h-b):hover { border-color: #181D24 !important; color: #181D24; }
-html body #carteira-raiz button.love-olho:not(#love-h-a):not(#love-h-b) { width: 38px; height: 38px; }
-.love-olho svg { width: 16px; height: 16px; }
-#carteira-raiz .love-olho svg { width: 17px; height: 17px; }
-.love-olho .love-olho-fechado, .love-saldo-oculto .love-olho .love-olho-aberto { display: none; }
-.love-saldo-oculto .love-olho .love-olho-fechado { display: block; }
+html body button.love-olho:not(#love-h-a):not(#love-h-b):hover { color: #16202F !important; background: rgba(22, 32, 47, .05) !important; }
+html body #carteira-raiz button.love-olho:not(#love-h-a):not(#love-h-b) { height: 36px; }
 .love-saldo-valor { transition: filter .3s; }
 html.love-saldo-oculto .love-saldo-valor { filter: blur(9px); user-select: none; }
-body[data-theme="dark"] button.love-olho { background: #252525 !important; border-color: #404040 !important; color: #FFFFFF !important; }
+body[data-theme="dark"] button.love-olho { background: none !important; color: rgba(255, 255, 255, .7) !important; }
+body[data-theme="dark"] button.love-olho:hover { background: rgba(255, 255, 255, .08) !important; color: #FFFFFF !important; }
 html body #tab-overview .home-presentes-celular .home-presentes-nome:not(#love-h-a):not(#love-h-b) { min-height: 32px; display: inline-flex !important; align-items: center; }
 
 
@@ -16116,3 +16115,10 @@ html body #b2b-chat-messages-container .chat-msg-texto:not(#love-h-a):not(#love-
   html body .dashboard-top-navbar > .logo-celular .logo-celular-icone.logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 28px; }
   html body .dashboard-top-navbar > .logo-celular .logo-celular-nome.logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 20px; }
 }
+
+
+/* Botão "Mostrar" da senha no cadastro antigo (pop-up): texto no lugar do olho. */
+.login-campo-com-icone { position: relative; }
+.login-campo-com-icone input { padding-right: 84px !important; }
+html body button.login-campo-icone.login-ver-senha:not(#love-h-a) { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); height: 36px; padding: 0 10px; border: 0; border-radius: 10px; background: none; font-family: inherit; font-size: 13px; font-weight: 500; color: #5B6779; cursor: pointer; }
+html body button.login-campo-icone.login-ver-senha:not(#love-h-a):hover { color: #16202F; background: rgba(22, 32, 47, .05); }

@@ -101,10 +101,9 @@
 /* Preenchimento automático do navegador: mesmo cinza do campo */
 #view-login#view-login .lg-campo input:is(:-webkit-autofill, :autofill) { -webkit-box-shadow: 0 0 0 1000px var(--lg-campo) inset !important; box-shadow: 0 0 0 1000px var(--lg-campo) inset !important; -webkit-text-fill-color: var(--lg-tinta) !important; transition: background-color 600000s 0s, color 600000s 0s; }
 #view-login#view-login .lg-campo-senha input { padding-right: 52px !important; }
-#view-login#view-login .lg-olho { position: absolute; right: 8px; top: 8px; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px !important; color: var(--lg-mudo) !important; }
+#view-login#view-login .lg-olho { position: absolute; right: 8px; top: 8px; height: 36px; width: auto; padding: 0 10px; display: inline-flex; align-items: center; border: 0 !important; border-radius: 10px !important; background: none; font-family: inherit; font-size: 13px !important; font-weight: 500 !important; color: var(--lg-mudo) !important; cursor: pointer; }
+#view-login#view-login .lg-campo:has(.lg-olho) input { padding-right: 84px !important; }
 #view-login#view-login .lg-olho:hover { color: var(--lg-tinta) !important; background: rgba(22,32,47,.05); }
-#view-login#view-login .lg-olho svg { width: 18px; height: 18px; }
-#view-login#view-login .lg-olho svg.hidden { display: none !important; }
 #view-login#view-login .lg-campo-codigo input { letter-spacing: .3em !important; font-variant-numeric: tabular-nums; }
 
 #view-login#view-login .lg-erro { font-size: 13.5px !important; line-height: 1.45 !important; color: #A5503F !important; margin: 0 2px; }

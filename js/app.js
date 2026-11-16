@@ -202,9 +202,13 @@ document.addEventListener('DOMContentLoaded', () => {
     try { if (localStorage.getItem('love-saldo-oculto') === '1') raiz.classList.add('love-saldo-oculto'); } catch (e) { /* sem armazenamento */ }
     const marcar = () => {
       const oculto = raiz.classList.contains('love-saldo-oculto');
+      // Texto no lugar do olho, como no login do Admin: "Mostrar" com os
+      // valores escondidos e "Ocultar" com eles à vista.
+      const t = (/** @type {string} */ chave, /** @type {string} */ pt) => (window.LoveI18n ? window.LoveI18n.t(chave) : pt);
       document.querySelectorAll('[data-love-olho]').forEach(b => {
         b.setAttribute('aria-pressed', String(oculto));
-        b.setAttribute('aria-label', oculto ? 'Mostrar valores' : 'Esconder valores');
+        b.setAttribute('aria-label', oculto ? 'Mostrar saldo' : 'Ocultar saldo');
+        b.textContent = oculto ? t('login.mostrar', 'Mostrar') : t('login.ocultar', 'Ocultar');
       });
     };
     document.addEventListener('click', (ev) => {
@@ -19013,9 +19017,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const mostrar = campo.type === 'password';
       campo.type = mostrar ? 'text' : 'password';
       btn.setAttribute('aria-pressed', String(mostrar));
-      btn.setAttribute('aria-label', window.LoveI18n ? window.LoveI18n.t(mostrar ? 'login.esconderSenha' : 'login.mostrarSenha') : (mostrar ? 'Esconder senha' : 'Mostrar senha'));
-      btn.querySelector('.login-olho-aberto')?.classList.toggle('hidden', mostrar);
-      btn.querySelector('.login-olho-fechado')?.classList.toggle('hidden', !mostrar);
+      btn.setAttribute('aria-label', window.LoveI18n ? window.LoveI18n.t(mostrar ? 'login.esconderSenha' : 'login.mostrarSenha') : (mostrar ? 'Ocultar senha' : 'Mostrar senha'));
+      btn.textContent = window.LoveI18n ? window.LoveI18n.t(mostrar ? 'login.ocultar' : 'login.mostrar') : (mostrar ? 'Ocultar' : 'Mostrar');
       campo.focus();
     });
   });

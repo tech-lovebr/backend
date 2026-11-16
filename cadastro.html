@@ -31,7 +31,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=20261105_googlecontanova"></script>
-  <script src="js/i18n.js?v=20261115_cdtit"></script>
+  <script src="js/i18n.js?v=20261116_mostrar"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,15 +95,14 @@
     .onboard-step[data-step="3"] { max-width: 400px; width: 100%; margin-left: auto; margin-right: auto; }
     /* Olhinho da senha (mesmo do login): à direita, cinza-claro. */
     .campo-senha-com-olho { position: relative; }
-    .campo-senha-com-olho input { padding-right: 2.75rem; }
+    .campo-senha-com-olho input { padding-right: 84px !important; }
+    /* "Mostrar" / "Ocultar" em texto, como no login do Admin. */
     .olho-senha {
       position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
-      background: none; border: none; padding: 0; color: #A1A1AA; cursor: pointer; border-radius: 6px;
+      height: 36px; padding: 0 10px; display: inline-flex; align-items: center;
+      background: none; border: 0; border-radius: 10px; font-family: inherit; font-size: 13px; font-weight: 500; color: #5B6779; cursor: pointer;
     }
-    .olho-senha:hover { color: #71717A; }
-    .olho-senha svg { width: 18px; height: 18px; }
-    .olho-senha .hidden { display: none; }
+    .olho-senha:hover { color: #16202F; background: rgba(22, 32, 47, .05); }
   </style>
 </head>
 <body class="cd-corpo">
@@ -277,7 +276,7 @@
               <div class="campo-senha-com-olho">
                 <input type="text" id="onboard-password-input" required minlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Crie uma senha" data-love-i18n-placeholder="cadastro.criarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
                 <!-- Olhinho: mostra/esconde a senha -->
-                <button type="button" id="btn-onboard-ver-senha" class="olho-senha" aria-label="Mostrar senha" data-love-i18n-aria-label="cadastro.mostrarSenha" aria-pressed="false"><svg class="login-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg class="login-olho-fechado hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 5.6A9.9 9.9 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3 3.8M6.3 6.9C3.9 8.6 2.5 12 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button>
+                <button type="button" id="btn-onboard-ver-senha" class="olho-senha" aria-label="Mostrar senha" data-love-i18n-aria-label="cadastro.mostrarSenha" aria-pressed="false">Mostrar</button>
               </div>
 
               <div id="password-strength-panel" class="password-strength-panel">
@@ -718,8 +717,7 @@
       campo.style.setProperty('text-security', mostrar ? 'none' : 'disc');
       btn.setAttribute('aria-pressed', String(mostrar));
       btn.setAttribute('aria-label', window.LoveI18n ? window.LoveI18n.t(mostrar ? 'cadastro.esconderSenha' : 'cadastro.mostrarSenha') : (mostrar ? 'Esconder senha' : 'Mostrar senha'));
-      btn.querySelector('.login-olho-aberto').classList.toggle('hidden', mostrar);
-      btn.querySelector('.login-olho-fechado').classList.toggle('hidden', !mostrar);
+      btn.textContent = window.LoveI18n ? window.LoveI18n.t(mostrar ? 'cadastro.ocultar' : 'cadastro.mostrar') : (mostrar ? 'Ocultar' : 'Mostrar');
       campo.focus();
     });
   })();

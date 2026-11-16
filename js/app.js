@@ -24537,6 +24537,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // (tipo, nome e data no /cadastro e depois "Crie seu primeiro evento").
         // Só quem nasce aqui recebe a marca; conta antiga nunca vê o onboarding.
         if (cliente) { try { localStorage.setItem('love-onboarding-conta-nova', session.user.id); } catch (e) {} }
+        // Boas-vindas por e-mail (quem entra pelo Google não recebe o
+        // "Confirm sign up" do Supabase). A função não repete o envio.
+        if (cliente) {
+          fetch('/api/boas-vindas', { method: 'POST', headers: { Authorization: `Bearer ${session.access_token}` } })
+            .catch(erro => console.warn('Boas-vindas não enviado:', erro));
+        }
       }
       // A função recusa (false) quando o e-mail já é de uma conta de
       // fornecedor do Hub B2B — cada conta é de anfitrião OU de fornecedor.

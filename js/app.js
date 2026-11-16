@@ -18618,6 +18618,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Topo do login (igual ao da landing): o ☰ volta para a landing com o menu
+  // aberto; "Entrar" já é esta página; o vidro aparece ao rolar, como lá.
+  document.getElementById('lg-burger')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    switchView('public');
+    history.pushState({ loveView: 'public' }, '', '/');
+    setTimeout(() => document.getElementById('lv-burger')?.click(), 0);
+  });
+  document.querySelector('#lg-cabecalho .lg-cab-entrar')?.addEventListener('click', (e) => e.preventDefault());
+  document.querySelector('#lg-cabecalho .lg-logo')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchView('public');
+    history.pushState({ loveView: 'public' }, '', '/');
+  });
+  {
+    const topoDoLogin = document.getElementById('lg-cabecalho');
+    const aoRolarNoLogin = () => topoDoLogin?.classList.toggle('lg-on', window.scrollY > 40);
+    window.addEventListener('scroll', aoRolarNoLogin, { passive: true });
+    aoRolarNoLogin();
+  }
+
   // Botão "voltar" do navegador: se a página de login estiver aberta, volta
   // pro site público em vez de sair da plataforma.
   window.addEventListener('popstate', () => {

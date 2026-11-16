@@ -100,7 +100,7 @@
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261116_logo">
-  <link rel="stylesheet" href="css/login-novo.css?v=20261116_entrando2">
+  <link rel="stylesheet" href="css/login-novo.css?v=20261116_cabecalho2">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -485,9 +485,16 @@
 
     <div class="lg-fundo" id="lg-fundo" aria-hidden="true"></div>
 
-    <!-- Cabeçalho do login: logo centralizado, como na landing -->
-    <header class="lg-cabecalho">
-      <a class="lg-logo" href="/" aria-label="Love"><img src="assets/love-logo-tinta.svg?v=1" alt="Love"></a>
+    <!-- Cabeçalho do login: o mesmo topo da landing (☰ à esquerda, logo no
+         centro, Entrar + Criar evento grátis à direita), para o topo não mudar
+         ao clicar em "Entrar". O ☰ volta para a landing com o menu aberto. -->
+    <div class="lg-faixa"><span>Crie o convite digital do seu evento</span> <a class="btn-trigger-register" href="/cadastro"><b>Começar agora</b> <span>→</span></a></div>
+    <header class="lg-cabecalho" id="lg-cabecalho">
+      <div class="lg-cab-in">
+        <span class="lg-cab-esq"><button type="button" class="lg-burger" id="lg-burger" aria-label="Abrir menu" data-en-aria-label="Open menu"><i></i><i></i><i></i></button></span>
+        <a class="lg-logo" href="/" aria-label="Love, início"><svg viewBox="0 0 1209 333" aria-hidden="true"><use href="#lv-logo"/></svg></a>
+        <div class="lg-cab-dir"><a class="lg-cab-entrar" href="/login" aria-current="page" data-love-i18n="login.entrar">Entrar</a><a class="lg-cab-criar btn-trigger-register" href="/cadastro">Criar evento grátis</a></div>
+      </div>
     </header>
 
     <div class="lg-pagina">
@@ -5749,7 +5756,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261116_login"></script>
+  <script src="js/app.js?v=20261116_cabecalho"></script>
   <script src="js/landing.js?v=20261115_menu"></script>
   <script src="js/carteira.js?v=20261115_olho"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>

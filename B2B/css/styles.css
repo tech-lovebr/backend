@@ -13587,3 +13587,11 @@ html.hub-claro body .dash-ads-card .dash-ads-slide-caption:not(#love-h-a):not(#l
 html.hub-claro body .dash-ads-card :is(.dash-ads-slide-title, .dash-ads-slide-subtitle):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
   color: #FFFFFF !important; text-shadow: none !important;
 }
+
+/* Menu do perfil (escuro): empresas da conta iguais aos outros itens — texto
+   #C4C4CC; no hover fundo #0C1824 e texto branco (sem o cinza-claro). */
+html:not(.hub-claro) body .topbar-dropdown .profile-empresa-item:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: transparent !important; color: #C4C4CC !important; }
+html:not(.hub-claro) body .topbar-dropdown .profile-empresa-item :is(span, p, small, strong, div, svg):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #C4C4CC !important; }
+html:not(.hub-claro) body .topbar-dropdown .profile-empresa-item:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; }
+html:not(.hub-claro) body .topbar-dropdown .profile-empresa-item:hover :is(span, p, small, strong, div, svg):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
+html:not(.hub-claro) body .topbar-dropdown :is(.profile-empresas-titulo, .profile-dropdown-email):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #C4C4CC !important; }

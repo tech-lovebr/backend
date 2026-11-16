@@ -167,3 +167,18 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
 /* Voltar só com a seta (sem o texto). */
 #cd#cd .cd-voltar > span { display: none !important; }
 #cd#cd .cd-voltar svg { width: 20px; height: 20px; }
+
+/* Etapas do cadastro no formato tradicional (só texto): "1. Começar ›
+   2. Seus dados › 3. Finalizar", a etapa atual em destaque, sem círculos nem
+   barras; uma linha fina embaixo separa do formulário. */
+#cd#cd #onboard-steps { justify-content: flex-start !important; gap: 0 !important; padding-bottom: 12px !important; border-bottom: 1px solid #E4E4E7; }
+#cd#cd #onboard-steps [data-step-indicator] { gap: 0 !important; }
+#cd#cd #onboard-steps .step-circle { width: auto !important; height: auto !important; border: 0 !important; border-radius: 0 !important; background: none !important; color: inherit !important; font-size: 13px !important; font-weight: inherit; line-height: 1.4; transition: none; }
+#cd#cd #onboard-steps [data-step-indicator] .step-circle:not(.is-done)::after { content: "."; }
+#cd#cd #onboard-steps [data-step-indicator] .step-circle { margin-right: 4px; }
+#cd#cd #onboard-steps [data-step-indicator] { color: #8A95A5; }
+#cd#cd #onboard-steps [data-step-indicator]:has(.is-active) { color: #16202F; font-weight: 500; }
+#cd#cd #onboard-steps [data-step-indicator]:has(.is-done) { color: #5B6779; }
+#cd#cd #onboard-steps .step-label { font-size: 13px !important; color: inherit !important; font-weight: inherit !important; line-height: 1.4; }
+#cd#cd #onboard-steps .step-line { flex: 0 0 auto !important; width: auto !important; height: auto !important; margin: 0 10px !important; background: none !important; color: #A1A1AA; font-size: 14px; line-height: 1.4; }
+#cd#cd #onboard-steps .step-line::before { content: "›"; }

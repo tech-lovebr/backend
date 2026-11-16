@@ -11361,14 +11361,37 @@ document.addEventListener('DOMContentLoaded', () => {
     fichaEditando = !id;
     if (!desenharFichaDoConvidado()) return;
     ficha.hidden = false;
-    document.body.classList.add('ficha-aberta');
+    // Computador: sem pop-up. A ficha abre dentro da própria página de
+    // Meus convidados, no lugar das abas e da tabela (como Criar presente);
+    // o botão de fechar no topo dela volta para a lista. Celular: tela cheia.
+    if (!abrirFichaNaPagina(ficha)) document.body.classList.add('ficha-aberta');
     const corpo = ficha.querySelector('.ficha-corpo');
     if (corpo) corpo.scrollTop = 0;
   }
 
+  /** @param {HTMLElement} ficha @returns {boolean} true quando abriu dentro da página */
+  function abrirFichaNaPagina(ficha) {
+    const conteudo = document.querySelector('#tab-rsvp .rsvp-caixa-abaixo-das-abas')?.parentElement;
+    if (!conteudo || !window.matchMedia(MQ_DESKTOP_PRESENTE).matches || !document.getElementById('tab-rsvp')?.classList.contains('active')) return false;
+    conteudo.prepend(ficha);
+    ficha.classList.add('na-pagina');
+    ficha.removeAttribute('aria-modal');
+    document.getElementById('tab-rsvp')?.classList.add('convidado-na-pagina');
+    window.scrollTo({ top: 0 });
+    return true;
+  }
+
   function fecharFichaDoConvidado() {
     const ficha = document.getElementById('ficha-convidado');
-    if (ficha) ficha.hidden = true;
+    if (ficha) {
+      ficha.hidden = true;
+      if (ficha.classList.contains('na-pagina')) {
+        ficha.classList.remove('na-pagina');
+        ficha.setAttribute('aria-modal', 'true');
+        document.body.appendChild(ficha);
+      }
+    }
+    document.getElementById('tab-rsvp')?.classList.remove('convidado-na-pagina');
     document.body.classList.remove('ficha-aberta');
     fichaGuestId = null;
     fichaRascunho = null;

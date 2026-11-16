@@ -16122,3 +16122,28 @@ html body #b2b-chat-messages-container .chat-msg-texto:not(#love-h-a):not(#love-
 .login-campo-com-icone input { padding-right: 84px !important; }
 html body button.login-campo-icone.login-ver-senha:not(#love-h-a) { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); height: 36px; padding: 0 10px; border: 0; border-radius: 10px; background: none; font-family: inherit; font-size: 13px; font-weight: 500; color: #5B6779; cursor: pointer; }
 html body button.login-campo-icone.login-ver-senha:not(#love-h-a):hover { color: #16202F; background: rgba(22, 32, 47, .05); }
+
+/* Computador, Meus convidados: Adicionar/Ver/Editar convidado abre dentro da
+   própria página (sem pop-up e sem fundo escuro), no lugar das abas e da
+   tabela, como Criar presente. O botão do topo da ficha fecha e a lista volta
+   (js: abrirFichaNaPagina). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #tab-rsvp.convidado-na-pagina .rsvp-caixa-abaixo-das-abas:not(#love-h-a):not(#love-h-b),
+  html body #tab-rsvp.convidado-na-pagina #rsvp-status-tabs:not(#love-h-a):not(#love-h-b),
+  html body #tab-rsvp.convidado-na-pagina .builder-toolbar > div:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .ficha-convidado.na-pagina:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    position: static !important; inset: auto !important; transform: none !important; z-index: auto !important;
+    width: 100% !important; max-width: none !important; max-height: none !important; height: auto !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03) !important; border-radius: 10px !important;
+    overflow: hidden !important;
+  }
+  html body .ficha-convidado.na-pagina .ficha-corpo:not(#love-h-a):not(#love-h-b) { overflow: visible !important; max-height: none !important; }
+  body[data-theme="dark"] .ficha-convidado.na-pagina { border-color: #404040 !important; }
+}
+
+/* Computador, Criar/Editar presente dentro da página: o topo da ficha também
+   com os cantos arredondados (o fundo branco dele cobria os cantos da caixa). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #drawer-add-gift.na-pagina > .gift-drawer-cab:not(#love-h-a):not(#love-h-b) { border-radius: 10px 10px 0 0 !important; }
+  html body #drawer-add-gift.na-pagina > :last-child:not(#love-h-a):not(#love-h-b) { border-radius: 0 0 10px 10px; }
+}

@@ -20,9 +20,9 @@ const AUTH_OPTIONAL_PAGES = ['termos', 'privacidade'];
 // tinha escolhido o escuro volta para o claro).
 localStorage.removeItem('b2b-theme');
 document.body.dataset.theme = 'light';
-// Visual do Hub: o escuro (azul-noite) é o padrão, inclusive em conta nova;
-// o fornecedor liga o claro (igual ao index) em Perfil › Tema claro.
-try { if (localStorage.getItem('b2b-visual') === 'claro') document.documentElement.classList.add('hub-claro'); } catch (e) {}
+// Visual do Hub: o claro (igual ao index) é o padrão, inclusive em conta nova;
+// o fornecedor liga o escuro (azul-noite) em Perfil › Tema escuro.
+try { if (localStorage.getItem('b2b-visual') !== 'escuro') document.documentElement.classList.add('hub-claro'); } catch (e) { document.documentElement.classList.add('hub-claro'); }
 // Computador (mouse): o menu fica sempre recolhido e abre ao passar o mouse
 // (ver initSidebarHover). Telas de toque mantêm o recolher/expandir salvo.
 const SIDEBAR_HOVER = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)').matches;
@@ -499,7 +499,7 @@ function initLogout() {
 function initThemeToggle() {
   const buttons = document.querySelectorAll('.theme-toggle-btn');
   if (!buttons.length) return;
-  // Light = visual claro (igual ao index, html.hub-claro); Dark = azul-noite (padrão).
+  // Light = visual claro (igual ao index, html.hub-claro, padrão); Dark = azul-noite.
   const atual = () => (document.documentElement.classList.contains('hub-claro') ? 'light' : 'dark');
   const setActive = theme => buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.themeOption === theme));
   setActive(atual());

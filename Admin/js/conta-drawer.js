@@ -362,6 +362,20 @@ const ContaDrawer = (() => {
     toast('Cadastro atualizado.');
   }
 
+  /* Foto da conta: a do cadastro ou a que o Google mandou ao criar a conta
+     (admin_listar_contas().foto, migration 130). Sem foto, o ícone de perfil. */
+  function fotoDaConta(c) {
+    const cad = (DADOS?.clientes || []).find(x => x.id === c.id) || fornecedorDe(c.id);
+    const url = String(c.foto || cad?.avatar_url || '').trim();
+    const valida = url.toLowerCase().startsWith('https://');
+    const icone = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></svg>`;
+    return `
+      <div class="conta-foto${valida ? ' tem-foto' : ''}" aria-label="Foto de perfil">
+        ${valida ? `<img src="${escapeHtml(url)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.parentNode.classList.remove('tem-foto');this.remove()">` : ''}
+        ${icone}
+      </div>`;
+  }
+
   function desenhar(c) {
     const semOrigem = c.origem === 'sem_origem';
     const origem = ORIGENS[c.origem] || ORIGENS.sem_origem;
@@ -386,6 +400,7 @@ const ContaDrawer = (() => {
       selo: badge(situacao.rotulo, situacao.classe),
       acoes: acoesDoCabecalho(c),
       body: `
+        ${fotoDaConta(c)}
         <div class="lista-dados">
           ${identidadeDoFornecedor(c, linha) || linha('Nome', nomeComLink(c, c.nome || '—'))}
           ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}

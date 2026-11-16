@@ -4768,3 +4768,11 @@ body.login-page .login-subtitulo { margin: 0 0 28px; text-align: center; font-si
 body.login-page .login-subtitulo[hidden] { display: none; }
 body.login-page .login-subtitulo { color: var(--lg-mudo); }
 body.login-page .login-cartao h1:has(+ .login-subtitulo[hidden]) { margin-bottom: 28px; }
+
+/* Embaixo da caixa: © 2026 LOVE à esquerda e a versão à direita, na largura da caixa. */
+body.login-page .login-rodape {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  width: min(480px, 100%); padding: 0 8px; box-sizing: border-box;
+  font-size: 12px; color: #FFFFFF; letter-spacing: .02em;
+}
+body.login-page .login-rodape .login-versao { text-align: right; }

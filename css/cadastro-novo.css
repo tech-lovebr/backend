@@ -239,3 +239,8 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 #cd#cd #cd-erro-acesso { margin: 12px 0 0; text-align: center; }
 #cd#cd #onboard-confirmar-campo[hidden] { display: none; }
 #cd#cd .onboard-step .campo-senha-com-olho input#onboard-password-confirm-input[type] { padding-right: 16px !important; }
+
+/* Logo do topo no mesmo tamanho do da página inicial: 118px no computador e
+   102px até 860px de largura (onde a landing também usa 102px). */
+#cd#cd .cd-logo { width: 118px !important; }
+@media (max-width: 860px) { #cd#cd .cd-logo { width: 102px !important; } }

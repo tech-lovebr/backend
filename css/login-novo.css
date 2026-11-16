@@ -290,3 +290,8 @@ body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !
 
 /* Campos (e-mail, senha) no cinza bem claro #F8FAFC. */
 #view-login#view-login { --lg-campo: #F8FAFC; }
+
+/* Logo do topo no mesmo tamanho do da página inicial: 118px no computador e
+   102px até 860px de largura (onde a landing também usa 102px). */
+#view-login#view-login .lg-logo { width: 118px !important; }
+@media (max-width: 860px) { #view-login#view-login .lg-logo { width: 102px !important; } }

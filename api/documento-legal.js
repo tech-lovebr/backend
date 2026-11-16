@@ -62,7 +62,8 @@ function pagina({ slug, titulo, conteudo, atualizadoEm }) {
     /* Topo igual ao do cadastro: cinza claro, seta de voltar à esquerda e o logo no centro. */
     header { position: sticky; top: 0; z-index: 20; padding-top: env(safe-area-inset-top, 0px); background: rgba(247,248,250,.82); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 1px 0 #E3E8EF; }
     .barra { position: relative; height: 72px; display: flex; align-items: center; justify-content: center; }
-    .barra .logo img { width: 102px; height: auto; display: block; }
+    .barra .logo img { width: 118px; height: auto; display: block; }
+    @media (max-width: 860px) { .barra .logo img { width: 102px; } }
     .barra a.voltar { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); top: 50%; transform: translateY(-50%); display: inline-flex; color: #5B6779; text-decoration: none; }
     .barra a.voltar:hover { color: #16202F; }
     .barra a.voltar svg { width: 20px; height: 20px; display: block; }

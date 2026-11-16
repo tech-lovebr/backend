@@ -231,3 +231,17 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 #view-login#view-login .lg-cabeca .lg-sobre { display: none !important; }
 #view-login#view-login .lg-voltar .lg-voltar-longo { display: none !important; }
 #view-login#view-login .lg-voltar .lg-voltar-curto { display: inline !important; }
+
+/* Computador: o mesmo topo do celular e do cadastro — colado em cima, 72px,
+   fundo claro com desfoque e a linha fina embaixo, logo de 102px no centro.
+   A caixa começa no mesmo respiro do cadastro. */
+#view-login#view-login .lg-cabecalho {
+  margin: 0 !important; top: 0; padding-top: env(safe-area-inset-top, 0px);
+  background: rgba(247,248,250,.82) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--lg-linha, #E3E8EF) !important;
+}
+#view-login#view-login .lg-cab-in { height: 72px; }
+#view-login#view-login .lg-logo { width: 102px; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-login#view-login .lg-pagina { padding-top: clamp(16px, 3vh, 32px) !important; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
+}

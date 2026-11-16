@@ -245,3 +245,7 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   #view-login#view-login .lg-pagina { padding-top: clamp(16px, 3vh, 32px) !important; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
 }
+
+/* Topo do login idêntico ao do cadastro: só "Voltar" à esquerda e o logo no
+   centro (sem "Entrar" e "Criar evento grátis" à direita). */
+#view-login#view-login .lg-cab-dir > * { display: none !important; }

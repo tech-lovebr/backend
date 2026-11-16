@@ -249,3 +249,7 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 /* Topo do login idêntico ao do cadastro: só "Voltar" à esquerda e o logo no
    centro (sem "Entrar" e "Criar evento grátis" à direita). */
 #view-login#view-login .lg-cab-dir > * { display: none !important; }
+
+/* Voltar só com a seta (sem o texto). */
+#view-login#view-login .lg-voltar :is(.lg-voltar-longo, .lg-voltar-curto) { display: none !important; }
+#view-login#view-login .lg-voltar svg { width: 20px; height: 20px; }

@@ -163,3 +163,7 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
   #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloTipoEvento"] { white-space: nowrap; font-size: min(clamp(30px, 2.8vw, 40px), 7.1cqi) !important; }
   #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloTipoEvento"] br { display: none; }
 }
+
+/* Voltar só com a seta (sem o texto). */
+#cd#cd .cd-voltar > span { display: none !important; }
+#cd#cd .cd-voltar svg { width: 20px; height: 20px; }

@@ -16258,3 +16258,8 @@ body[data-theme="dark"] button.love-olho:not(#love-h-a):not(#love-h-b) { backgro
 body[data-theme="dark"] button.love-olho:not(#love-h-a):not(#love-h-b):hover { background: none !important; color: #FFFFFF !important; }
 body[data-theme="dark"] button.login-campo-icone.login-ver-senha:not(#love-h-a) { color: rgba(255, 255, 255, .7); }
 body[data-theme="dark"] button.login-campo-icone.login-ver-senha:not(#love-h-a):hover { color: #FFFFFF; }
+
+/* Favoritar marcado (fornecedores: card, lista e página do serviço): o
+   coraçãozinho do meio fica branco sobre a bolinha pêssego. */
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { fill: #FFFFFF !important; color: #FFFFFF !important; stroke: none !important; }
+html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305b"] path:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { fill: #FFFFFF !important; stroke: none !important; }

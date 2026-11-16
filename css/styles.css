@@ -16060,3 +16060,6 @@ html body #view-event-os-dashboard :is(.btn-toggle-card-fav, #btn-b2b-profile-fa
 /* Encontrar fornecedor: o nome no card (lista e grid) na mesma fonte e peso do
    título da página (Outfit 500); o tamanho continua o mesmo. */
 html body #b2b-cards-list-container h4:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-family: var(--fonte-love, 'Outfit'), sans-serif !important; font-weight: 500 !important; letter-spacing: -0.02em !important; }
+
+/* Adicionar convidado: "(opcional)" ao lado de Apelido, Telefone e E-mail. */
+html body .ficha-convidado .ficha-opcional:not(#love-h-a):not(#love-h-b) { font-size: 12px; font-weight: 400; color: #A1A1AA; text-transform: none; letter-spacing: 0; }

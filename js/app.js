@@ -11133,7 +11133,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const nomeLimpo = String(attendee.name || '').trim();
         const partes = nomeLimpo.split(/\s+/);
         const generico = !attendee.isPrimary && /^acompanhante$/i.test(nomeLimpo);
-        const iniciais = generico ? '+1' : ((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '');
+        // Iniciais sem o apelido entre parênteses ("Rafael (Bolinha)" = R).
+        const partesSemApelido = nomeLimpo.replace(/\s*\([^)]*\)\s*$/, '').split(/\s+/).filter(Boolean);
+        const iniciais = generico ? '+1' : ((partesSemApelido[0] || '')[0] || '') + (partesSemApelido.length > 1 ? (partesSemApelido[partesSemApelido.length - 1][0] || '') : '');
         const nomeEmPartes = `<span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}`;
         // Mesma cor para o convidado e seus acompanhantes (o grupo alterna,
         // não cada linha); o acompanhante aparece como subitem do convidado.
@@ -11429,10 +11431,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!guest) { fecharFichaDoConvidado(); return false; }
     const novo = !!fichaRascunho;
     const nome = String(guest.name || '').trim();
-    const partes = nome.split(/\s+/);
-    const primeiro = partes[0] || '';
-    const sobrenome = partes.slice(1).join(' ');
-    const iniciais = (primeiro[0] || '') + (sobrenome ? (partes[partes.length - 1][0] || '') : '');
+    // "Rafael (Bolinha)": nome completo e, entre parênteses no fim, o apelido.
+    const comApelido = nome.match(/^(.*?)\s*\(([^)]*)\)\s*$/);
+    const nomeCompleto = comApelido ? comApelido[1].trim() : nome;
+    const apelido = comApelido ? comApelido[2].trim() : '';
+    const partes = nomeCompleto.split(/\s+/).filter(Boolean);
+    const iniciais = ((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '');
     const status = { confirmed: 'Confirmado', declined: 'Recusado', pending: 'Pendente' }[guest.status] || 'Pendente';
 
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-titulo')).textContent = novo ? 'Adicionar convidado' : fichaEditando ? 'Editar convidado' : '';
@@ -11442,14 +11446,14 @@ document.addEventListener('DOMContentLoaded', () => {
     selo.textContent = status;
     selo.dataset.status = guest.status || 'pending';
 
-    const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor, /** @type {string} */ id, /** @type {string} */ tipo, /** @type {string} */ dica) => fichaEditando
-      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
+    const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor, /** @type {string} */ id, /** @type {string} */ tipo, /** @type {string} */ dica, opcional = false) => fichaEditando
+      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}${opcional ? ' <span class="ficha-opcional">(opcional)</span>' : ''}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
       : `<div class="ficha-linha"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor${valor ? '' : ' is-vazio'}${tipo === 'email' && valor ? ' is-email' : ''}">${escaparHtml(valor || '—')}</span></div>`;
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-contato')).innerHTML =
-      linha('Nome', primeiro, 'ficha-primeiro', 'text', 'Nome')
-      + linha('Sobrenome', sobrenome, 'ficha-sobrenome', 'text', 'Sobrenome')
-      + linha('Telefone', guest.phone || '', 'ficha-telefone', 'tel', '(00) 00000-0000')
-      + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail')
+      linha('Nome completo', nomeCompleto, 'ficha-primeiro', 'text', 'Nome completo')
+      + (fichaEditando || apelido ? linha('Apelido', apelido, 'ficha-apelido', 'text', 'Apelido', true) : '')
+      + linha('Telefone', guest.phone || '', 'ficha-telefone', 'tel', '(00) 00000-0000', true)
+      + linha('E-mail', guest.email || '', 'ficha-email', 'email', 'E-mail', true)
       + (fichaEditando ? vinculoDaFicha(guest) : '');
 
     const acompanhantes = (guest.companionsNames || []).map((/** @type {string} */ n) => String(n || '').replace(/\s*\([^)]*\)\s*$/, '').trim()).filter(Boolean);
@@ -11493,10 +11497,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const valor = (/** @type {string} */ id) => (/** @type {HTMLInputElement|null} */ (ficha.querySelector(`#${id}`))?.value || '').trim();
     const erro = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-erro'));
     const avisar = (/** @type {string} */ texto, /** @type {string} */ campo) => { erro.textContent = texto; erro.hidden = false; /** @type {HTMLInputElement|null} */ (ficha.querySelector(`#${campo}`))?.focus(); };
-    const nome = [valor('ficha-primeiro'), valor('ficha-sobrenome')].filter(Boolean).join(' ');
+    // Nome completo (só o primeiro nome já basta) e o apelido, se tiver,
+    // entre parênteses: "Rafael (Bolinha)".
+    const nomeDigitado = valor('ficha-primeiro').replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
+    const apelidoDigitado = valor('ficha-apelido').replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
+    const nome = apelidoDigitado ? `${nomeDigitado} (${apelidoDigitado})` : nomeDigitado;
     const telefone = valor('ficha-telefone');
     const email = valor('ficha-email');
-    if (nome.length < 3) return avisar('Informe o nome do convidado (pelo menos 3 letras).', 'ficha-primeiro');
+    if (nomeDigitado.length < 2) return avisar('Informe o nome do convidado.', 'ficha-primeiro');
     if (telefone && !isValidBrazilPhone(telefone)) return avisar('Telefone incompleto. Use (DDD) 9XXXX-XXXX.', 'ficha-telefone');
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return avisar('E-mail inválido.', 'ficha-email');
     if (fichaRestricao && !fichaRestricao.validar()) return;

@@ -218,3 +218,10 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
    primeira, sem itálico; título e texto de apoio centralizados. */
 #view-login#view-login .lg-titulo i { font-style: normal !important; font-weight: inherit !important; font-family: inherit !important; }
 #view-login#view-login .lg-cabeca :is(.lg-titulo, .lg-sub) { text-align: center !important; margin-left: auto; margin-right: auto; }
+
+
+/* Título na mesma fonte do título da home ("A plataforma definitiva para
+   suas celebrações."): Outfit leve; a segunda linha um pouco mais forte e
+   no azul da home. */
+#view-login#view-login .lg-titulo { font-family: "Outfit", "Helvetica Neue", Arial, sans-serif !important; font-weight: 200 !important; font-variation-settings: normal !important; letter-spacing: -.03em !important; line-height: 1.02 !important; color: #16202F !important; }
+#view-login#view-login .lg-titulo i { font-style: normal !important; font-family: inherit !important; font-weight: 350 !important; color: #3E6A9E !important; }

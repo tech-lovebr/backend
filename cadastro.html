@@ -32,12 +32,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-init.js?v=20261116_16anos"></script>
-  <script src="js/i18n.js?v=20261116_olho"></script>
+  <script src="js/i18n.js?v=20261116_fluxo"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap">
-  <link rel="stylesheet" href="css/cadastro-novo.css?v=20261116_branco">
+  <link rel="stylesheet" href="css/cadastro-novo.css?v=20261116_fluxo">
   <style>
     body { font-family: 'Outfit', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -51,10 +51,10 @@
     #btn-onboard-next-1:not(:disabled):hover, #btn-onboard-next-2:hover, #btn-onboard-submit:not(:disabled):hover { box-shadow: inset 0 0 0 1px #183b54 !important; }
     #btn-onboard-next-1:disabled { background: #F4F4F5 !important; color: #A1A1AA !important; }
     /* Campos da etapa 2 e o "Outro": sem contorno, no cinza do fundo da plataforma. */
-    .onboard-step[data-step="2"] :is(input[type="text"], input[type="date"], select), #onboard-outro-input {
+    .onboard-step[data-step="3"] :is(input[type="text"], input[type="date"], select), #onboard-outro-input {
       border: 0 !important; background: #F4F6F7 !important; box-shadow: none !important; outline: none !important;
     }
-    .onboard-step[data-step="2"] :is(input[type="text"], input[type="date"], select):focus, #onboard-outro-input:focus { background: #EDF0F2 !important; }
+    .onboard-step[data-step="3"] :is(input[type="text"], input[type="date"], select):focus, #onboard-outro-input:focus { background: #EDF0F2 !important; }
     .cadastro-outro { position: relative; }
     #onboard-outro-input { display: block; width: 100%; height: 54px; padding: 0 20px; border-radius: 12px; font: 400 14px Inter, system-ui, sans-serif; color: #27272A; }
     #onboard-outro-input::placeholder { color: #A1A1AA; }
@@ -91,9 +91,9 @@
     .password-strength-checklist li.is-met { color: #18181B; }
     .password-strength-check { font-size: 0.8rem; line-height: 1; color: #D4D4D8; transition: color .15s ease; }
     .password-strength-checklist li.is-met .password-strength-check { color: #16A34A; }
-    /* Etapa 3 (e-mail, senha, Criar conta, Google e Apple): mesma largura do
+    /* Etapa 1 (Google, e-mail, senha e confirmar senha): mesma largura do
        botão do Google, que vai no máximo a 400px. */
-    .onboard-step[data-step="3"] { max-width: 400px; width: 100%; margin-left: auto; margin-right: auto; }
+    .onboard-step[data-step="1"] { max-width: 400px; width: 100%; margin-left: auto; margin-right: auto; }
     /* Olhinho da senha (mesmo do login): à direita, cinza-claro. */
     .campo-senha-com-olho { position: relative; }
     .campo-senha-com-olho input { padding-right: 48px !important; }
@@ -169,8 +169,68 @@
 
       <div class="flex-1 flex flex-col justify-center max-w-md w-full">
 
-        <!-- Etapa 1: tipo de evento -->
+        <!-- Etapa 1: acesso (Google, ou e-mail + senha + confirmar senha). A conta
+             só é criada no fim, depois do tipo de evento e dos dados pessoais. -->
         <div class="onboard-step is-active" data-step="1">
+          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n-html="cadastro.tituloAcesso">Crie sua <br><i>conta.</i></h1>
+          <p class="text-zinc-500 text-sm mb-7" data-love-i18n="cadastro.subTituloAcesso">Comece com o Google ou com seu e-mail.</p>
+
+          <div class="cd-sociais">
+            <button type="button" id="btn-onboard-google" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-sm font-normal flex items-center justify-center gap-3 transition-all">
+              <svg class="w-5 h-5" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              </svg>
+              <span data-love-i18n="cadastro.continuarComGoogle">Continuar com o Google</span>
+            </button>
+          </div>
+          <p class="cd-erro" id="cd-erro-acesso" role="alert" hidden></p>
+          <p class="cd-ou" data-love-i18n="cadastro.ouComEmail">ou crie com seu e-mail</p>
+
+          <form id="form-onboard-register" class="space-y-3.5 mt-5" autocomplete="off">
+            <div>
+              <label class="block text-xs font-normal text-zinc-700 mb-1" data-love-i18n="cadastro.email">E-mail</label>
+              <input type="email" id="onboard-email-input" required autocomplete="off" placeholder="seu.email@exemplo.com" data-love-i18n-placeholder="login.emailPlaceholder" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+            </div>
+            <div class="relative">
+              <label class="block text-xs font-normal text-zinc-700 mb-1" data-love-i18n="cadastro.senha">Senha</label>
+              <div class="campo-senha-com-olho">
+                <input type="text" id="onboard-password-input" required minlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Crie uma senha" data-love-i18n-placeholder="cadastro.criarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+                <!-- Olhinho: mostra/esconde a senha -->
+                <button type="button" id="btn-onboard-ver-senha" class="olho-senha" aria-label="Mostrar senha" data-love-i18n-aria-label="cadastro.mostrarSenha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
+              </div>
+
+              <div id="password-strength-panel" class="password-strength-panel">
+                <div class="password-strength-bar-track">
+                  <div id="password-strength-bar-fill" class="password-strength-bar-fill"></div>
+                </div>
+                <p id="password-strength-label" class="password-strength-label"></p>
+                <ul class="password-strength-checklist">
+                  <li data-rule="length"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaPeloMenos8">Pelo menos 8 caracteres</span></li>
+                  <li data-rule="upper"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMaiuscula">Uma letra maiúscula</span></li>
+                  <li data-rule="lower"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMinuscula">Uma letra minúscula</span></li>
+                  <li data-rule="number"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmNumero">Um número</span></li>
+                </ul>
+              </div>
+            </div>
+            <!-- Confirmar senha: aparece depois que a pessoa digita a senha. -->
+            <div id="onboard-confirmar-campo" hidden>
+              <label class="block text-xs font-normal text-zinc-700 mb-1" for="onboard-password-confirm-input" data-love-i18n="cadastro.confirmarSenha">Confirmar senha</label>
+              <div class="campo-senha-com-olho">
+                <input type="text" id="onboard-password-confirm-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Repita a senha" data-love-i18n-placeholder="cadastro.confirmarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
+              </div>
+              <p class="cd-erro" id="onboard-senhas-diferentes" hidden data-love-i18n="cadastro.senhasDiferentes">As senhas não são iguais.</p>
+            </div>
+            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2" data-love-i18n="cadastro.continuar">Continuar</button>
+          </form>
+
+          <p class="cd-ja-tem" data-love-i18n-html="cadastro.jaTemContaEntrar">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
+        </div>
+
+        <!-- Etapa 2: tipo de evento -->
+        <div class="onboard-step" data-step="2">
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n-html="cadastro.tituloTipoEvento">Vamos planejar <br><i>o seu grande dia</i></h1>
           <p class="text-sm font-normal text-zinc-800 mb-4" data-love-i18n="cadastro.subTituloTipoEvento">Para começar, que tipo de evento você quer celebrar?</p>
 
@@ -206,11 +266,10 @@
             <button type="button" id="btn-onboard-next-1" disabled class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal disabled:bg-zinc-200 disabled:text-zinc-400 disabled:cursor-not-allowed transition-opacity" data-love-i18n="cadastro.proximo">Próximo</button>
           </div>
 
-          <p class="cd-ja-tem" data-love-i18n-html="cadastro.jaTemContaEntre">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entre por aqui</a></p>
         </div>
 
-        <!-- Etapa 2: dados pessoais e do evento -->
-        <div class="onboard-step" data-step="2">
+        <!-- Etapa 3: dados pessoais e do evento (o botão cria a conta) -->
+        <div class="onboard-step" data-step="3">
           <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n-html="cadastro.tituloDadosPessoais">Conte um pouco <br><i>sobre você.</i></h1>
           <p class="text-zinc-500 text-sm mb-7" data-love-i18n="cadastro.subTituloDadosPessoais">Isso nos ajuda a personalizar sua experiência.</p>
 
@@ -242,64 +301,9 @@
           </div>
 
           <div class="mt-8">
-            <button type="button" id="btn-onboard-next-2" class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal transition-colors" data-love-i18n="cadastro.proximo">Próximo</button>
+            <button type="button" id="btn-onboard-next-2" class="w-full px-8 py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal transition-colors" data-love-i18n="cadastro.criarConta">Criar conta</button>
+            <p class="cd-erro" id="cd-erro-criar" role="alert" hidden></p>
           </div>
-        </div>
-
-        <!-- Etapa 3: e-mail e senha -->
-        <div class="onboard-step" data-step="3">
-          <h1 class="text-3xl sm:text-4xl font-normal text-zinc-900 leading-tight mb-2" data-love-i18n-html="cadastro.tituloFinalizar">Finalize<br><i>seu cadastro.</i></h1>
-          <p class="text-zinc-500 text-sm mb-7" data-love-i18n="cadastro.subTituloFinalizar">Só falta criar seu acesso à plataforma.</p>
-
-          <div class="cd-sociais">
-            <button type="button" id="btn-onboard-google" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 text-sm font-normal flex items-center justify-center gap-3 transition-all">
-              <svg class="w-5 h-5" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-              </svg>
-              <span data-love-i18n="cadastro.continuarComGoogle">Continuar com o Google</span>
-            </button>
-            <button type="button" id="btn-onboard-apple" class="w-full py-3 px-4 rounded-xl border border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-800 text-sm font-normal flex items-center justify-center gap-3 transition-all">
-              <svg class="w-4 h-4 fill-zinc-900" viewBox="0 0 170 170">
-                <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.07-7.66-7.83-11.87-14.28-5.77-8.91-10.35-18.9-13.74-29.96-3.4-11.06-5.1-21.73-5.1-32.01 0-14.65 3.63-26.68 10.89-36.09 7.26-9.41 16.5-14.23 27.72-14.47 4.58 0 9.87 1.25 15.86 3.76 6 2.5 9.8 3.82 11.41 3.94 1.34-.12 5.37-1.48 12.08-4.08 6.71-2.6 12.19-3.8 16.45-3.6 12.67.63 22.56 5.33 29.68 14.09-11.14 6.78-16.58 16.2-16.32 28.27.24 9.4 3.82 17.15 10.74 23.27 6.92 6.12 15.22 9.53 24.9 10.23-2.12 6.64-4.87 13.43-8.24 20.37zM119.22 31.84c0-7.39 2.66-14.35 7.98-20.89C132.52 4.41 139.19.78 147.21 0c.12 1.03.18 1.94.18 2.74 0 7.39-2.78 14.46-8.33 21.21-5.56 6.75-12.38 10.51-20.47 11.28-.48-1.14-.72-2.27-.72-3.39z"/>
-              </svg>
-              <span data-love-i18n="cadastro.continuarComApple">Continuar com a Apple</span>
-            </button>
-          </div>
-          <p class="cd-ou" data-love-i18n="cadastro.ouComEmail">ou crie com seu e-mail</p>
-
-          <form id="form-onboard-register" class="space-y-3.5 mt-5" autocomplete="off">
-            <div>
-              <label class="block text-xs font-normal text-zinc-700 mb-1" data-love-i18n="cadastro.email">E-mail</label>
-              <input type="email" id="onboard-email-input" required autocomplete="off" placeholder="seu.email@exemplo.com" data-love-i18n-placeholder="login.emailPlaceholder" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
-            </div>
-            <div class="relative">
-              <label class="block text-xs font-normal text-zinc-700 mb-1" data-love-i18n="cadastro.senha">Senha</label>
-              <div class="campo-senha-com-olho">
-                <input type="text" id="onboard-password-input" required minlength="6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Crie uma senha" data-love-i18n-placeholder="cadastro.criarSenhaPlaceholder" style="-webkit-text-security: disc; text-security: disc;" class="w-full text-sm p-3 rounded-xl border border-zinc-200 bg-zinc-50 focus:bg-white focus:ring-2 focus:ring-[#537bae] focus:outline-none text-zinc-800">
-                <!-- Olhinho: mostra/esconde a senha -->
-                <button type="button" id="btn-onboard-ver-senha" class="olho-senha" aria-label="Mostrar senha" data-love-i18n-aria-label="cadastro.mostrarSenha" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
-              </div>
-
-              <div id="password-strength-panel" class="password-strength-panel">
-                <div class="password-strength-bar-track">
-                  <div id="password-strength-bar-fill" class="password-strength-bar-fill"></div>
-                </div>
-                <p id="password-strength-label" class="password-strength-label"></p>
-                <ul class="password-strength-checklist">
-                  <li data-rule="length"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaPeloMenos8">Pelo menos 8 caracteres</span></li>
-                  <li data-rule="upper"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMaiuscula">Uma letra maiúscula</span></li>
-                  <li data-rule="lower"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMinuscula">Uma letra minúscula</span></li>
-                  <li data-rule="number"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmNumero">Um número</span></li>
-                </ul>
-              </div>
-            </div>
-            <button type="submit" id="btn-onboard-submit" class="w-full py-3.5 rounded-xl bg-[#537bae] hover:bg-[#416799] text-white text-sm font-normal shadow-md transition-all mt-2" data-love-i18n="cadastro.criarConta">Criar conta</button>
-          </form>
-
-          <p class="cd-ja-tem" data-love-i18n-html="cadastro.jaTemContaEntrar">Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entrar</a></p>
         </div>
 
       </div>
@@ -402,7 +406,7 @@
         e.preventDefault();
         if (aberta && ativa >= 0) { usarOutro(sugestoes[ativa]); fecharOutro(); return; }
         fecharOutro();
-        if (onboardType) goToStep(2);
+        if (onboardType) goToStep(3);
       }
     });
 
@@ -425,8 +429,8 @@
       });
     }
 
-    btnNext1.addEventListener('click', () => goToStep(2));
-    btnNext2.addEventListener('click', () => { if (contaNova) concluirContaNova(); else goToStep(3); });
+    btnNext1.addEventListener('click', () => goToStep(3));
+    btnNext2.addEventListener('click', () => { if (contaNova) concluirContaNova(); else criarContaComEmail(); });
 
     // Conta criada agora pelo Google na tela de login (/cadastro?conta-nova=1):
     // a pessoa já está logada, então faz só tipo de evento, nome e data e
@@ -437,8 +441,9 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { history.replaceState(null, '', '/cadastro'); return; }
       contaNova = true;
-      const ultimo = document.querySelector('[data-step-indicator="3"]');
-      if (ultimo) { ultimo.hidden = true; const linha = ultimo.previousElementSibling; if (linha) linha.hidden = true; }
+      // Já entrou pelo Google: pula o acesso e vai direto para o tipo de evento.
+      goToStep(2);
+      btnNext2.textContent = window.LoveI18n ? window.LoveI18n.t('cadastro.continuar') : 'Continuar';
       const meta = session.user.user_metadata || {};
       const partes = String(meta.full_name || meta.name || '').trim().split(/\s+/).filter(Boolean);
       const nome = document.getElementById('onboard-firstname-input');
@@ -480,7 +485,8 @@
     document.getElementById('cd-voltar').addEventListener('click', () => {
       const atual = document.querySelector('.onboard-step.is-active');
       const current = atual ? Number(atual.dataset.step) : 1;
-      if (current > 1) goToStep(current - 1); else window.location.href = '/';
+      // Conta nova pelo Google não volta para o acesso (já entrou).
+      if (current > (contaNova ? 2 : 1)) goToStep(current - 1); else window.location.href = '/';
     });
 
     // Aniversário em listas Dia / Mês / Ano (de 1917 até quem tem 16 anos
@@ -559,47 +565,60 @@
     passwordInput.addEventListener('blur', () => passwordPanel.classList.remove('is-visible'));
     updatePasswordStrength();
 
-    // "Continuar com o Google": guarda o tipo de evento escolhido (a
-    // plataforma abre direto no "criar evento") e vai para o Google; na volta
-    // o cadastro de anfitrião é criado (garantir_cliente_google — migration 049).
+    function mostrarErro(id, texto) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = texto || '';
+      el.hidden = !texto;
+    }
+
+    // "Continuar com o Google" (primeira etapa): entra com o Google. Na volta a
+    // plataforma cria o cadastro de anfitrião (garantir_cliente_google) e, se a
+    // conta for nova, manda para /cadastro?conta-nova=1, que segue com o tipo
+    // de evento e os dados pessoais. Conta que já existia vai para o painel.
     document.getElementById('btn-onboard-google').addEventListener('click', async (e) => {
       const btn = e.currentTarget;
       if (btn.disabled) return;
       btn.disabled = true;
+      mostrarErro('cd-erro-acesso', '');
       try {
-        const nomes = montarNomeCliente(
-          document.getElementById('onboard-firstname-input').value,
-          document.getElementById('onboard-lastname-input').value
-        );
-        localStorage.setItem('love-pending-cadastro', JSON.stringify({
-          first_name: nomes.first_name || null,
-          last_name: nomes.last_name || null,
-          birthday: document.getElementById('onboard-birthday-input').value || null,
-          intended_event_type: onboardType || null,
-          intended_event_type_label: onboardTypeLabel || null,
-          intended_event_date: document.getElementById('onboard-eventdate-input').value || null
-        }));
-      } catch (erro) { /* sem armazenamento: segue sem os dados */ }
-      if (onboardType) {
-        localStorage.setItem('love-pending-event-type', onboardType);
-        localStorage.setItem('love-pending-event-type-label', onboardTypeLabel || '');
-        localStorage.setItem('love-pending-event-type-slug', onboardTypeSlug || '');
-      }
+        ['love-pending-cadastro', 'love-pending-event-type', 'love-pending-event-type-label', 'love-pending-event-type-slug'].forEach(k => localStorage.removeItem(k));
+      } catch (erro) { /* sem armazenamento */ }
       // No computador abre em pop-up; ao entrar, segue para a plataforma.
       const { error } = await entrarComGoogle({ aoEntrar: () => window.location.replace('/') });
       btn.disabled = false;
       if (error && !/não concluído/.test(error.message || '')) {
         console.error('Erro ao continuar com o Google:', error);
-        alert('Não foi possível continuar com o Google. Tente de novo.');
+        mostrarErro('cd-erro-acesso', window.LoveI18n ? window.LoveI18n.t('cadastro.erroGoogle') : 'Não foi possível continuar com o Google. Tente de novo.');
       }
     });
-    // Apple: ainda não configurado.
-    document.getElementById('btn-onboard-apple').addEventListener('click', () => {
-      alert(window.LoveI18n ? window.LoveI18n.t('cadastro.appleIndisponivel') : 'Cadastro com a Apple ainda não disponível. Use o Google ou e-mail e senha.');
+
+    // Confirmar senha: aparece assim que a pessoa começa a digitar a senha.
+    const confirmarCampo = document.getElementById('onboard-confirmar-campo');
+    const confirmarInput = document.getElementById('onboard-password-confirm-input');
+    passwordInput.addEventListener('input', () => {
+      const temSenha = !!passwordInput.value;
+      confirmarCampo.hidden = !temSenha;
+      confirmarInput.required = temSenha;
+      mostrarErro('onboard-senhas-diferentes', '');
+    });
+    confirmarInput.addEventListener('input', () => { document.getElementById('onboard-senhas-diferentes').hidden = true; });
+
+    // Etapa 1 com e-mail: confere a senha e segue para o tipo de evento. A
+    // conta só é criada no fim (botão "Criar conta" da etapa 3).
+    document.getElementById('form-onboard-register').addEventListener('submit', (e) => {
+      e.preventDefault();
+      mostrarErro('cd-erro-acesso', '');
+      if (confirmarInput.value !== passwordInput.value) {
+        document.getElementById('onboard-senhas-diferentes').hidden = false;
+        confirmarInput.focus();
+        return;
+      }
+      goToStep(2);
     });
 
-    document.getElementById('form-onboard-register').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    async function criarContaComEmail() {
+      mostrarErro('cd-erro-criar', '');
       const { first_name: firstName, last_name: lastName, full_name: fullName } = montarNomeCliente(
         document.getElementById('onboard-firstname-input').value,
         document.getElementById('onboard-lastname-input').value
@@ -608,7 +627,7 @@
       const eventDate = document.getElementById('onboard-eventdate-input').value;
       const email = document.getElementById('onboard-email-input').value.trim();
       const password = document.getElementById('onboard-password-input').value;
-      const submitBtn = document.getElementById('btn-onboard-submit');
+      const submitBtn = btnNext2;
 
       submitBtn.disabled = true;
       submitBtn.textContent = window.LoveI18n ? window.LoveI18n.t('cadastro.criando') : 'Criando...';
@@ -638,9 +657,13 @@
         submitBtn.disabled = false;
         var t = window.LoveI18n && window.LoveI18n.t;
         submitBtn.textContent = t ? t('cadastro.criarConta') : 'Criar conta';
-        alert(error.message === 'User already registered'
-          ? (t ? t('cadastro.emailJaExiste') : 'Esse e-mail já tem uma conta. Faça login.')
-          : (t ? t('cadastro.erroCriarConta') : 'Não foi possível criar sua conta: ') + error.message);
+        if (error.message === 'User already registered') {
+          // E-mail já usado: volta para o acesso com o aviso.
+          goToStep(1);
+          mostrarErro('cd-erro-acesso', t ? t('cadastro.emailJaExiste') : 'Esse e-mail já tem uma conta. Faça login.');
+        } else {
+          mostrarErro('cd-erro-criar', (t ? t('cadastro.erroCriarConta') : 'Não foi possível criar sua conta: ') + error.message);
+        }
         return;
       }
 
@@ -669,7 +692,7 @@
       }
 
       window.location.href = '/';
-    });
+    }
   </script>
 
 <script>
@@ -721,6 +744,11 @@
       var mostrar = btn.getAttribute('aria-pressed') !== 'true';
       campo.style.setProperty('-webkit-text-security', mostrar ? 'none' : 'disc');
       campo.style.setProperty('text-security', mostrar ? 'none' : 'disc');
+      var confirmar = document.getElementById('onboard-password-confirm-input');
+      if (confirmar) {
+        confirmar.style.setProperty('-webkit-text-security', mostrar ? 'none' : 'disc');
+        confirmar.style.setProperty('text-security', mostrar ? 'none' : 'disc');
+      }
       btn.setAttribute('aria-pressed', String(mostrar));
       btn.setAttribute('aria-label', window.LoveI18n ? window.LoveI18n.t(mostrar ? 'cadastro.esconderSenha' : 'cadastro.mostrarSenha') : (mostrar ? 'Ocultar senha' : 'Mostrar senha'));
       btn.innerHTML = mostrar ? OLHO_ABERTO : OLHO_CORTADO;

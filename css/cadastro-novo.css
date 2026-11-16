@@ -226,3 +226,16 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
    no computador e no celular. */
 #cd#cd .cd-relevo { display: none !important; }
 #cd#cd .cd-cartao { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+/* "Crie sua conta." numa linha só, como os outros títulos do cadastro. */
+#cd#cd .onboard-step:has(> h1[data-love-i18n-html="cadastro.tituloAcesso"]) { container-type: inline-size; }
+#cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloAcesso"] { white-space: nowrap; font-size: min(clamp(30px, 2.8vw, 40px), 7.1cqi) !important; }
+#cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloAcesso"] br { display: none; }
+
+/* Avisos dentro da página (sem janela do navegador): e-mail já cadastrado,
+   senhas diferentes, erro do Google ou ao criar a conta. */
+#cd#cd .cd-erro { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: #9F3A38; }
+#cd#cd .cd-erro[hidden] { display: none; }
+#cd#cd #cd-erro-acesso { margin: 12px 0 0; text-align: center; }
+#cd#cd #onboard-confirmar-campo[hidden] { display: none; }
+#cd#cd .onboard-step .campo-senha-com-olho input#onboard-password-confirm-input[type] { padding-right: 16px !important; }

@@ -558,6 +558,8 @@ function varrerVidro(raiz) {
     const st = getComputedStyle(el);
     const c = corRGBA(st.backgroundColor);
     if (!c || c.a < 0.6) continue;
+    // Quem tem imagem de fundo (ex.: capa da empresa no topo da Home) fica como está.
+    if (st.backgroundImage.includes('url(')) continue;
     const branco = Math.min(c.r, c.g, c.b) >= 244;
     const cinzaClaro = Math.min(c.r, c.g, c.b) >= 212 && Math.max(c.r, c.g, c.b) - Math.min(c.r, c.g, c.b) < 12;
     // Caixas grandes em tom claro (ex.: plano em destaque #EAF1F8) também viram vidro.

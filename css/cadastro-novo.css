@@ -155,3 +155,11 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
    no azul da home. */
 #cd#cd .onboard-step h1 { font-family: "Outfit", "Helvetica Neue", Arial, sans-serif !important; font-weight: 200 !important; font-variation-settings: normal !important; letter-spacing: -.03em !important; line-height: 1.02 !important; color: #16202F !important; }
 #cd#cd .onboard-step h1 i { font-style: normal !important; font-family: inherit !important; font-weight: 350 !important; color: #3E6A9E !important; }
+
+/* Computador: "Vamos planejar o seu grande dia?" numa linha só; a letra se
+   ajusta à largura da coluna para caber. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #cd#cd .onboard-step:has(> h1[data-love-i18n-html="cadastro.tituloTipoEvento"]) { container-type: inline-size; }
+  #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloTipoEvento"] { white-space: nowrap; font-size: min(clamp(30px, 2.8vw, 40px), 7.1cqi) !important; }
+  #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloTipoEvento"] br { display: none; }
+}

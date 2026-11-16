@@ -362,6 +362,16 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login #auth-view-esqueci .esq-depois, #view-login#view-login #auth-view-esqueci.is-enviado .esq-antes, #view-login#view-login #auth-view-esqueci.is-enviado .lg-sub, #view-login#view-login #auth-view-esqueci.is-enviado .lg-novo { display: none !important; }
 #view-login#view-login #auth-view-esqueci.is-enviado .esq-depois { display: inline !important; }
 #view-login#view-login .lg-esqueci-ok { margin: 0; font-size: 14px; line-height: 1.55; color: #A3B5C8; text-align: center; }
+/* Esqueci minha senha: X no canto de cima, à direita, da caixa; fecha e volta
+   para o login. Só o ícone, sem caixa; no hover só clareia (caixa escura). */
+#view-login#view-login .lg-fechar { position: absolute; top: 16px; right: 16px; z-index: 2; width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: none !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; outline: none; color: rgba(234,241,248,.6) !important; cursor: pointer; }
+#view-login#view-login .lg-fechar svg { width: 20px; height: 20px; display: block; }
+#view-login#view-login .lg-fechar:hover { color: #EAF1F8 !important; }
+/* Depois de enviar: "Recuperação de senha" numa linha só no computador e o
+   botão Voltar para o login embaixo do aviso. */
+@media (min-width: 769px) { #view-login#view-login #auth-view-esqueci .lg-titulo { white-space: nowrap; } #view-login#view-login #auth-view-esqueci.is-enviado .lg-titulo { font-size: clamp(32px, 2.8vw, 40px) !important; } }
+@media (max-width: 768px) { #view-login#view-login #auth-view-esqueci .lg-cabeca { padding-top: 40px; } }
+#view-login#view-login .lg-esqueci-login { margin-top: 24px; width: 100%; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -447,9 +457,10 @@ html, body { background: #0C1824 !important; }
 
           <!-- Esqueci minha senha: mesma caixa do login, só muda o conteúdo. -->
           <div id="auth-view-esqueci" class="lg-painel" hidden>
+            <button type="button" id="esqueci-voltar" class="lg-fechar" aria-label="Fechar e voltar para o login" data-en-aria="Close and go back to login" title="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
             <div class="lg-cabeca">
               <h1 class="lg-titulo"><span class="esq-antes" data-en="Forgot my password">Esqueci minha senha</span><span class="esq-depois" data-en="Password recovery">Recuperação de senha</span></h1>
-              <p class="lg-sub" data-en="Enter your email and we'll send you a link to create a new password.">Informe seu e-mail e enviaremos um link para você criar uma nova senha.</p>
+              <p class="lg-sub" data-en="Enter your email and we'll send you a link to create a new password.">Informe seu e-mail e enviaremos um link para criar uma nova senha.</p>
             </div>
             <form id="esqueci-form" class="lg-form" novalidate>
               <div class="lg-campo">
@@ -457,10 +468,10 @@ html, body { background: #0C1824 !important; }
                 <label for="esqueci-email" data-en="Email">E-mail</label>
               </div>
               <p id="esqueci-erro" class="lg-erro text-red-600 hidden"></p>
-              <button type="submit" id="esqueci-btn" class="lg-btn lg-btn-escuro"><span data-en="Send link">Enviar link</span><i aria-hidden="true"></i></button>
+              <button type="submit" id="esqueci-btn" class="lg-btn lg-btn-escuro"><span data-en="Resend password">Reenviar senha</span><i aria-hidden="true"></i></button>
             </form>
             <p id="esqueci-ok" class="lg-esqueci-ok" hidden data-en="If this email is correct, you'll receive a link to set a new password.">Se este e-mail estiver correto, você receberá um link para configurar uma nova senha.</p>
-            <p class="lg-novo"><span data-en="Remembered your password?">Lembrou a senha?</span> <a href="login" id="esqueci-voltar" class="lg-link lg-link-forte" data-en="Log in">Entrar</a></p>
+            <button type="button" id="esqueci-ir-login" class="lg-btn lg-btn-escuro lg-esqueci-login" hidden><span data-en="Back to login">Voltar para o login</span><i aria-hidden="true"></i></button>
           </div>
         </div>
       </section>
@@ -643,6 +654,7 @@ html, body { background: #0C1824 !important; }
           if (em && !campo.value) campo.value = em;
           document.getElementById('esqueci-form').hidden = false;
           document.getElementById('esqueci-ok').hidden = true;
+          document.getElementById('esqueci-ir-login').hidden = true;
           esqueci.classList.remove('is-enviado');
           if (foco) campo.focus();
         } else if (foco) document.getElementById('login-email').focus();
@@ -651,6 +663,7 @@ html, body { background: #0C1824 !important; }
         a.addEventListener('click', function (ev) { ev.preventDefault(); mostrar('esqueci', true); });
       });
       document.getElementById('esqueci-voltar').addEventListener('click', function (ev) { ev.preventDefault(); mostrar('login', true); });
+      document.getElementById('esqueci-ir-login').addEventListener('click', function () { mostrar('login', true); });
       if (new URLSearchParams(location.search).get('esqueci') === '1') mostrar('esqueci', false);
 
       document.getElementById('esqueci-form').addEventListener('submit', async function (ev) {
@@ -681,6 +694,7 @@ html, body { background: #0C1824 !important; }
         btn.disabled = false;
         document.getElementById('esqueci-form').hidden = true;
         document.getElementById('esqueci-ok').hidden = false;
+        document.getElementById('esqueci-ir-login').hidden = false;
         document.getElementById('auth-view-esqueci').classList.add('is-enviado');
       });
     })();

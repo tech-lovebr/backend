@@ -42,17 +42,18 @@
 
         <div data-view-panel="financeiro">
           <section class="cart-caixa cart-resumo fin-resumo">
+            <div class="cart-resumo-topo"><button type="button" class="love-olho" data-love-olho aria-label="Ocultar saldo" aria-pressed="false">Ocultar</button></div>
             <div class="cart-resumo-cols fin-resumo-cols">
               <div class="cart-resumo-col">
                 <p class="cart-rotulo">Saldo disponível para saque</p>
-                <p class="cart-numero" id="fin-saldo-disponivel">—</p>
+                <p class="cart-numero love-saldo-valor" id="fin-saldo-disponivel">—</p>
                 <button type="button" class="btn-primary cart-sacar" id="request-withdrawal-btn">Sacar disponível</button>
                 <p class="cart-dica" id="fin-dica-conta" hidden>Cadastre uma conta em <a href="configuracoes?tab=banco" class="cart-link-texto">Contas bancárias</a> para sacar.</p>
                 <button type="button" class="cart-link-texto cart-ver" data-fin-ver="saques">Ver histórico de saques</button>
               </div>
               <div class="cart-resumo-col">
                 <p class="cart-rotulo">Saldo pendente</p>
-                <p class="cart-numero" id="fin-saldo-pendente">—</p>
+                <p class="cart-numero love-saldo-valor" id="fin-saldo-pendente">—</p>
                 <p class="cart-dica">Pagamentos dos seus clientes a caminho da sua carteira.</p>
                 <button type="button" class="cart-link-texto cart-ver" data-fin-ver="extrato">Ver extrato completo</button>
               </div>

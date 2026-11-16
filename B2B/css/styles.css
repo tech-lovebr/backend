@@ -13511,3 +13511,20 @@ html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search
 }
 html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search"], input[placeholder^="Pesquisar"]):not(.proposal-cell-input):is(:hover, :focus):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: rgba(255, 255, 255, 0.24) !important; color: #FFFFFF !important; }
 html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search"], input[placeholder^="Pesquisar"])::placeholder { color: #C4C4CC !important; opacity: 1; }
+
+/* Editar meu site (escuro): painel de Elementos/Ajustes na cor do menu lateral
+   (#0C1824), aba ativa no tom do menu ativo (#0F1F2F), textos e ícones brancos,
+   caixas e campos dos Ajustes (título da página, descrição, meta description…)
+   na cor do menu lateral. O template (canvas) não muda com o tema. */
+html:not(.hub-claro) body .builder-elements-panel:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; border-right-color: rgba(255, 255, 255, 0.08) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body .builder-elements-panel .builder-panel-tabs:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; border-color: rgba(255, 255, 255, 0.08) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body .builder-elements-panel .builder-panel-tab:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: transparent !important; color: #C4C4CC !important; }
+html:not(.hub-claro) body .builder-elements-panel .builder-panel-tab:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
+html:not(.hub-claro) body .builder-elements-panel .builder-panel-tab.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0F1F2F !important; color: #FFFFFF !important; }
+html:not(.hub-claro) body .builder-elements-panel .builder-el-item:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; border-color: rgba(255, 255, 255, 0.10) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body .builder-elements-panel .builder-el-item:hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: rgba(255, 255, 255, 0.28) !important; }
+html:not(.hub-claro) body .builder-elements-panel :is(span, label, p, h2, h3, h4, h5, strong, small, summary, a, button:not(.btn-primary), svg, .builder-el-group-title, div):not([class*="swatch"]):not([style*="background"]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
+html:not(.hub-claro) body .builder-elements-panel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), textarea, select):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; border-color: rgba(255, 255, 255, 0.12) !important; }
+html:not(.hub-claro) body .builder-elements-panel :is(input, textarea)::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
+html:not(.hub-claro) body .builder-elements-panel :is(.hub-vidro, .hub-vidro-solido):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background-color: #0C1824 !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body .builder-elements-panel .hub-borda:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-color: rgba(255, 255, 255, 0.10) !important; }

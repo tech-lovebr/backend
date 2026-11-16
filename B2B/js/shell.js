@@ -522,7 +522,7 @@ function initThemeToggle() {
 // sobre fundo escuro ficam claros. Vale também para o que a página monta
 // depois (tabelas, listas), via MutationObserver. O site do cliente
 // (construtor e prévias) fica de fora. As classes só pintam fora do claro.
-const VIDRO_FORA = '.builder-canvas, .site-preview, [id="live-preview-container"], .b2b-sidebar, iframe, img, video, canvas, picture';
+const VIDRO_FORA = '.builder-canvas, .builder-canvas-frame, .builder-mobile-menu-root, .site-preview, [id="live-preview-container"], .b2b-sidebar, iframe, img, video, canvas, picture';
 const VIDRO_SVG = 'svg, svg *';
 function corRGBA(txt) {
   const m = (txt || '').match(/rgba?\(([^)]+)\)/);

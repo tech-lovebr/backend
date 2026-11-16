@@ -1962,3 +1962,29 @@ function ligarCepAutomatico(cepEl, campos) {
     if (c.numero && !c.numero.value) c.numero.focus();
   });
 }
+
+/* -------------------- Olhinho do saldo --------------------
+   Esconde/mostra os valores marcados com .love-saldo-valor (desfoque, sem
+   re-renderizar os números). Mesma chave da plataforma do anfitrião
+   ('love-saldo-oculto'), então a escolha vale nas duas pontas. */
+(function olhoDoSaldo() {
+  const CHAVE = 'love-saldo-oculto';
+  const raiz = document.documentElement;
+  try { if (localStorage.getItem(CHAVE) === '1') raiz.classList.add('love-saldo-oculto'); } catch (e) { /* sem armazenamento */ }
+  const atualizar = () => {
+    const oculto = raiz.classList.contains('love-saldo-oculto');
+    document.querySelectorAll('[data-love-olho]').forEach(b => {
+      b.setAttribute('aria-pressed', oculto ? 'true' : 'false');
+      b.setAttribute('aria-label', oculto ? 'Mostrar valores' : 'Esconder valores');
+    });
+  };
+  document.addEventListener('click', e => {
+    const botao = e.target.closest && e.target.closest('[data-love-olho]');
+    if (!botao) return;
+    e.preventDefault();
+    const oculto = raiz.classList.toggle('love-saldo-oculto');
+    try { localStorage.setItem(CHAVE, oculto ? '1' : '0'); } catch (err) { /* sem armazenamento */ }
+    atualizar();
+  }, true);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', atualizar); else atualizar();
+})();

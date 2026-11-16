@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=925">
+  <link rel="stylesheet" href="css/styles.css?v=926">
 </head>
 <body class="font-sans" data-page="dashboard">
 
@@ -60,12 +60,12 @@
           <div class="dashboard-side-stack">
             <div class="dash-saldo-total" id="dash-saldo-total">
               <p class="dash-saldo-total-rotulo">Saldo total · Todos os saldos</p>
-              <p class="dash-saldo-total-valor" id="dash-saldo-total-valor">—</p>
+              <p class="dash-saldo-total-valor love-saldo-valor" id="dash-saldo-total-valor">—</p>
               <div class="dash-saldo-total-grafico" id="dash-saldo-total-grafico"></div>
               <div class="dash-saldo-celular">
                 <div class="dash-saldo-celular-colunas">
-                  <div><span class="dash-saldo-celular-valor" id="dash-saldo-celular-saldo">—</span><span class="dash-saldo-celular-nome">Saldo disponível</span></div>
-                  <div><span class="dash-saldo-celular-valor" id="dash-saldo-celular-contratos">—</span><span class="dash-saldo-celular-nome">Contratos ativos</span></div>
+                  <div><span class="dash-saldo-celular-valor love-saldo-valor" id="dash-saldo-celular-saldo">—</span><span class="dash-saldo-celular-nome">Saldo disponível</span></div>
+                  <div class="dash-saldo-celular-col-olho"><span class="dash-saldo-celular-valor love-saldo-valor" id="dash-saldo-celular-contratos">—</span><span class="dash-saldo-celular-nome">Contratos ativos<button type="button" class="love-olho" data-love-olho aria-label="Esconder valores" aria-pressed="false"><svg class="love-olho-aberto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><svg class="love-olho-fechado" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-6.4 0-10-7-10-7a18.4 18.4 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 4c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24M1 1l22 22"/></svg></button></span></div>
                 </div>
                 <a href="pagamentos" class="dash-saldo-celular-botao is-sem-saldo" id="dash-saldo-celular-sacar">Sacar disponível</a>
               </div>
@@ -345,7 +345,7 @@
   </div>
 
   <script src="js/data.js?v=24"></script>
-  <script src="js/utils.js?v=53"></script>
+  <script src="js/utils.js?v=54"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
   <script src="js/shell.js?v=93"></script>

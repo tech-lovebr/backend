@@ -4761,3 +4761,10 @@ body[data-theme="dark"] .drawer-acoes-botoes :is(.btn-neutro, .btn-danger) { bac
 /* Rodapé na mesma cor do cabeçalho: branco com a mesma linha (no escuro, #181D24). */
 .admin-main > .admin-footer { background: #FFFFFF; border-top-color: var(--topbar-border); }
 body[data-theme="dark"] .admin-main > .admin-footer { background: #181D24; border-top-color: rgba(255, 255, 255, .08); }
+
+/* Login: só a saudação centralizada, com a frase de apoio embaixo. */
+body.login-page .login-cartao h1 { margin-bottom: 8px; text-align: center; }
+body.login-page .login-subtitulo { margin: 0 0 28px; text-align: center; font-size: 14px; line-height: 1.5; color: var(--lg-suave); }
+body.login-page .login-subtitulo[hidden] { display: none; }
+body.login-page .login-subtitulo { color: var(--lg-mudo); }
+body.login-page .login-cartao h1:has(+ .login-subtitulo[hidden]) { margin-bottom: 28px; }

@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://love.com.br" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="css/admin.css?v=166">
+  <link rel="stylesheet" href="css/admin.css?v=167">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/mock.js"></script>
   <script src="js/carregamento.js?v=2"></script>
@@ -45,8 +45,8 @@
 
   <main class="login-area">
     <div class="login-cartao">
-      <p class="login-sobre">Love Admin</p>
-      <h1>Painel Administrativo</h1>
+      <h1>Seja bem-vindo(a)!</h1>
+      <p class="login-subtitulo" id="login-subtitulo">Acesse com sua conta para continuar.</p>
 
       <form id="login-form" novalidate>
         <div class="login-campo">
@@ -152,8 +152,9 @@
     /** @param {'login' | 'esqueci' | 'novaSenha'} qual */
     function mostrarTela(qual) {
       Object.entries(telas).forEach(([nome, el]) => { el.hidden = nome !== qual; });
-      titulo.textContent = qual === 'login' ? 'Painel Administrativo'
+      titulo.textContent = qual === 'login' ? 'Seja bem-vindo(a)!'
         : qual === 'esqueci' ? 'Recuperar senha' : 'Nova senha';
+      document.getElementById('login-subtitulo').hidden = qual !== 'login';
     }
 
     /** @param {HTMLElement} el @param {string} texto @param {boolean} [ok] */

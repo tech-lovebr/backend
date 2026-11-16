@@ -587,6 +587,8 @@ function varrerVidro(raiz) {
   for (const el of todos) {
     const st = getComputedStyle(el);
     const ehSvg = el.matches(VIDRO_SVG);
+    // Ilustrações (svg maiores que um ícone) mantêm as cores; só ícones clareiam.
+    if (ehSvg) { const dono = el.closest('svg'); if (dono && (dono.getBoundingClientRect().width > 40 || dono.closest('.cart-docs-ilustra'))) continue; }
     const marcado = el.classList.contains('hub-txt-1') || el.classList.contains('hub-txt-2');
     const c = corRGBA(st.color);
     const traco = ehSvg && !el.classList.contains('hub-traco') && st.stroke && st.stroke !== 'none' && !/url\(/.test(st.stroke) ? corRGBA(st.stroke) : null;

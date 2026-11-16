@@ -13536,3 +13536,21 @@ html:not(.hub-claro) body :is(.builder-canvas-frame, .builder-mobile-menu-root):
    tom mais escuro que o do menu (#0C1824), sem ficar branco; texto segue branco. */
 html:not(.hub-claro) body .topbar-dropdown :is(.topbar-dropdown-item, .theme-toggle-btn):hover:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; }
 html:not(.hub-claro) body .topbar-dropdown .theme-toggle-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; }
+
+/* Configurações (escuro): submenu lateral com o mesmo hover do menu do perfil
+   (#0C1824, texto branco), item ativo no mesmo tom e sem a linha branca
+   embaixo; Tipo de documento com a opção marcada no tom do menu lateral. */
+html:not(.hub-claro) body .settings-shell--lateral .category-tab:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; border-bottom-color: transparent !important; box-shadow: none !important; }
+html:not(.hub-claro) body .settings-shell--lateral .category-tab:is(:hover, .active):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; color: #FFFFFF !important; border-color: transparent !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body .settings-shell--lateral .category-tab :is(span, svg):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #FFFFFF !important; }
+html:not(.hub-claro) body .plan-billing-toggle .plan-billing-option.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; box-shadow: none !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+html:not(.hub-claro) body .plan-billing-toggle .plan-billing-option *:not(.plan-billing-option-discount):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
+
+/* Contas bancárias (escuro): ilustração do documento como no claro, com o
+   círculo de fundo no tom do menu lateral e o anel em azul claro suave. */
+html:not(.hub-claro) body .cart-docs-ilustra svg > circle:nth-of-type(1) { fill: #0C1824; }
+html:not(.hub-claro) body .cart-docs-ilustra svg > circle:nth-of-type(2) { stroke: rgba(234, 241, 248, 0.18); }
+html:not(.hub-claro) body .cart-docs-ilustra svg > rect:nth-of-type(1) { fill: #234E73; }
+html:not(.hub-claro) body .cart-docs-ilustra svg > rect:nth-of-type(2) { fill: #183b54; }
+html:not(.hub-claro) body .cart-docs-ilustra svg > circle:nth-of-type(4) { fill: #0C1824; }
+html:not(.hub-claro) body .cart-docs-ilustra:not(#love-h-a) { border-color: transparent !important; }

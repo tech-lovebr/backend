@@ -13571,7 +13571,7 @@ body[data-theme="dark"] button.love-olho { background: #252525 !important; borde
 html body .dash-saldo-celular-colunas > .dash-saldo-celular-col-olho:not(#love-h-a) { position: relative; }
 html body .dash-saldo-celular-col-olho button.love-olho:not(#love-h-a):not(#love-h-b) { position: absolute; top: 0; right: 16px; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body .dash-saldo-celular-col-olho button.love-olho:not(#love-h-a):not(#love-h-b) { right: 4px; }
+  html body .dash-saldo-celular-col-olho button.love-olho:not(#love-h-a):not(#love-h-b) { right: 16px; }
 }
 /* Escuro (azul-noite): botão na cor do menu lateral, ícone branco. */
 html:not(.hub-claro) body button.love-olho:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #0C1824 !important; border-color: rgba(255, 255, 255, 0.12) !important; color: #FFFFFF !important; -webkit-backdrop-filter: none; backdrop-filter: none; }

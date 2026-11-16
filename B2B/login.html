@@ -27,7 +27,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/favicon-love.svg?v=1">
   <link rel="alternate icon" type="image/png" href="assets/love-logo-google-120.png?v=1">
   <meta name="description" content="Acesso de assessores e fornecedores parceiros da Love para gestão de leads, contratos e vitrine de serviços.">
-  <meta name="theme-color" content="#183b54">
+  <meta name="theme-color" content="#0C1824">
   <meta name="robots" content="noindex, nofollow">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -193,6 +193,45 @@ html.hub-en #view-login#view-login #auth-view-login .lg-titulo { font-size: min(
 #view-login#view-login #google-login-btn svg { width: 18px; height: 18px; }
 #view-login#view-login .lg-termos { max-width: 520px; margin: 0; font-size: 12.5px !important; line-height: 1.5 !important; color: #FFFFFF !important; text-align: center; }
 #view-login#view-login .lg-termos a { color: rgba(247,248,250,.82) !important; text-decoration: underline; text-underline-offset: 2px; }
+/* ==========================================================================
+   Entrar do Hub no visual escuro da landing (css/hub-landing.css): fundo Noite
+   #0C1824 com o brilho azul e o grão, cartão #10202F com contorno 10%, textos
+   #EAF1F8 / #A3B5C8, destaque #A9C6EA, campos em vidro e o Entrar no mesmo
+   botão claro do "Cadastre-se grátis" (#EAF1F8 com texto #0C1824).
+   ========================================================================== */
+html, body { background: #0C1824 !important; }
+#view-login#view-login {
+  --lg-fundo: #0C1824; --lg-papel: #10202F; --lg-tinta: #EAF1F8; --lg-mudo: #A3B5C8; --lg-suave: #71879D;
+  --lg-linha: rgba(234,241,248,.1); --lg-campo: rgba(255,255,255,.04); --lg-azul: #A9C6EA; --lg-azul2: #A9C6EA;
+  color-scheme: dark;
+}
+#view-login#view-login .lg-fundo { background: radial-gradient(40% 38% at 74% 24%, rgba(44,90,133,.55) 0%, rgba(44,90,133,0) 100%), radial-gradient(46% 42% at 18% 82%, rgba(24,59,84,.7) 0%, rgba(24,59,84,0) 100%), #0C1824; }
+#view-login#view-login .lg-fundo::after { opacity: .07; mix-blend-mode: screen; }
+#view-login#view-login .lg-cabecalho { background: rgba(12,24,36,.82) !important; box-shadow: 0 1px 0 rgba(234,241,248,.1) !important; }
+#view-login#view-login .lg-logo svg g { fill: #EAF1F8; }
+#view-login#view-login .lg-selo { color: #A9C6EA !important; border-color: rgba(169,198,234,.35); }
+#view-login#view-login .lg-cartao { background: #10202F; border: 1px solid rgba(234,241,248,.1); box-shadow: 0 40px 100px rgba(0,0,0,.35); }
+#view-login#view-login .lg-janela { background: #132739; }
+#view-login#view-login .lg-relevo { opacity: .06; }
+#view-login#view-login .lg-pontos { background: rgba(12,24,36,.6); }
+#view-login#view-login .lg-pontos i { background: rgba(234,241,248,.3); }
+#view-login#view-login .lg-pontos i.is-ativo { background: #EAF1F8; }
+#view-login#view-login .lg-titulo { color: #EAF1F8 !important; }
+#view-login#view-login .lg-titulo i { color: #A9C6EA !important; }
+#view-login#view-login .lg-campo input { background: rgba(255,255,255,.04) !important; border-color: rgba(234,241,248,.12) !important; color: #EAF1F8 !important; }
+#view-login#view-login .lg-campo input:focus { background: rgba(255,255,255,.06) !important; border-color: rgba(169,198,234,.6) !important; box-shadow: none !important; }
+#view-login#view-login .lg-campo input:is(:-webkit-autofill, :autofill) { -webkit-box-shadow: 0 0 0 1000px #15283A inset !important; box-shadow: 0 0 0 1000px #15283A inset !important; -webkit-text-fill-color: #EAF1F8 !important; caret-color: #EAF1F8; }
+#view-login#view-login .lg-olho:hover { background: rgba(255,255,255,.06); }
+#view-login#view-login .lg-btn-escuro { background: #EAF1F8 !important; color: #0C1824 !important; }
+#view-login#view-login .lg-btn-escuro span { color: #0C1824 !important; }
+#view-login#view-login .lg-btn-escuro:hover { background: #FFFFFF !important; box-shadow: 0 14px 40px rgba(169,198,234,.25); }
+/* Google no tema escuro oficial (fundo #131314, contorno #8E918F, texto #E3E3E3). */
+#view-login#view-login #google-login-btn { background: #131314 !important; border-color: #8E918F !important; color: #E3E3E3 !important; }
+#view-login#view-login #google-login-btn:hover { background: #1F1F21 !important; border-color: #8E918F !important; }
+#view-login#view-login .lg-erro { color: #E8B4A6 !important; }
+#view-login#view-login .lg-erro :is(a, button) { color: #A9C6EA !important; }
+#view-login#view-login .lg-link-forte, #view-login#view-login .lg-link-forte:hover { color: #A9C6EA !important; }
+#view-login#view-login .lg-termos a { color: #A3B5C8 !important; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>

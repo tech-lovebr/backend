@@ -267,3 +267,10 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-login#view-login .lg-cabeca :is(.lg-titulo, .lg-sub) { text-align: center !important; margin-left: auto; margin-right: auto; }
 }
+
+/* Celular: "Acesse sua conta" no mesmo tamanho do login do Hub (numa linha,
+   a letra acompanha a largura do formulário, até 38px). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login #login-panel-signin { container-type: inline-size; }
+  #view-login#view-login #login-panel-signin .lg-titulo { white-space: nowrap; font-size: min(38px, 9.5cqi) !important; }
+}

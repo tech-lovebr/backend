@@ -18956,7 +18956,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showLoginMfaPanel() {
-    ['login-panel-signin', 'login-panel-forgot'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    ['login-panel-signin', 'login-panel-forgot', 'login-panel-nova-senha'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
     const panelMfa = document.getElementById('login-panel-mfa');
     if (!panelMfa) return;
     panelMfa.classList.remove('hidden');
@@ -19016,6 +19016,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelForgot = document.getElementById('login-panel-forgot');
     if (!panelSignin || !panelForgot) return;
     panelSignin.classList.add('hidden');
+    document.getElementById('login-panel-nova-senha')?.classList.add('hidden');
     panelForgot.classList.remove('hidden');
     const forgotEmailInput = document.getElementById('login-forgot-email-input');
     if (forgotEmailInput && prefillEmail) forgotEmailInput.value = prefillEmail;
@@ -19027,6 +19028,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!panelSignin || !panelForgot) return;
     panelForgot.classList.add('hidden');
     document.getElementById('login-panel-mfa')?.classList.add('hidden');
+    document.getElementById('login-panel-nova-senha')?.classList.add('hidden');
+    document.getElementById('login-aviso')?.classList.add('hidden');
     panelSignin.classList.remove('hidden');
   }
 
@@ -19044,6 +19047,130 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   // "Lembrou a senha? Entrar" (embaixo do Reenviar senha): também volta para o login.
   document.getElementById('btn-forgot-lembrou')?.addEventListener('click', showLoginSigninPanel);
+
+  // 10.1c Crie uma nova senha — painel inline, aberto pelo link "Redefinir sua
+  // senha" do e-mail (/login?nova-senha=1 com o token; ver o início de
+  // js/supabase-init.js, que guarda em window.__loveNovaSenha o que veio na URL).
+  const tLogin = (chave, padrao) => (window.LoveI18n ? window.LoveI18n.t(chave) : padrao);
+  let novaSenhaAberta = false;
+
+  function mostrarPainelNovaSenha() {
+    ['login-panel-signin', 'login-panel-forgot', 'login-panel-mfa'].forEach(id => document.getElementById(id)?.classList.add('hidden'));
+    document.getElementById('login-panel-nova-senha')?.classList.remove('hidden');
+  }
+
+  function novaSenhaLinkInvalido() {
+    novaSenhaAberta = false;
+    mostrarPainelNovaSenha();
+    document.getElementById('form-login-nova-senha')?.classList.add('hidden');
+    document.getElementById('login-nova-senha-invalido')?.classList.remove('hidden');
+    const sub = document.getElementById('login-nova-senha-sub');
+    if (sub) {
+      sub.removeAttribute('data-love-i18n');
+      sub.textContent = tLogin('login.novaSenhaLinkInvalido', 'Esse link é inválido ou já expirou. Peça um novo.');
+    }
+    history.replaceState(null, '', '/login');
+  }
+
+  async function abrirPainelNovaSenha() {
+    novaSenhaAberta = true;
+    switchView('login');
+    mostrarPainelNovaSenha();
+    // O que veio na URL vale só para esta abertura.
+    // (marca como usado em vez de apagar: initClienteSession ainda precisa
+    // saber que a página abriu pelo link, mesmo se o evento chegar antes).
+    const guardado = /** @type {any} */ (window).__loveNovaSenha;
+    const info = guardado && !guardado.usado ? guardado : {};
+    if (guardado) guardado.usado = true;
+    const sub = document.getElementById('login-nova-senha-sub');
+    if (sub) {
+      sub.setAttribute('data-love-i18n', 'login.novaSenhaDesc');
+      sub.textContent = tLogin('login.novaSenhaDesc', 'Escolha uma senha nova para acessar sua conta.');
+    }
+    if (info.erro) { novaSenhaLinkInvalido(); return; }
+    let sessao = null;
+    try {
+      if (info.tokenHash) {
+        const { data, error } = await supabaseClient.auth.verifyOtp({ token_hash: info.tokenHash, type: 'recovery' });
+        sessao = error ? null : data.session;
+      } else {
+        const { data } = await supabaseClient.auth.getSession();
+        sessao = data.session;
+      }
+    } catch (e) { sessao = null; }
+    const email = sessao && sessao.user && sessao.user.email;
+    if (!email) { novaSenhaLinkInvalido(); return; }
+    document.getElementById('form-login-nova-senha')?.classList.remove('hidden');
+    document.getElementById('login-nova-senha-invalido')?.classList.add('hidden');
+    const campoEmail = /** @type {HTMLInputElement|null} */ (document.getElementById('login-nova-senha-email'));
+    if (campoEmail) campoEmail.value = email;
+    document.getElementById('login-nova-senha-input')?.focus();
+  }
+
+  document.getElementById('btn-nova-senha-pedir-link')?.addEventListener('click', () => {
+    novaSenhaAberta = false;
+    showLoginForgotPanel('');
+    document.getElementById('login-forgot-email-input')?.focus();
+  });
+
+  // Chegou o evento de recuperação sem ter passado pelo /login?nova-senha=1
+  // (ex.: ?code= de outro fluxo): abre o painel do mesmo jeito.
+  supabaseClient.auth.onAuthStateChange((evento) => {
+    if (evento === 'PASSWORD_RECOVERY' && !novaSenhaAberta) abrirPainelNovaSenha();
+  });
+
+  document.getElementById('form-login-nova-senha')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const campoSenha = /** @type {HTMLInputElement} */ (document.getElementById('login-nova-senha-input'));
+    const campoConfirmar = /** @type {HTMLInputElement} */ (document.getElementById('login-nova-senha-confirmar'));
+    const campoEmail = /** @type {HTMLInputElement} */ (document.getElementById('login-nova-senha-email'));
+    const erroEl = /** @type {HTMLElement} */ (document.getElementById('login-nova-senha-erro'));
+    const botao = /** @type {HTMLButtonElement} */ (document.getElementById('btn-salvar-nova-senha'));
+    const mostrarErro = (msg) => { erroEl.textContent = msg; erroEl.classList.remove('hidden'); };
+    erroEl.classList.add('hidden');
+    const password = campoSenha.value;
+
+    // Mesmas regras de senha do cadastro (8+ caracteres, maiúscula, minúscula e número).
+    if (!senhaCumpreRegras(password)) { mostrarErro(MENSAGEM_REGRAS_SENHA); campoSenha.focus(); return; }
+    if (password !== campoConfirmar.value) {
+      mostrarErro(tLogin('login.senhasNaoCoincidem', 'As senhas não coincidem. Digite a confirmação de novo.'));
+      campoConfirmar.value = '';
+      campoConfirmar.focus();
+      return;
+    }
+
+    botao.disabled = true;
+    botao.classList.add('is-entrando');
+    const { error } = await supabaseClient.auth.updateUser({ password });
+    botao.disabled = false;
+    botao.classList.remove('is-entrando');
+
+    if (error) {
+      const msg = (error.message || '').toLowerCase();
+      if (msg.includes('different from the old') || /** @type {any} */ (error).code === 'same_password') {
+        mostrarErro(tLogin('login.senhaIgualAtual', 'A nova senha precisa ser diferente da atual.'));
+      } else {
+        mostrarErro(tLogin('login.naoSalvouNovaSenha', 'Não foi possível salvar a nova senha. Tente de novo.'));
+      }
+      return;
+    }
+
+    const email = campoEmail.value;
+    await supabaseClient.auth.signOut();
+    novaSenhaAberta = false;
+    history.replaceState(null, '', '/login');
+    campoSenha.value = '';
+    campoConfirmar.value = '';
+    showLoginSigninPanel();
+    const loginEmail = /** @type {HTMLInputElement|null} */ (document.getElementById('login-email-input'));
+    if (loginEmail) loginEmail.value = email;
+    const aviso = document.getElementById('login-aviso');
+    if (aviso) {
+      aviso.textContent = tLogin('login.senhaAtualizada', 'Senha atualizada. Entre com a sua nova senha.');
+      aviso.classList.remove('hidden');
+    }
+    document.getElementById('login-password-input')?.focus();
+  });
 
   const formLoginForgot = document.getElementById('form-login-forgot');
   if (formLoginForgot) {
@@ -24470,7 +24597,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // /login com sessão salva: não mostra o login (initClienteSession abre o
   // painel; se a sessão não se confirmar, volta para o login).
-  if (isLoginRoute && !hasPlausibleSession) {
+  if (/** @type {any} */ (window).__loveNovaSenha || (isLoginRoute && !hasPlausibleSession)) {
     switchView('login');
   } else if (!hasPlausibleSession) {
     switchView('public');
@@ -24501,6 +24628,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initClienteSession();
 
   async function initClienteSession() {
+    // Link "Redefinir sua senha" do e-mail: a sessão de recuperação não entra
+    // na plataforma — abre o "Crie uma nova senha" na caixa do login.
+    if (/** @type {any} */ (window).__loveNovaSenha) { abrirPainelNovaSenha(); return; }
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
       // Cobre o palpite de sessão (localStorage tinha a chave, mas o token

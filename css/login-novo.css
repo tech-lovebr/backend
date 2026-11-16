@@ -271,8 +271,8 @@ html.love-rota-login, html.love-rota-login body, html:has(> body.login-mode), ht
 /* Celular: "Acesse sua conta" no mesmo tamanho do login do Hub (numa linha,
    a letra acompanha a largura do formulário, até 38px). */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  #view-login#view-login #login-panel-signin { container-type: inline-size; }
-  #view-login#view-login #login-panel-signin .lg-titulo { white-space: nowrap; font-size: min(38px, 9.5cqi) !important; }
+  #view-login#view-login :is(#login-panel-signin, #login-panel-nova-senha) { container-type: inline-size; }
+  #view-login#view-login :is(#login-panel-signin, #login-panel-nova-senha) .lg-titulo { white-space: nowrap; font-size: min(38px, 9.5cqi) !important; }
 }
 
 /* Computador também: título e descrição centralizados, como no login do Hub
@@ -308,3 +308,9 @@ body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !
 #view-login#view-login .lg-btn:not(.is-entrando) i { display: inline-block; flex-shrink: 0; width: 16px !important; height: 16px !important; background: currentColor; position: static; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E") center/16px 16px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E") center/16px 16px no-repeat; transition: transform .3s var(--lg-ease); }
 #view-login#view-login .lg-btn:not(.is-entrando) i::after { display: none; }
 #view-login#view-login .lg-btn:not(.is-entrando):hover i { width: 16px !important; transform: translateX(3px); }
+
+/* Crie uma nova senha (link do e-mail): e-mail da conta só para leitura,
+   um pouco apagado; aviso do login na cor primária. */
+#view-login#view-login .lg-campo-apagado { opacity: .7; }
+#view-login#view-login .lg-campo-apagado input { cursor: default; }
+#view-login#view-login .lg-erro.lg-aviso { color: #183b54 !important; }

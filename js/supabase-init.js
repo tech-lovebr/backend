@@ -3,16 +3,25 @@
    Depende do script global do Supabase (UMD) carregado antes deste arquivo.
    ========================================================================== */
 
-// Link de "esqueci a senha" que caiu fora de /resetar-senha (ex.: o Supabase
-// voltou para o Site URL porque o redirectTo não estava na lista permitida):
-// manda para a página certa levando o token, antes do cliente consumi-lo aqui.
+// Link "Redefinir sua senha" do e-mail: o "Crie uma nova senha" abre dentro
+// da caixa do login (/login?nova-senha=1). Se o link caiu em outro endereço
+// (ex.: o Supabase voltou para o Site URL), manda para lá levando o token,
+// antes do cliente consumi-lo. Em /login?nova-senha=1 guarda o que veio na
+// URL (o cliente apaga o hash ao ler o token) para o js/app.js.
 (function () {
-  if (window.location.pathname.startsWith('/resetar-senha')) return;
   const hash = new URLSearchParams(window.location.hash.slice(1));
   const query = new URLSearchParams(window.location.search);
+  if (window.location.pathname === '/login' && query.get('nova-senha') === '1') {
+    window.__loveNovaSenha = {
+      erro: hash.get('error_code') || hash.get('error') || query.get('error_code') || query.get('error') || '',
+      tokenHash: query.get('type') === 'recovery' ? query.get('token_hash') : null,
+    };
+    return;
+  }
   const isRecovery = hash.get('type') === 'recovery' || query.get('type') === 'recovery';
   if (isRecovery) {
-    window.location.replace('/resetar-senha' + window.location.search + window.location.hash);
+    const resto = window.location.search ? '&' + window.location.search.slice(1) : '';
+    window.location.replace('/login?nova-senha=1' + resto + window.location.hash);
   }
 })();
 

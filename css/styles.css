@@ -16029,15 +16029,15 @@ html body #view-event-os-dashboard :is(#builder-save, #btn-save-header-edit, .lo
 }
 html body #view-event-os-dashboard :is(#builder-save, #btn-save-header-edit, .love-tabela-botao, .btn-message-supplier):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) * { font-size: inherit !important; font-weight: inherit !important; }
 
-/* Publicar (Personalizar evento) e Salvar (Informações) em azul clarinho, como
-   o item ativo do menu lateral. */
-html body #view-event-os-dashboard :is(#builder-publish, #btn-save-header-edit):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+/* Publicar (Personalizar evento) em azul clarinho, como o item ativo do menu
+   lateral. O Salvar de Informações fica igual ao Salvar de Aparência. */
+html body #view-event-os-dashboard #builder-publish:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
   background: #EBF4FF !important; border: 1px solid #EBF4FF !important; color: #183b54 !important; box-shadow: none !important;
 }
-html body #view-event-os-dashboard :is(#builder-publish, #btn-save-header-edit):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) * { color: #183b54 !important; }
-html body #view-event-os-dashboard :is(#builder-publish, #btn-save-header-edit):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):hover:not(:disabled) { background: #EBF4FF !important; border-color: #183b54 !important; color: #183b54 !important; }
-body[data-theme="dark"] #view-event-os-dashboard :is(#builder-publish, #btn-save-header-edit) { background: #1E2A36 !important; border-color: #1E2A36 !important; color: #EBF4FF !important; }
-body[data-theme="dark"] #view-event-os-dashboard :is(#builder-publish, #btn-save-header-edit) * { color: #EBF4FF !important; }
+html body #view-event-os-dashboard #builder-publish:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) * { color: #183b54 !important; }
+html body #view-event-os-dashboard #builder-publish:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):hover:not(:disabled) { background: #EBF4FF !important; border-color: #183b54 !important; color: #183b54 !important; }
+body[data-theme="dark"] #view-event-os-dashboard #builder-publish { background: #1E2A36 !important; border-color: #1E2A36 !important; color: #EBF4FF !important; }
+body[data-theme="dark"] #view-event-os-dashboard #builder-publish * { color: #EBF4FF !important; }
 
 /* Encontrar fornecedor: o ativo de Ver em lista / Ver em grid na cor do botão
    Solicitar e do ícone do logotipo (#183b54). */

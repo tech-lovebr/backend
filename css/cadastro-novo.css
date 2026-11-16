@@ -182,3 +182,11 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
 #cd#cd #onboard-steps .step-label { font-size: 13px !important; color: inherit !important; font-weight: inherit !important; line-height: 1.4; }
 #cd#cd #onboard-steps .step-line { flex: 0 0 auto !important; width: auto !important; height: auto !important; margin: 0 10px !important; background: none !important; color: #A1A1AA; font-size: 14px; line-height: 1.4; }
 #cd#cd #onboard-steps .step-line::before { content: "›"; }
+
+/* Celular também: "Vamos planejar o seu grande dia?" numa linha só (a letra
+   se ajusta à largura da coluna). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #cd#cd .onboard-step:has(> h1[data-love-i18n-html="cadastro.tituloTipoEvento"]) { container-type: inline-size; }
+  #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloTipoEvento"] { white-space: nowrap; font-size: min(clamp(30px, 2.8vw, 40px), 7.1cqi) !important; }
+  #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloTipoEvento"] br { display: none; }
+}

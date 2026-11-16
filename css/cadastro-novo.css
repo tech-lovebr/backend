@@ -126,3 +126,13 @@ body.cd-corpo { margin: 0; background: #E9F1FB; font-family: "Outfit", "Helvetic
 @media (prefers-reduced-motion: reduce) {
   #cd#cd .cd-foto { transition: opacity .01s; }
 }
+
+/* Celular: "Já tem uma conta? Entre por aqui" centralizado; caixa um pouco
+   translúcida (o céu aparece por trás) com as linhas do relevo e o grão mais
+   discretos — igual ao login. Desktop não muda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #cd#cd .cd-ja-tem { text-align: center !important; }
+  #cd#cd .cd-cartao { background: rgba(255, 255, 255, .78) !important; -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); }
+  #cd#cd .cd-relevo { opacity: .35; }
+  #cd#cd .cd-fundo::after { opacity: .2; }
+}

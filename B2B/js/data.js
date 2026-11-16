@@ -118,16 +118,18 @@ const FORNECEDOR_CATEGORIAS = [
   'Mídia e Audiovisual', 'Música e Entretenimento', 'Decoração', 'Assessoria e Cerimonialista',
   'Aluguel de Trajes', 'Beleza e Estilo', 'Aluguel de Carros'
 ];
+// Só as tags principais de cada categoria (lista enxuta). O que for mais
+// específico a pessoa escreve em "Outro"; tags antigas já salvas continuam aparecendo.
 const TAGS_POR_CATEGORIA = {
-  'Buffet e Gastronomia': ['Buffet completo', 'Bolo', 'Doces finos', 'Bem-casados', 'Brigadeiros gourmet', 'Docinhos de festa', 'Mesa de doces', 'Cupcakes', 'Salgados de festa', 'Finger food', 'Tábua de frios', 'Buffet infantil', 'Jantar servido à francesa', 'Churrasco', 'Massas', 'Café da manhã', 'Brunch', 'Carrinhos', 'Food truck', 'Comida de boteco', 'Comida japonesa', 'Cardápio vegano', 'Vegetariano', 'Sem glúten'],
-  'Bar e Bebidas': ['Open bar', 'Coquetel', 'Drinks autorais', 'Coquetelaria clássica', 'Bartender', 'Sommelier', 'Chopp', 'Aluguel de cervejeira', 'Cervejas artesanais', 'Vinhos', 'Espumantes', 'Gin tônica', 'Caipirinhas', 'Drinks sem álcool', 'Bar infantil', 'Bar móvel', 'Consignação de bebidas', 'Café e barista'],
-  'Espaços para Locação': ['Sítio', 'Chácara', 'Fazenda', 'Hotel', 'Restaurante', 'Salão de festas', 'Casa na praia', 'Casa de campo', 'Espaço exclusivo', 'Rooftop', 'Igreja/Capela', 'Ao ar livre', 'Jardim', 'Com piscina', 'Vista para o mar'],
-  'Staff e Mão de Obra': ['Garçons', 'Bartenders', 'Recepcionistas', 'Seguranças', 'Copeiras', 'Limpeza', 'Manobristas', 'Montadores', 'Carregadores', 'Coordenação de equipe', 'Bilíngue', 'Uniformizado'],
-  'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Making of', 'Ensaio pré-wedding', 'Cabine de fotos', 'Fotos instantâneas', 'Álbum impresso', 'Edição de vídeo', 'Same day edit', 'Edição em 4K', 'Transmissão ao vivo', 'Estilo documental', 'Estilo editorial'],
-  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Voz e violão', 'Quarteto de cordas', 'Orquestra', 'Samba e pagode', 'Sertanejo', 'Música eletrônica', 'MPB', 'Cerimônia musical', 'Mestre de cerimônias', 'Animação de festa', 'Recreação infantil', 'Personagens vivos', 'Mágico', 'Aluguel de brinquedos', 'Iluminação cênica', 'Efeitos especiais'],
-  'Decoração': ['Arranjos florais', 'Flores naturais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Painel instagramável', 'Mesa posta', 'Balões', 'Lembrancinhas', 'Papelaria', 'Clássica', 'Rústica', 'Boho', 'Minimalista', 'Moderna', 'Tropical', 'Romântica'],
-  'Assessoria e Cerimonialista': ['Assessoria completa', 'Assessoria do dia', 'Day coordinator', 'Cerimonial', 'Planejamento', 'Gestão de fornecedores', 'Roteiro do evento', 'Celebrante', 'Casamento civil', 'Destination wedding', 'Bilíngue'],
-  'Aluguel de Trajes': ['Vestido de noiva', 'Traje masculino', 'Trajes de madrinhas', 'Daminhas e pajens', 'Roupas para festa', 'Moda infantil', 'Sob medida', 'Ateliê', 'Acessórios'],
-  'Beleza e Estilo': ['Maquiagem', 'Penteado', 'Dia da noiva', 'Dia do noivo', 'Madrinhas', 'Camarim', 'Atendimento em domicílio'],
-  'Aluguel de Carros': ['Carro clássico', 'Carro antigo', 'Carro de luxo', 'Conversível', 'Limousine', 'Com motorista', 'Van para convidados']
+  'Buffet e Gastronomia': ['Buffet completo', 'Bolo', 'Doces finos', 'Salgados de festa', 'Finger food', 'Churrasco', 'Buffet infantil', 'Food truck'],
+  'Bar e Bebidas': ['Open bar', 'Drinks autorais', 'Bartender', 'Chopp', 'Vinhos', 'Drinks sem álcool', 'Bar móvel', 'Café e barista'],
+  'Espaços para Locação': ['Salão de festas', 'Sítio', 'Chácara', 'Fazenda', 'Hotel', 'Restaurante', 'Ao ar livre', 'Com piscina'],
+  'Staff e Mão de Obra': ['Garçons', 'Bartenders', 'Recepcionistas', 'Seguranças', 'Copeiras', 'Limpeza', 'Manobristas'],
+  'Mídia e Audiovisual': ['Fotografia', 'Filmagem', 'Drone', 'Cabine de fotos', 'Ensaio pré-wedding', 'Álbum impresso', 'Transmissão ao vivo'],
+  'Música e Entretenimento': ['DJ', 'Banda ao vivo', 'Voz e violão', 'Quarteto de cordas', 'Cerimônia musical', 'Mestre de cerimônias', 'Recreação infantil'],
+  'Decoração': ['Arranjos florais', 'Iluminação', 'Mobiliário', 'Cenografia', 'Painel instagramável', 'Mesa posta', 'Balões', 'Lembrancinhas'],
+  'Assessoria e Cerimonialista': ['Assessoria completa', 'Assessoria do dia', 'Cerimonial', 'Planejamento', 'Celebrante', 'Destination wedding'],
+  'Aluguel de Trajes': ['Vestido de noiva', 'Traje masculino', 'Trajes de madrinhas', 'Daminhas e pajens', 'Roupas para festa', 'Sob medida'],
+  'Beleza e Estilo': ['Maquiagem', 'Penteado', 'Dia da noiva', 'Dia do noivo', 'Madrinhas', 'Atendimento em domicílio'],
+  'Aluguel de Carros': ['Carro clássico', 'Carro de luxo', 'Conversível', 'Limousine', 'Com motorista', 'Van para convidados']
 };

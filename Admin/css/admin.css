@@ -4785,3 +4785,6 @@ body.login-page .login-cartao h1 {
 /* Saudação e frase de apoio alinhadas à esquerda. */
 body.login-page .login-cartao h1,
 body.login-page .login-subtitulo { text-align: left; }
+/* De volta ao centro. */
+body.login-page .login-cartao h1,
+body.login-page .login-subtitulo { text-align: center; }

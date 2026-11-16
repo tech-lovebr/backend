@@ -399,8 +399,8 @@ const ContaDrawer = (() => {
       semTitulo: true,
       selo: badge(situacao.rotulo, situacao.classe),
       acoes: acoesDoCabecalho(c),
+      avatar: fotoDaConta(c),
       body: `
-        ${fotoDaConta(c)}
         <div class="lista-dados">
           ${identidadeDoFornecedor(c, linha) || linha('Nome', nomeComLink(c, c.nome || '—'))}
           ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}

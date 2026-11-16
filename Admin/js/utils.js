@@ -270,15 +270,16 @@ const Drawer = {
     return { host, esconder, auto: true };
   },
 
-  _abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back, selo, acoes }) {
+  _abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back, selo, acoes, avatar }) {
     const { host, esconder = [] } = emLinha;
     esconder.forEach(el => { if (el) el.hidden = true; });
     host.innerHTML = `
-      <section class="card painel-linha ${emLinha.auto ? 'painel-centro' : ''}">
+      <section class="card painel-linha ${emLinha.auto ? 'painel-centro' : ''} ${avatar ? 'com-avatar' : ''}">
         <header class="painel-linha-cabeca">
           <button type="button" class="header-bar-voltar painel-linha-voltar" title="Voltar" aria-label="Voltar">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6" /></svg>
           </button>
+          ${avatar || ''}
           <div class="painel-linha-titulos">
             <div class="drawer-nome"><h2 id="painel-linha-titulo">${escapeHtml(title || 'Detalhes')}</h2><span id="drawer-selo">${selo || ''}</span></div>
             ${subtitleHtml ? `<p>${subtitleHtml}</p>` : subtitle ? `<p>${escapeHtml(subtitle)}</p>` : ''}
@@ -322,9 +323,10 @@ const Drawer = {
   },
 
   /** `back`, quando informado, mostra a seta de voltar no cabeçalho. */
-  open({ title, subtitle, subtitleHtml, body, footer, back, selo, acoes, semTitulo = false, semLinha = false, emLinha = null, popup = false }) {
+  /** `avatar` (HTML): foto/ícone entre a seta e o título, sem a linha embaixo do cabeçalho. */
+  open({ title, subtitle, subtitleHtml, body, footer, back, selo, acoes, avatar, semTitulo = false, semLinha = false, emLinha = null, popup = false }) {
     if (!emLinha && !popup && !this._overlayAberto()) emLinha = this._alvoAutomatico();
-    if (emLinha) return this._abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back, selo, acoes });
+    if (emLinha) return this._abrirEmLinha({ emLinha, title, subtitle, subtitleHtml, body, footer, back, selo, acoes, avatar });
     this._build();
     document.getElementById('drawer-panel').classList.toggle('drawer-sem-titulo', semTitulo);
     // semLinha: cabeçalho só com o título, sem a linha embaixo.

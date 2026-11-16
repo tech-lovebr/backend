@@ -4819,3 +4819,8 @@ body[data-theme="dark"] .mini-perfil { background: #27272A; border-color: rgba(2
   min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .nome-clicavel:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Conta aberta: seta, foto e nome + situação na mesma linha, sem a linha embaixo. */
+.painel-linha.com-avatar .painel-linha-cabeca { border-bottom: 0; padding-bottom: .25rem; gap: .875rem; }
+.painel-linha-cabeca .conta-foto { width: 56px; height: 56px; margin: 0; }
+.painel-linha-cabeca .conta-foto svg { width: 26px; height: 26px; }

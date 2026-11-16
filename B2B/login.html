@@ -380,6 +380,23 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login #auth-view-nova .lg-titulo { font-family: "Outfit", "Helvetica Neue", Arial, sans-serif !important; font-weight: 200 !important; font-variation-settings: normal !important; letter-spacing: -.03em !important; line-height: 1.02 !important; color: #EAF1F8 !important; font-size: clamp(32px, 3.1vw, 44px) !important; text-align: center !important; }
 #view-login#view-login #auth-view-nova .lg-sub { color: #A3B5C8 !important; text-align: center !important; margin: 10px auto 0; }
 #view-login#view-login #nova-email[readonly] { opacity: .7; cursor: default; }
+/* Regras da senha (iguais ao cadastro da Love): 8+ caracteres, maiúscula,
+   minúscula e número. O quadro aparece enquanto a pessoa está no campo e
+   ainda falta cumprir alguma regra. Versão escura do Hub. */
+#view-login#view-login .lg-regras { display: none; margin-top: -4px; padding: 14px 16px; border: 1px solid rgba(234,241,248,.12); border-radius: 14px; background: rgba(234,241,248,.04); }
+#view-login#view-login .lg-regras.is-visible { display: block; }
+#view-login#view-login .lg-regras-trilho { height: 4px; border-radius: 999px; background: rgba(234,241,248,.12); overflow: hidden; margin-bottom: 8px; }
+#view-login#view-login .lg-regras-barra { height: 100%; width: 0; border-radius: 999px; background: rgba(234,241,248,.3); transition: width .2s ease, background-color .2s ease; }
+#view-login#view-login .lg-regras-barra.is-fraca { background: #E5735F; }
+#view-login#view-login .lg-regras-barra.is-media { background: #E0A13A; }
+#view-login#view-login .lg-regras-barra.is-forte { background: #4CB782; }
+#view-login#view-login .lg-regras-nivel { margin: 0 0 10px; font-size: 12px; font-weight: 500; color: #A3B5C8; }
+#view-login#view-login .lg-regras-nivel:empty { display: none; }
+#view-login#view-login .lg-regras-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+#view-login#view-login .lg-regras-lista li { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: rgba(163,181,200,.7); transition: color .15s ease; }
+#view-login#view-login .lg-regras-lista li.is-ok { color: #EAF1F8; }
+#view-login#view-login .lg-regras-check { font-size: 13px; line-height: 1; color: rgba(234,241,248,.3); transition: color .15s ease; }
+#view-login#view-login .lg-regras-lista li.is-ok .lg-regras-check { color: #4CB782; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -494,12 +511,22 @@ html, body { background: #0C1824 !important; }
                 <label for="nova-email" data-en="Email">E-mail</label>
               </div>
               <div class="lg-campo lg-campo-senha">
-                <input type="password" id="nova-senha" name="password" autocomplete="new-password" minlength="6" required placeholder=" ">
+                <input type="password" id="nova-senha" name="password" autocomplete="new-password" minlength="8" required placeholder=" ">
                 <label for="nova-senha" data-en="New password">Nova senha</label>
                 <button type="button" class="lg-olho lg-olho-nova" data-campo="nova-senha" aria-label="Mostrar senha" data-en-aria="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
+              <div class="lg-regras" id="nova-regras" data-campo-regras>
+                <div class="lg-regras-trilho"><div class="lg-regras-barra"></div></div>
+                <p class="lg-regras-nivel"></p>
+                <ul class="lg-regras-lista">
+                  <li data-regra="length"><span class="lg-regras-check">○</span> <span data-en="At least 8 characters">Pelo menos 8 caracteres</span></li>
+                  <li data-regra="upper"><span class="lg-regras-check">○</span> <span data-en="One uppercase letter">Uma letra maiúscula</span></li>
+                  <li data-regra="lower"><span class="lg-regras-check">○</span> <span data-en="One lowercase letter">Uma letra minúscula</span></li>
+                  <li data-regra="number"><span class="lg-regras-check">○</span> <span data-en="One number">Um número</span></li>
+                </ul>
+              </div>
               <div class="lg-campo lg-campo-senha">
-                <input type="password" id="nova-senha2" name="password-confirm" autocomplete="new-password" minlength="6" required placeholder=" ">
+                <input type="password" id="nova-senha2" name="password-confirm" autocomplete="new-password" minlength="8" required placeholder=" ">
                 <label for="nova-senha2" data-en="Confirm the new password">Confirme a nova senha</label>
                 <button type="button" class="lg-olho lg-olho-nova" data-campo="nova-senha2" aria-label="Mostrar senha" data-en-aria="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
               </div>
@@ -740,6 +767,41 @@ html, body { background: #0C1824 !important; }
     })();
   </script>
   <script>
+    /* Regras da senha (iguais ao cadastro da Love): pelo menos 8 caracteres,
+       uma maiúscula, uma minúscula e um número. */
+    var MENSAGEM_REGRAS_SENHA_HUB = 'A senha precisa ter pelo menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número.';
+    var MENSAGEM_REGRAS_SENHA_HUB_EN = 'The password must have at least 8 characters, one uppercase letter, one lowercase letter and one number.';
+    function regrasDaSenhaHub(v) {
+      v = String(v || '');
+      return { length: v.length >= 8, upper: /[A-Z]/.test(v), lower: /[a-z]/.test(v), number: /[0-9]/.test(v) };
+    }
+    function senhaCumpreRegrasHub(v) {
+      var r = regrasDaSenhaHub(v);
+      return r.length && r.upper && r.lower && r.number;
+    }
+    function ligarRegrasDaSenha(campoId, painelId) {
+      var campo = document.getElementById(campoId), painel = document.getElementById(painelId);
+      if (!campo || !painel) return;
+      var barra = painel.querySelector('.lg-regras-barra'), nivel = painel.querySelector('.lg-regras-nivel');
+      var en = document.documentElement.classList.contains('hub-en');
+      function atualizar() {
+        var r = regrasDaSenhaHub(campo.value);
+        var ok = Object.keys(r).filter(function (k) { return r[k]; }).length;
+        painel.querySelectorAll('[data-regra]').forEach(function (li) { li.classList.toggle('is-ok', !!r[li.dataset.regra]); });
+        barra.classList.remove('is-fraca', 'is-media', 'is-forte');
+        if (!campo.value) { barra.style.width = '0%'; nivel.textContent = ''; }
+        else if (ok <= 1) { barra.style.width = '25%'; barra.classList.add('is-fraca'); nivel.textContent = en ? 'Weak password' : 'Senha fraca'; }
+        else if (ok <= 3) { barra.style.width = '65%'; barra.classList.add('is-media'); nivel.textContent = en ? 'Medium password' : 'Senha média'; }
+        else { barra.style.width = '100%'; barra.classList.add('is-forte'); nivel.textContent = en ? 'Strong password' : 'Senha forte'; }
+        painel.classList.toggle('is-visible', document.activeElement === campo && ok < 4);
+      }
+      campo.addEventListener('input', atualizar);
+      campo.addEventListener('focus', atualizar);
+      campo.addEventListener('blur', function () { painel.classList.remove('is-visible'); });
+      atualizar();
+    }
+  </script>
+  <script>
     /* Crie uma nova senha (login?nova-senha=1, aberto pelo link do e-mail): troca
        o conteúdo da caixa; salvou, sai da sessão de recuperação e volta para o
        Acesse sua conta com o e-mail preenchido (o navegador oferece salvar). */
@@ -760,6 +822,7 @@ html, body { background: #0C1824 !important; }
       login.hidden = true; esqueci.hidden = true; painel.hidden = false;
       form.hidden = true;
 
+      ligarRegrasDaSenha('nova-senha', 'nova-regras');
       painel.querySelectorAll('.lg-olho-nova').forEach(function (b) {
         b.addEventListener('click', function () {
           var c = document.getElementById(b.dataset.campo);
@@ -803,8 +866,8 @@ html, body { background: #0C1824 !important; }
         ev.preventDefault();
         erro.classList.add('hidden');
         var s = senha.value;
-        if (s.length < 6) {
-          erro.textContent = en ? 'The password must have at least 6 characters.' : 'A senha precisa ter pelo menos 6 caracteres.';
+        if (!senhaCumpreRegrasHub(s)) {
+          erro.textContent = en ? MENSAGEM_REGRAS_SENHA_HUB_EN : MENSAGEM_REGRAS_SENHA_HUB;
           erro.classList.remove('hidden'); senha.focus(); return;
         }
         if (s !== senha2.value) {

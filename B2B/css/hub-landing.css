@@ -312,3 +312,5 @@ footer{padding-block:64px 36px}
 .all.all-carrossel > a:hover .ic{transform:none}
 .all-luz{position:absolute;left:0;top:0;z-index:0;border-radius:14px;pointer-events:none;background:radial-gradient(55% 70% at 82% 8%,#2E5F8C 0%,transparent 64%),radial-gradient(60% 80% at 8% 92%,#1C4263 0%,transparent 70%),radial-gradient(38% 48% at 55% 58%,rgba(242,211,198,.16) 0%,transparent 70%),#0F2132;border:1px solid rgba(169,198,234,.25);box-shadow:0 10px 30px rgba(0,0,0,.25);transition:left .8s var(--ease),top .8s var(--ease),width .8s var(--ease),height .8s var(--ease)}
 @media (prefers-reduced-motion:reduce){.all-luz{transition:none}}
+/* Botões das seções (Quero receber pedidos, Enviar minha proposta, Criar meu primeiro link): mesmo formato do Cadastre-se grátis. */
+.txt > .btn{width:fit-content;justify-self:start}

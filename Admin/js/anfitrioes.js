@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 7);
+  renderLoading(tbody, 6);
 
   const [clientes, eventos, convidados, presentes, carteira, conversas, contas] = await Promise.all([
     safeSelect('clientes', '*'),
@@ -262,7 +262,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 7, 'Nenhum anfitrião encontrado',
+    renderEmpty(tbody, 6, 'Nenhum anfitrião encontrado',
       CLIENTES.length ? 'Ajuste a busca ou o período acima.' : 'Nenhuma conta de anfitrião foi criada ainda.');
     return;
   }
@@ -277,11 +277,10 @@ function render() {
                  aria-label="Selecionar ${escapeHtml(c.couple_name || c.email || '')}">
         </td>
         <td class="col-numero cell-muted">${escapeHtml(numeroDoCadastro(c.id))}</td>
-        <td class="cell-strong"><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(c.id) || c.avatar_url)}<span>${dash(c.couple_name)}</span></span></td>
+        <td class="cell-strong"><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(c.id) || c.avatar_url)}<button type="button" class="nome-clicavel" data-ver="${escapeHtml(c.id)}" title="Ver cadastro">${dash(c.couple_name)}</button></span></td>
         <td class="cell-muted">${celulaEmail(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>
         <td class="cell-muted">${escapeHtml(ultimoAcessoDe(c.id))}</td>
-        <td class="col-acoes">${botaoVerMais(c.id)}</td>
       </tr>`;
   }).join('');
 
@@ -297,7 +296,7 @@ function render() {
   });
 
   // A linha não abre o cadastro: dá para selecionar e copiar o texto. Quem
-  // abre é o + no fim da linha, na mesma caixa.
+  // abre é o nome da conta, na mesma caixa.
   ligarAcoesDaLinha(tbody, abrirDetalhe);
 
   renderBarraDeSelecao();

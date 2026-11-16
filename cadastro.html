@@ -599,13 +599,16 @@
     const avisoSenhas = document.getElementById('onboard-senhas-diferentes');
     // "As senhas não coincidem." embaixo do Confirmar senha: aparece quando o
     // que foi digitado já não bate com a senha (ou ficou do mesmo tamanho e é
-    // diferente); some assim que as duas ficam iguais.
+    // diferente). Ao avisar, o Confirmar senha é apagado para a pessoa digitar
+    // de novo; o aviso fica até ela voltar a digitar certo.
     function conferirSenhas(final) {
       const confirmacao = confirmarInput.value;
       const senha = passwordInput.value;
-      const diferente = !!confirmacao && confirmacao !== senha &&
+      if (!confirmacao) { if (!senha) avisoSenhas.hidden = true; return false; }
+      const diferente = confirmacao !== senha &&
         (final || confirmacao.length >= senha.length || !senha.startsWith(confirmacao));
       avisoSenhas.hidden = !diferente;
+      if (diferente) confirmarInput.value = '';
       return !diferente;
     }
     passwordInput.addEventListener('input', () => {
@@ -624,6 +627,7 @@
       mostrarErro('cd-erro-acesso', '');
       if (confirmarInput.value !== passwordInput.value) {
         avisoSenhas.hidden = false;
+        confirmarInput.value = '';
         confirmarInput.focus();
         return;
       }

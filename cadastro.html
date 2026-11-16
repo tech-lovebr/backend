@@ -560,8 +560,16 @@
       }
     }
 
-    passwordInput.addEventListener('input', updatePasswordStrength);
-    passwordInput.addEventListener('focus', () => passwordPanel.classList.add('is-visible'));
+    // As regras da senha só aparecem enquanto a pessoa está no campo e ainda
+    // falta cumprir alguma; com todas cumpridas (ou ao clicar no olhinho, ou
+    // indo para o Confirmar senha) o quadro some.
+    function mostrarRegrasSeFaltar() {
+      const regras = evaluatePasswordRules(passwordInput.value);
+      const faltaAlguma = Object.values(regras).some(ok => !ok);
+      passwordPanel.classList.toggle('is-visible', document.activeElement === passwordInput && faltaAlguma);
+    }
+    passwordInput.addEventListener('input', () => { updatePasswordStrength(); mostrarRegrasSeFaltar(); });
+    passwordInput.addEventListener('focus', mostrarRegrasSeFaltar);
     passwordInput.addEventListener('blur', () => passwordPanel.classList.remove('is-visible'));
     updatePasswordStrength();
 

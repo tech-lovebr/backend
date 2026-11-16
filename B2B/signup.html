@@ -87,7 +87,6 @@ html, body { margin: 0; padding: 0; background: #F7F8FA; }
 #view-login#view-login .lg-sobre { font-size: 12px !important; font-weight: 500 !important; letter-spacing: .22em !important; text-transform: uppercase; color: var(--lg-suave) !important; }
 #view-login#view-login .lg-titulo { font-family: var(--lg-serif) !important; font-weight: 300 !important; font-variation-settings: "SOFT" 50, "WONK" 0; letter-spacing: -.02em !important; font-size: clamp(32px, 3.1vw, 44px) !important; line-height: 1.04 !important; color: var(--lg-azul) !important; text-wrap: balance; }
 #view-login#view-login .lg-sub { color: var(--lg-mudo) !important; font-size: 15.5px !important; line-height: 1.5 !important; max-width: 38ch; text-wrap: pretty; }
-#view-login#view-login .lg-titulo i { font-style: italic; }
 /* Hub: cada frase do título numa linha só ("Mais eventos na agenda." / "Mais dinheiro na conta."),
    com a fonte das duas diminuindo junto conforme a largura do formulário (400px no computador). */
 #view-login#view-login #auth-view-login { container-type: inline-size; }
@@ -236,7 +235,6 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login .lg-pontos i { background: rgba(234,241,248,.3); }
 #view-login#view-login .lg-pontos i.is-ativo { background: #EAF1F8; }
 #view-login#view-login .lg-titulo { color: #EAF1F8 !important; }
-#view-login#view-login .lg-titulo i { color: #A9C6EA !important; }
 #view-login#view-login .lg-campo input { background: rgba(255,255,255,.04) !important; border-color: rgba(234,241,248,.12) !important; color: #EAF1F8 !important; }
 #view-login#view-login .lg-campo input:focus { background: rgba(255,255,255,.06) !important; border-color: rgba(169,198,234,.6) !important; box-shadow: none !important; }
 #view-login#view-login .lg-campo input:is(:-webkit-autofill, :autofill) { -webkit-box-shadow: 0 0 0 1000px #15283A inset !important; box-shadow: 0 0 0 1000px #15283A inset !important; -webkit-text-fill-color: #EAF1F8 !important; caret-color: #EAF1F8; }
@@ -312,6 +310,10 @@ html, body { background: #0C1824 !important; }
    descendo, vidro rgba(12,24,36,.8) com desfoque e a linha fina embaixo. */
 #view-login#view-login .lg-cabecalho { position: sticky !important; top: 0; z-index: 40; transition: background .5s, box-shadow .5s; }
 #view-login#view-login .lg-cabecalho.on { background: rgba(12,24,36,.8) !important; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 1px 0 rgba(234,241,248,.1) !important; }
+/* Título: a segunda linha na mesma letra e cor da primeira, sem itálico;
+   título e texto de apoio centralizados (igual ao login dos anfitriões, 2314eba2). */
+#view-login#view-login .lg-titulo i { font-style: normal !important; font-weight: inherit !important; font-family: inherit !important; color: inherit !important; }
+#view-login#view-login .lg-cabeca :is(.lg-titulo, .lg-sub) { text-align: center !important; margin-left: auto; margin-right: auto; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>

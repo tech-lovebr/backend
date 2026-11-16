@@ -332,6 +332,10 @@ html, body { background: #0C1824 !important; }
   /* Voltar só com a seta (sem o texto). */
 #view-login#view-login .lg-voltar :is(.lg-voltar-longo, .lg-voltar-curto) { display: none !important; }
 #view-login#view-login .lg-voltar svg { width: 20px; height: 20px; }
+/* Login (computador e celular): sem o desenho em relevo atrás do formulário;
+   a caixa fica com o fundo normal (escuro do Hub), sem transparência. */
+#view-login#view-login .lg-relevo { display: none !important; }
+#view-login#view-login .lg-cartao { background: #10202F !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>

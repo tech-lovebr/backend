@@ -285,7 +285,6 @@ html, body { background: #0C1824 !important; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-login#view-login .lg-cabeca .lg-sobre { display: none !important; }
   #view-login#view-login .lg-novo { text-align: center; }
-  #view-login#view-login .lg-cartao { background: rgba(16, 32, 47, .78) !important; -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); }
   #view-login#view-login .lg-pagina { align-items: center !important; align-content: center; padding-top: 74px !important; padding-bottom: 16px !important; min-height: calc(100vh - 72px); min-height: calc(100dvh - 72px); }
 }
 /* Título: a segunda linha na mesma letra e cor da primeira, sem itálico;
@@ -310,6 +309,10 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login .lg-voltar svg { width: 20px; height: 20px; }
 /* Login: sem as bolinhas do carrossel de fotos (a foto continua trocando sozinha). */
 #view-login#view-login .lg-pontos { display: none !important; }
+/* Login (computador e celular): sem o desenho em relevo atrás do formulário;
+   a caixa fica com o fundo normal (escuro do Hub), sem transparência. */
+#view-login#view-login .lg-relevo { display: none !important; }
+#view-login#view-login .lg-cartao { background: #10202F !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>

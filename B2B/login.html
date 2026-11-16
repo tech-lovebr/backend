@@ -353,6 +353,12 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login .lg-aviso a:hover { color: #EAF1F8 !important; }
 /* Acesse sua conta no mesmo tamanho do Crie sua conta do cadastro (32–44px), também no celular. */
 #view-login#view-login #auth-view-login .lg-titulo { font-size: clamp(32px, 3.1vw, 44px) !important; }
+#view-login#view-login [hidden] { display: none !important; }
+/* Esqueci minha senha: mesmo formato do Acesse sua conta. */
+#view-login#view-login #auth-view-esqueci .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
+#view-login#view-login #auth-view-esqueci .lg-titulo { font-family: "Outfit", "Helvetica Neue", Arial, sans-serif !important; font-weight: 200 !important; font-variation-settings: normal !important; letter-spacing: -.03em !important; line-height: 1.02 !important; color: #EAF1F8 !important; font-size: clamp(32px, 3.1vw, 44px) !important; text-align: center !important; }
+#view-login#view-login #auth-view-esqueci .lg-sub { color: #A3B5C8 !important; text-align: center !important; margin: 10px auto 0; }
+#view-login#view-login .lg-esqueci-ok { margin: 0; font-size: 14px; line-height: 1.55; color: #A3B5C8; text-align: center; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -434,6 +440,24 @@ html, body { background: #0C1824 !important; }
 
             <p class="lg-novo"><span data-en="Don't have an account yet?">Ainda não tem uma conta?</span> <a href="signup" id="go-to-signup" class="lg-link lg-link-forte" data-en="Sign up">Cadastre-se</a></p>
 
+          </div>
+
+          <!-- Esqueci minha senha: mesma caixa do login, só muda o conteúdo. -->
+          <div id="auth-view-esqueci" class="lg-painel" hidden>
+            <div class="lg-cabeca">
+              <h1 class="lg-titulo" data-en="Forgot my password">Esqueci minha senha</h1>
+              <p class="lg-sub" data-en="Enter your email and we'll send you a link to create a new password.">Informe seu e-mail e enviaremos um link para você criar uma nova senha.</p>
+            </div>
+            <form id="esqueci-form" class="lg-form" novalidate>
+              <div class="lg-campo">
+                <input type="email" id="esqueci-email" name="email" autocomplete="username email" required placeholder=" ">
+                <label for="esqueci-email" data-en="Email">E-mail</label>
+              </div>
+              <p id="esqueci-erro" class="lg-erro text-red-600 hidden"></p>
+              <button type="submit" id="esqueci-btn" class="lg-btn lg-btn-escuro"><span data-en="Send link">Enviar link</span><i aria-hidden="true"></i></button>
+            </form>
+            <p id="esqueci-ok" class="lg-esqueci-ok" hidden data-en="If this email is registered, you'll receive a recovery link in a moment.">Se esse e-mail estiver cadastrado, você vai receber um link de recuperação em instantes.</p>
+            <p class="lg-novo"><span data-en="Remembered your password?">Lembrou a senha?</span> <a href="login" id="esqueci-voltar" class="lg-link lg-link-forte" data-en="Log in">Entrar</a></p>
           </div>
         </div>
       </section>
@@ -599,6 +623,54 @@ html, body { background: #0C1824 !important; }
         btn.textContent = T(error ? 'Aguarde um minuto e tente de novo' : 'E-mail reenviado');
       });
     }
+  </script>
+  <script>
+    /* Esqueci minha senha: troca o conteúdo da caixa do login (login?esqueci=1). */
+    (function () {
+      var login = document.getElementById('auth-view-login');
+      var esqueci = document.getElementById('auth-view-esqueci');
+      if (!login || !esqueci) return;
+      function mostrar(modo, foco) {
+        var e = modo === 'esqueci';
+        login.hidden = e; esqueci.hidden = !e;
+        history.replaceState(null, '', location.pathname + (e ? '?esqueci=1' : ''));
+        if (e) {
+          var em = document.getElementById('login-email').value.trim();
+          var campo = document.getElementById('esqueci-email');
+          if (em && !campo.value) campo.value = em;
+          document.getElementById('esqueci-form').hidden = false;
+          document.getElementById('esqueci-ok').hidden = true;
+          if (foco) campo.focus();
+        } else if (foco) document.getElementById('login-email').focus();
+      }
+      document.querySelectorAll('.auth-esqueceu-senha').forEach(function (a) {
+        a.addEventListener('click', function (ev) { ev.preventDefault(); mostrar('esqueci', true); });
+      });
+      document.getElementById('esqueci-voltar').addEventListener('click', function (ev) { ev.preventDefault(); mostrar('login', true); });
+      if (new URLSearchParams(location.search).get('esqueci') === '1') mostrar('esqueci', false);
+
+      document.getElementById('esqueci-form').addEventListener('submit', async function (ev) {
+        ev.preventDefault();
+        var campo = document.getElementById('esqueci-email');
+        var erro = document.getElementById('esqueci-erro');
+        var btn = document.getElementById('esqueci-btn');
+        var email = campo.value.trim();
+        erro.classList.add('hidden');
+        if (!/^\S+@\S+\.\S+$/.test(email)) {
+          erro.textContent = document.documentElement.classList.contains('hub-en') ? 'Enter a valid email.' : 'Digite um e-mail válido.';
+          erro.classList.remove('hidden');
+          campo.focus();
+          return;
+        }
+        btn.disabled = true;
+        try {
+          await fetch('/api/esqueci-senha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) });
+        } catch (e) { /* mesma mensagem genérica: não confirma se o e-mail existe */ }
+        btn.disabled = false;
+        document.getElementById('esqueci-form').hidden = true;
+        document.getElementById('esqueci-ok').hidden = false;
+      });
+    })();
   </script>
   <script>(function(){var h=document.querySelector('.lg-cabecalho');if(!h)return;var on=function(){h.classList.toggle('on',window.scrollY>40)};on();window.addEventListener('scroll',on,{passive:true});})();</script>
 </body>

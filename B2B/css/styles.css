@@ -13692,6 +13692,10 @@ html body.produto-modo-criar #product-drawer .product-wizard-footer:not(#love-h-
 html body.produto-modo-criar #produto-etapa-intro:not(#love-h-a):not(#love-h-b) { grid-column: auto; grid-row: auto; margin: 0 0 0.5rem; padding: 0; background: none; border: 0; }
 html body.produto-modo-criar #produto-etapa-intro #produto-etapa-titulo:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 1.5rem; line-height: 1.25; }
 html body.produto-modo-criar #produto-etapa-intro .produto-etapa-sub:not(#love-h-a):not(#love-h-b) { margin-top: 0.5rem; }
+/* Cancelar/Voltar e Continuar também dentro da caixa, embaixo dos campos
+   (a caixa e o rodapé viram um bloco só), em todas as etapas. */
+html body.produto-modo-criar #product-drawer .form-drawer-body:not(#love-h-a):not(#love-h-b) { border-bottom: 0; border-radius: 10px 10px 0 0; }
+html body.produto-modo-criar #product-drawer .product-wizard-footer:not(#love-h-a):not(#love-h-b) { background: #FFFFFF; border: 1px solid var(--borda-suave); border-top: 0; border-radius: 0 0 10px 10px; padding: 0.5rem 1.5rem 1.5rem; }
 @media (max-width: 900px) {
   html body.produto-modo-criar #product-drawer.show:not(#love-h-a):not(#love-h-b) { align-items: stretch; }
   html body.produto-modo-criar #produto-etapa-intro #produto-etapa-titulo:not(#love-h-a):not(#love-h-b) { font-size: 1.25rem; }

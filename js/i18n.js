@@ -101,7 +101,7 @@
       proximo: { pt: 'Próximo', en: 'Next' },
       jaTemContaEntre: { pt: 'Já tem uma conta? <a href="/login" class="text-[#537bae] font-bold hover:underline">Entre por aqui</a>', en: 'Already have an account? <a href="/login" class="text-[#537bae] font-bold hover:underline">Log in here</a>' },
       voltar: { pt: 'Voltar', en: 'Back' },
-      tituloDadosPessoais: { pt: 'Conte um pouco<br><i>sobre você.</i>', en: 'Tell us a bit<br><i>about yourself.</i>' },
+      tituloDadosPessoais: { pt: 'Conte um pouco <br><i>sobre você.</i>', en: 'Tell us a bit <br><i>about yourself.</i>' },
       subTituloDadosPessoais: { pt: 'Isso nos ajuda a personalizar sua experiência.', en: 'This helps us personalize your experience.' },
       nome: { pt: 'Nome', en: 'First name' },
       nomePlaceholder: { pt: 'Seu nome', en: 'Your first name' },

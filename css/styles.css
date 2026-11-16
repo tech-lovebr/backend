@@ -8044,17 +8044,12 @@ html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .builder
 .std-celular-status-icones { display: flex; align-items: center; gap: 5px; }
 .std-celular-status svg { height: 11px; width: auto; }
 .std-celular-topo { display: flex; align-items: center; gap: 8px; padding: 8px 14px 10px; background: #F6F6F6; border-bottom: 1px solid #DADADA; color: #1A6FCB; }
-.std-celular-voltar svg { width: 22px; height: 22px; display: block; }
 .std-celular-avatar { width: 32px; height: 32px; border-radius: 50%; background: #DFE5E7; color: #FFFFFF; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
 .std-celular-avatar svg { width: 28px; height: 28px; }
 .std-celular-nome { flex: 1; font-size: 15px; font-weight: 600; color: #111B21; }
 .std-celular-acoes { display: flex; gap: 18px; }
 .std-celular-acoes svg { width: 24px; height: 24px; display: block; }
 .std-celular-conversa { flex: 1; padding: 14px 10px; background: #EFEAE2 url('../assets/whatsapp-fundo.webp') center top / 380px auto repeat; }
-.std-celular-rodape { display: flex; align-items: center; gap: 10px; padding: 8px 12px 14px; background: #F6F6F6; border-top: 1px solid #DADADA; color: #1A6FCB; }
-.std-celular-rodape > svg, .std-celular-mais svg { width: 24px; height: 24px; display: block; flex-shrink: 0; }
-.std-celular-campo { flex: 1; height: 32px; border: 1px solid #D1D7DB; border-radius: 18px; background: #FFFFFF; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; }
-.std-celular-campo svg { width: 20px; height: 20px; }
 /* Save the Date (ajuste): a área toda é o celular — sem margem em volta,
    sem cantos arredondados, barras de cima e de baixo de ponta a ponta (como
    o rodapé "Feito com Love") e a conversa com fundo branco. */
@@ -16181,3 +16176,37 @@ html body #b2b-chat-send-btn.chat-enviar-icone:not(#love-h-a):not(#love-h-b):not
 }
 html body #b2b-chat-send-btn.chat-enviar-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background-color: #456A99 !important; }
 html body #b2b-chat-send-btn.chat-enviar-icone svg:not(#love-h-a) { width: 20px; height: 20px; margin-left: -2px; }
+
+
+/* ==========================================================================
+   Celular: menu (hambúrguer) com o "Início" na altura do X de fechar; o X
+   desce um pouquinho. Save the Date: sem o título repetido na gaveta.
+   Co-anfitriões: busca e lista iguais às de Meus convidados. Desktop não muda.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .menu-celular .menu-celular-topo:not(#love-h-a) { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 6px); right: 8px; z-index: 1; height: 44px; padding: 0; }
+  html body .menu-celular .menu-celular-nav:not(#love-h-a) { padding-top: calc(env(safe-area-inset-top, 0px) + 4px); }
+  html body .menu-celular .menu-celular-nav > :first-child:not(#love-h-a) { width: calc(100% - 44px); }
+
+  html body .builder-gaveta .std-editar-texto-rotulo:not(#love-h-a) { display: none !important; }
+  html body #site-builder-root[data-pagina="savethedate"] #builder-canvas .std-celular:not(#love-h-a) { cursor: pointer; }
+
+  html body #view-event-os-dashboard #organizadores-caixa .love-tabela-barra:not(#love-h-a):not(#love-h-b) { padding: 0 16px 16px !important; border-bottom: 1px solid #E4E4E7 !important; }
+  html body #view-event-os-dashboard #organizadores-caixa .love-tabela-busca > svg:not(#love-h-a) { left: 12px !important; width: 14px !important; height: 14px !important; }
+  html body #view-event-os-dashboard #organizadores-caixa .love-tabela-busca input:not(#love-h-a):not(#love-h-b) { height: 40px !important; padding: 0 12px 0 44px !important; font-size: 16px !important; border-radius: 8px !important; }
+  html body #organizadores-tabela tbody tr:not(.org-editar-linha):not(#love-h-a):not(#love-h-b) { box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.06); }
+  html body #view-event-os-dashboard #organizadores-tabela tbody tr:not(.org-editar-linha) > td:not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding: 0 !important; }
+  html body #organizadores-tabela .org-nome-celula:not(#love-h-a):not(#love-h-b) { gap: 18px; }
+  html body #organizadores-tabela .org-avatar-celular:not(#love-h-a):not(#love-h-b) {
+    width: 38px; height: 38px; margin: 0 0 0 4px; background: #FFFFFF; border: 1px solid #E4E4E7; color: #183b54; font-family: inherit; font-size: 13px; font-weight: 400;
+  }
+  html body #organizadores-caixa .tabela-com-linhas-vazias:not(#love-h-a):not(#love-h-b) {
+    min-height: calc(100dvh - 300px);
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--altura-da-linha, 60px) - 1px), rgba(0, 0, 0, 0.06) calc(var(--altura-da-linha, 60px) - 1px), rgba(0, 0, 0, 0.06) var(--altura-da-linha, 60px)) !important;
+    background-position: 0 var(--fim-das-linhas, 0px) !important; background-size: 100% calc(100% - var(--fim-das-linhas, 0px)) !important; background-repeat: no-repeat !important;
+  }
+  body[data-theme="dark"] #organizadores-caixa .tabela-com-linhas-vazias { background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--altura-da-linha, 60px) - 1px), rgba(255, 255, 255, 0.06) calc(var(--altura-da-linha, 60px) - 1px), rgba(255, 255, 255, 0.06) var(--altura-da-linha, 60px)) !important; }
+  body[data-theme="dark"] #organizadores-tabela tbody tr:not(.org-editar-linha) { box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.06) !important; }
+  body[data-theme="dark"] #organizadores-tabela .org-avatar-celular { background: #1F1F1F !important; border-color: #404040 !important; color: #EBF4FF !important; }
+  body[data-theme="dark"] #view-event-os-dashboard #organizadores-caixa .love-tabela-barra { border-bottom-color: #404040 !important; }
+}

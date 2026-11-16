@@ -1492,7 +1492,7 @@ function renderLeftPanel() {
   const corpo = document.getElementById('builder-panel-tab-body');
   if (ehSaveTheDate) {
     renderEditorDeTextoSaveTheDate(corpo);
-    if (corpo) corpo.insertAdjacentHTML('afterbegin', '<div class="builder-el-group-title std-editar-texto-rotulo">Editar texto</div>');
+    if (corpo) corpo.insertAdjacentHTML('afterbegin', '<div class="builder-el-group-title std-editar-texto-rotulo" data-cel-titulo="Editar texto">Editar texto</div>');
   } else {
     renderElementosTab(corpo);
   }
@@ -2775,14 +2775,9 @@ const STD_CELULAR = {
   sinal: '<svg viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>',
   wifi: '<svg viewBox="0 0 16 12" fill="currentColor"><path d="M8 2.2c2.4 0 4.6.9 6.2 2.5l1.3-1.3A10.5 10.5 0 0 0 8 .3 10.5 10.5 0 0 0 .5 3.4l1.3 1.3A8.7 8.7 0 0 1 8 2.2Zm0 3.7c1.4 0 2.7.5 3.6 1.4l1.3-1.3A7 7 0 0 0 8 4 7 7 0 0 0 3.1 6l1.3 1.3A5.2 5.2 0 0 1 8 5.9Zm0 3.6c.4 0 .8.2 1.1.5L8 11.2 6.9 10c.3-.3.7-.5 1.1-.5Z"/></svg>',
   bateria: '<svg viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="22" height="11" rx="3" stroke="currentColor" opacity=".45"/><rect x="2" y="2" width="15" height="8" rx="1.5" fill="currentColor"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="currentColor" opacity=".45"/></svg>',
-  voltar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>',
   pessoa: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="9" r="4"/><path d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/></svg>',
   video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="6" width="13" height="12" rx="2.5"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/></svg>',
-  telefone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 3.5h3.5l1.5 4.5-2.2 1.4a11 11 0 0 0 6.8 6.8l1.4-2.2 4.5 1.5V19a1.5 1.5 0 0 1-1.6 1.5C10.6 20 4 13.4 3.5 5.1A1.5 1.5 0 0 1 5 3.5Z"/></svg>',
-  mais: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>',
-  figurinha: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 20H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v6l-6 6Z"/><path d="M14 20v-3a3 3 0 0 1 3-3h3"/></svg>',
-  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
-  microfone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>'
+  telefone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 3.5h3.5l1.5 4.5-2.2 1.4a11 11 0 0 0 6.8 6.8l1.4-2.2 4.5 1.5V19a1.5 1.5 0 0 1-1.6 1.5C10.6 20 4 13.4 3.5 5.1A1.5 1.5 0 0 1 5 3.5Z"/></svg>'
 };
 
 function renderElementBlockHtml(el, mode, device) {
@@ -2792,27 +2787,21 @@ function renderElementBlockHtml(el, mode, device) {
 
   // Save the Date: a mensagem é um bloco só, editado no painel "Editar texto".
   if (mode !== 'preview' && currentPageKey === 'savethedate') {
-    // Aparece como uma conversa no celular: barra do WhatsApp em cima, o
-    // papel de parede no meio com a mensagem num balão verde de "enviada",
-    // e a barra de digitar embaixo.
+    // Aparece como uma conversa no celular: barra do WhatsApp em cima e o
+    // papel de parede com a mensagem num balão verde de "enviada". Sem a
+    // seta de voltar e sem a barra de digitar (nada ali é clicável).
     const agora = new Date();
     const hora = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
     return `
       <div class="builder-element std-celular" aria-label="Prévia no WhatsApp">
         <div class="std-celular-status"><span>${hora}</span><span class="std-celular-status-icones">${STD_CELULAR.sinal}${STD_CELULAR.wifi}${STD_CELULAR.bateria}</span></div>
         <div class="std-celular-topo">
-          <span class="std-celular-voltar">${STD_CELULAR.voltar}</span>
           <span class="std-celular-avatar">${STD_CELULAR.pessoa}</span>
           <span class="std-celular-nome">Convidado</span>
           <span class="std-celular-acoes">${STD_CELULAR.video}${STD_CELULAR.telefone}</span>
         </div>
         <div class="std-celular-conversa">
           <div class="std-mensagem-bloco"><div class="std-bolha">${renderElementContent(el, device, 'preview')}<span class="std-bolha-hora">${hora} <span class="std-bolha-lido">✓✓</span></span></div></div>
-        </div>
-        <div class="std-celular-rodape">
-          <span class="std-celular-mais">${STD_CELULAR.mais}</span>
-          <span class="std-celular-campo">${STD_CELULAR.figurinha}</span>
-          ${STD_CELULAR.camera}${STD_CELULAR.microfone}
         </div>
       </div>`;
   }
@@ -5987,6 +5976,14 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
       selectElement(selecionar.id, selecionar.kind);
       requestAnimationFrame(() => document.querySelector(`[data-element-id="${novo.id}"], [data-section-id="${novo.id}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
     });
+
+    // Save the Date: tocar na mensagem abre a gaveta com o "Editar texto".
+    raiz.addEventListener('click', (e) => {
+      if (!noCelular.matches || currentPageKey !== 'savethedate') return;
+      if (!/** @type {HTMLElement} */ (e.target).closest('.std-celular')) return;
+      abrir();
+      setTimeout(() => /** @type {HTMLElement|null} */ (document.getElementById('std-editor-texto'))?.focus({ preventScroll: true }), 320);
+    }, true);
 
     // Painel mudou (elemento escolhido na prévia ou voltou para a lista):
     // título da gaveta e, ao escolher um elemento, a gaveta abre sozinha.

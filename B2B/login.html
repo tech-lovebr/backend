@@ -375,6 +375,11 @@ html, body { background: #0C1824 !important; }
 @media (min-width: 769px) { #view-login#view-login #auth-view-esqueci .lg-titulo { white-space: nowrap; } #view-login#view-login #auth-view-esqueci.is-enviado .lg-titulo { font-size: clamp(32px, 2.8vw, 40px) !important; } }
 @media (max-width: 768px) { #view-login#view-login #auth-view-esqueci .lg-cabeca { padding-top: 40px; } }
 #view-login#view-login .lg-esqueci-login { margin-top: 24px; width: 100%; }
+/* Crie uma nova senha: mesmo formato do Acesse sua conta. */
+#view-login#view-login #auth-view-nova .lg-cabeca { margin-bottom: clamp(18px, 3vh, 28px); }
+#view-login#view-login #auth-view-nova .lg-titulo { font-family: "Outfit", "Helvetica Neue", Arial, sans-serif !important; font-weight: 200 !important; font-variation-settings: normal !important; letter-spacing: -.03em !important; line-height: 1.02 !important; color: #EAF1F8 !important; font-size: clamp(32px, 3.1vw, 44px) !important; text-align: center !important; }
+#view-login#view-login #auth-view-nova .lg-sub { color: #A3B5C8 !important; text-align: center !important; margin: 10px auto 0; }
+#view-login#view-login #nova-email[readonly] { opacity: .7; cursor: default; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -475,6 +480,36 @@ html, body { background: #0C1824 !important; }
             </form>
             <p id="esqueci-ok" class="lg-esqueci-ok" hidden data-en="If this email is correct, you'll receive a link to set a new password.">Se este e-mail estiver correto, você receberá um link para configurar uma nova senha.</p>
             <button type="button" id="esqueci-ir-login" class="lg-btn lg-btn-escuro lg-esqueci-login" hidden><i class="lg-seta-volta" aria-hidden="true"></i><span data-en="Back to login">Voltar para o login</span></button>
+          </div>
+
+          <!-- Crie uma nova senha (link do e-mail): mesma caixa do login, só muda o conteúdo. -->
+          <div id="auth-view-nova" class="lg-painel" hidden>
+            <div class="lg-cabeca">
+              <h1 class="lg-titulo" data-en="Create a new password">Crie uma nova senha</h1>
+              <p class="lg-sub" data-en="Choose a new password to access your account.">Escolha uma senha nova para acessar sua conta.</p>
+            </div>
+            <form id="nova-form" class="lg-form" method="post" autocomplete="on" novalidate>
+              <div class="lg-campo">
+                <input type="email" id="nova-email" name="email" autocomplete="username email" readonly placeholder=" ">
+                <label for="nova-email" data-en="Email">E-mail</label>
+              </div>
+              <div class="lg-campo lg-campo-senha">
+                <input type="password" id="nova-senha" name="password" autocomplete="new-password" minlength="6" required placeholder=" ">
+                <label for="nova-senha" data-en="New password">Nova senha</label>
+                <button type="button" class="lg-olho lg-olho-nova" data-campo="nova-senha" aria-label="Mostrar senha" data-en-aria="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
+              </div>
+              <div class="lg-campo lg-campo-senha">
+                <input type="password" id="nova-senha2" name="password-confirm" autocomplete="new-password" minlength="6" required placeholder=" ">
+                <label for="nova-senha2" data-en="Confirm the new password">Confirme a nova senha</label>
+                <button type="button" class="lg-olho lg-olho-nova" data-campo="nova-senha2" aria-label="Mostrar senha" data-en-aria="Show password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg></button>
+              </div>
+              <p id="nova-erro" class="lg-erro text-red-600 hidden"></p>
+              <button type="submit" id="nova-btn" class="lg-btn lg-btn-escuro"><span data-en="Save new password">Salvar nova senha</span><i aria-hidden="true"></i></button>
+            </form>
+            <div id="nova-invalido" hidden>
+              <p class="lg-esqueci-ok" data-en="This link is invalid or has expired. Request a new one.">Esse link é inválido ou já expirou. Peça um novo.</p>
+              <button type="button" id="nova-pedir" class="lg-btn lg-btn-escuro lg-esqueci-login"><span data-en="Request a new link">Pedir um novo link</span><i aria-hidden="true"></i></button>
+            </div>
           </div>
         </div>
       </section>
@@ -701,6 +736,93 @@ html, body { background: #0C1824 !important; }
         document.getElementById('esqueci-ok').hidden = false;
         document.getElementById('esqueci-ir-login').hidden = false;
         document.getElementById('auth-view-esqueci').classList.add('is-enviado');
+      });
+    })();
+  </script>
+  <script>
+    /* Crie uma nova senha (login?nova-senha=1, aberto pelo link do e-mail): troca
+       o conteúdo da caixa; salvou, sai da sessão de recuperação e volta para o
+       Acesse sua conta com o e-mail preenchido (o navegador oferece salvar). */
+    (function () {
+      var painel = document.getElementById('auth-view-nova');
+      if (!painel || new URLSearchParams(location.search).get('nova-senha') !== '1') return;
+      var login = document.getElementById('auth-view-login');
+      var esqueci = document.getElementById('auth-view-esqueci');
+      var form = document.getElementById('nova-form');
+      var invalido = document.getElementById('nova-invalido');
+      var erro = document.getElementById('nova-erro');
+      var campoEmail = document.getElementById('nova-email');
+      var senha = document.getElementById('nova-senha');
+      var senha2 = document.getElementById('nova-senha2');
+      var btn = document.getElementById('nova-btn');
+      var en = document.documentElement.classList.contains('hub-en');
+      var hashErro = /error=|error_code=/.test(location.hash);
+      login.hidden = true; esqueci.hidden = true; painel.hidden = false;
+      form.hidden = true;
+
+      painel.querySelectorAll('.lg-olho-nova').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var c = document.getElementById(b.dataset.campo);
+          var mostrar = c.type === 'password';
+          c.type = mostrar ? 'text' : 'password';
+          b.setAttribute('aria-pressed', String(mostrar));
+          b.setAttribute('aria-label', T(mostrar ? 'Ocultar senha' : 'Mostrar senha'));
+          b.innerHTML = mostrar ? OLHO_ABERTO : OLHO_CORTADO;
+          c.focus();
+        });
+      });
+
+      function voltarAoLogin(email, aviso) {
+        painel.hidden = true; login.hidden = false;
+        history.replaceState(null, '', location.pathname);
+        if (email) document.getElementById('login-email').value = email;
+        if (aviso) {
+          var info = document.getElementById('login-info');
+          info.textContent = aviso;
+          info.classList.remove('hidden');
+        }
+        document.getElementById(email ? 'login-password' : 'login-email').focus();
+      }
+      document.getElementById('nova-pedir').addEventListener('click', function () {
+        painel.hidden = true; login.hidden = false;
+        document.querySelector('.auth-esqueceu-senha').click();
+      });
+
+      (async function () {
+        var sessao = null;
+        if (!hashErro) {
+          try { sessao = (await supabaseClient.auth.getSession()).data.session; } catch (e) { sessao = null; }
+        }
+        if (!sessao) { invalido.hidden = false; return; }
+        campoEmail.value = sessao.user.email || '';
+        form.hidden = false;
+        senha.focus();
+      })();
+
+      form.addEventListener('submit', async function (ev) {
+        ev.preventDefault();
+        erro.classList.add('hidden');
+        var s = senha.value;
+        if (s.length < 6) {
+          erro.textContent = en ? 'The password must have at least 6 characters.' : 'A senha precisa ter pelo menos 6 caracteres.';
+          erro.classList.remove('hidden'); senha.focus(); return;
+        }
+        if (s !== senha2.value) {
+          erro.textContent = en ? 'The passwords don’t match. Type the confirmation again.' : 'As senhas não coincidem. Digite a confirmação de novo.';
+          erro.classList.remove('hidden'); senha2.value = ''; senha2.focus(); return;
+        }
+        btn.disabled = true;
+        var r = await supabaseClient.auth.updateUser({ password: s });
+        btn.disabled = false;
+        if (r.error) {
+          erro.textContent = /different|same/i.test(r.error.message || '')
+            ? (en ? 'The new password must be different from the current one.' : 'A nova senha precisa ser diferente da atual.')
+            : (en ? 'We couldn’t save the new password. Try again.' : 'Não foi possível salvar a nova senha. Tente de novo.');
+          erro.classList.remove('hidden'); return;
+        }
+        var email = campoEmail.value;
+        try { await supabaseClient.auth.signOut(); } catch (e) { /* segue para o login */ }
+        voltarAoLogin(email, en ? 'Password updated. Log in with your new password.' : 'Senha atualizada. Entre com a sua nova senha.');
       });
     })();
   </script>

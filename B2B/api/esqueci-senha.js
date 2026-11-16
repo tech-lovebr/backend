@@ -84,7 +84,12 @@ module.exports = async (req, res) => {
   });
 
   if (error || !data?.properties?.action_link) {
-    return res.status(200).json(genericResponse);
+    // E-mail sem conta: resposta genérica (não revela quem está cadastrado).
+    const semConta = error && (error.status === 404 || /not.?found/i.test(error.message || ""));
+    if (!error || semConta) return res.status(200).json(genericResponse);
+    // Falha nossa (chave, configuração): o login cai no envio do próprio Supabase.
+    console.error("esqueci-senha: generateLink falhou:", error);
+    return res.status(500).json({ error: "Falha ao gerar o link", detalhe: error.message || String(error) });
   }
 
   try {
@@ -98,6 +103,7 @@ module.exports = async (req, res) => {
     }));
   } catch (err) {
     console.error("Falha ao enviar e-mail de redefinição de senha:", err);
+    return res.status(502).json({ error: "Falha ao enviar o e-mail", detalhe: err?.name || err?.message || "SES" });
   }
 
   return res.status(200).json(genericResponse);

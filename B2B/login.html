@@ -667,9 +667,17 @@ html, body { background: #0C1824 !important; }
           return;
         }
         btn.disabled = true;
+        // 1º: nosso e-mail (SES). Se a rota falhar, o Supabase manda o link pelo e-mail dele.
+        var enviou = false;
         try {
-          await fetch('/api/esqueci-senha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) });
-        } catch (e) { /* mesma mensagem genérica: não confirma se o e-mail existe */ }
+          var resp = await fetch('/api/esqueci-senha', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) });
+          enviou = resp.ok;
+        } catch (e) { /* cai no Supabase abaixo */ }
+        if (!enviou) {
+          try {
+            await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/resetar-senha' });
+          } catch (e) { /* mesma mensagem genérica: não confirma se o e-mail existe */ }
+        }
         btn.disabled = false;
         document.getElementById('esqueci-form').hidden = true;
         document.getElementById('esqueci-ok').hidden = false;

@@ -14,8 +14,11 @@
 const { createClient } = require("@supabase/supabase-js");
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
+// Mesmo banco do site do Hub (js/supabase-init.js): a variável SUPABASE_URL
+// pode apontar para outro projeto, e aí a conta não é encontrada e nada sai.
+const SUPABASE_URL_HUB = "https://krpgtixwmxwhtjchcufl.supabase.co";
 const supabaseAdmin = createClient(
-  process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL,
+  SUPABASE_URL_HUB,
   process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
@@ -97,7 +100,7 @@ module.exports = async (req, res) => {
   if (error || !data?.properties?.action_link) {
     // E-mail sem conta: resposta genérica (não revela quem está cadastrado).
     const semConta = error && (error.status === 404 || /not.?found/i.test(error.message || ""));
-    await registrar({ destinatario: email, status: "falhou", erro: semConta ? "Sem conta com este e-mail (" + (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "") + ")" : "generateLink: " + (error?.message || "sem link") });
+    await registrar({ destinatario: email, status: "falhou", erro: semConta ? "Sem conta com este e-mail" : "generateLink: " + (error?.message || "sem link") });
     if (!error || semConta) return res.status(200).json(genericResponse);
     // Falha nossa (chave, configuração): o login cai no envio do próprio Supabase.
     console.error("esqueci-senha: generateLink falhou:", error);

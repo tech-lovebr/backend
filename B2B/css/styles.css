@@ -13389,13 +13389,6 @@ html.hub-claro body .b2b-sidebar .upgrade-card-desc:not(#love-h-a):not(#love-h-b
   html.hub-claro body:not([data-theme="dark"]) #greeting-title:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #18181B !important; }
 }
 
-/* Perfil › Tema claro: item com chave (desligada cinza #E4E4E7, ligada na
-   cor da sidebar #181D24), antes do Sair. */
-.topbar-item-tema { width: 100%; background: none; border: 0; cursor: pointer; text-align: left; font: inherit; }
-.topbar-item-tema .tema-chave { position: relative; flex: none; width: 32px; height: 18px; margin-left: auto; border-radius: 999px; background: #E4E4E7; transition: background-color .2s ease; }
-.topbar-item-tema .tema-chave::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); transition: transform .2s ease; }
-.topbar-item-tema[aria-checked="true"] .tema-chave { background: #181D24; }
-.topbar-item-tema[aria-checked="true"] .tema-chave::after { transform: translateX(14px); }
 /* Claro: cards da Home brancos, como os do index. */
 @media (min-width: 769px) {
   html.hub-claro body[data-page="dashboard"] .b2b-content :is(.dash-card, .dashboard-help-card):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; border-color: rgba(0, 0, 0, 0.06) !important; }

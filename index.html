@@ -101,7 +101,7 @@
   <link rel="stylesheet" href="css/styles.css?v=20261116_linhasbrancas">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
-  <link rel="stylesheet" href="css/landing-nova.css?v=20261117_headmenor">
+  <link rel="stylesheet" href="css/landing-nova.css?v=20261117_rodape">
   <link rel="stylesheet" href="css/login-novo.css?v=20261116_recuperacao3">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
@@ -407,37 +407,102 @@
     </section>
 
     <!-- Rodapé da landing (mesmos ids usados em app.js) -->
-<footer id="public-landing-footer" class="lv-rodape">
-  <div class="lv-wrap">
-    <div class="lv-fgrid">
-      <div class="lv-fmarca">
+<footer id="public-landing-footer" class="lv-rodape lv-rod">
+  <!-- Rodapé no formato do Joy: links grandes dos recursos e links menores
+       no claro; faixa com a frase que gira; parte escura com os produtos,
+       o idioma (love.com.br = português, planwithlove.com = inglês), os
+       botões e os direitos. -->
+  <div class="lv-rod-claro">
+    <div class="lv-wrap lv-rod-cols">
+      <nav class="lv-rod-col" aria-label="Recursos" data-en-aria-label="Features">
+        <ul class="lv-rod-grandes">
+          <li><a href="#lv-convite" data-en="Digital invitation">Convite digital</a></li>
+          <li><a href="#lv-convidados" data-en="Guest list">Lista de convidados</a></li>
+          <li><a href="#lv-presentes" data-en="Gift registry">Lista de presentes</a></li>
+          <li><a href="#lv-mesas" data-en="Seating chart">Mapa de mesas</a></li>
+          <li><a href="#lv-recados" data-en="Message wall">Mural de recados</a></li>
+          <li><a href="#lv-carteira" data-en="Digital wallet">Carteira digital</a></li>
+          <li><a href="#lv-seguranca" data-en="Security">Segurança</a></li>
+        </ul>
+      </nav>
+      <nav class="lv-rod-col" aria-label="Love">
+        <ul class="lv-rod-menores">
+          <li><button type="button" id="btn-footer-create-event" data-en="Create new event">Criar novo evento</button></li>
+          <li><button type="button" id="btn-footer-find-event" data-en="Find an event">Encontrar um evento</button></li>
+          <li><button type="button" class="btn-trigger-login" data-en="Host area">Área do anfitrião</button></li>
+          <li><button type="button" id="btn-footer-b2b-advisors" data-en="Advisor dashboard">Painel de assessores</button></li>
+          <li><a href="#lv-faq" data-en="Common questions">Perguntas frequentes</a></li>
+          <li><button type="button" id="btn-footer-help-center" data-en="Help Center">Central de ajuda</button></li>
+          <li><button type="button" id="btn-footer-contact" data-en="Contact us">Fale conosco</button></li>
+          <li><button type="button" id="btn-footer-blog" data-en="Blog">Blog</button></li>
+        </ul>
+      </nav>
+      <div class="lv-rod-col lv-rod-marca">
         <a class="lv-logo lv-flogo" href="/" aria-label="Love"><svg viewBox="0 0 1209 333"><use href="#lv-logog"/></svg></a>
-        <p class="lv-p lv-ftexto" data-en="Digital invitations, gift registry, and RSVPs, all in one platform, built for the most important days of your life.">Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
+        <p class="lv-ftexto" data-en="Digital invitations, gift registry, and RSVPs, all in one platform, built for the most important days of your life.">Convite digital, lista de presentes e confirmação de presença numa plataforma só, feita para os dias mais importantes da sua vida.</p>
         <div class="lv-redes">
           <a href="https://instagram.com/loveplataforma" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a>
-          <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.850 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.130zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
-          <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3 3 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3 3 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3 3 0 0 0 2.12-2.14C24 15.930 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a>
+          <a href="https://www.linkedin.com/company/planwithlove/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg></a>
+          <a href="https://www.youtube.com/@LovePlataforma" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3 3 0 0 0-2.12-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.38.5A3 3 0 0 0 .5 6.19C0 8.07 0 12 0 12s0 3.93.5 5.81a3 3 0 0 0 2.12 2.14c1.88.5 9.38.5 9.38.5s7.5 0 9.38-.5a3 3 0 0 0 2.12-2.14C24 15.93 24 12 24 12s0-3.93-.5-5.81zM9.55 15.57V8.43L15.82 12l-6.27 3.57z"/></svg></a>
         </div>
       </div>
-      <div><h4 data-en="Platform">Plataforma</h4><ul>
-        <li><button type="button" id="btn-footer-create-event" data-en="Create new event">Criar novo evento</button></li>
-        <li><button type="button" id="btn-footer-find-event" data-en="Find an event">Encontre um evento</button></li>
-        <li><button type="button" id="btn-footer-b2b-advisors" data-en="Advisor dashboard">Painel de assessores</button></li>
-        <li><button type="button" id="btn-footer-blog" data-en="Blog">Blog</button></li>
-      </ul></div>
-      <div><h4 data-en="Support">Suporte</h4><ul>
-        <li><button type="button" id="btn-footer-help-center" data-en="Help Center">Central de ajuda</button></li>
-        <li><button type="button" id="btn-footer-contact" data-en="Contact us">Fale conosco</button></li>
-        <li><button type="button" class="btn-trigger-login" data-en="Host area">Área do anfitrião</button></li>
-      </ul></div>
-      <div><h4 data-en="Security">Segurança</h4><ul>
-        <li data-en="Gifts via Pix">Presentes via Pix</li>
-        <li data-en="Encrypted connection">Conexão criptografada</li>
-        <li data-en="Data protected (LGPD)">Dados protegidos (LGPD)</li>
-      </ul></div>
     </div>
-    <div class="lv-legal"><span data-en="© 2026 Love Hub Ltda. All rights reserved.">© 2026 Love Hub Ltda. Todos os direitos reservados.</span><span><a href="/privacidade" data-en="Privacy">Privacidade</a> · <a href="/termos" data-en="Terms &amp; conditions">Termos e condições</a></span></div>
   </div>
+  <div class="lv-rod-faixa">
+    <div class="lv-wrap lv-rod-frase" aria-hidden="true"><span class="lv-rod-gira" data-palavras="Celebre a vida|Planeje melhor|Reúna os amigos|Receba presentes|Celebre a vida" data-palavras-en="Celebrate life|Plan smarter|Gather your people|Receive gifts|Celebrate life">Celebre a vida</span> <b data-en="with Love">com Love</b></div>
+  </div>
+  <div class="lv-rod-escuro">
+    <div class="lv-wrap">
+      <div class="lv-rod-linha">
+        <div class="lv-rod-produtos">
+          <a class="is-ativo" href="/" aria-current="page" data-en="Love for hosts">Love para anfitriões</a>
+          <a href="https://hub.love.com.br" data-en="Love Hub for vendors">Love Hub para fornecedores</a>
+        </div>
+        <div class="lv-idioma" id="lv-idioma">
+          <button type="button" class="lv-idioma-btn" aria-expanded="false" aria-controls="lv-idioma-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg><span data-en="English">Português</span><svg class="lv-idioma-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="lv-idioma-menu" id="lv-idioma-menu" hidden>
+            <a href="https://love.com.br/" lang="pt-BR" data-idioma="pt">Português</a>
+            <a href="https://planwithlove.com/" lang="en" data-idioma="en">English</a>
+          </div>
+        </div>
+      </div>
+      <div class="lv-rod-botoes">
+        <a class="lv-rod-btn btn-trigger-register" href="/cadastro"><span data-en="Create free website">Criar site grátis</span></a>
+        <a class="lv-rod-btn" href="/encontrar-evento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span data-en="Find an event">Encontrar um evento</span></a>
+      </div>
+      <div class="lv-legal"><span data-en="© 2026 Love Hub Ltda. All rights reserved.">© 2026 Love Hub Ltda. Todos os direitos reservados.</span><span><a href="/termos" data-en="Terms">Termos</a> &amp; <a href="/privacidade" data-en="Privacy">Privacidade</a></span></div>
+    </div>
+  </div>
+  <script>
+    // Rodapé: idioma (mesmo caminho no outro domínio) e frase que gira.
+    (function () {
+      var raiz = document.getElementById('lv-idioma');
+      if (!raiz) return;
+      var en = document.documentElement.classList.contains('love-en-domain') || /(^|\.)planwithlove\.com$/i.test(location.hostname);
+      var btn = raiz.querySelector('.lv-idioma-btn'), menu = raiz.querySelector('.lv-idioma-menu');
+      raiz.querySelectorAll('[data-idioma]').forEach(function (a) {
+        var dom = a.getAttribute('data-idioma') === 'en' ? 'https://planwithlove.com' : 'https://love.com.br';
+        a.href = dom + location.pathname + location.search;
+        if ((a.getAttribute('data-idioma') === 'en') === en) a.setAttribute('aria-current', 'true');
+      });
+      function fechar() { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+      btn.addEventListener('click', function (e) { e.stopPropagation(); var abrir = menu.hidden; menu.hidden = !abrir; btn.setAttribute('aria-expanded', String(abrir)); });
+      document.addEventListener('click', function (e) { if (!raiz.contains(e.target)) fechar(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fechar(); });
+
+      var gira = document.querySelector('.lv-rod-gira');
+      if (!gira || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+      var palavras = (gira.getAttribute(en ? 'data-palavras-en' : 'data-palavras') || '').split('|').filter(Boolean);
+      if (en && palavras[0]) gira.textContent = palavras[0];
+      var i = 0;
+      setInterval(function () {
+        if (document.hidden || palavras.length < 2) return;
+        i = (i + 1) % palavras.length;
+        gira.classList.add('is-saindo');
+        setTimeout(function () { gira.textContent = palavras[i]; gira.classList.remove('is-saindo'); }, 300);
+      }, 2400);
+    })();
+  </script>
 </footer>
 
   </div>

@@ -16371,3 +16371,17 @@ html body #tab-create-event-page .criar-evento-centro {
    seções (Presentes, Lista de convidados, Benefícios, Benefícios & Serviços)
    é branca, sobre o céu da Love. */
 html body:not([data-theme="dark"]) #tab-overview :is(.home-atalhos-titulo > span, .home-beneficios > .space-y-1 > .flex > .h-px):not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; background-color: #FFFFFF !important; }
+
+/* Celular, pop-up da conta: sem a alça (não dá para arrastar), X à direita,
+   nome e e-mail mais para cima, "Seus eventos" escrito em cima da caixa
+   (só aparece com 2+ eventos) e Sair com o mesmo ícone do menu do desktop. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .menu-conta .menu-conta-fechar:not(#love-h-a) { left: auto; right: 14px; top: 12px; }
+  html body .menu-conta .menu-conta-cabeca:not(#love-h-a):not(#love-h-b) { padding: 22px 48px 16px; }
+  html body .menu-conta .menu-conta-nome:not(#love-h-a) { margin-top: 0; }
+  html body .menu-conta .menu-conta-eventos[hidden] { display: none !important; }
+  html body .menu-conta .menu-conta-eventos > .menu-celular-evento-rotulo { display: block; margin: 0 0 8px; font-size: 13px; font-weight: 500; color: #71717A; }
+  html body .menu-conta .menu-celular-evento-atual:not(#love-h-a) { min-height: 52px; }
+  html body .menu-conta .menu-conta-sair:not(#love-h-a) { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+  html body .menu-conta .menu-conta-sair svg { width: 20px; height: 20px; flex-shrink: 0; }
+}

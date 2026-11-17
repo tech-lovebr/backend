@@ -371,13 +371,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const icone = (/** @type {string} */ id) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[id] || ''}</svg>`;
     // Ordem das seções na gaveta (os itens vêm do railTabsConfig).
     const SECOES = [['rsvp', 'Lista de convidados'], ['gifts', 'Presentes'], ['edit-site', 'Personalizar evento'], ['b2b', 'Fornecedores']];
+    // Criar novo evento fica no topo da lista (acima de Ver meu site); o
+    // seletor de eventos só mostra os eventos que a pessoa tem.
     const ITENS_CONTA = [
+      ['btn-dropdown-create-new-event', 'Criar novo evento'],
       ['btn-account-preview-site', 'Ver meu site'],
       ['btn-account-wallet', 'Financeiro'],
       ['btn-account-profile-data', 'Configurações'],
-      ['btn-account-contact-support', 'Falar com o suporte'],
       ['btn-account-faq', 'Central de ajuda']
     ];
+    const ICONE_CRIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>';
     const abertos = (/** @type {Element} */ el, /** @type {boolean} */ ligado) => {
       el.classList.toggle('is-aberta', ligado);
       el.setAttribute('aria-hidden', String(!ligado));
@@ -437,12 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
         b.addEventListener('click', () => repassar(orig));
         listaEventos.appendChild(b);
       });
-      const criar = document.createElement('button');
-      criar.type = 'button';
-      criar.className = 'menu-celular-evento is-criar';
-      criar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Criar novo evento</span>';
-      criar.addEventListener('click', () => repassar(document.getElementById('btn-dropdown-create-new-event')));
-      listaEventos.appendChild(criar);
+      // Com um evento só não há o que trocar: some o seletor inteiro.
+      const eventos = /** @type {HTMLElement|null} */ (conta.querySelector('.menu-conta-eventos'));
+      if (eventos) eventos.hidden = listaEventos.children.length < 2;
     };
     const desenharItensConta = () => {
       itensConta.innerHTML = '';
@@ -453,7 +453,8 @@ document.addEventListener('DOMContentLoaded', () => {
         b.type = 'button';
         b.className = 'menu-conta-item';
         const ic = orig.querySelector('svg');
-        if (ic) b.appendChild(ic.cloneNode(true));
+        if (id === 'btn-dropdown-create-new-event') b.insertAdjacentHTML('beforeend', ICONE_CRIAR);
+        else if (ic) b.appendChild(ic.cloneNode(true));
         const texto = document.createElement('span');
         texto.textContent = rotulo;
         b.appendChild(texto);
@@ -508,11 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
     contaFundo.addEventListener('click', fecharConta);
     conta.querySelector('.menu-conta-sair')?.addEventListener('click', () => repassar(document.getElementById('btn-account-logout')));
     eventoAtual.addEventListener('click', () => mostrarEventos(listaEventos.hidden));
-    // Puxar a alça do pop-up para baixo fecha.
-    const alca = conta.querySelector('.menu-conta-alca');
-    let alcaY = 0;
-    alca?.addEventListener('touchstart', (e) => { alcaY = /** @type {TouchEvent} */ (e).touches[0].clientY; }, { passive: true });
-    alca?.addEventListener('touchend', (e) => { if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaY > 40) fecharConta(); });
+
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       if (conta.classList.contains('is-aberta')) fecharConta(); else fechar();

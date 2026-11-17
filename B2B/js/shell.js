@@ -1265,13 +1265,17 @@ function ligarBarraDeBaixo() {
 function montarMenuDoCelular() {
   const abrirBtn = document.getElementById('btn-menu-celular');
   if (!abrirBtn || document.getElementById('menu-celular')) return;
-  // Topo do menu só com o X (igual ao index), sem a logo.
+  // Topo do menu: alternador Início | Conversas (igual ao index), sem o X —
+  // fecha tocando fora. Dashboard não repete na lista.
 
   document.body.insertAdjacentHTML('beforeend', `
     <div class="menu-celular-fundo" aria-hidden="true"></div>
     <aside id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
       <div class="menu-celular-topo">
-        <button type="button" class="menu-celular-fechar" aria-label="Fechar menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+        <div class="menu-celular-alternar" role="group" aria-label="Início ou Conversas">
+          <a href="dashboard" data-alternar="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg><span>Início</span></a>
+          <a href="chat" data-alternar="conversas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg><span>Conversas</span><span class="menu-celular-alternar-selo" hidden></span></a>
+        </div>
       </div>
       <nav class="menu-celular-nav" aria-label="Seções"></nav>
       <button type="button" class="menu-celular-conta" aria-haspopup="dialog">
@@ -1285,12 +1289,17 @@ function montarMenuDoCelular() {
     </aside>
     <div class="menu-conta-fundo" aria-hidden="true"></div>
     <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" aria-hidden="true">
-      <div class="menu-conta-alca" aria-hidden="true"></div>
       <button type="button" class="menu-conta-fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div class="menu-conta-cabeca">
         <span class="menu-conta-avatar" aria-hidden="true"></span>
-        <p class="menu-conta-nome"></p>
-        <p class="menu-conta-email"></p>
+        <div class="menu-conta-cabeca-textos">
+          <p class="menu-conta-nome"></p>
+          <p class="menu-conta-email"></p>
+        </div>
+      </div>
+      <div class="menu-conta-tema" role="group" aria-label="Tema">
+        <button type="button" data-tema="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/></svg><span>Light</span></button>
+        <button type="button" data-tema="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/></svg><span>Dark</span></button>
       </div>
       <div class="menu-conta-empresas">
         <button type="button" class="menu-celular-empresa-atual" aria-expanded="false">
@@ -1303,7 +1312,7 @@ function montarMenuDoCelular() {
         <div class="menu-celular-empresas-lista" hidden></div>
       </div>
       <nav class="menu-conta-itens" aria-label="Minha conta"></nav>
-      <button type="button" class="menu-conta-sair">Sair</button>
+      <button type="button" class="menu-conta-sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg><span>Sair</span></button>
     </section>`);
 
   const gaveta = /** @type {HTMLElement} */ (document.getElementById('menu-celular'));
@@ -1365,7 +1374,20 @@ function montarMenuDoCelular() {
       categorias += '<p class="menu-celular-secao">Minha empresa</p>';
     };
     const naCobrancas = pagina === 'contratos' && !!document.querySelector('#payments-view-tabs [data-view="receber"].active');
+    gaveta.querySelectorAll('[data-alternar]').forEach(b => {
+      const ativo = /** @type {HTMLElement} */ (b).dataset.alternar === 'conversas' ? pagina === 'chat' : pagina === 'dashboard';
+      b.classList.toggle('is-ativo', ativo);
+      if (ativo) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    const selo = /** @type {HTMLElement|null} */ (gaveta.querySelector('.menu-celular-alternar-selo'));
+    const seloOrig = document.getElementById('nav-msg-badge-mobile') || document.getElementById('nav-msg-badge');
+    if (selo) {
+      const n = (seloOrig?.textContent || '').trim();
+      selo.textContent = n;
+      selo.hidden = !seloOrig || seloOrig.style.display === 'none' || !n || n === '0';
+    }
     sidebar.querySelectorAll('.sidebar-nav > .sidebar-nav-item[data-page], .sidebar-nav > .sidebar-nav-group').forEach(el => {
+      if (/** @type {HTMLElement} */ (el).dataset.page === 'dashboard') return;
       if (el.classList.contains('sidebar-nav-group')) {
         const titulo = (el.querySelector('.sidebar-nav-text')?.textContent || '').trim();
         const ic = icone(el.querySelector('.sidebar-nav-toggle'));
@@ -1406,6 +1428,12 @@ function montarMenuDoCelular() {
     }
     nav.innerHTML = html;
   };
+  gaveta.querySelector('.menu-celular-alternar')?.addEventListener('click', (e) => {
+    const b = e.target instanceof Element ? e.target.closest('[data-alternar]') : null;
+    if (!b) return;
+    fechar();
+    if (b.classList.contains('is-ativo')) { e.preventDefault(); irAoTopo(); }
+  });
   nav.addEventListener('click', (e) => {
     const link = e.target instanceof Element ? e.target.closest('.menu-celular-link') : null;
     if (!link) return;
@@ -1439,6 +1467,9 @@ function montarMenuDoCelular() {
   };
   const desenharEmpresas = () => {
     listaEmpresas.innerHTML = '';
+    const unica = document.querySelectorAll('#profile-empresas .profile-empresa-item').length < 2;
+    empresaAtual.classList.toggle('is-unica', unica);
+    empresaAtual.toggleAttribute('disabled', unica);
     document.querySelectorAll('#profile-empresas .profile-empresa-item').forEach(orig => {
       const b = document.createElement('button');
       b.type = 'button';
@@ -1451,15 +1482,19 @@ function montarMenuDoCelular() {
       b.addEventListener('click', () => repassar(orig));
       listaEmpresas.appendChild(b);
     });
-    const criar = document.createElement('button');
-    criar.type = 'button';
-    criar.className = 'menu-celular-empresa is-criar';
-    criar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Adicionar empresa</span>';
-    criar.addEventListener('click', () => repassar(document.querySelector('#avatar-dropdown .topbar-item-adicionar-empresa')));
-    listaEmpresas.appendChild(criar);
   };
   const desenharItensConta = () => {
     itensConta.innerHTML = '';
+    // Adicionar empresa: primeira opção da conta (como Criar novo evento no index).
+    const criarOrig = document.querySelector('#avatar-dropdown .topbar-item-adicionar-empresa');
+    if (criarOrig) {
+      const criar = document.createElement('button');
+      criar.type = 'button';
+      criar.className = 'menu-conta-item';
+      criar.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg><span>Adicionar empresa</span>';
+      criar.addEventListener('click', () => repassar(criarOrig));
+      itensConta.appendChild(criar);
+    }
     document.querySelectorAll('#avatar-dropdown > .topbar-dropdown-item:not(.topbar-item-adicionar-empresa):not(.topbar-item-sair):not([href="configuracoes"])').forEach(orig => {
       const b = document.createElement('button');
       b.type = 'button';
@@ -1486,7 +1521,22 @@ function montarMenuDoCelular() {
     document.body.classList.add('menu-celular-aberto');
     abrirBtn.setAttribute('aria-expanded', 'true');
   };
+  const marcarTema = () => {
+    const claro = document.documentElement.classList.contains('hub-claro');
+    conta.querySelectorAll('[data-tema]').forEach(b => {
+      const ativo = /** @type {HTMLElement} */ (b).dataset.tema === (claro ? 'light' : 'dark');
+      b.classList.toggle('is-ativo', ativo);
+      b.setAttribute('aria-pressed', String(ativo));
+    });
+  };
+  conta.querySelector('.menu-conta-tema')?.addEventListener('click', (e) => {
+    const b = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-tema]')) : null;
+    if (!b) return;
+    /** @type {HTMLElement|null} */ (document.querySelector('.theme-toggle-btn[data-theme-option="' + b.dataset.tema + '"]'))?.click();
+    marcarTema();
+  });
   const abrirConta = () => {
+    marcarTema();
     preencherConta();
     desenharEmpresas();
     desenharItensConta();
@@ -1496,18 +1546,12 @@ function montarMenuDoCelular() {
   };
 
   abrirBtn.addEventListener('click', (e) => { e.stopPropagation(); abrir(); });
-  gaveta.querySelector('.menu-celular-fechar')?.addEventListener('click', fechar);
   fundo.addEventListener('click', fechar);
   gaveta.querySelector('.menu-celular-conta')?.addEventListener('click', abrirConta);
   conta.querySelector('.menu-conta-fechar')?.addEventListener('click', fecharConta);
   contaFundo.addEventListener('click', fecharConta);
   conta.querySelector('.menu-conta-sair')?.addEventListener('click', () => repassar(document.querySelector('#avatar-dropdown [data-logout]')));
   empresaAtual.addEventListener('click', () => mostrarEmpresas(listaEmpresas.hidden));
-  // Puxar a alça do pop-up para baixo fecha.
-  const alca = conta.querySelector('.menu-conta-alca');
-  let alcaY = 0;
-  alca?.addEventListener('touchstart', (e) => { alcaY = /** @type {TouchEvent} */ (e).touches[0].clientY; }, { passive: true });
-  alca?.addEventListener('touchend', (e) => { if (/** @type {TouchEvent} */ (e).changedTouches[0].clientY - alcaY > 40) fecharConta(); });
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (conta.classList.contains('is-aberta')) fecharConta(); else fechar();

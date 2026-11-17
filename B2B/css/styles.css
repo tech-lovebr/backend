@@ -13770,3 +13770,59 @@ html:not(.hub-claro) body :is(.btn-secondary, .btn-white, .love-tabela-botao, .o
 html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card:not(.dash-ads-card), .dashboard-help-card):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
   background: rgba(20, 40, 58, 0.62) !important; -webkit-backdrop-filter: blur(14px) saturate(1.2) !important; backdrop-filter: blur(14px) saturate(1.2) !important; border-color: transparent !important; box-shadow: none !important;
 }
+
+/* ==========================================================================
+   Celular, menu ☰ e pop-up da conta (iguais ao index): no topo do menu o
+   alternador Início | Conversas, sem o X (fecha tocando fora) e sem o
+   Dashboard na lista. Pop-up da conta sem a alça (não dá para arrastar),
+   X no canto direito, foto ao lado do nome, Light/Dark logo abaixo do nome,
+   empresa única só com o nome (sem seta) e Adicionar empresa como a
+   primeira opção. Blocos preenchidos, sem contornos (pegada de app).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .menu-celular .menu-celular-topo:not(#love-h-a):not(#love-h-b) { display: flex; align-items: center; height: auto; padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 4px; }
+  html body .menu-celular .menu-celular-nav > :first-child:not(#love-h-a):not(#love-h-b) { margin-top: 12px; }
+  html body .menu-celular-alternar:not(#love-h-a) { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border-radius: 12px; background: rgba(24, 59, 84, 0.06); }
+  html body :is(.menu-celular-alternar a, .menu-conta-tema button):not(#love-h-a) { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 10px; border: 0; border-radius: 9px; background: transparent; font-family: inherit; font-size: 15px; font-weight: 500; color: #71717A; text-decoration: none; transition: background-color .15s ease, color .15s ease; }
+  html body :is(.menu-celular-alternar a, .menu-conta-tema button) svg { width: 22px; height: 22px; flex-shrink: 0; }
+  html body :is(.menu-celular-alternar a.is-ativo, .menu-conta-tema button.is-ativo):not(#love-h-a) { background: #FFFFFF; color: #183b54; }
+  html body .menu-celular-alternar-selo:not(#love-h-a) { min-width: 18px; height: 18px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: #183b54; color: #FFFFFF; font-size: 11px; font-weight: 600; }
+  html body .menu-celular-alternar-selo[hidden] { display: none !important; }
+
+  html body .menu-conta .menu-conta-alca { display: none !important; }
+  html body .menu-conta .menu-conta-fechar:not(#love-h-a):not(#love-h-b) { left: auto; right: 14px; top: 12px; border: 0 !important; box-shadow: none !important; -webkit-backdrop-filter: none; backdrop-filter: none; background: rgba(24, 59, 84, 0.07) !important; color: #3F3F46; }
+  html body .menu-conta .menu-conta-cabeca:not(#love-h-a):not(#love-h-b) { flex-direction: row; align-items: center; gap: 12px; padding: 18px 60px 14px 0; text-align: left; }
+  html body .menu-conta .menu-conta-avatar:not(#love-h-a):not(#love-h-b) { width: 48px; height: 48px; min-width: 48px; font-size: 17px; display: inline-flex !important; }
+  html body .menu-conta .menu-conta-cabeca-textos { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  html body .menu-conta .menu-conta-nome:not(#love-h-a) { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body .menu-conta .menu-conta-email:not(#love-h-a) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body .menu-conta-tema:not(#love-h-a) { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; margin: 0 0 12px; border-radius: 12px; background: rgba(24, 59, 84, 0.06); }
+  html body .menu-conta-tema button:not(#love-h-a):not(#love-h-b) { height: 40px; font-size: 14px; }
+  html body .menu-conta-tema button svg { width: 18px; height: 18px; }
+
+  html body .menu-conta .menu-celular-empresa-atual:not(#love-h-a):not(#love-h-b) { border: 0 !important; background: rgba(24, 59, 84, 0.06) !important; box-shadow: none !important; }
+  html body .menu-conta .menu-celular-empresa-atual.is-unica:not(#love-h-a):not(#love-h-b) { min-height: 52px; cursor: default; opacity: 1; color: inherit; }
+  html body .menu-conta .menu-celular-empresa-atual.is-unica :is(.menu-celular-empresa-seta, .menu-celular-empresa-rotulo) { display: none !important; }
+  html body .menu-conta .menu-celular-empresas-lista:not(#love-h-a) { border: 0; background: rgba(24, 59, 84, 0.04); }
+  html body .menu-conta .menu-celular-empresa:not(#love-h-a) { background: transparent; }
+  html body .menu-conta .menu-conta-sair:not(#love-h-a) { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+  html body .menu-conta .menu-conta-sair svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+  /* Escuro do Hub */
+  html:not(.hub-claro) body :is(.menu-celular-alternar, .menu-conta-tema, .menu-conta .menu-celular-empresa-atual, .menu-conta .menu-celular-empresas-lista):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(255, 255, 255, 0.06) !important; }
+  html:not(.hub-claro) body :is(.menu-celular-alternar a, .menu-conta-tema button):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #A3B5C8 !important; background: transparent !important; }
+  html:not(.hub-claro) body :is(.menu-celular-alternar a.is-ativo, .menu-conta-tema button.is-ativo):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(255, 255, 255, 0.12) !important; color: #FFFFFF !important; }
+  html:not(.hub-claro) body .menu-conta .menu-conta-fechar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(255, 255, 255, 0.08) !important; color: #FFFFFF !important; }
+  html:not(.hub-claro) body .menu-celular-alternar-selo:not(#love-h-a):not(#love-h-b) { background: #EAF1F8; color: #0C1824; }
+}
+/* Celular, escuro do Hub: menu ☰ e pop-up da conta na cor do menu lateral
+   (#0C1824), textos claros; antes ficavam brancos mesmo no escuro. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html:not(.hub-claro) body :is(.menu-celular, .menu-celular-conta, .menu-conta):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #0C1824 !important; color: #EAF1F8 !important; }
+  html:not(.hub-claro) body .menu-celular-conta:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-top-color: rgba(255, 255, 255, 0.08) !important; }
+  html:not(.hub-claro) body :is(.menu-celular-link, .menu-celular-conta .menu-celular-nome, .menu-conta-nome, .menu-conta-item, .menu-conta .menu-celular-empresa, .menu-conta .menu-celular-empresa-atual, .menu-conta .menu-celular-empresa-atual .menu-celular-empresa-nome):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #EAF1F8 !important; }
+  html:not(.hub-claro) body :is(.menu-celular-link svg, .menu-conta-item svg):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #A3B5C8 !important; }
+  html:not(.hub-claro) body :is(.menu-celular-link.is-ativo, .menu-celular-link.is-ativo svg, .menu-conta-sair):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+  html:not(.hub-claro) body :is(.menu-celular-secao, .menu-celular-conta .menu-celular-empresa-nome, .menu-conta-email, .menu-celular-conta-seta):not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #A3B5C8 !important; }
+  html:not(.hub-claro) body :is(.menu-conta-item span, .menu-conta .menu-celular-empresa):not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(255, 255, 255, 0.08) !important; }
+}

@@ -402,6 +402,12 @@ html, body { background: #0C1824 !important; }
 body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap; font-size: min(clamp(32px, 3.1vw, 44px), 9.2cqi) !important; }
 /* Continuar com o Google: cantos arredondados iguais aos do botão Entrar (pílula). */
 #view-login#view-login :is(#google-login-btn, #google-signup-btn) { border-radius: 999px !important; }
+/* Mesma fonte do título (Outfit, traço leve) em todos os textos da caixa:
+   inclusive Continuar com o Google (antes Google Sans). Textos em 300,
+   botões, links e rótulos em 400; títulos ficam como estão. */
+#view-login#view-login :is(#google-login-btn, #google-signup-btn), #view-login#view-login :is(#google-login-btn, #google-signup-btn) * { font-family: var(--lg-sans) !important; letter-spacing: 0 !important; }
+#view-login#view-login :is(.lg-painel, .lg-aviso) :is(p, span, label, input, li, a, button, small, legend):not(.lg-titulo, .lg-titulo *), #view-login#view-login .lg-aviso { font-weight: 300 !important; }
+#view-login#view-login .lg-painel :is(.lg-btn, .lg-btn *, .lg-link, a, label, legend, .lg-objetivo):not(.lg-titulo, .lg-titulo *) { font-weight: 400 !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>

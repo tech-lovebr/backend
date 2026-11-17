@@ -755,7 +755,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (pendingInitialDashboardRoute) {
         const route = pendingInitialDashboardRoute;
         pendingInitialDashboardRoute = null;
-        if (route.type === 'legal') {
+        if (route.type === 'novoEvento') {
+          // Veio de /novo-evento (direto ou depois do login): abre "Vamos criar
+          // um novo evento?" e limpa a URL e a intenção (recarregar não reabre).
+          try { sessionStorage.removeItem('love-depois-do-login'); } catch (e) {}
+          openCreateEventPage();
+          history.replaceState(null, '', '/');
+        } else if (route.type === 'legal') {
           openLegalDocPage(route.slug);
         } else if (route.type === 'notifications') {
           openNotificationsPage({ pushUrl: false });
@@ -3593,7 +3599,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inclui as rotas do próprio site: love.com.br/<slug> abre o convite, então
     // um evento não pode ter o mesmo nome de uma página da plataforma.
     const reservedSlugs = ['admin', 'login', 'register', 'dashboard', 'api', 'help', 'suporte', 'termos', 'privacidade', 'app', 'beatriz', 'lucas', 'casamento', 'evento',
-      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'central-de-ajuda', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib', 'encontrar-evento'];
+      'cadastro', 'resetar-senha', 'convite-preview', 'privacidade', 'politica-de-privacidade', 'personalizar', 'presentes', 'convidados', 'carteira', 'fornecedores', 'notificacoes', 'duvidas', 'central-de-ajuda', 'configuracoes', 'organizador', 'blog', 'assets', 'css', 'js', 'lib', 'encontrar-evento', 'novo-evento', 'login'];
     const existsInOtherEvents = state.events.some(ev => ev.id !== currentEventId && ev.slug === cleaned);
     const isReserved = reservedSlugs.includes(cleaned);
 
@@ -18714,6 +18720,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnLoginToRegister = document.getElementById('btn-login-to-register');
   if (btnLoginToRegister) {
     btnLoginToRegister.addEventListener('click', () => {
+      // Conta nova segue o fluxo normal de primeiro evento (sem o /novo-evento guardado).
+      try { sessionStorage.removeItem('love-depois-do-login'); } catch (e) {}
       window.location.href = '/cadastro';
     });
   }
@@ -24628,14 +24636,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const initialIsFaq = window.location.pathname === '/central-de-ajuda';
   const initialIsSettings = window.location.pathname === '/configuracoes';
 
+  // /novo-evento (link do rodapé dos e-mails): abre "Vamos criar um novo
+  // evento?". Sem sessão, mostra o Entrar e guarda a intenção para depois do
+  // login — inclusive a volta do Google, que cai em "/" (sessionStorage).
+  const initialIsNovoEvento = window.location.pathname === '/novo-evento';
+  let depoisDoLogin = null;
+  try {
+    if (initialIsNovoEvento) sessionStorage.setItem('love-depois-do-login', 'novo-evento');
+    depoisDoLogin = sessionStorage.getItem('love-depois-do-login');
+  } catch (e) { if (initialIsNovoEvento) depoisDoLogin = 'novo-evento'; }
+
   // Guardado ANTES do switchView/initClienteSession: se a sessão confirmar
   // 'dashboard', é consumido ali dentro mesmo, sem passar pela Visão Geral
   // no meio do caminho (ver pendingInitialDashboardRoute, perto do topo).
-  if (initialLegalSlug) pendingInitialDashboardRoute = { type: 'legal', slug: initialLegalSlug };
+  if (initialIsNovoEvento) pendingInitialDashboardRoute = { type: 'novoEvento' };
+  else if (initialLegalSlug) pendingInitialDashboardRoute = { type: 'legal', slug: initialLegalSlug };
   else if (initialIsNotifications) pendingInitialDashboardRoute = { type: 'notifications' };
   else if (initialIsFaq) pendingInitialDashboardRoute = { type: 'faq' };
   else if (initialIsSettings) pendingInitialDashboardRoute = { type: 'settings' };
   else if (initialRailTab && initialRailTab !== 'overview') pendingInitialDashboardRoute = { type: 'tab', tab: initialRailTab, rota: initialRoute };
+  else if (depoisDoLogin === 'novo-evento') pendingInitialDashboardRoute = { type: 'novoEvento' };
 
   // Só chama switchView('public') de cara se NÃO houver pista de sessão no
   // localStorage. Quando há (ver o <script> no <head> de index.html, que já
@@ -24644,7 +24664,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // chamar switchView('public') aqui e trocar pra 'dashboard' alguns
   // instantes depois é exatamente o que fazia a home pública piscar pra
   // quem já estava logado, em QUALQUER página (não só nas legais).
-  const isLoginRoute = window.location.pathname === '/login' || window.location.hash === '#login';
+  const isLoginRoute = window.location.pathname === '/login' || window.location.hash === '#login' || initialIsNovoEvento;
   const hasPlausibleSession = (() => {
     try { return !!localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token'); } catch (e) { return false; }
   })();
@@ -24818,6 +24838,7 @@ document.addEventListener('DOMContentLoaded', () => {
       marcaContaNova = null;
     }
     if (marcaContaNova && !pendingType) {
+      try { sessionStorage.removeItem('love-depois-do-login'); } catch (e) {}
       window.location.replace('/cadastro?conta-nova=1');
       return;
     }

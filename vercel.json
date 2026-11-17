@@ -20,6 +20,7 @@
     { "source": "/organizador", "destination": "/organizador.html" },
     { "source": "/encontrar-evento", "destination": "/encontrar-evento.html" },
     { "source": "/login", "destination": "/" },
+    { "source": "/novo-evento", "destination": "/" },
     { "source": "/termos", "destination": "/api/documento-legal?slug=termos" },
     { "source": "/privacidade", "destination": "/api/documento-legal?slug=privacidade" },
     { "source": "/personalizar", "destination": "/" },

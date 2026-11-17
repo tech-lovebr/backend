@@ -24446,6 +24446,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // vai para a página inicial.
   // Barra do navegador no cinza claro enquanto a página legal está aberta;
   // ao sair dela volta a cor original.
+  // Plataforma logada: a barra do navegador no celular (theme-color) na cor
+  // do topo — branco no tema claro, #1A1A1A no escuro — para o topo e a
+  // barra do navegador parecerem uma peça só. Acompanha a troca de tema.
+  const metaBarraLogada = document.querySelector('meta[name="theme-color"]');
+  if (metaBarraLogada) {
+    const pintarBarraLogada = () => {
+      if (!document.body.classList.contains('dashboard-mode')) return;
+      const cor = document.body.getAttribute('data-theme') === 'dark' ? '#1A1A1A' : '#FFFFFF';
+      if (metaBarraLogada.getAttribute('content') !== cor) metaBarraLogada.setAttribute('content', cor);
+    };
+    new MutationObserver(pintarBarraLogada).observe(document.body, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    pintarBarraLogada();
+  }
+
   const paginaLegalPublica = document.getElementById('legal-doc-page');
   if (paginaLegalPublica) {
     const pintarBarraLegal = () => {

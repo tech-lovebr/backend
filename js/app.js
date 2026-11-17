@@ -19255,6 +19255,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const msg = (error.message || '').toLowerCase();
       if (msg.includes('different from the old') || /** @type {any} */ (error).code === 'same_password') {
         mostrarErro(tLogin('login.senhaIgualAtual', 'A nova senha precisa ser diferente da atual.'));
+      } else if (mensagemSenhaRecusada(error)) {
+        mostrarErro(mensagemSenhaRecusada(error));
       } else {
         mostrarErro(tLogin('login.naoSalvouNovaSenha', 'Não foi possível salvar a nova senha. Tente de novo.'));
       }
@@ -19403,7 +19405,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) {
         showToast(
-          error.message.includes('already registered') ? 'Esse e-mail já tem uma conta. Tente entrar.' : 'Não foi possível criar sua conta.',
+          error.message.includes('already registered') ? 'Esse e-mail já tem uma conta. Tente entrar.' : (mensagemSenhaRecusada(error) || 'Não foi possível criar sua conta.'),
           '⚠️'
         );
         return;
@@ -24150,7 +24152,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (updateError) {
         return avisar(/different from the old/i.test(updateError.message || '')
           ? 'A nova senha precisa ser diferente da atual.'
-          : 'Não foi possível trocar sua senha. Tente novamente.');
+          : (mensagemSenhaRecusada(updateError) || 'Não foi possível trocar sua senha. Tente novamente.'));
       }
       ['settings-password-current', 'settings-password-new', 'settings-password-confirm'].forEach(id => { /** @type {HTMLInputElement} */ (document.getElementById(id)).value = ''; });
       avisar('Senha atualizada.', false);

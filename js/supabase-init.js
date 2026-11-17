@@ -139,6 +139,24 @@ function senhaCumpreRegras(senha) {
   return v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v) && /[^A-Za-z0-9\s]/.test(v);
 }
 
+/**
+ * Senha recusada pelo próprio Supabase Auth (erro weak_password): senha que
+ * já apareceu em vazamentos (reasons: pwned) ou fora dos requisitos do
+ * painel. Devolve o texto em português para mostrar, ou '' se o erro é outro.
+ * @param {any} erro
+ */
+function mensagemSenhaRecusada(erro) {
+  if (!erro) return '';
+  const msg = String(erro.message || '').toLowerCase();
+  const fraca = erro.code === 'weak_password' || erro.name === 'AuthWeakPasswordError' || /weak|easy to guess|pwned|password should/.test(msg);
+  if (!fraca) return '';
+  const motivos = Array.isArray(erro.reasons) ? erro.reasons : [];
+  if (motivos.includes('pwned') || /pwned|easy to guess|known/.test(msg)) {
+    return 'Essa senha já apareceu em vazamentos de dados na internet. Por segurança, escolha outra.';
+  }
+  return MENSAGEM_REGRAS_SENHA;
+}
+
 function montarNomeCliente(firstName, lastName) {
   const first_name = (firstName || '').trim().replace(/\s+/g, ' ');
   const last_name = (lastName || '').trim().replace(/\s+/g, ' ');

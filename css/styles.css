@@ -16637,7 +16637,7 @@ html body #tab-create-event-page #btn-start-event-creation:hover svg { transform
   html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) {
     position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; width: 100% !important;
     height: calc(64px + env(safe-area-inset-top, 0px)) !important; padding: env(safe-area-inset-top, 0px) 16px 0 !important;
-    background: #FFFFFF !important; border-radius: 0 0 20px 20px !important; box-shadow: 0 1px 0 #E3E8EF !important;
+    background: #FFFFFF !important; border-radius: 0 !important; box-shadow: 0 1px 0 #E3E8EF !important;
   }
   html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { margin-left: -10px !important; }
   html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar > div:has(#btn-notifications-menu):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { margin-right: -10px !important; }
@@ -16698,4 +16698,19 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa:no
 html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::before {
   content: 'Hoje'; align-self: center; padding: 5px 12px; border-radius: 8px; background: #FFFFFF;
   color: #54656F; font-size: 12.5px; font-weight: 500; line-height: 1.2; box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+}
+
+/* Celular: o mesmo vidro leve (branco a 75% com desfoque) no topo, na barra
+   de baixo e nas caixas da Home (Olá + atalhos do convite, link do convite,
+   Presentes e Convidados). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]) .sidebar-icon-rail:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i):not(#love-h-j),
+  html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i):not(#love-h-j),
+  html body #tab-overview .home-capa-celular-caixa:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i):not(#love-h-j),
+  html body #tab-overview #home-link-convite:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i):not(#love-h-j),
+  html body #tab-overview .bg-white.rounded-2xl:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i):not(#love-h-j) {
+    background-color: rgba(255, 255, 255, 0.75) !important; background-image: none !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+  }
 }

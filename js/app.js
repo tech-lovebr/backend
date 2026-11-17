@@ -726,6 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // rodar pela primeira vez.
     document.documentElement.classList.remove('love-likely-logged-in');
     document.documentElement.classList.remove('love-rota-login');
+    document.documentElement.classList.remove('love-entrando-google');
 
     state.currentView = viewName;
 

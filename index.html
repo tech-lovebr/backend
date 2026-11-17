@@ -12,13 +12,28 @@
        caso esteja errado (ver switchView, que remove essa classe). -->
   <meta name="theme-color" content="#3B82F6">
   <style>html.love-likely-logged-in #view-public-site, html.love-rota-login #view-public-site { display: none !important; }
+  /* Volta do "Entrar com o Google": em vez da landing, a tela fica limpa com
+     o logo da Love e uma barrinha até o painel abrir (switchView tira). */
+  html.love-entrando-google body::before { content: ''; position: fixed; inset: 0; z-index: 9998; background: #F6F8FB url('assets/love-logo-tinta.svg?v=3') center calc(50% - 14px) / 120px auto no-repeat; }
+  html.love-entrando-google body::after { content: ''; position: fixed; z-index: 9999; left: 50%; top: calc(50% + 26px); width: 64px; height: 3px; margin-left: -32px; border-radius: 3px; background: linear-gradient(90deg, rgba(24,59,84,.12) 0%, #183b54 50%, rgba(24,59,84,.12) 100%) 0 0 / 200% 100%; animation: love-entrando 1.1s linear infinite; }
+  @keyframes love-entrando { to { background-position: -200% 0; } }
   /* planwithlove.com: a landing fica escondida até o script logo depois dela
      trocar os textos pra inglês (ver data-en/data-en-html/data-en-alt) — sem
      isso, piscaria o texto em português por um instante. */
   html.love-en-domain:not(.love-en-pronta) #view-public-site { visibility: hidden; }</style>
   <script>
     try {
-      if (localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token')) {
+      // Volta do Google (ou de outro login por link): o token ainda está no
+      // endereço e só vira sessão daqui a pouco — sem isso a landing aparecia
+      // até o painel carregar, parecendo erro. Se o login falhar, switchView
+      // volta para a página certa (ver initClienteSession).
+      var voltaDoLogin = /[#&?](access_token|code)=/.test(location.hash + location.search)
+        && !/[#&?]type=recovery/.test(location.hash + location.search)
+        && !/[#&?]error/.test(location.hash + location.search)
+        && location.pathname !== '/login';
+      if (voltaDoLogin) {
+        document.documentElement.classList.add('love-likely-logged-in', 'love-entrando-google');
+      } else if (localStorage.getItem('sb-krpgtixwmxwhtjchcufl-auth-token')) {
         document.documentElement.classList.add('love-likely-logged-in');
       } else if (location.pathname === '/login' || location.pathname === '/novo-evento' || location.hash === '#login') {
         // Abriu /login (ex.: "Entre por aqui" do cadastro): já começa na tela
@@ -5758,7 +5773,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261117_titulocoluna"></script>
+  <script src="js/app.js?v=20261117_voltagoogle"></script>
   <script src="js/landing.js?v=20261117_gira55"></script>
   <script src="js/carteira.js?v=20261116_olho"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>

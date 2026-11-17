@@ -402,6 +402,15 @@ html, body { background: #0C1824 !important; }
 @media (max-width: 768px) { #view-login#view-login #auth-view-nova .lg-titulo { white-space: nowrap; font-size: min(32px, 9cqi) !important; } }
 /* Continuar com o Google: cantos arredondados iguais aos do botão Entrar (pílula). */
 #view-login#view-login :is(#google-login-btn, #google-signup-btn) { border-radius: 999px !important; }
+/* Acesse sua conta: E-mail e Senha escritos fora da caixa, em cima do campo
+   (sem o rótulo flutuando dentro), e Esqueceu a senha? à esquerda, abaixo da senha. */
+#view-login#view-login #auth-view-login .lg-campo { display: flex; flex-direction: column; gap: 8px; }
+#view-login#view-login #auth-view-login .lg-campo input + label { position: static; order: -1; top: auto; left: auto; font-size: 14px !important; font-weight: 500; letter-spacing: 0 !important; color: #EAF1F8 !important; pointer-events: auto; transition: none; }
+#view-login#view-login #auth-view-login .lg-campo input { height: 48px; padding: 0 16px !important; }
+#view-login#view-login #auth-view-login .lg-campo:has(.lg-olho) input { padding-right: 84px !important; }
+#view-login#view-login #auth-view-login .lg-olho { top: auto; bottom: 6px; }
+#view-login#view-login #auth-view-login .lg-campo-senha { margin-top: 8px; }
+#view-login#view-login #auth-view-login .lg-linha { justify-content: flex-start; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>

@@ -16395,3 +16395,21 @@ html body:not([data-theme="dark"]) #tab-overview :is(.home-atalhos-titulo > span
   }
   html body .dashboard-top-navbar > div:has(#btn-notifications-menu):not(#love-h-a):not(#love-h-b) { order: 2; margin: 0 -10px 0 auto !important; }
 }
+
+/* Celular, menu ☰: abre da esquerda para a direita e tem no topo o
+   alternador Início | Mensagens (com o X à direita). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .menu-celular:not(#love-h-a) { left: 0; right: auto; transform: translateX(-100%); }
+  html body .menu-celular.is-aberta:not(#love-h-a) { transform: translateX(0); }
+  html body .menu-celular .menu-celular-topo:not(#love-h-a):not(#love-h-b) { position: static; display: flex; align-items: center; justify-content: space-between; gap: 8px; height: auto; padding: calc(env(safe-area-inset-top, 0px) + 10px) 8px 8px 16px; }
+  html body .menu-celular .menu-celular-nav:not(#love-h-a):not(#love-h-b) { padding-top: 0; }
+  html body .menu-celular .menu-celular-nav > :first-child:not(#love-h-a):not(#love-h-b) { width: auto; margin-top: 12px; }
+  .menu-celular-alternar { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; background: #F4F4F5; border-radius: 10px; }
+  .menu-celular-alternar button { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 10px; background: transparent; border: 0; border-radius: 8px; font-size: 14px; font-weight: 500; color: #71717A; transition: background-color .15s ease, color .15s ease; }
+  .menu-celular-alternar button.is-ativo { background: #FFFFFF; color: #183b54; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04); }
+  .menu-celular-alternar-selo { min-width: 18px; height: 18px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: #183b54; color: #FFFFFF; font-size: 11px; font-weight: 600; }
+  .menu-celular-alternar-selo[hidden] { display: none; }
+  body[data-theme="dark"] .menu-celular-alternar { background: #252525; }
+  body[data-theme="dark"] .menu-celular-alternar button { color: #A1A1AA; }
+  body[data-theme="dark"] .menu-celular-alternar button.is-ativo { background: #333333; color: #FFFFFF; box-shadow: none; }
+}

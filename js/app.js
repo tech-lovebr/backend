@@ -407,7 +407,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const subAtivo = (document.querySelector('#drawer-sub-items-list .active')?.textContent || '').trim();
       const linha = (/** @type {string} */ tab, /** @type {string} */ sub, /** @type {string} */ rotulo, /** @type {string} */ ic, /** @type {boolean} */ ativo) =>
         `<button type="button" class="menu-celular-link${ativo ? ' is-ativo' : ''}" data-tab="${tab}" data-sub="${sub}"${ativo ? ' aria-current="page"' : ''}>${icone(ic)}<span>${escaparHtml(rotulo)}</span></button>`;
-      let html = linha('overview', '', 'Início', 'inicio', abaAtiva === 'overview');
+      // Início e Mensagens ficam no alternador do topo (não repetem na lista).
+      let html = '';
+      const chatAberto = !!document.querySelector('#btn-dash-header-chat.active');
+      gaveta.querySelectorAll('[data-alternar]').forEach(b => {
+        const ativo = /** @type {HTMLElement} */ (b).dataset.alternar === 'mensagens' ? chatAberto : (!chatAberto && abaAtiva === 'overview');
+        b.classList.toggle('is-ativo', ativo);
+        b.setAttribute('aria-pressed', String(ativo));
+      });
+      const seloOrig = document.querySelector('#btn-dash-header-chat .badge-header-chat');
+      const selo = /** @type {HTMLElement|null} */ (gaveta.querySelector('.menu-celular-alternar-selo'));
+      if (selo) {
+        const n = (seloOrig?.textContent || '').trim();
+        selo.textContent = n;
+        selo.hidden = !seloOrig || seloOrig.classList.contains('hidden') || !n || n === '0';
+      }
       SECOES.forEach(([tab, titulo]) => {
         const cfg = /** @type {any} */ (railTabsConfig)[tab];
         if (!cfg || !areaPermitida(tab)) return;
@@ -418,6 +432,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       nav.innerHTML = html;
     };
+    gaveta.querySelector('[data-alternar="inicio"]')?.addEventListener('click', () => irPara('overview'));
+    gaveta.querySelector('[data-alternar="mensagens"]')?.addEventListener('click', () => repassar(document.getElementById('btn-dash-header-chat')));
     nav.addEventListener('click', (e) => {
       const b = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('.menu-celular-link')) : null;
       if (b) irPara(b.dataset.tab || '', b.dataset.sub || '');

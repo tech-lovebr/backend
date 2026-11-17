@@ -4824,3 +4824,26 @@ body[data-theme="dark"] .mini-perfil { background: #27272A; border-color: rgba(2
 .painel-linha.com-avatar .painel-linha-cabeca { border-bottom: 0; padding-bottom: .25rem; gap: .875rem; }
 .painel-linha-cabeca .conta-foto { width: 56px; height: 56px; margin: 0; }
 .painel-linha-cabeca .conta-foto svg { width: 26px; height: 26px; }
+
+/* Seções do cadastro do fornecedor em acordeão (fechadas por padrão). */
+.secao-acordeao { margin-top: 1.25rem; }
+.secao-acordeao > summary {
+  display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+  margin: 0 0 .625rem; cursor: pointer; list-style: none;
+  font-size: .6875rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--text-soft);
+}
+.secao-acordeao > summary::-webkit-details-marker { display: none; }
+.secao-acordeao > summary svg { width: 16px; height: 16px; transition: transform .15s ease; }
+.secao-acordeao[open] > summary svg { transform: rotate(180deg); }
+.secao-acordeao > summary:hover { color: #181D24; }
+.secao-acordeao:not([open]) > summary { margin-bottom: 0; }
+
+/* Redes sociais: só os ícones, cada um abre o perfil. */
+.redes-icones { display: inline-flex; flex-wrap: wrap; gap: .375rem; }
+.rede-icone {
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  border: 1px solid #E4E4E7; border-radius: var(--radius-control); color: #3F3F46; background: #FFFFFF;
+}
+.rede-icone svg { width: 16px; height: 16px; }
+.rede-icone:hover { border-color: #181D24; color: #181D24; }
+body[data-theme="dark"] .rede-icone { background: transparent; border-color: rgba(255, 255, 255, .12); color: #E4E4E7; }

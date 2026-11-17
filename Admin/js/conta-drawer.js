@@ -638,6 +638,38 @@ const ContaDrawer = (() => {
   const FATURAMENTO = { 5000: 'Até R$ 5 mil', 10000: 'R$ 5 mil a R$ 10 mil', 20000: 'R$ 10 mil a R$ 20 mil', 50000: 'R$ 20 mil a R$ 50 mil', 100000: 'R$ 50 mil a R$ 100 mil', 200000: 'Acima de R$ 100 mil' };
   const REDES = { instagram: 'Instagram', linkedin: 'LinkedIn', tiktok: 'TikTok', facebook: 'Facebook', youtube: 'YouTube' };
 
+  /* Redes sociais do fornecedor: só o ícone de cada uma; clicar abre o perfil. */
+  const ICONES_REDES = {
+    instagram: '<rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r=".6" fill="currentColor" />',
+    facebook: '<path d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V9H6.5v3.5H9V21h3.5v-8.5H15l.5-3.5h-3V7a1 1 0 0 1 1-1H15z" />',
+    linkedin: '<rect x="3" y="3" width="18" height="18" rx="3" /><path d="M8 10.5V17M8 7.5v.01M12 17v-6.5M12 13.5a2.5 2.5 0 0 1 5 0V17" />',
+    tiktok: '<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5" /><path d="M14 3c.4 2.6 2.2 4.4 5 4.7" />',
+    youtube: '<rect x="2.5" y="5.5" width="19" height="13" rx="4" /><path d="M10.5 9.5v5l4.5-2.5z" fill="currentColor" />'
+  };
+  const SITES_REDES = { instagram: 'https://instagram.com/', facebook: 'https://facebook.com/', linkedin: 'https://linkedin.com/in/', tiktok: 'https://tiktok.com/@', youtube: 'https://youtube.com/@' };
+  function linkDaRede(rede, valor) {
+    const v = String(valor || '').trim();
+    if (/^https?:\/\//i.test(v)) return v;
+    if (/^[\w.-]+\.[a-z]{2,}(\/|$)/i.test(v)) return 'https://' + v;
+    return (SITES_REDES[rede] || 'https://') + v.replace(/^@/, '');
+  }
+  function iconesDasRedes(f) {
+    const itens = Object.entries(f.social_links || {}).filter(([, url]) => String(url || '').trim());
+    if (!itens.length) return '';
+    return `<span class="redes-icones">${itens.map(([rede, url]) => {
+      const nome = REDES[rede] || rede;
+      const icone = ICONES_REDES[rede] || '<circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />';
+      return `<a href="${escapeHtml(linkDaRede(rede, url))}" target="_blank" rel="noopener" class="rede-icone" title="${escapeHtml(nome)}" aria-label="${escapeHtml(nome)}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${icone}</svg></a>`;
+    }).join('')}</span>`;
+  }
+
+  /* Seção em acordeão (começa fechada). */
+  const acordeao = (titulo, conteudo) => `
+      <details class="secao-acordeao">
+        <summary><span>${escapeHtml(titulo)}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="lista-dados">${conteudo}</div>
+      </details>`;
+
   const soDigitos = v => String(v ?? '').replace(/\D/g, '');
   function formatarCpf(v) {
     const d = soDigitos(v);
@@ -663,29 +695,21 @@ const ContaDrawer = (() => {
   function secoesDoCadastroHub(f, id) {
     const doc = String(f.document_type || 'cnpj').toLowerCase() === 'cpf' ? 'CPF da empresa' : 'CNPJ';
     const cidadeUf = (cidade, uf) => [cidade, uf].filter(Boolean).join(' / ');
-    const enderecoCom = (rua, numero) => [rua, numero].filter(Boolean).join(', ');
 
-    const mesmoEndereco = f.usa_endereco_perfil !== false
-      && !f.business_address && !f.business_cep && !f.business_city;
     const raio = f.service_radius_km == null ? '' : (Number(f.service_radius_km) === 0 ? 'Qualquer distância' : `${f.service_radius_km} km`);
     const parcelas = f.max_installments_no_interest == null ? ''
       : (Number(f.max_installments_no_interest) > 1 ? `Até ${f.max_installments_no_interest}x sem juros` : 'À vista');
-    const redes = Object.entries(f.social_links || {})
-      .filter(([, url]) => String(url || '').trim())
-      .map(([rede, url]) => linhaFixa(REDES[rede] || rede,
-        `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${escapeHtml(url)}</a>`)).join('');
+    const redes = iconesDasRedes(f);
 
     return `
-      <p class="drawer-section-title">Informações pessoais</p>
-      <div class="lista-dados">
-        ${linhaCadastro('Nome do responsável', f.contact_name)}
-        ${linhaCadastro('CPF', formatarCpf(f.responsavel_cpf))}
-        ${linhaCadastro('Data de nascimento', dataDeNascimento({ origem: 'b2b', id }))}
-        ${linhaCadastro('Celular', f.phone)}
-      </div>
+      ${acordeao('Informações pessoais', [
+        linhaCadastro('Nome do responsável', f.contact_name),
+        linhaCadastro('CPF', formatarCpf(f.responsavel_cpf)),
+        linhaCadastro('Data de nascimento', dataDeNascimento({ origem: 'b2b', id })),
+        linhaCadastro('Celular', f.phone)
+      ].join(''))}
 
-      <p class="drawer-section-title">Informações da empresa</p>
-      <div class="lista-dados">
+      ${acordeao('Informações da empresa', `
         ${linhaCadastro('Razão social', f.razao_social)}
         ${linhaCadastro('Nome fantasia', f.company_name)}
         ${linhaCadastro(doc, formatarCnpj(f.cnpj))}
@@ -693,28 +717,16 @@ const ContaDrawer = (() => {
         ${linhaCadastro('Faturamento mensal', FATURAMENTO[Math.round(Number(f.faturamento_mensal))] || (f.faturamento_mensal != null ? formatCurrency(f.faturamento_mensal) : ''))}
         ${linhaCadastro('Categoria', f.category)}
         ${linhaCadastro('CEP', formatarCep(f.cep))}
-        ${linhaCadastro('Endereço', enderecoCom(f.address, f.endereco_numero))}
-        ${linhaCadastro('Complemento', f.endereco_complemento)}
-        ${linhaCadastro('Bairro', f.bairro)}
+        ${linhaCadastro('Endereço', [f.address, f.endereco_numero, f.endereco_complemento].map(v => String(v || '').trim()).filter(Boolean).join(', '))}
         ${linhaCadastro('Cidade', cidadeUf(f.city, f.state))}
-        ${linhaCadastro('Descrição', f.description)}
-      </div>
+        ${linhaCadastro('Descrição', f.description)}`)}
 
       <p class="drawer-section-title">Atendimento</p>
       <div class="lista-dados">
-        ${mesmoEndereco
-          ? linhaCadastro('Endereço de atendimento', 'O mesmo da empresa')
-          : [
-              linhaCadastro('Endereço de atendimento', enderecoCom(f.business_address, f.business_numero)),
-              linhaCadastro('Complemento', f.business_complemento),
-              linhaCadastro('CEP', formatarCep(f.business_cep)),
-              linhaCadastro('Bairro', f.business_bairro),
-              linhaCadastro('Cidade', cidadeUf(f.business_city, f.business_state))
-            ].join('')}
         ${linhaCadastro('Raio de atendimento', raio)}
         ${linhaCadastro('Aceita visitas', simOuNao(f.aceita_visitas))}
         ${linhaCadastro('Oferece amostra', simOuNao(f.oferece_amostra))}
-        ${redes || linhaCadastro('Redes sociais', '')}
+        ${redes ? linhaFixa('Redes sociais', redes) : linhaCadastro('Redes sociais', '')}
       </div>
 
       <p class="drawer-section-title">Pagamento</p>

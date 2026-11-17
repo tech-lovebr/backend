@@ -16582,3 +16582,22 @@ html body #tab-create-event-page #btn-start-event-creation:hover svg { transform
   html body:has(#tab-overview.active) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { height: calc(64px + env(safe-area-inset-top, 0px)) !important; }
   html body #tab-overview .home-capa-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { margin-top: -48px; }
 }
+
+/* Celular: topo FLUTUANTE (Home e Criar evento) — caixa branca como a do
+   "Olá", com as mesmas margens laterais (16px), 12px do topo, cantos de
+   10px e 64px de altura; o conteúdo começa abaixo dele. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) {
+    top: calc(env(safe-area-inset-top, 0px) + 12px) !important; left: 16px !important; right: 16px !important; width: auto !important;
+    height: 64px !important; min-height: 0 !important; padding: 0 8px !important;
+    background: #FFFFFF !important; border: 0 !important; border-radius: 10px !important; box-shadow: none !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { margin-left: 0 !important; }
+  html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar > div:has(#btn-notifications-menu):not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-right: 0 !important; }
+  html body:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar > .logo-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { top: 0; }
+  body[data-theme="dark"]:has(:is(#tab-overview, #tab-create-event-page).active) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: #1F1F1F !important; }
+  /* O conteúdo começa 12px abaixo do topo flutuante (12 + 64 + 12 = 88px). */
+  html body #tab-overview .home-capa-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { margin-top: -24px; }
+  html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a):not(#love-h-b) { top: calc(env(safe-area-inset-top, 0px) + 88px); }
+}

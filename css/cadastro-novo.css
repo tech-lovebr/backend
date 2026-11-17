@@ -284,3 +284,11 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #cd#cd#cd .cd-pagina { justify-content: flex-start !important; padding-top: 24px !important; }
 }
+
+/* Tipo de evento escolhido (Casamento, Aniversário... e o "Outro"): fica
+   com a cor do hover e uma linha fina azul em volta, para ver que foi
+   clicado (antes só escurecia um pouco o fundo e parecia não ter marcado). */
+#cd#cd#cd#cd .type-card.is-selected, #cd#cd#cd#cd .type-card.is-selected:hover,
+#cd#cd#cd#cd #onboard-outro-input.is-selected {
+  background: rgba(24,59,84,.10) !important; border: 1px solid rgba(24,59,84,.45) !important; color: var(--cd-azul) !important;
+}

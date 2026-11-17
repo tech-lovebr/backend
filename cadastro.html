@@ -26,6 +26,8 @@
         document.documentElement.classList.add('love-en-domain');
         document.documentElement.lang = 'en';
         document.title = 'Create your account — Love';
+        // Endereço em inglês: /sign-up (o vercel.json já redireciona /cadastro).
+        if (location.pathname === '/cadastro') history.replaceState(history.state, '', '/sign-up' + location.search + location.hash);
       }
     } catch (e) {}
   </script>
@@ -37,7 +39,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&display=swap">
-  <link rel="stylesheet" href="css/cadastro-novo.css?v=20261117_vaocaixa">
+  <link rel="stylesheet" href="css/cadastro-novo.css?v=20261117_tipomarcado">
   <style>
     body { font-family: 'Outfit', system-ui, sans-serif; }
     .onboard-step { display: none; }
@@ -440,7 +442,7 @@
     (async function iniciarContaNova() {
       if (!/[?&]conta-nova=1(&|$)/.test(location.search)) return;
       const { data: { session } } = await supabaseClient.auth.getSession();
-      if (!session) { history.replaceState(null, '', '/cadastro'); return; }
+      if (!session) { history.replaceState(null, '', document.documentElement.classList.contains('love-en-domain') ? '/sign-up' : '/cadastro'); return; }
       contaNova = true;
       // Já entrou pelo Google: pula o acesso e vai direto para o tipo de evento.
       goToStep(2);

@@ -82,6 +82,8 @@ const server = http.createServer((req, res) => {
         // URL sem extensão (ex: /cadastro) — tenta servir o .html correspondente,
         // espelhando os rewrites de produção (vercel.json) para URLs limpas.
         if (!path.extname(safePath)) {
+          // planwithlove.com: /sign-up é o cadastro em inglês (igual ao vercel.json).
+          if (pathname === '/sign-up') return serveFile(path.join(PUBLIC_DIR, 'cadastro.html'));
           const htmlPath = `${safePath}.html`;
           return fs.stat(htmlPath, (err2, stats2) => {
             if (!err2 && stats2.isFile()) {

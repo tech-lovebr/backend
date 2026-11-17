@@ -16676,3 +16676,10 @@ html body #tab-create-event-page #create-event-capa-moldura:not(#love-h-a):not(#
    Descrição, Link personalizado) e o aviso do fuso um pouco maiores. */
 html body #tab-create-event-page #form-create-new-event-page label:not(#love-h-a):not(#love-h-b) { font-size: 14px !important; }
 html body #tab-create-event-page #form-create-new-event-page p.criar-evento-fuso:not(#love-h-a):not(#love-h-b) { font-size: 13px !important; }
+
+/* Desktop, Convite digital > Elementos: as caixinhas dos elementos voltam a
+   ter a linha fina em volta (a "pegada de app" tinha tirado). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .builder-el-item:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { border: 1px solid #E4E4E7 !important; }
+  html body .builder-el-item:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):hover { border-color: #D4D4D8 !important; }
+}

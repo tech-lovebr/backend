@@ -425,6 +425,25 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
 #view-login#view-login .lg-objetivo { border-color: transparent !important; background: rgba(255,255,255,.07); }
 #view-login#view-login .lg-objetivo:hover { border-color: transparent !important; background: rgba(255,255,255,.11); }
 #view-login#view-login .lg-objetivo[aria-pressed="true"] { border-color: transparent !important; background: #183B54 !important; color: #FFFFFF !important; }
+/* Cabeçalho bem separado do fundo (como no login/cadastro da Love, nas cores
+   escuras do Hub): topo fixo de 72px em vidro escuro com a linha fina embaixo;
+   fundo da página azul-noite um tom acima, com manchas suaves (azul-claro no
+   canto superior esquerdo, pêssego bem leve no superior direito); caixa com
+   sombra larga. A caixa começa logo abaixo do topo, com o mesmo vão no login
+   e no cadastro: 32px no computador e 24px no celular. */
+#view-login#view-login#view-login .lg-cabecalho,
+#view-login#view-login#view-login .lg-cabecalho.on { position: sticky !important; top: 0 !important; z-index: 50 !important; margin: 0 !important; width: 100% !important; background: rgba(12,24,36,.82) !important; -webkit-backdrop-filter: blur(16px) !important; backdrop-filter: blur(16px) !important; box-shadow: 0 1px 0 rgba(234,241,248,.1) !important; border-bottom: 0 !important; }
+#view-login#view-login#view-login .lg-nav { height: 72px !important; }
+#view-login#view-login#view-login .lg-fundo { background: radial-gradient(50% 60% at 12% 8%, rgba(169,198,234,.16) 0%, rgba(169,198,234,0) 100%), radial-gradient(45% 55% at 92% 6%, rgba(245,230,222,.08) 0%, rgba(245,230,222,0) 100%), radial-gradient(46% 42% at 18% 82%, rgba(24,59,84,.7) 0%, rgba(24,59,84,0) 100%), #13283C !important; }
+#view-login#view-login#view-login .lg-cartao { box-shadow: 0 40px 100px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06) !important; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-login#view-login#view-login .lg-cartao { border-radius: 28px !important; }
+  #view-login#view-login#view-login .lg-pagina { align-items: start !important; align-content: start !important; justify-content: center !important; place-items: start center !important; padding-top: 32px !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login#view-login .lg-cartao { border-radius: 24px !important; }
+  #view-login#view-login#view-login .lg-pagina { align-items: start !important; align-content: start !important; justify-content: center !important; place-items: start center !important; padding-top: 24px !important; }
+}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>

@@ -16731,3 +16731,16 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::b
   }
   html body #b2b-messages-view .b2b-chat-contacts-column > div:has(#b2b-chat-search):not(#love-h-a):not(#love-h-b) { height: auto !important; padding-top: 16px !important; }
 }
+
+/* Celular: (1) a colagem de Criar evento fica sobre o azul do painel
+   (#E4EDF8): o branco da foto se mistura com a cor (multiply) e as duas
+   metades da imagem se encostam sem sobrepor; (2) aba ativa do submenu do
+   topo num cinza bem claro, do tom do topo da landing (no lugar do azul). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+    background-color: #EEF7FF !important;
+    background-size: auto 50%, auto 50% !important;
+    background-blend-mode: multiply, multiply !important;
+  }
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #F1F3F5 !important; color: #18181B !important; }
+}

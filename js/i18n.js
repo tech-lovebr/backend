@@ -141,7 +141,7 @@
       senhaUmaMaiuscula: { pt: 'Uma letra maiúscula', en: 'One uppercase letter' },
       senhaUmaMinuscula: { pt: 'Uma letra minúscula', en: 'One lowercase letter' },
       senhaUmNumero: { pt: 'Um número', en: 'One number' },
-      senhaDificil: { pt: 'Difícil de adivinhar (sem 123, nome ou e-mail)', en: 'Hard to guess (no 123, name or email)' },
+      senhaUmEspecial: { pt: 'Um caractere especial (!@#$%&*)', en: 'One special character (!@#$%&*)' },
       senhaFraca: { pt: 'Senha fraca', en: 'Weak password' },
       senhaMedia: { pt: 'Senha média', en: 'Medium password' },
       senhaForte: { pt: 'Senha forte', en: 'Strong password' },

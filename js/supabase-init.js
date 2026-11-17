@@ -126,86 +126,17 @@ function criarSeletorData(input, opcoes) {
   return input;
 }
 
-/* Senha obrigatória (cadastro, Crie uma nova senha, Configurações): pelo
-   menos 8 caracteres, uma letra maiúscula, uma minúscula, um número e não
-   ser fácil de adivinhar (senhaEhFacil). Sem isso a senha não é salva.
-   A Love movimenta dinheiro (carteira, saques, split), então "Senha123",
-   "Abc12345", "Love2026" e senhas com o nome/e-mail da pessoa ficam de fora.
-   Isto é a primeira barreira, no navegador; a de verdade fica no Supabase
-   (Auth → requisitos de senha, senhas vazadas, limite de tentativas). */
-const MENSAGEM_REGRAS_SENHA = 'A senha precisa ter pelo menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número, e não pode ser fácil de adivinhar (como Senha123, sequências, seu nome ou seu e-mail).';
+/* Senha obrigatória (cadastro, Crie uma nova senha, Configurações): as 5
+   regras de mercado — pelo menos 8 caracteres, uma letra maiúscula, uma
+   minúscula, um número e um caractere especial. Sem isso a senha não é salva.
+   Isto é a barreira da tela; a de verdade fica no Supabase Auth (requisitos
+   de senha, bloqueio de senhas vazadas e limite de tentativas). */
+const MENSAGEM_REGRAS_SENHA = 'A senha precisa ter pelo menos 8 caracteres, uma letra maiúscula, uma letra minúscula, um número e um caractere especial.';
 
-// Palavras que, com números/símbolos em volta, viram as senhas mais usadas.
-const SENHAS_PALAVRAS_COMUNS = new Set([
-  'senha', 'minhasenha', 'senhaforte', 'novasenha', 'password', 'passw', 'pass', 'admin', 'administrador', 'root', 'user', 'usuario',
-  'teste', 'test', 'mudar', 'mudarsenha', 'trocar', 'acesso', 'entrar', 'login', 'segredo', 'secreto', 'secret', 'welcome', 'bemvindo', 'bemvinda',
-  'love', 'loves', 'iloveyou', 'teamo', 'amor', 'meuamor', 'amoreterno', 'amorzinho', 'paixao', 'casamento', 'casal', 'noiva', 'noivo', 'festa',
-  'aniversario', 'deus', 'jesus', 'deusefiel', 'familia', 'feliz', 'felicidade', 'brasil', 'brazil', 'saopaulo', 'riodejaneiro',
-  'flamengo', 'corinthians', 'palmeiras', 'santos', 'vasco', 'gremio', 'internacional', 'cruzeiro', 'botafogo', 'fluminense', 'atletico', 'bahia',
-  'qwerty', 'qwertyuiop', 'asdf', 'asdfgh', 'zxcvbn', 'abc', 'abcd', 'abcde', 'abcdef', 'abcdefg', 'abcdefgh', 'aa', 'aaa',
-  'princesa', 'princess', 'dragon', 'monkey', 'master', 'shadow', 'sunshine', 'football', 'futebol', 'baseball', 'superman', 'batman',
-  'maria', 'joao', 'jose', 'ana', 'pedro', 'lucas', 'gabriel', 'rafael', 'mateus', 'matheus', 'julia', 'beatriz', 'mariana', 'fernanda',
-  'banco', 'pix', 'dinheiro', 'carteira', 'gateway', 'asaas'
-]);
-// Senhas inteiras muito usadas que escapam da regra de palavras.
-const SENHAS_INTEIRAS_COMUNS = new Set([
-  '1q2w3e4r', '1q2w3e4r5t', 'q1w2e3r4', 'q1w2e3r4t5', '1qaz2wsx', 'zaq12wsx', 'qazwsx', 'a1b2c3d4', 'a1s2d3f4', 'p4ssw0rd', 'passw0rd', 'trustno1'
-]);
-const SEQUENCIAS_SENHA = ['abcdefghijklmnopqrstuvwxyz', '01234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm', '1qaz2wsx3edc', 'qazwsxedc'];
-
-/** Troca os "disfarces" mais comuns (S3nh@ → senha) e deixa em minúsculas sem acento. */
-function normalizarSenhaParaComparar(v) {
-  return String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/@|4/g, 'a').replace(/3/g, 'e').replace(/[1!|]/g, 'i').replace(/0/g, 'o').replace(/[$5]/g, 's').replace(/7/g, 't');
-}
-
-/**
- * true quando a senha é fácil de adivinhar, mesmo cumprindo maiúscula/minúscula/número.
- * @param {string} senha
- * @param {{ email?: string, nome?: string }} [contexto] e-mail e nome da pessoa, quando já se sabe
- */
-function senhaEhFacil(senha, contexto) {
+/** @param {string} senha */
+function senhaCumpreRegras(senha) {
   const v = String(senha || '');
-  if (!v) return true;
-  const minus = v.toLowerCase();
-  if (SENHAS_INTEIRAS_COMUNS.has(minus)) return true;
-  // Pouca variedade: "Aaaa1111", "Abababab1".
-  if (new Set(minus).size < 5) return true;
-  // 4 ou mais iguais seguidos (aaaa, 1111).
-  if (/(.)\1{3,}/.test(minus)) return true;
-  // 4 ou mais em sequência, para frente ou para trás (1234, 4321, abcd, qwer, asdf).
-  for (const seq of SEQUENCIAS_SENHA) {
-    const inv = seq.split('').reverse().join('');
-    for (let i = 0; i + 4 <= seq.length; i++) {
-      if (minus.includes(seq.slice(i, i + 4)) || minus.includes(inv.slice(i, i + 4))) return true;
-    }
-  }
-  // Palavra comum com números/símbolos em volta: Senha123, Love2026!, Flamengo10, S3nh@2024.
-  const letras = normalizarSenhaParaComparar(v).replace(/[^a-z]/g, '');
-  if (SENHAS_PALAVRAS_COMUNS.has(letras)) return true;
-  const soLetras = minus.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
-  if (SENHAS_PALAVRAS_COMUNS.has(soLetras)) return true;
-  // A palavra da Love e as mais óbvias não podem aparecer em lugar nenhum da senha.
-  if (/love|senha|password|passw/.test(normalizarSenhaParaComparar(v))) return true;
-  // Nome ou e-mail da pessoa dentro da senha.
-  const ctx = contexto || {};
-  const pedacos = [];
-  const usuarioEmail = String(ctx.email || '').toLowerCase().split('@')[0];
-  usuarioEmail.split(/[^a-z0-9]+/).forEach(p => pedacos.push(p));
-  pedacos.push(usuarioEmail.replace(/[^a-z0-9]/g, ''));
-  String(ctx.nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/).forEach(p => pedacos.push(p));
-  const semAcento = minus.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  if (pedacos.some(p => p && p.length >= 3 && (semAcento.includes(p) || letras.includes(p)))) return true;
-  return false;
-}
-
-/**
- * @param {string} senha
- * @param {{ email?: string, nome?: string }} [contexto]
- */
-function senhaCumpreRegras(senha, contexto) {
-  const v = String(senha || '');
-  return v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v) && !senhaEhFacil(v, contexto);
+  return v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v) && /[^A-Za-z0-9\s]/.test(v);
 }
 
 function montarNomeCliente(firstName, lastName) {

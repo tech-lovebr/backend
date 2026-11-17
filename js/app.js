@@ -19194,8 +19194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!novaSenhaInput || !novaSenhaPainelRegras) return;
     const valor = novaSenhaInput.value;
     /** @type {Record<string, boolean>} */
-    const contexto = { email: /** @type {HTMLInputElement|null} */ (document.getElementById('login-nova-senha-email'))?.value || '' };
-    const regras = { length: valor.length >= 8, upper: /[A-Z]/.test(valor), lower: /[a-z]/.test(valor), number: /[0-9]/.test(valor), facil: !!valor && !senhaEhFacil(valor, contexto) };
+    const regras = { length: valor.length >= 8, upper: /[A-Z]/.test(valor), lower: /[a-z]/.test(valor), number: /[0-9]/.test(valor), special: /[^A-Za-z0-9\s]/.test(valor) };
     const cumpridas = Object.values(regras).filter(Boolean).length;
     novaSenhaPainelRegras.querySelectorAll('li[data-rule]').forEach(li => {
       li.classList.toggle('is-met', !!regras[/** @type {HTMLElement} */ (li).dataset.rule || '']);
@@ -19238,7 +19237,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mesmas regras de senha do cadastro (8+ caracteres, maiúscula, minúscula e
     // número). Sem mensagem: volta para a Nova senha com o quadro de regras aberto.
-    if (!senhaCumpreRegras(password, { email: campoEmail.value })) { campoSenha.focus(); atualizarRegrasNovaSenha(); return; }
+    if (!senhaCumpreRegras(password)) { campoSenha.focus(); atualizarRegrasNovaSenha(); return; }
     if (password !== campoConfirmar.value) {
       mostrarErro(tLogin('login.senhasNaoCoincidem', 'As senhas não coincidem. Digite a confirmação de novo.'));
       campoConfirmar.value = '';
@@ -19380,7 +19379,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = document.getElementById('register-email-input').value.trim();
       const password = document.getElementById('register-password-input').value;
       const submitBtn = document.getElementById('btn-register-submit');
-      if (!senhaCumpreRegras(password, { email, nome: name })) { showToast(MENSAGEM_REGRAS_SENHA, '⚠️'); return; }
+      if (!senhaCumpreRegras(password)) { showToast(MENSAGEM_REGRAS_SENHA, '⚠️'); return; }
 
       submitBtn.disabled = true;
       const { data: cadastro, error } = await supabaseClient.auth.signUp({
@@ -24134,7 +24133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmar = valor('settings-password-confirm');
     if (!atual || !nova || !confirmar) return avisar('Preencha os 3 campos de senha.');
     if (nova !== confirmar) return avisar('A confirmação não coincide com a nova senha.');
-    if (!senhaCumpreRegras(nova, { email: session && session.user ? session.user.email : '', nome: session && session.user ? [session.user.user_metadata?.first_name, session.user.user_metadata?.last_name].filter(Boolean).join(' ') : '' })) return avisar(MENSAGEM_REGRAS_SENHA);
+    if (!senhaCumpreRegras(nova)) return avisar(MENSAGEM_REGRAS_SENHA);
     if (!session || !btn) return;
     btn.disabled = true;
     try {

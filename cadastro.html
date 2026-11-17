@@ -31,8 +31,8 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261116_senhaforte"></script>
-  <script src="js/i18n.js?v=20261116_senhaforte"></script>
+  <script src="js/supabase-init.js?v=20261116_especial"></script>
+  <script src="js/i18n.js?v=20261116_especial"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -212,7 +212,7 @@
                   <li data-rule="upper"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMaiuscula">Uma letra maiúscula</span></li>
                   <li data-rule="lower"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmaMinuscula">Uma letra minúscula</span></li>
                   <li data-rule="number"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmNumero">Um número</span></li>
-                  <li data-rule="facil"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaDificil">Difícil de adivinhar (sem 123, nome ou e-mail)</span></li>
+                  <li data-rule="special"><span class="password-strength-check">○</span> <span data-love-i18n="cadastro.senhaUmEspecial">Um caractere especial (!@#$%&amp;*)</span></li>
                 </ul>
               </div>
             </div>
@@ -523,20 +523,13 @@
     const passwordBarFill = document.getElementById('password-strength-bar-fill');
     const passwordLabel = document.getElementById('password-strength-label');
 
-    // E-mail e nome da pessoa: a senha não pode conter nenhum dos dois.
-    function contextoSenha() {
-      const valor = id => (document.getElementById(id) || {}).value || '';
-      return { email: valor('onboard-email-input'), nome: valor('onboard-firstname-input') + ' ' + valor('onboard-lastname-input') };
-    }
-
     function evaluatePasswordRules(value) {
       return {
         length: value.length >= 8,
         upper: /[A-Z]/.test(value),
         lower: /[a-z]/.test(value),
         number: /[0-9]/.test(value),
-        // Senha123, 1234, aaaa, Love2026, nome ou e-mail (senhaEhFacil em js/supabase-init.js).
-        facil: !!value && !senhaEhFacil(value, contextoSenha())
+        special: /[^A-Za-z0-9\s]/.test(value)
       };
     }
 
@@ -579,9 +572,7 @@
     }
     // Continuar só fica liberado com as 5 regras cumpridas.
     const btnContinuarAcesso = document.getElementById('btn-onboard-submit');
-    function liberarContinuar() { btnContinuarAcesso.disabled = !senhaCumpreRegras(passwordInput.value, contextoSenha()); }
-    // Trocar o e-mail pode tornar a senha "fácil" (ou deixar de tornar).
-    document.getElementById('onboard-email-input')?.addEventListener('input', () => { if (passwordInput.value) { updatePasswordStrength(); liberarContinuar(); } });
+    function liberarContinuar() { btnContinuarAcesso.disabled = !senhaCumpreRegras(passwordInput.value); }
     passwordInput.addEventListener('input', () => { updatePasswordStrength(); mostrarRegrasSeFaltar(); liberarContinuar(); });
     passwordInput.addEventListener('focus', mostrarRegrasSeFaltar);
     passwordInput.addEventListener('blur', () => passwordPanel.classList.remove('is-visible'));
@@ -649,7 +640,7 @@
       mostrarErro('cd-erro-acesso', '');
       // Senha fora das regras: sem mensagem, só volta para o campo com o
       // quadro de regras aberto mostrando o que falta.
-      if (!senhaCumpreRegras(passwordInput.value, contextoSenha())) {
+      if (!senhaCumpreRegras(passwordInput.value)) {
         passwordInput.focus();
         mostrarRegrasSeFaltar();
         return;
@@ -665,7 +656,7 @@
 
     async function criarContaComEmail() {
       mostrarErro('cd-erro-criar', '');
-      if (!senhaCumpreRegras(passwordInput.value, contextoSenha())) {
+      if (!senhaCumpreRegras(passwordInput.value)) {
         goToStep(1);
         updatePasswordStrength();
         setTimeout(() => { passwordInput.focus(); mostrarRegrasSeFaltar(); }, 50);

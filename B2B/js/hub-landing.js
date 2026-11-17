@@ -8,13 +8,13 @@
      aparece. No love.com.br nada disso roda. */
   const EN = document.documentElement.classList.contains('hub-en');
   const D = {
-    'Love Hub: CRM para Profissionais de Eventos': 'Love Hub: CRM for Event Professionals',
+    'Love Hub: CRM para Fornecedores de Eventos': 'Love Hub: CRM for Event Vendors',
     'Encontre clientes': 'Find clients', 'Perguntas frequentes': 'FAQ', 'Abrir menu': 'Open menu', 'Fechar menu': 'Close menu', 'Seções': 'Sections', 'Receba pagamentos': 'Get paid', 'Entrar': 'Log in', 'Cadastre-se grátis': 'Sign up free',
     'Love Hub, início': 'Love Hub, home', 'Escolha seu perfil': 'Choose your profile',
     'Para anfitriões': 'For hosts', 'Para fornecedores': 'For vendors',
     'Clientes e cobranças num lugar só': 'Clients and payments in one place',
-    'Mais eventos na agenda.': 'More events on your calendar.', 'Mais dinheiro na conta.': 'More money in your account.',
-    'Encontre novos clientes na Love, envie propostas rápidas e receba por link sem burocracia.': 'Find new clients on Love, send quick proposals and get paid by link, with no red tape.',
+    'O CRM para vender mais': 'The CRM to sell more', 'e gerenciar seus eventos': 'and manage your events',
+    'O software completo para atrair novos clientes, enviar propostas e gerenciar entregas': 'The complete software to attract new clients, send proposals and manage deliveries',
     'Ver como funciona': 'See how it works',
     'Mesa comprida de festa ao ar livre, com guardanapos azuis, flores brancas e azuis e velas': 'Long outdoor party table with blue napkins, white and blue flowers and candles',
     'Casamento': 'Wedding', 'Aniversário': 'Birthday', 'Chá de bebê': 'Baby shower', 'Decoração': 'Decor', 'Bolos e doces': 'Cakes and sweets', 'Bufê': 'Catering',

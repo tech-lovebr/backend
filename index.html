@@ -101,7 +101,7 @@
   <link rel="stylesheet" href="css/styles.css?v=20261116_linhasbrancas">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
-  <link rel="stylesheet" href="css/landing-nova.css?v=20261117_rodape">
+  <link rel="stylesheet" href="css/landing-nova.css?v=20261117_suave">
   <link rel="stylesheet" href="css/login-novo.css?v=20261116_recuperacao3">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
@@ -369,18 +369,6 @@
   <p class="lv-more">Chá de panela, chá revelação <span class="lv-hand">e o próximo.</span></p>
 </section>
 
-<!-- FAQ -->
-<section class="lv-wrap lv-faq" style="padding-bottom:clamp(56px,7vw,104px) !important">
-  <div style="display:grid !important;gap:16px !important;align-content:start !important"><h2 class="lv-h2" data-en-html="Frequently asked &lt;span class=&quot;lv-it&quot;&gt;questions&lt;/span&gt;">Perguntas <span class="lv-it">frequentes</span></h2><p class="lv-p" data-en="Didn&#39;t find what you were looking for? Talk to us through the Help Center.">Não achou o que procurava? Fale com a gente pela Central de ajuda.</p></div>
-  <div id="lv-faq">
-    <div class="lv-qa lv-open"><button aria-expanded="true"><span data-en="How much does it cost to create my event?">Quanto custa criar o meu evento?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="Creating the event, the digital invitation and the gift registry is free. Start right now and publish only when it looks just right.">Criar o evento, o convite digital e a lista de presentes é grátis. Você começa agora mesmo e só publica quando estiver do seu jeito.</p></div></div></div>
-    <div class="lv-qa"><button aria-expanded="false"><span data-en="How do I receive cash gifts?">Como recebo os presentes em dinheiro?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="When a guest gives a gift, the amount goes to your Love Wallet balance, with the sender&#39;s message. Then just withdraw to your account via Pix, right from the platform.">Quando um convidado presenteia, o valor cai no saldo da sua Carteira na Love, com o recado de quem enviou. Depois é só sacar para a sua conta via Pix, direto pela plataforma.</p></div></div></div>
-    <div class="lv-qa"><button aria-expanded="false"><span data-en="Do my guests need an account?">Meus convidados precisam criar conta?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="No. They open the invitation link, RSVP and choose a gift in a few taps, on their phone or computer.">Não. Eles abrem o link do convite, confirmam a presença e escolhem o presente em poucos toques, pelo celular ou pelo computador.</p></div></div></div>
-    <div class="lv-qa"><button aria-expanded="false"><span data-en="Is it safe to pay and receive through Love?">É seguro pagar e receber pela Love?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="Yes. Connections are encrypted, payments are processed by a partner payment institution and every gift is recorded in your statement, with date, amount and payment method.">Sim. As conexões são criptografadas, os pagamentos são processados por instituição de pagamento parceira e cada presente fica registrado no seu extrato, com data, valor e forma de pagamento.</p></div></div></div>
-    <div class="lv-qa"><button aria-expanded="false"><span data-en="Does it work for events other than weddings?">Serve para outros eventos além de casamento?</span><span class="lv-pm"></span></button><div class="lv-ans"><div><p data-en="Yes. There are templates for baby showers, gender reveals, bridal showers, birthdays, anniversaries and other celebrations.">Serve. Há modelos para chá de bebê, chá revelação, chá de panela, aniversário, bodas e outras comemorações.</p></div></div></div>
-  </div>
-</section>
-
 <!-- FINAL -->
 <section class="lv-final lv-pl lv-gr lv-petalsky lv-drift" id="lv-criar"><div class="lv-emb" aria-hidden="true"><svg viewBox="-6 -6 405 325"><g filter="url(#lv-eb)"><use href="#lv-b1"/><use href="#lv-b2"/><use href="#lv-b3"/><use href="#lv-b4"/></g></svg></div>
   <div class="lv-ov">
@@ -431,7 +419,6 @@
           <li><button type="button" id="btn-footer-find-event" data-en="Find an event">Encontrar um evento</button></li>
           <li><button type="button" class="btn-trigger-login" data-en="Host area">Área do anfitrião</button></li>
           <li><button type="button" id="btn-footer-b2b-advisors" data-en="Advisor dashboard">Painel de assessores</button></li>
-          <li><a href="#lv-faq" data-en="Common questions">Perguntas frequentes</a></li>
           <li><button type="button" id="btn-footer-help-center" data-en="Help Center">Central de ajuda</button></li>
           <li><button type="button" id="btn-footer-contact" data-en="Contact us">Fale conosco</button></li>
           <li><button type="button" id="btn-footer-blog" data-en="Blog">Blog</button></li>
@@ -499,8 +486,8 @@
         if (document.hidden || palavras.length < 2) return;
         i = (i + 1) % palavras.length;
         gira.classList.add('is-saindo');
-        setTimeout(function () { gira.textContent = palavras[i]; gira.classList.remove('is-saindo'); }, 300);
-      }, 2400);
+        setTimeout(function () { gira.textContent = palavras[i]; gira.classList.remove("is-saindo"); }, 700);
+      }, 4500);
     })();
   </script>
 </footer>
@@ -5807,13 +5794,13 @@
 
   <!-- Scripts Modulares -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="js/supabase-init.js?v=20261116_vazada"></script>
+  <script src="js/supabase-init.js?v=20261117_novasenha"></script>
   <script src="js/data.js?v=20261013_vitrine"></script>
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261116_vazada"></script>
-  <script src="js/landing.js?v=20261116_headline"></script>
+  <script src="js/app.js?v=20261117_novasenha"></script>
+  <script src="js/landing.js?v=20261117_suave"></script>
   <script src="js/carteira.js?v=20261116_olho"></script>
   <script src="js/checklist.js?v=20261030_convidadosvazio"></script>
   <script src="js/pedidos-orcamento.js?v=20261115_lista"></script>

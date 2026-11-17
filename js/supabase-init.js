@@ -9,6 +9,8 @@
 // antes do cliente consumi-lo. Em /login?nova-senha=1 guarda o que veio na
 // URL (o cliente apaga o hash ao ler o token) para o js/app.js.
 (function () {
+  // URL de chegada, antes do cliente do Supabase apagar o token do endereço.
+  window.__loveUrlChegada = window.location.search + window.location.hash;
   const hash = new URLSearchParams(window.location.hash.slice(1));
   const query = new URLSearchParams(window.location.search);
   if (window.location.pathname === '/login' && query.get('nova-senha') === '1') {

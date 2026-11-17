@@ -497,8 +497,8 @@
 
 /* Título da abertura: "seu casamento" alterna com outras celebrações (js/landing.js),
    no mesmo azul mais forte do antigo "para suas celebrações". */
-#view-public-site#view-public-site .lv-dis .lv-gira { display: inline-block; white-space: nowrap; transition: opacity .35s ease, transform .35s ease; }
-#view-public-site#view-public-site .lv-dis .lv-gira.lv-gira-sai { opacity: 0; transform: translateY(.18em); }
+#view-public-site#view-public-site .lv-dis .lv-gira { display: inline-block; white-space: nowrap; transition: opacity .7s cubic-bezier(.4, 0, .2, 1), transform .7s cubic-bezier(.4, 0, .2, 1), filter .7s cubic-bezier(.4, 0, .2, 1); }
+#view-public-site#view-public-site .lv-dis .lv-gira.lv-gira-sai { opacity: 0; transform: translateY(.12em); filter: blur(4px); }
 /* Celular: a letra do título diminui o suficiente para "seu chá de fraldas"
    (a palavra mais longa) caber numa linha, sem a frase pular de altura. */
 @media (max-width: 768px) {
@@ -543,8 +543,8 @@
 #view-public-site#view-public-site .lv-rod-faixa{background:#122C3F;color:#FFFFFF;padding:22px 0}
 #view-public-site#view-public-site .lv-rod-frase{font-size:36px !important;font-weight:300 !important;line-height:40px !important;letter-spacing:-.015em !important;color:#FFFFFF !important;white-space:nowrap;overflow:hidden}
 #view-public-site#view-public-site .lv-rod-frase b{font-weight:500 !important;color:#F2D3C6 !important}
-#view-public-site#view-public-site .lv-rod-gira{display:inline-block;transition:opacity .3s ease,transform .3s ease}
-#view-public-site#view-public-site .lv-rod-gira.is-saindo{opacity:0;transform:translateY(-.3em)}
+#view-public-site#view-public-site .lv-rod-gira{display:inline-block;transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1),filter .7s cubic-bezier(.4,0,.2,1)}
+#view-public-site#view-public-site .lv-rod-gira.is-saindo{opacity:0;transform:translateY(-.12em);filter:blur(4px)}
 
 #view-public-site#view-public-site .lv-rod-escuro{background:var(--deep);color:#FFFFFF;padding:48px 0 40px}
 #view-public-site#view-public-site .lv-rod-linha{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}

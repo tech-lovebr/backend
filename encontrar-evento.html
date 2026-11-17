@@ -11,9 +11,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
-  <link rel="stylesheet" href="css/landing-nova.css?v=20261117_rodape">
+  <link rel="stylesheet" href="css/landing-nova.css?v=20261117_suave">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-init.js?v=20261116_vazada"></script>
+  <script src="js/supabase-init.js?v=20261117_novasenha"></script>
   <style>
     /* Encontrar evento: mesmo topo, fundo e rodapé da landing (css/landing-nova.css). */
     html, body { margin: 0; background: #F7F8FA; }
@@ -30,6 +30,8 @@
     #view-public-site#view-public-site .ee-campo input::placeholder { color: var(--soft); }
     #view-public-site#view-public-site .ee-campo input::-webkit-search-cancel-button { -webkit-appearance: none; }
     #view-public-site#view-public-site .ee-form .lv-btn { height: 48px !important; padding: 0 24px !important; flex: none; }
+    #view-public-site#view-public-site .ee-form .ee-procurar { gap: 8px !important; }
+    #view-public-site#view-public-site .ee-form .ee-procurar svg { width: 18px; height: 18px; flex: none; }
     #view-public-site#view-public-site .ee-aviso { margin: 0; font-size: 14px !important; color: var(--mute) !important; }
     #view-public-site#view-public-site .ee-corpo { padding: clamp(40px, 6vw, 72px) 0 clamp(64px, 8vw, 104px); }
     #view-public-site#view-public-site .ee-faixa { max-width: 760px; margin: 0 auto; }
@@ -97,7 +99,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
               <input type="search" id="ee-texto" name="q" autocomplete="off" placeholder="Pesquisar pelo nome" aria-label="Pesquisar pelo nome dos anfitriões ou do evento">
             </label>
-            <button type="submit" class="lv-btn lv-btn-d">Pesquisar</button>
+            <button type="submit" class="lv-btn lv-btn-d ee-procurar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Procurar</span></button>
           </form>
           <p class="ee-aviso" id="ee-aviso" hidden></p>
         </div>
@@ -149,7 +151,6 @@
           <li><a href="/encontrar-evento">Encontrar um evento</a></li>
           <li><a href="/login">Área do anfitrião</a></li>
           <li><a href="/login">Painel de assessores</a></li>
-          <li><a href="/#lv-faq">Perguntas frequentes</a></li>
           <li><a href="/login">Central de ajuda</a></li>
           <li><a href="/">Fale conosco</a></li>
           <li><a href="/">Blog</a></li>
@@ -217,8 +218,8 @@
         if (document.hidden || palavras.length < 2) return;
         i = (i + 1) % palavras.length;
         gira.classList.add('is-saindo');
-        setTimeout(function () { gira.textContent = palavras[i]; gira.classList.remove('is-saindo'); }, 300);
-      }, 2400);
+        setTimeout(function () { gira.textContent = palavras[i]; gira.classList.remove("is-saindo"); }, 700);
+      }, 4500);
     })();
   </script>
 </footer>

@@ -19219,9 +19219,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Chegou o evento de recuperação sem ter passado pelo /login?nova-senha=1
-  // (ex.: ?code= de outro fluxo): abre o painel do mesmo jeito.
+  // (ex.: ?code= de outro fluxo): abre o painel do mesmo jeito — mas só na aba
+  // que abriu pelo link do e-mail. O Supabase repassa o evento para as outras
+  // abas abertas (ex.: a do "Esqueceu a senha?"), e aí a página aparecia
+  // duplicada: uma em /login?nova-senha=1 e outra em love.com.br.
+  const abriuPeloLinkDoEmail = /[?&#](code|token_hash|access_token)=/.test(/** @type {any} */ (window).__loveUrlChegada || '');
   supabaseClient.auth.onAuthStateChange((evento) => {
-    if (evento === 'PASSWORD_RECOVERY' && !novaSenhaAberta) abrirPainelNovaSenha();
+    if (evento === 'PASSWORD_RECOVERY' && !novaSenhaAberta && abriuPeloLinkDoEmail) abrirPainelNovaSenha();
   });
 
   document.getElementById('form-login-nova-senha')?.addEventListener('submit', async (e) => {
@@ -19304,7 +19308,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ? 'https://love.com.br'
         : window.location.origin;
       await supabaseClient.auth.resetPasswordForEmail(email, {
-        redirectTo: `${resetOrigin}/resetar-senha`,
+        // Direto para o Crie uma nova senha (sem passar por /resetar-senha).
+        redirectTo: `${resetOrigin}/login?nova-senha=1`,
       });
       submitBtn.disabled = false;
 

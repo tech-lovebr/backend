@@ -447,11 +447,11 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login#view-login .lg-cartao { box-shadow: 0 40px 100px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06) !important; }
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   #view-login#view-login#view-login .lg-cartao { border-radius: 28px !important; }
-  #view-login#view-login#view-login .lg-pagina { align-items: start !important; align-content: start !important; justify-content: center !important; place-items: start center !important; padding-top: 32px !important; }
+  #view-login#view-login#view-login .lg-pagina { grid-template-columns: minmax(0, 1fr) !important; justify-content: stretch !important; align-content: start !important; align-items: start !important; justify-items: center !important; padding-top: 32px !important; }
 }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-login#view-login#view-login .lg-cartao { border-radius: 24px !important; }
-  #view-login#view-login#view-login .lg-pagina { align-items: start !important; align-content: start !important; justify-content: center !important; place-items: start center !important; padding-top: 24px !important; }
+  #view-login#view-login#view-login .lg-pagina { grid-template-columns: minmax(0, 1fr) !important; justify-content: stretch !important; align-content: start !important; align-items: start !important; justify-items: center !important; padding-top: 24px !important; }
 }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>

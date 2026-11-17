@@ -1462,7 +1462,9 @@ function initPasswordForm() {
 
     if (!current || !next || !confirm) return mostrarMsgForm('password-msg', 'Preencha a senha atual e a nova senha duas vezes.', true);
     if (next !== confirm) return mostrarMsgForm('password-msg', 'A confirmação não é igual à nova senha.', true);
-    if (next.length < 6) return mostrarMsgForm('password-msg', 'A nova senha precisa ter pelo menos 6 caracteres.', true);
+    const sessaoAtual = window.b2bSession && window.b2bSession.user;
+    const contextoSenha = { email: sessaoAtual ? sessaoAtual.email : '', nome: sessaoAtual ? [sessaoAtual.user_metadata && sessaoAtual.user_metadata.full_name, sessaoAtual.user_metadata && sessaoAtual.user_metadata.company_name].filter(Boolean).join(' ') : '' };
+    if (!senhaCumpreRegrasHub(next, contextoSenha)) return mostrarMsgForm('password-msg', MENSAGEM_REGRAS_SENHA_HUB, true);
     if (next === current) return mostrarMsgForm('password-msg', 'A nova senha precisa ser diferente da atual.', true);
 
     const btn = form.querySelector('button[type="submit"]');

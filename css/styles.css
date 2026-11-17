@@ -16603,16 +16603,17 @@ html body #tab-create-event-page #btn-start-event-creation:hover svg { transform
 }
 
 /* Celular: a capa da Home (e a colagem de Criar evento) volta a encostar no
-   topo da tela, com o topo flutuante POR CIMA dela; a barra de baixo também
-   flutua, com as mesmas margens da caixa do "Olá" (16px de cada lado) e 12px
-   do fim da tela. */
+   topo da tela, com o topo flutuante POR CIMA dela. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  :root { --bottom-bar-height-mobile: calc(76px + env(safe-area-inset-bottom, 0px)) !important; }
   html body #tab-overview .home-capa-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { margin-top: calc(-112px - env(safe-area-inset-top, 0px)); }
   html body #tab-overview .home-capa-celular-foto:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { height: calc(300px + env(safe-area-inset-top, 0px)); }
   html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a):not(#love-h-b):not(#love-h-c) { top: 0; }
-  html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
-    top: auto !important; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px) !important; left: 16px !important; right: 16px !important; width: auto !important;
-    height: 64px !important; padding-bottom: 0 !important; border-radius: 10px !important; overflow: hidden;
+}
+
+/* Celular: barra de baixo como antes (encostada embaixo, largura toda), só
+   que branca e sólida, da mesma cor do topo flutuante. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]) .sidebar-icon-rail:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+    background: #FFFFFF !important; background-image: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
   }
 }

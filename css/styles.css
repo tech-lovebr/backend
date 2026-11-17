@@ -15176,7 +15176,7 @@ html body .floorplan-empty-hint .floorplan-vazio-animado:not(#love-h-a):not(#lov
     font-size: 17px !important; font-weight: 600 !important; letter-spacing: 0 !important; line-height: 1.3 !important; color: #18181B !important;
   }
   html body #tab-b2b #b2b-messages-view .chat-total-celular:empty:not(#love-h-a):not(#love-h-b) { display: none; }
-  html body #tab-b2b #b2b-messages-view .chat-total-celular:not(:empty) + div:not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-top: 0 !important; }
+  html body #tab-b2b #b2b-messages-view .chat-total-celular:not(:empty) + div:not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-top: 16px !important; }
   body[data-theme="dark"] #tab-b2b #b2b-messages-view .chat-total-celular { color: #FFFFFF !important; }
 }
 
@@ -16713,4 +16713,21 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::b
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     backdrop-filter: blur(20px) saturate(180%) !important;
   }
+}
+
+/* Celular: (1) pop-up "Que tipo de evento você quer criar?" sem o X (ficava
+   em cima do título) — fecha tocando fora; (2) colagem de Criar evento mais
+   cheia: o grupo de fotos da direita preenche a parte de cima e o da
+   esquerda a de baixo (a imagem é larga e o celular só mostrava o meio
+   vazio); (3) Conversas: busca com o mesmo respiro em cima e embaixo. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #modal-select-event-type .tipo-evento-popup > button.absolute:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    background-color: #F4F5F7 !important;
+    background-image: url('../assets/criar-evento-colagem.jpg?v=20261116'), url('../assets/criar-evento-colagem.jpg?v=20261116') !important;
+    background-size: auto 55%, auto 55% !important;
+    background-position: 100% 0%, 0% 100% !important;
+    background-repeat: no-repeat, no-repeat !important;
+  }
+  html body #b2b-messages-view .b2b-chat-contacts-column > div:has(#b2b-chat-search):not(#love-h-a):not(#love-h-b) { height: auto !important; padding-top: 16px !important; }
 }

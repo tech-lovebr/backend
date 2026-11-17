@@ -363,3 +363,14 @@ footer{padding-block:64px 36px}
 .hero .dis{font-size:clamp(44px,4.2vw,60px);line-height:1.1;max-width:15em}
 .hero .lede{font-size:20px;line-height:1.6;max-width:660px}
 }
+
+/* Pegada de app (React Native), igual ao login e cadastro: sem contornos
+   claros. Botões de contorno, seletor Para anfitriões/fornecedores, carrossel,
+   telinhas e chips viram blocos preenchidos; o hover só clareia o fundo. */
+.btn-o,.menu-cel-ent{border-color:transparent!important;background:rgba(255,255,255,.08)}
+.btn-o:hover,.menu-cel-ent:hover{border-color:transparent!important;background:rgba(255,255,255,.13)}
+.seg,.all.all-carrossel,.fr.glass{border-color:transparent}
+.chip{border-color:transparent}
+.pill,.m,.eye{border-color:transparent;background-color:rgba(24,59,84,.06)}
+.pill.ok{background:var(--okbg)}.pill.bl{background:var(--sky)}.m.on{background:var(--deep)}
+.send{border-color:transparent}

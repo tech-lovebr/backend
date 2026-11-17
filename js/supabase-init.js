@@ -30,7 +30,125 @@
 const SUPABASE_URL = 'https://krpgtixwmxwhtjchcufl.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtycGd0aXh3bXh3aHRqY2hjdWZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxNzI5ODgsImV4cCI6MjEwNTc0ODk4OH0.6ZwpEz-m-qWM_bPW8_Fucvv2EWkdMBkmH2BVgPdMfuQ';
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+/* ==========================================================================
+   Uma conta por navegador, igual em todas as abas
+
+   A sessão mora num lugar só: o armazenamento do Supabase (localStorage,
+   compartilhado por todas as abas do mesmo navegador). O que cada aba
+   guardava sozinha era a conta que ela MOSTRA (window.loveClienteSession,
+   perfil, eventos...). Antes, se outra aba saía ou entrava com outra conta,
+   esta continuava mostrando a conta antiga enquanto as requisições já saíam
+   com o token da conta nova — e uma ação podia cair na conta errada.
+
+   Agora esta página guarda o id da conta com que abriu (contaDaPagina) e:
+   - outra aba saiu da conta  → limpa tudo e vai para o /login (ou recarrega
+     as páginas públicas);
+   - outra aba entrou com OUTRA conta → limpa tudo e recarrega, já na conta
+     nova;
+   - toda requisição ao Supabase confere se o token que vai sair é da conta
+     que a página mostra; se não for, a requisição nem sai (nada é gravado
+     na conta errada) e a página recarrega.
+   Avisos chegam pelo próprio Supabase (BroadcastChannel entre as abas), pelo
+   evento "storage" do navegador e por uma conferência quando a aba volta a
+   ficar visível. Sair ou entrar NESTA aba segue o fluxo normal da página.
+   ========================================================================== */
+/** @type {string|null|undefined} undefined = ainda não sabemos; null = sem login */
+let contaDaPagina;
+let trocaNestaAba = false;
+let recarregandoPorTrocaDeConta = false;
+
+function idDoToken(token) {
+  try {
+    const meio = String(token || '').split('.')[1];
+    if (!meio) return null;
+    const json = JSON.parse(atob(meio.replace(/-/g, '+').replace(/_/g, '/')));
+    return json && json.role === 'authenticated' && json.sub ? String(json.sub) : null;
+  } catch (e) { return null; }
+}
+
+function contaMudou(idNovo) {
+  idNovo = idNovo || null;
+  if (recarregandoPorTrocaDeConta) return;
+  if (contaDaPagina === undefined || trocaNestaAba || contaDaPagina === idNovo) {
+    contaDaPagina = idNovo;
+    return;
+  }
+  // Página aberta sem login: quem entrou (ex.: janelinha do Google) é
+  // adotado — não há nada de outra conta na tela.
+  if (contaDaPagina === null) { contaDaPagina = idNovo; return; }
+
+  // Outra aba trocou a conta: nada da conta antiga fica na memória.
+  recarregandoPorTrocaDeConta = true;
+  const w = /** @type {any} */ (window);
+  w.loveClienteSession = null;
+  w.loveClienteProfile = null;
+  if (!idNovo && document.body && document.body.classList.contains('dashboard-mode')) window.location.replace('/login');
+  else window.location.reload();
+}
+
+async function conferirContaDaPagina() {
+  if (recarregandoPorTrocaDeConta || contaDaPagina === undefined) return;
+  try {
+    const { data } = await supabaseClient.auth.getSession();
+    contaMudou(data && data.session && data.session.user ? data.session.user.id : null);
+  } catch (e) { /* sem rede: confere na próxima vez */ }
+}
+
+/** Antes de sair para o Supabase: o token é da conta que a página mostra? */
+function fetchDaContaDaPagina(entrada, opcoes) {
+  try {
+    const url = typeof entrada === 'string' ? entrada : (entrada && entrada.url) || '';
+    if (typeof contaDaPagina === 'string' && !trocaNestaAba && !/\/auth\/v1\//.test(url)) {
+      const cab = new Headers((opcoes && opcoes.headers) || (entrada && entrada.headers) || undefined);
+      const id = idDoToken((cab.get('Authorization') || '').replace(/^Bearer\s+/i, ''));
+      if (id !== contaDaPagina) {
+        setTimeout(conferirContaDaPagina, 0);
+        return Promise.resolve(new Response(JSON.stringify({
+          message: 'A conta foi trocada em outra aba. A página vai recarregar.', code: 'love-conta-trocada'
+        }), { status: 409, headers: { 'Content-Type': 'application/json' } }));
+      }
+    }
+  } catch (e) { /* na dúvida, segue a requisição */ }
+  return fetch(entrada, opcoes);
+}
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  global: { fetch: fetchDaContaDaPagina }
+});
+
+// Sair ou entrar nesta aba é o fluxo normal da página — não conta como
+// "outra aba trocou a conta".
+(function marcarTrocasDestaAba() {
+  const auth = /** @type {any} */ (supabaseClient.auth);
+  ['signOut', 'signInWithPassword', 'signInWithIdToken', 'signInWithOtp', 'verifyOtp', 'signUp', 'setSession', 'exchangeCodeForSession'].forEach(nome => {
+    if (typeof auth[nome] !== 'function') return;
+    const original = auth[nome].bind(auth);
+    auth[nome] = async (...args) => {
+      trocaNestaAba = true;
+      try {
+        const r = await original(...args);
+        // Sem chamar getSession aqui: pode estar dentro de um aviso do
+        // próprio Supabase e travaria. Usa o que a chamada devolveu.
+        if (r && !r.error) {
+          if (nome === 'signOut') contaDaPagina = null;
+          else if (r.data && r.data.session && r.data.session.user) contaDaPagina = r.data.session.user.id;
+        }
+        return r;
+      } finally { trocaNestaAba = false; }
+    };
+  });
+})();
+
+supabaseClient.auth.onAuthStateChange((evento, session) => {
+  contaMudou(session && session.user ? session.user.id : null);
+});
+window.addEventListener('storage', (e) => {
+  if (!e.key || /^sb-.*-auth-token$/.test(e.key)) setTimeout(conferirContaDaPagina, 0);
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') conferirContaDaPagina();
+});
+window.addEventListener('pageshow', (e) => { if (e.persisted) conferirContaDaPagina(); });
 
 /* ==========================================================================
    Nome do anfitrião: first_name / last_name / full_name

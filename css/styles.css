@@ -16534,3 +16534,15 @@ html body #modal-select-event-type h3.tipo-evento-titulo:not(#love-h-a):not(#lov
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #modal-select-event-type h3.tipo-evento-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: min(24px, calc((100vw - 88px) / 14.9)) !important; }
 }
+
+/* Criar evento (boas-vindas): botão redondo como o "Criar meu site grátis"
+   da landing — pílula azul, 52px, texto e a mesma seta à direita. */
+html body #tab-create-event-page #btn-start-event-creation.criar-evento-btn:not(#love-h-a):not(#love-h-b) {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px; height: 52px; padding: 0 26px;
+  border: 0 !important; border-radius: 999px !important; background: #183b54 !important; color: #F5F8FC !important;
+  font-family: var(--fonte-love); font-size: 15px; font-weight: 500; white-space: nowrap; box-shadow: none !important;
+  transition: background-color .4s ease, box-shadow .4s ease;
+}
+html body #tab-create-event-page #btn-start-event-creation.criar-evento-btn:not(#love-h-a):not(#love-h-b):hover { background: #10293C !important; box-shadow: 0 14px 34px rgba(24, 59, 84, 0.22) !important; }
+html body #tab-create-event-page #btn-start-event-creation svg { width: 16px; height: 16px; flex-shrink: 0; transition: transform .3s ease; }
+html body #tab-create-event-page #btn-start-event-creation:hover svg { transform: translateX(3px); }

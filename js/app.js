@@ -2623,8 +2623,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (welcomeTitle) welcomeTitle.textContent = 'Crie seu primeiro evento';
       if (welcomeSubtitle) welcomeSubtitle.textContent = 'Comece a planejar seu grande dia ou crie a lista de presentes perfeita para celebrar seus momentos mais especiais.';
     } else {
-      if (welcomeTitle) welcomeTitle.textContent = 'Vamos criar um novo evento?';
-      if (welcomeSubtitle) welcomeSubtitle.textContent = 'Personalize o site da sua próxima celebração em alguns minutos.';
+      if (welcomeTitle) welcomeTitle.textContent = 'Sempre existe um bom motivo para celebrar';
+      if (welcomeSubtitle) welcomeSubtitle.textContent = 'Personalize o site da sua próxima celebração e convide suas pessoas favoritas.';
     }
 
     if (goToForm) {

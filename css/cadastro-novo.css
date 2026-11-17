@@ -262,3 +262,15 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 #cd#cd :is(#btn-onboard-google, #btn-onboard-apple), #cd#cd :is(#btn-onboard-google, #btn-onboard-apple) * { font-family: var(--cd-sans) !important; letter-spacing: 0 !important; }
 #cd#cd :is(p, span, label, input, li, small, legend):not(h1, h1 *) { font-weight: 300 !important; }
 #cd#cd#cd :is(button, button *, a, label, legend):not(h1, h1 *) { font-weight: 400 !important; }
+
+/* Pegada de app (React Native): sem contornos claros. Caixa, campos,
+   Continuar com o Google, categorias, regras da senha e opções clicáveis
+   são blocos preenchidos; foco e hover só mudam o fundo, sem anel. */
+#cd#cd#cd :is(input:not([type=checkbox]):not([type=radio]), select, textarea, .type-card, #btn-onboard-google, #btn-onboard-apple, .password-strength-panel, .step-circle:not(.is-active):not(.is-done)) { border-color: transparent !important; box-shadow: none !important; }
+#cd#cd#cd :is(input:not([type=checkbox]):not([type=radio]), select, textarea) { background-color: rgba(24,59,84,.06) !important; }
+#cd#cd#cd :is(input:not([type=checkbox]):not([type=radio]), select, textarea):focus { background-color: rgba(24,59,84,.10) !important; border-color: transparent !important; box-shadow: none !important; }
+#cd#cd#cd :is(.type-card, #btn-onboard-google, #btn-onboard-apple) { background: rgba(24,59,84,.06) !important; }
+#cd#cd#cd :is(.type-card, #btn-onboard-google, #btn-onboard-apple):is(:hover, :focus-visible) { background: rgba(24,59,84,.10) !important; border-color: transparent !important; }
+#cd#cd#cd .type-card.is-selected, #cd#cd#cd .type-card.is-selected:hover { background: rgba(24,59,84,.14) !important; border-color: transparent !important; }
+#cd#cd#cd .password-strength-panel { background: rgba(24,59,84,.05) !important; }
+#cd#cd#cd .step-circle:not(.is-active):not(.is-done) { background: rgba(24,59,84,.07) !important; }

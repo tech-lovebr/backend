@@ -365,3 +365,15 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
 #view-login#view-login #btn-google-login, #view-login#view-login #btn-google-login * { font-family: var(--lg-sans) !important; letter-spacing: 0 !important; }
 #view-login#view-login :is(.lg-painel, .lg-aviso) :is(p, span, label, input, li, a, button, small, legend):not(.lg-titulo, .lg-titulo *), #view-login#view-login .lg-aviso { font-weight: 300 !important; }
 #view-login#view-login .lg-painel :is(.lg-btn, .lg-btn *, .lg-link, a, label, legend):not(.lg-titulo, .lg-titulo *) { font-weight: 400 !important; }
+
+/* Pegada de app (React Native): sem contornos claros. Campos, Continuar com
+   o Google e o quadro de regras da senha são blocos preenchidos; foco e
+   hover só mudam o fundo, sem anel. */
+#view-login#view-login#view-login .lg-campo input,
+#view-login#view-login#view-login :is(.lg-btn-claro, #btn-google-login),
+#view-login#view-login#view-login .password-strength-panel { border-color: transparent !important; box-shadow: none !important; }
+#view-login#view-login#view-login .lg-campo input { background: rgba(24,59,84,.06) !important; }
+#view-login#view-login#view-login .lg-campo input:focus { background: rgba(24,59,84,.10) !important; border-color: transparent !important; box-shadow: none !important; }
+#view-login#view-login#view-login :is(.lg-btn-claro, #btn-google-login) { background: rgba(24,59,84,.07) !important; }
+#view-login#view-login#view-login :is(.lg-btn-claro, #btn-google-login):is(:hover, :focus-visible) { background: rgba(24,59,84,.11) !important; border-color: transparent !important; }
+#view-login#view-login#view-login .password-strength-panel { background: rgba(24,59,84,.05) !important; }

@@ -600,3 +600,18 @@
   #view-public-site#view-public-site .lv-rod-marca{width:100%;justify-content:space-between}
   #view-public-site#view-public-site .lv-rod-direita{gap:8px 16px}
 }
+
+/* Pegada de app (React Native): sem contornos claros. Caixas de vidro,
+   seletor, chips e botões de contorno se separam do fundo pela cor; hover
+   só muda o fundo. Menus/pop-ups mantêm a sombra. */
+#view-public-site#view-public-site :is(.lv-seg,.lv-all-carrossel,.lv-all-luz,.lv-inv-real,.lv-fr.lv-glass,.lv-tpl,.lv-st,.lv-floor,.lv-tbl,.lv-eye,.lv-btn-o,.lv-menu-in,.lv-idioma-menu){border-color:transparent !important}
+#view-public-site#view-public-site .lv-btn-o{background:rgba(24,59,84,.07) !important;-webkit-backdrop-filter:none;backdrop-filter:none}
+#view-public-site#view-public-site .lv-btn-o:hover{background:rgba(24,59,84,.11) !important}
+#view-public-site#view-public-site .lv-tpl{background:rgba(24,59,84,.06) !important;box-shadow:none !important}
+#view-public-site#view-public-site .lv-tpl:hover{background:rgba(24,59,84,.10) !important}
+#view-public-site#view-public-site .lv-tpl.lv-on{background:rgba(24,59,84,.14) !important;box-shadow:none !important}
+#view-public-site#view-public-site .lv-st:not(.lv-ok){background:rgba(24,59,84,.06) !important}
+#view-public-site#view-public-site .lv-floor{background:#EDF1F6 !important}
+#view-public-site#view-public-site .lv-eye{background:rgba(24,59,84,.07) !important}
+#view-public-site#view-public-site .lv-eye:hover{background:rgba(24,59,84,.11) !important}
+#view-public-site#view-public-site .ee-form{border-color:transparent !important;box-shadow:none !important}

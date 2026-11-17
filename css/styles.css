@@ -16572,7 +16572,7 @@ html body #tab-create-event-page #btn-start-event-creation:hover svg { transform
 /* Celular: item ativo dos menus (abas do submenu e barra de baixo) no cinza
    clarinho do menu ativo do Admin (#E8E8EB), em vez do azul clarinho. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #E8E8EB !important; color: #18181B !important; }
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #E9F1FB !important; color: #18181B !important; }
   html body:not([data-theme="dark"]) .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { background-color: #E8E8EB !important; color: #18181B !important; box-shadow: none !important; }
 }
 

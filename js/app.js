@@ -22393,7 +22393,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (viewId === 'messages') {
       document.body.classList.add('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');
-      if (toolbarTitle) toolbarTitle.textContent = 'Mensagens';
+      // No celular a tela se chama Conversas; no computador, Mensagens.
+      if (toolbarTitle) toolbarTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Conversas' : 'Mensagens';
       if (searchInput) searchInput.placeholder = 'Pesquisar nas conversas...';
       if (exploreView) exploreView.classList.add('hidden');
       if (contractedView) contractedView.classList.add('hidden');

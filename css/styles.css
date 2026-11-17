@@ -12299,8 +12299,8 @@ html body .sidebar-icon-rail .rail-chat-selo.hidden:not(#love-h-a) { display: no
    de ponta a ponta, sem caixas.
    ========================================================================== */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body:not(:has(#tab-overview.active)) .dashboard-top-navbar:not(#love-h-a) { display: none !important; }
-  html body:not(:has(#tab-overview.active)) { --navbar-height-mobile: env(safe-area-inset-top, 0px); }
+  html body:not(:has(:is(#tab-overview, #tab-create-event-page).active)) .dashboard-top-navbar:not(#love-h-a) { display: none !important; }
+  html body:not(:has(:is(#tab-overview, #tab-create-event-page).active)) { --navbar-height-mobile: env(safe-area-inset-top, 0px); }
 
   /* Nenhum modo (editor etc.) empurra o conteúdo para o lado no celular. */
   html body .dashboard-main-area:not(#love-h-a) { margin-left: 0 !important; width: auto !important; max-width: 100% !important; }
@@ -16299,4 +16299,20 @@ html body #tab-create-event-page .criar-evento-btn:focus-visible { outline: 2px 
   html body #tab-create-event-page .criar-evento-colagem::before { background: radial-gradient(ellipse 60% 34% at 50% 50%, rgba(246, 248, 250, .92) 50%, rgba(246, 248, 250, 0) 100%); }
   html body #view-event-os-dashboard #tab-create-event-page h2.criar-evento-titulo:not(#love-h-a):not(#love-h-b) { font-size: 24px !important; }
   html body #tab-create-event-page .criar-evento-centro { max-width: 300px; }
+}
+
+/* Criar novo evento (passo 1), computador: a colagem ocupa tudo, do menu
+   lateral (80px) até a borda da janela e do topo (76px) até embaixo, sem
+   caixa, sem borda e sem rolagem. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body:has(#tab-create-event-page.active #create-event-welcome-step:not(.hidden)) { overflow: hidden; }
+  html body #tab-create-event-page.active:has(#create-event-welcome-step:not(.hidden)):not(#love-h-a) { animation: none !important; transform: none !important; }
+  html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a) { position: fixed; top: 76px; left: 80px; right: 0; bottom: 0; z-index: 1; margin: 0; min-height: 0; border: 0; border-radius: 0; }
+}
+/* Celular: o topo com logo, menu e perfil (o mesmo da Home, com fundo claro)
+   aparece aqui também, e a colagem vai de ponta a ponta, sem caixa. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:has(#tab-create-event-page.active #create-event-welcome-step:not(.hidden)) { overflow: hidden; }
+  html body #tab-create-event-page.active:has(#create-event-welcome-step:not(.hidden)):not(#love-h-a) { animation: none !important; transform: none !important; }
+  html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a) { position: fixed; top: var(--navbar-height-mobile, 60px); left: 0; right: 0; bottom: 0; z-index: 1; margin: 0; min-height: 0; border: 0; border-radius: 0; }
 }

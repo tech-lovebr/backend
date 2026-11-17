@@ -408,6 +408,23 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
 #view-login#view-login :is(#google-login-btn, #google-signup-btn), #view-login#view-login :is(#google-login-btn, #google-signup-btn) * { font-family: var(--lg-sans) !important; letter-spacing: 0 !important; }
 #view-login#view-login :is(.lg-painel, .lg-aviso) :is(p, span, label, input, li, a, button, small, legend):not(.lg-titulo, .lg-titulo *), #view-login#view-login .lg-aviso { font-weight: 300 !important; }
 #view-login#view-login .lg-painel :is(.lg-btn, .lg-btn *, .lg-link, a, label, legend, .lg-objetivo):not(.lg-titulo, .lg-titulo *) { font-weight: 400 !important; }
+/* Pegada de app (React Native): sem contornos claros. Caixa, campos, Continuar
+   com o Google, categoria, regras da senha e opções do que busca viram blocos
+   preenchidos, sem borda; o foco só clareia um pouco o fundo. */
+#view-login#view-login .lg-cartao { border-color: transparent !important; }
+#view-login#view-login .lg-campo input,
+#view-login#view-login .category-select-trigger { border-color: transparent !important; background: rgba(255,255,255,.07) !important; box-shadow: none !important; }
+#view-login#view-login .lg-campo input:focus,
+#view-login#view-login .category-select-trigger:focus-visible,
+#view-login#view-login .category-select-trigger[aria-expanded="true"] { border-color: transparent !important; background: rgba(255,255,255,.11) !important; box-shadow: none !important; }
+#view-login#view-login .lg-campo input:is(:-webkit-autofill, :autofill) { -webkit-box-shadow: 0 0 0 1000px #1E2F3F inset !important; box-shadow: 0 0 0 1000px #1E2F3F inset !important; border-color: transparent !important; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn) { border-color: transparent !important; background: rgba(255,255,255,.08) !important; }
+#view-login#view-login :is(#google-login-btn, #google-signup-btn):hover,
+#view-login#view-login :is(#google-login-btn, #google-signup-btn):focus-visible { border-color: transparent !important; background: rgba(255,255,255,.12) !important; }
+#view-login#view-login .lg-regras { border-color: transparent; background: rgba(255,255,255,.05); }
+#view-login#view-login .lg-objetivo { border-color: transparent !important; background: rgba(255,255,255,.07); }
+#view-login#view-login .lg-objetivo:hover { border-color: transparent !important; background: rgba(255,255,255,.11); }
+#view-login#view-login .lg-objetivo[aria-pressed="true"] { border-color: transparent !important; background: #183B54 !important; color: #FFFFFF !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>

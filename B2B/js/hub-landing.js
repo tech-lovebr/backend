@@ -12,7 +12,6 @@
     'Encontre clientes': 'Find clients', 'Perguntas frequentes': 'FAQ', 'Abrir menu': 'Open menu', 'Fechar menu': 'Close menu', 'Seções': 'Sections', 'Receba pagamentos': 'Get paid', 'Entrar': 'Log in', 'Cadastre-se grátis': 'Sign up free',
     'Love Hub, início': 'Love Hub, home', 'Escolha seu perfil': 'Choose your profile',
     'Para anfitriões': 'For hosts', 'Para fornecedores': 'For vendors',
-    'Clientes e cobranças num lugar só': 'Clients and payments in one place',
     'CRM para vender mais': 'CRM to sell more', 'e gerenciar seus eventos': 'and manage your events',
     'A plataforma completa para fornecedores de eventos.': 'The complete platform for event vendors.', 'Encontre novos clientes, envie propostas profissionais e gerencie cada entrega em um só lugar.': 'Find new clients, send professional proposals and manage every delivery in one place.',
     'Ver como funciona': 'See how it works',

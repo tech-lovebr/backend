@@ -16414,27 +16414,6 @@ html body:not([data-theme="dark"]) #tab-overview :is(.home-atalhos-titulo > span
   body[data-theme="dark"] .menu-celular-alternar button.is-ativo { background: #333333; color: #FFFFFF; box-shadow: none; }
 }
 
-/* Celular: a barra de baixo (Início, Convidados, Presentes, Convite...) na
-   mesma cor da barra do navegador do celular, onde fica a URL — clara quando
-   o celular está no claro e escura quando está no escuro (segue o celular). */
-@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
-    background: rgba(249, 249, 249, 0.94) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-    box-shadow: none !important;
-  }
-}
-@media (max-width: 768px) and (prefers-color-scheme: dark), (hover: none) and (pointer: coarse) and (max-height: 500px) and (prefers-color-scheme: dark) {
-  html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
-    background: rgba(28, 28, 30, 0.94) !important;
-    border-top-color: rgba(255, 255, 255, 0.08) !important;
-  }
-  html body .sidebar-icon-rail .rail-icon-btn:not(.active):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #A1A1AA !important; }
-  html body .sidebar-icon-rail .rail-icon-btn.active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { background-color: #2C2C2E !important; color: #FFFFFF !important; box-shadow: none !important; }
-}
-
 /* Pegada de app (React Native): sem contornos claros. */
 :root, body[data-theme="dark"] {
   --borda-suave: transparent;
@@ -16472,9 +16451,6 @@ html body :is(.home-capa-celular-caixa, #builder-publish):not(#love-h-a):not(#lo
 html body :is(.menu-celular-avatar, .menu-conta-fechar, .menu-celular-evento-atual, .planta-gaveta-icone, .builder-aviso-celular):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: transparent !important; box-shadow: none !important; }
 html body :is(.menu-celular-avatar, .menu-conta-fechar, .menu-celular-evento-atual, .planta-gaveta-icone):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background-color: rgba(24, 59, 84, 0.07) !important; }
 body[data-theme="dark"] :is(.menu-celular-avatar, .menu-conta-fechar, .menu-celular-evento-atual, .planta-gaveta-icone):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background-color: rgba(255, 255, 255, 0.07) !important; }
-@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body .sidebar-icon-rail:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-left-color: transparent !important; border-right-color: transparent !important; border-bottom-color: transparent !important; }
-}
 /* Moldura do QR code (Informações): bloco preenchido no lugar do contorno. */
 html body #tab-info-event .p-3.bg-white.border-2:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background-color: #EEF2F6 !important; }
 body[data-theme="dark"] #tab-info-event .p-3.bg-white.border-2:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background-color: rgba(255, 255, 255, 0.07) !important; }
@@ -16492,21 +16468,19 @@ body[data-theme="dark"] #tab-info-event .p-3.bg-white.border-2:not(#love-h-a):no
   html body .menu-celular-alternar button svg { width: 22px; height: 22px; flex-shrink: 0; }
 }
 
-/* Celular: Mensagens no topo, à esquerda do sino (mesmo tamanho e cor dele,
-   branco por cima da foto da Home); na barra de baixo, Fornecedores (coroa)
-   no lugar de Mensagens; na tela de Mensagens some a coroa do topo. */
+/* Celular: na barra de baixo, Fornecedores (coroa) no lugar de Mensagens
+   (Mensagens fica no menu ☰); na tela de Mensagens some a coroa do topo. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body .dashboard-top-navbar .header-chat-topo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
-    display: inline-flex !important; align-items: center; justify-content: center;
-    width: 44px !important; height: 44px !important; min-width: 44px !important; padding: 0 !important;
-    background: transparent !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #18181B !important;
-  }
-  html body .dashboard-top-navbar .header-chat-topo:not(#love-h-a) svg { width: 24px !important; height: 24px !important; }
-  html body .dashboard-top-navbar .header-chat-topo .badge-header-chat:not(#love-h-a) { top: 4px !important; right: 4px !important; }
-  body[data-theme="dark"] .dashboard-top-navbar .header-chat-topo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d),
-  html body:has(#tab-overview.active) .dashboard-top-navbar .header-chat-topo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #FFFFFF !important; }
-  html body:has(#tab-overview.active) .dashboard-top-navbar .header-chat-topo svg *:not(#love-h-a) { stroke: #FFFFFF !important; }
   html body .sidebar-icon-rail #btn-dash-header-chat:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
   html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="b2b"]:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: flex !important; order: 6 !important; }
   html body #btn-b2b-explorar-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+}
+
+/* Celular, topo: ☰, logo e sino um pouco maiores. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a) svg,
+  html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b) svg { width: 27px !important; height: 27px !important; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-icone.logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { height: 32px; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-nome.logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { height: 23px; }
+  html body:not([data-theme="dark"]) .dashboard-top-navbar > .logo-celular .logo-celular-login:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 116px; }
 }

@@ -498,6 +498,7 @@ html, body { background: #0C1824 !important; }
               <p id="esqueci-erro" class="lg-erro text-red-600 hidden"></p>
               <button type="submit" id="esqueci-btn" class="lg-btn lg-btn-escuro"><span data-en="Resend password">Reenviar senha</span><i aria-hidden="true"></i></button>
             </form>
+            <p class="lg-novo" id="esqueci-lembrou"><span data-en="Remembered your password?">Lembrou a senha?</span> <a href="login" id="esqueci-entrar" class="lg-link lg-link-forte" data-en="Log in">Entrar</a></p>
             <p id="esqueci-ok" class="lg-esqueci-ok" hidden data-en="If this email is correct, you'll receive a link to set a new password.">Se este e-mail estiver correto, você receberá um link para configurar uma nova senha.</p>
             <button type="button" id="esqueci-ir-login" class="lg-btn lg-btn-escuro lg-esqueci-login" hidden><i class="lg-seta-volta" aria-hidden="true"></i><span data-en="Back to login">Voltar para o login</span></button>
           </div>
@@ -731,6 +732,7 @@ html, body { background: #0C1824 !important; }
       });
       document.getElementById('esqueci-voltar').addEventListener('click', function (ev) { ev.preventDefault(); mostrar('login', true); });
       document.getElementById('esqueci-ir-login').addEventListener('click', function () { mostrar('login', true); });
+      document.getElementById('esqueci-entrar').addEventListener('click', function (ev) { ev.preventDefault(); mostrar('login', true); });
       if (new URLSearchParams(location.search).get('esqueci') === '1') mostrar('esqueci', false);
 
       document.getElementById('esqueci-form').addEventListener('submit', async function (ev) {

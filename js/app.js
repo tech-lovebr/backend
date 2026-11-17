@@ -2662,11 +2662,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Conta nova (sem nenhum evento): sem o "Voltar" do formulário — ela
     // fica aqui até terminar de criar o primeiro evento.
-    const barraVoltar = document.getElementById('btn-back-to-welcome-step')?.parentElement;
-    if (barraVoltar) barraVoltar.style.display = (!state.hasEventCreated || !state.events || !state.events.length) ? 'none' : '';
+    const btnVoltar = document.getElementById('btn-back-to-welcome-step');
+    if (btnVoltar) btnVoltar.style.display = (!state.hasEventCreated || !state.events || !state.events.length) ? 'none' : '';
+    escreverOlaDoCriarEvento();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // "Olá Victor, vamos criar um novo evento?" no topo do formulário, com o
+  // primeiro nome da conta. Sempre numa linha: a letra diminui se não couber.
+  function escreverOlaDoCriarEvento() {
+    const titulo = document.getElementById('create-event-form-titulo');
+    if (!titulo) return;
+    const perfil = window.loveClienteProfile || {};
+    const bruto = String(perfil.first_name || perfil.full_name || perfil.couple_name || '').split('(')[0].trim().split(/\s+/)[0] || '';
+    const nome = bruto && typeof maiusculaNoNome === 'function' ? maiusculaNoNome(bruto) : bruto;
+    titulo.textContent = nome ? `Olá ${nome}, vamos criar um novo evento?` : 'Olá, vamos criar um novo evento?';
+    ajustarOlaDoCriarEvento();
+  }
+  function ajustarOlaDoCriarEvento() {
+    const titulo = document.getElementById('create-event-form-titulo');
+    if (!titulo || !titulo.offsetParent) return;
+    titulo.style.fontSize = '';
+    let tam = parseFloat(getComputedStyle(titulo).fontSize) || 28;
+    while (titulo.scrollWidth > titulo.clientWidth + 1 && tam > 14) {
+      tam -= 0.5;
+      titulo.style.setProperty('font-size', tam + 'px', 'important');
+    }
+  }
+  window.addEventListener('resize', ajustarOlaDoCriarEvento);
 
   // Formata uma data ISO ("2025-10-18") como "18 de Outubro de 2025"
   // Celular, Home: a foto do convite (capa) colada no topo, com a caixa

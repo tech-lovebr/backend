@@ -799,6 +799,15 @@ html, body { background: #0C1824 !important; }
       campo.addEventListener('focus', atualizar);
       campo.addEventListener('blur', function () { painel.classList.remove('is-visible'); });
       atualizar();
+      campo.mostrarRegras = atualizar;
+    }
+    /* Senha fora das regras: sem mensagem — foca o campo e abre o quadro de
+       regras (o focus não dispara de novo se o campo já estava focado). */
+    function abrirRegrasDaSenha(campoId) {
+      var campo = document.getElementById(campoId);
+      if (!campo) return;
+      campo.focus();
+      if (campo.mostrarRegras) campo.mostrarRegras();
     }
   </script>
   <script>
@@ -866,10 +875,7 @@ html, body { background: #0C1824 !important; }
         ev.preventDefault();
         erro.classList.add('hidden');
         var s = senha.value;
-        if (!senhaCumpreRegrasHub(s)) {
-          erro.textContent = en ? MENSAGEM_REGRAS_SENHA_HUB_EN : MENSAGEM_REGRAS_SENHA_HUB;
-          erro.classList.remove('hidden'); senha.focus(); return;
-        }
+        if (!senhaCumpreRegrasHub(s)) { abrirRegrasDaSenha('nova-senha'); return; }
         if (s !== senha2.value) {
           erro.textContent = en ? 'The passwords don’t match. Type the confirmation again.' : 'As senhas não coincidem. Digite a confirmação de novo.';
           erro.classList.remove('hidden'); senha2.value = ''; senha2.focus(); return;

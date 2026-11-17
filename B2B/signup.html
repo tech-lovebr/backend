@@ -960,12 +960,7 @@ html, body { background: #0C1824 !important; }
       errorEl.classList.add('hidden');
 
       // Mesmas regras de senha do cadastro da Love (8+ caracteres, maiúscula, minúscula e número).
-      if (!senhaCumpreRegrasHub(password)) {
-        errorEl.textContent = MENSAGEM_REGRAS_SENHA_HUB;
-        errorEl.classList.remove('hidden');
-        document.getElementById('signup-password').focus();
-        return;
-      }
+      if (!senhaCumpreRegrasHub(password)) { abrirRegrasDaSenha('signup-password'); return; }
 
       // Senhas diferentes: avisa e apaga a confirmação (igual ao cadastro da Love).
       const confirma = document.getElementById('signup-password2');
@@ -1058,6 +1053,15 @@ html, body { background: #0C1824 !important; }
       campo.addEventListener('focus', atualizar);
       campo.addEventListener('blur', function () { painel.classList.remove('is-visible'); });
       atualizar();
+      campo.mostrarRegras = atualizar;
+    }
+    /* Senha fora das regras: sem mensagem — foca o campo e abre o quadro de
+       regras (o focus não dispara de novo se o campo já estava focado). */
+    function abrirRegrasDaSenha(campoId) {
+      var campo = document.getElementById(campoId);
+      if (!campo) return;
+      campo.focus();
+      if (campo.mostrarRegras) campo.mostrarRegras();
     }
   </script>
   <script>ligarRegrasDaSenha('signup-password', 'signup-regras');</script>

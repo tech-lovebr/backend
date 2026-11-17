@@ -2660,6 +2660,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (formStep) formStep.classList.add('hidden');
     }
 
+    // Conta nova (sem nenhum evento): sem o "Voltar" do formulário — ela
+    // fica aqui até terminar de criar o primeiro evento.
+    const barraVoltar = document.getElementById('btn-back-to-welcome-step')?.parentElement;
+    if (barraVoltar) barraVoltar.style.display = (!state.hasEventCreated || !state.events || !state.events.length) ? 'none' : '';
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 

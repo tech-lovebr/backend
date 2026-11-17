@@ -511,3 +511,6 @@
   #view-public-site#view-public-site .lv-nav .lv-in:has(.lv-burger){grid-template-columns:1fr auto 1fr !important;column-gap:0 !important}
   #view-public-site#view-public-site .lv-nav .lv-in:has(.lv-burger) .lv-logo{justify-self:center !important}
 }
+
+/* Encontrar um evento (topo): lupa à esquerda do texto. */
+#view-public-site#view-public-site .lv-btn .lv-lupa{display:inline-block !important;flex-shrink:0;width:17px !important;height:17px !important;margin-right:-2px}

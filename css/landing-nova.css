@@ -615,3 +615,6 @@
 #view-public-site#view-public-site .lv-eye{background:rgba(24,59,84,.07) !important}
 #view-public-site#view-public-site .lv-eye:hover{background:rgba(24,59,84,.11) !important}
 #view-public-site#view-public-site .ee-form{border-color:transparent !important;box-shadow:none !important}
+/* Topo fixo da landing: o mesmo vidro do topo e da barra de baixo da
+   plataforma no celular (45% com desfoque). */
+#view-public-site#view-public-site .lv-nav.lv-on{background:rgba(247,248,250,.45) !important;-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}

@@ -16362,7 +16362,7 @@ html body:not([data-theme="dark"]) #tab-create-event-page .criar-evento-colagem:
 /* A caixa do meio: vidro branco em degradê, como a barra lateral (branco
    translúcido com o mesmo desfoque). */
 html body #tab-create-event-page .criar-evento-centro {
-  background: linear-gradient(180deg, rgba(255, 255, 255, .82) 0%, rgba(255, 255, 255, .55) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, .28) 100%);
   -webkit-backdrop-filter: blur(16px) saturate(140%); backdrop-filter: blur(16px) saturate(140%);
   border: 1px solid rgba(255, 255, 255, .9);
 }

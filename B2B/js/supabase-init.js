@@ -169,77 +169,40 @@ supabaseClient.auth.onAuthStateChange((evento, session) => {
 
 /* ==========================================================================
    Senha segura (igual à Love): pelo menos 8 caracteres, uma maiúscula, uma
-   minúscula, um número e não ser fácil de adivinhar. Vale no cadastro, no
-   Crie uma nova senha e em Configurações. O Hub movimenta dinheiro (saldo,
-   saques), então "Senha123", "Abc12345", "Love2026", sequências e senhas com
-   o nome/e-mail da pessoa ficam de fora. Isto é a barreira do navegador; a de
-   verdade fica no Supabase (Auth → requisitos de senha, senhas vazadas,
-   limite de tentativas e CAPTCHA).
+   minúscula, um número e um caractere especial. Vale no cadastro, no Crie uma
+   nova senha e em Configurações. Senhas vazadas quem recusa é o Supabase Auth
+   (Leaked password protection) — ver mensagemSenhaRecusada.
    ========================================================================== */
-var MENSAGEM_REGRAS_SENHA_HUB = 'A senha precisa ter pelo menos 8 caracteres, uma letra maiúscula, uma letra minúscula e um número, e não pode ser fácil de adivinhar (como Senha123, sequências, seu nome ou seu e-mail).';
-var MENSAGEM_REGRAS_SENHA_HUB_EN = 'The password must have at least 8 characters, one uppercase letter, one lowercase letter and one number, and can’t be easy to guess (like Password123, sequences, your name or your email).';
-var SENHAS_PALAVRAS_COMUNS_HUB = new Set([
-  'senha', 'minhasenha', 'senhaforte', 'novasenha', 'password', 'passw', 'pass', 'admin', 'administrador', 'root', 'user', 'usuario',
-  'teste', 'test', 'mudar', 'mudarsenha', 'trocar', 'acesso', 'entrar', 'login', 'segredo', 'secreto', 'secret', 'welcome', 'bemvindo', 'bemvinda',
-  'love', 'loves', 'lovehub', 'hub', 'iloveyou', 'teamo', 'amor', 'meuamor', 'amoreterno', 'amorzinho', 'paixao', 'casamento', 'casal', 'noiva', 'noivo', 'festa',
-  'aniversario', 'deus', 'jesus', 'deusefiel', 'familia', 'feliz', 'felicidade', 'brasil', 'brazil', 'saopaulo', 'riodejaneiro',
-  'flamengo', 'corinthians', 'palmeiras', 'santos', 'vasco', 'gremio', 'internacional', 'cruzeiro', 'botafogo', 'fluminense', 'atletico', 'bahia',
-  'qwerty', 'qwertyuiop', 'asdf', 'asdfgh', 'zxcvbn', 'abc', 'abcd', 'abcde', 'abcdef', 'abcdefg', 'abcdefgh', 'aa', 'aaa',
-  'princesa', 'princess', 'dragon', 'monkey', 'master', 'shadow', 'sunshine', 'football', 'futebol', 'baseball', 'superman', 'batman',
-  'maria', 'joao', 'jose', 'ana', 'pedro', 'lucas', 'gabriel', 'rafael', 'mateus', 'matheus', 'julia', 'beatriz', 'mariana', 'fernanda',
-  'banco', 'pix', 'dinheiro', 'carteira', 'gateway', 'asaas', 'empresa', 'fornecedor', 'eventos', 'buffet', 'bufe', 'decoracao', 'fotografia'
-]);
-var SENHAS_INTEIRAS_COMUNS_HUB = new Set([
-  '1q2w3e4r', '1q2w3e4r5t', 'q1w2e3r4', 'q1w2e3r4t5', '1qaz2wsx', 'zaq12wsx', 'qazwsx', 'a1b2c3d4', 'a1s2d3f4', 'p4ssw0rd', 'passw0rd', 'trustno1'
-]);
-var SEQUENCIAS_SENHA_HUB = ['abcdefghijklmnopqrstuvwxyz', '01234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm', '1qaz2wsx3edc', 'qazwsxedc'];
+var MENSAGEM_REGRAS_SENHA_HUB = 'A senha precisa ter pelo menos 8 caracteres, uma letra maiúscula, uma letra minúscula, um número e um caractere especial.';
+var MENSAGEM_REGRAS_SENHA_HUB_EN = 'The password must have at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character.';
 
-/** Troca os disfarces mais comuns (S3nh@ → senha) e deixa em minúsculas sem acento. */
-function normalizarSenhaHub(v) {
-  return String(v || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/@|4/g, 'a').replace(/3/g, 'e').replace(/[1!|]/g, 'i').replace(/0/g, 'o').replace(/[$5]/g, 's').replace(/7/g, 't');
+/** As 5 regras, uma a uma (para o quadro de regras). */
+function regrasDaSenhaHub(senha) {
+  var v = String(senha || '');
+  return { length: v.length >= 8, upper: /[A-Z]/.test(v), lower: /[a-z]/.test(v), number: /[0-9]/.test(v), special: /[^A-Za-z0-9s]/.test(v) };
+}
+function senhaCumpreRegrasHub(senha) {
+  var r = regrasDaSenhaHub(senha);
+  return r.length && r.upper && r.lower && r.number && r.special;
 }
 
 /**
- * true quando a senha é fácil de adivinhar, mesmo cumprindo maiúscula/minúscula/número.
- * @param {string} senha
- * @param {{ email?: string, nome?: string }} [contexto] e-mail e nome (pessoa ou empresa), quando já se sabe
+ * Senha recusada pelo próprio Supabase Auth (erro weak_password): senha que
+ * já apareceu em vazamentos (reasons: pwned) ou fora dos requisitos do
+ * painel. Devolve o texto para mostrar, ou '' se o erro é outro.
+ * @param {any} erro
+ * @param {boolean} [en] texto em inglês
  */
-function senhaEhFacilHub(senha, contexto) {
-  var v = String(senha || '');
-  if (!v) return true;
-  var minus = v.toLowerCase();
-  if (SENHAS_INTEIRAS_COMUNS_HUB.has(minus)) return true;
-  if (new Set(minus).size < 5) return true;
-  if (/(.)\1{3,}/.test(minus)) return true;
-  for (var s = 0; s < SEQUENCIAS_SENHA_HUB.length; s++) {
-    var seq = SEQUENCIAS_SENHA_HUB[s], inv = seq.split('').reverse().join('');
-    for (var i = 0; i + 4 <= seq.length; i++) {
-      if (minus.indexOf(seq.slice(i, i + 4)) >= 0 || minus.indexOf(inv.slice(i, i + 4)) >= 0) return true;
-    }
+function mensagemSenhaRecusada(erro, en) {
+  if (!erro) return '';
+  var msg = String(erro.message || '').toLowerCase();
+  var fraca = erro.code === 'weak_password' || erro.name === 'AuthWeakPasswordError' || /weak|easy to guess|pwned|password should/.test(msg);
+  if (!fraca) return '';
+  var motivos = Array.isArray(erro.reasons) ? erro.reasons : [];
+  if (motivos.indexOf('pwned') >= 0 || /pwned|easy to guess|known/.test(msg)) {
+    return en ? 'This password has appeared in data leaks on the internet. For your security, choose another one.' : 'Essa senha já apareceu em vazamentos de dados na internet. Por segurança, escolha outra.';
   }
-  var letras = normalizarSenhaHub(v).replace(/[^a-z]/g, '');
-  if (SENHAS_PALAVRAS_COMUNS_HUB.has(letras)) return true;
-  var soLetras = minus.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
-  if (SENHAS_PALAVRAS_COMUNS_HUB.has(soLetras)) return true;
-  if (/love|senha|password|passw/.test(normalizarSenhaHub(v))) return true;
-  var ctx = contexto || {}, pedacos = [];
-  var usuario = String(ctx.email || '').toLowerCase().split('@')[0];
-  usuario.split(/[^a-z0-9]+/).forEach(function (p) { pedacos.push(p); });
-  pedacos.push(usuario.replace(/[^a-z0-9]/g, ''));
-  String(ctx.nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/).forEach(function (p) { pedacos.push(p); });
-  var semAcento = minus.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  return pedacos.some(function (p) { return p && p.length >= 3 && (semAcento.indexOf(p) >= 0 || letras.indexOf(p) >= 0); });
-}
-
-/** As 5 regras, uma a uma (para o quadro de regras). */
-function regrasDaSenhaHub(senha, contexto) {
-  var v = String(senha || '');
-  return { length: v.length >= 8, upper: /[A-Z]/.test(v), lower: /[a-z]/.test(v), number: /[0-9]/.test(v), facil: !!v && !senhaEhFacilHub(v, contexto) };
-}
-function senhaCumpreRegrasHub(senha, contexto) {
-  var r = regrasDaSenhaHub(senha, contexto);
-  return r.length && r.upper && r.lower && r.number && r.facil;
+  return en ? MENSAGEM_REGRAS_SENHA_HUB_EN : MENSAGEM_REGRAS_SENHA_HUB;
 }
 
 /* Força bruta no login: 5 senhas erradas para o mesmo e-mail em 15 min

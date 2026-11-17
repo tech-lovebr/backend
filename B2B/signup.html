@@ -402,7 +402,7 @@ html, body { background: #0C1824 !important; }
 body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap; font-size: min(clamp(32px, 3.1vw, 44px), 9.2cqi) !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="js/supabase-init.js?v=5"></script>
+  <script src="js/supabase-init.js?v=6"></script>
 </head>
 <body data-auth-view="signup">
 
@@ -570,7 +570,7 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
                   <li data-regra="upper"><span class="lg-regras-check">○</span> <span data-en="One uppercase letter">Uma letra maiúscula</span></li>
                   <li data-regra="lower"><span class="lg-regras-check">○</span> <span data-en="One lowercase letter">Uma letra minúscula</span></li>
                   <li data-regra="number"><span class="lg-regras-check">○</span> <span data-en="One number">Um número</span></li>
-                  <li data-regra="facil"><span class="lg-regras-check">○</span> <span data-en="Hard to guess (no 123, name or email)">Difícil de adivinhar (sem 123, nome ou e-mail)</span></li>
+                  <li data-regra="special"><span class="lg-regras-check">○</span> <span data-en="One special character (!@#$%&amp;*)">Um caractere especial (!@#$%&amp;*)</span></li>
                 </ul>
               </div>
 
@@ -965,7 +965,7 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
       errorEl.classList.add('hidden');
 
       // Mesmas regras de senha do cadastro da Love (8+ caracteres, maiúscula, minúscula e número).
-      if (!senhaCumpreRegrasHub(password, { email: email })) { abrirRegrasDaSenha('signup-password'); return; }
+      if (!senhaCumpreRegrasHub(password)) { abrirRegrasDaSenha('signup-password'); return; }
 
       // Senhas diferentes: avisa e apaga a confirmação (igual ao cadastro da Love).
       const confirma = document.getElementById('signup-password2');
@@ -991,6 +991,14 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
       submitBtn.disabled = false;
 
       if (error) {
+        // Recusada pelo Supabase (vazada / fora dos requisitos): avisa e volta ao campo de senha.
+        const recusada = mensagemSenhaRecusada(error);
+        if (recusada) {
+          errorEl.textContent = recusada;
+          errorEl.classList.remove('hidden');
+          document.getElementById('signup-password').focus();
+          return;
+        }
         errorEl.textContent = error.message.includes('already registered')
           ? 'Esse e-mail já tem uma conta. Tente entrar.'
           : 'Não foi possível criar sua conta. Verifique os dados e tente novamente.';
@@ -1060,12 +1068,7 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
     }
   </script>
   <script>
-    ligarRegrasDaSenha('signup-password', 'signup-regras', function () { return { email: document.getElementById('signup-email').value }; });
-    // Trocar o e-mail pode tornar a senha "fácil" (ou deixar de tornar).
-    document.getElementById('signup-email').addEventListener('input', function () {
-      var c = document.getElementById('signup-password');
-      if (c.value && c.mostrarRegras) c.mostrarRegras();
-    });
+    ligarRegrasDaSenha('signup-password', 'signup-regras');
   </script>
 </body>
 </html>

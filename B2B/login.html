@@ -402,7 +402,7 @@ html, body { background: #0C1824 !important; }
 @media (max-width: 768px) { #view-login#view-login #auth-view-nova .lg-titulo { white-space: nowrap; font-size: min(32px, 9cqi) !important; } }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <script src="js/supabase-init.js?v=5"></script>
+  <script src="js/supabase-init.js?v=6"></script>
 </head>
 <body data-auth-view="login">
 
@@ -527,7 +527,7 @@ html, body { background: #0C1824 !important; }
                   <li data-regra="upper"><span class="lg-regras-check">○</span> <span data-en="One uppercase letter">Uma letra maiúscula</span></li>
                   <li data-regra="lower"><span class="lg-regras-check">○</span> <span data-en="One lowercase letter">Uma letra minúscula</span></li>
                   <li data-regra="number"><span class="lg-regras-check">○</span> <span data-en="One number">Um número</span></li>
-                  <li data-regra="facil"><span class="lg-regras-check">○</span> <span data-en="Hard to guess (no 123, name or email)">Difícil de adivinhar (sem 123, nome ou e-mail)</span></li>
+                  <li data-regra="special"><span class="lg-regras-check">○</span> <span data-en="One special character (!@#$%&amp;*)">Um caractere especial (!@#$%&amp;*)</span></li>
                 </ul>
               </div>
               <div class="lg-campo lg-campo-senha">
@@ -864,7 +864,7 @@ html, body { background: #0C1824 !important; }
         senha.focus();
       }
 
-      ligarRegrasDaSenha('nova-senha', 'nova-regras', function () { return { email: campoEmail.value }; });
+      ligarRegrasDaSenha('nova-senha', 'nova-regras');
       painel.querySelectorAll('.lg-olho-nova').forEach(function (b) {
         b.addEventListener('click', function () {
           var c = document.getElementById(b.dataset.campo);
@@ -910,7 +910,7 @@ html, body { background: #0C1824 !important; }
         ev.preventDefault();
         erro.classList.add('hidden');
         var s = senha.value;
-        if (!senhaCumpreRegrasHub(s, { email: campoEmail.value })) { abrirRegrasDaSenha('nova-senha'); return; }
+        if (!senhaCumpreRegrasHub(s)) { abrirRegrasDaSenha('nova-senha'); return; }
         if (s !== senha2.value) {
           erro.textContent = en ? 'The passwords don’t match. Type the confirmation again.' : 'As senhas não coincidem. Digite a confirmação de novo.';
           erro.classList.remove('hidden'); senha2.value = ''; senha2.focus(); return;
@@ -919,6 +919,9 @@ html, body { background: #0C1824 !important; }
         var r = await supabaseClient.auth.updateUser({ password: s });
         btn.disabled = false;
         if (r.error) {
+          // Recusada pelo Supabase (vazada / fora dos requisitos): avisa e volta ao campo.
+          var recusada = mensagemSenhaRecusada(r.error, en);
+          if (recusada) { erro.textContent = recusada; erro.classList.remove('hidden'); senha.focus(); return; }
           erro.textContent = (r.error.code === 'same_password' || /different from the old/i.test(r.error.message || ''))
             ? (en ? 'The new password must be different from the current one.' : 'A nova senha precisa ser diferente da atual.')
             : (en ? 'We couldn’t save the new password. Try again.' : 'Não foi possível salvar a nova senha. Tente de novo.');

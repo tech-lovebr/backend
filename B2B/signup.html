@@ -376,9 +376,9 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login .lg-objetivos legend { padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500; color: #EAF1F8; }
 #view-login#view-login .lg-objetivos legend span { margin-left: 6px; font-size: 12.5px; font-weight: 400; color: rgba(163,181,200,.8); }
 #view-login#view-login .lg-objetivos-lista { display: flex; flex-wrap: wrap; gap: 8px; }
-#view-login#view-login .lg-objetivo { height: 36px; padding: 0 14px; border-radius: 8px !important; border: 1px solid rgba(234,241,248,.2); background: transparent; color: #EAF1F8; font: inherit; font-size: 14px; cursor: pointer; }
+#view-login#view-login .lg-objetivo { flex: 1 1 auto; height: 36px; padding: 0 12px; border-radius: 8px !important; border: 1px solid rgba(234,241,248,.2); background: transparent; color: #EAF1F8; font: inherit; font-size: 14px; cursor: pointer; }
 #view-login#view-login .lg-objetivo:hover { border-color: rgba(234,241,248,.45); }
-#view-login#view-login .lg-objetivo[aria-pressed="true"] { background: #EAF1F8; border-color: #EAF1F8; color: #0C1824; }
+#view-login#view-login .lg-objetivo[aria-pressed="true"] { background: #183B54 !important; border-color: #537BAE !important; color: #EAF1F8 !important; }
 #view-login#view-login .lg-objetivo.is-limite { opacity: .45; cursor: default; }
 /* Regras da senha (iguais ao cadastro da Love): 8+ caracteres, maiúscula,
    minúscula e número. O quadro aparece enquanto a pessoa está no campo e
@@ -581,16 +581,17 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
               </div>
 
               <fieldset class="lg-objetivos so-completar" id="signup-objetivos" hidden>
-                <legend>O que você busca na Love? <span>Escolha até 3</span></legend>
+                <legend>O que você busca na Love?</legend>
                 <div class="lg-objetivos-lista">
-                  <button type="button" class="lg-objetivo" data-objetivo="Gestão de eventos" aria-pressed="false">Gestão de eventos</button>
-                  <button type="button" class="lg-objetivo" data-objetivo="CRM de clientes" aria-pressed="false">CRM de clientes</button>
                   <button type="button" class="lg-objetivo" data-objetivo="Captação de clientes" aria-pressed="false">Captação de clientes</button>
-                  <button type="button" class="lg-objetivo" data-objetivo="Gestão de tarefas" aria-pressed="false">Gestão de tarefas</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="CRM" aria-pressed="false">CRM</button>
                   <button type="button" class="lg-objetivo" data-objetivo="Agenda" aria-pressed="false">Agenda</button>
-                  <button type="button" class="lg-objetivo" data-objetivo="Propostas e contratos" aria-pressed="false">Propostas e contratos</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Criar site" aria-pressed="false">Criar site</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Gestão de tarefas" aria-pressed="false">Gestão de tarefas</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Enviar propostas" aria-pressed="false">Enviar propostas</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Funcionários" aria-pressed="false">Funcionários</button>
                   <button type="button" class="lg-objetivo" data-objetivo="Receber pagamentos" aria-pressed="false">Receber pagamentos</button>
-                  <button type="button" class="lg-objetivo" data-objetivo="Site da empresa" aria-pressed="false">Site da empresa</button>
+                  <button type="button" class="lg-objetivo" data-objetivo="Organizar meu trabalho" aria-pressed="false">Organizar meu trabalho</button>
                 </div>
               </fieldset>
 

@@ -46,7 +46,7 @@
       acessarConta: { pt: 'Acesse sua conta', en: 'Access your account' },
       entrarNaLove: { pt: 'Entrar na Love', en: 'Log in to Love' },
       tituloHtml: { pt: 'Acesse sua conta', en: 'Access your account' },
-      email: { pt: 'E-mail', en: 'Email' },
+      email: { pt: 'Email', en: 'Email' },
       emailPlaceholder: { pt: 'seu.email@exemplo.com', en: 'you@example.com' },
       senha: { pt: 'Senha', en: 'Password' },
       senhaPlaceholder: { pt: 'Sua senha secreta', en: 'Your password' },

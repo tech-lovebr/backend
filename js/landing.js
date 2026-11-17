@@ -264,9 +264,9 @@
       if (palavras.length < 2) return;
       giroTitulo = (giroTitulo + 1) % palavras.length;
       el.classList.add('lv-gira-sai');
-      // Sai devagar (0,7s), troca a palavra e entra devagar; cada uma fica ~4,5s.
-      setTimeout(function () { el.textContent = palavras[giroTitulo]; el.classList.remove('lv-gira-sai'); }, 700);
-    }, 4500);
+      // Troca normal (0,35s); cada palavra fica ~5,5s na tela antes da próxima.
+      setTimeout(function () { el.textContent = palavras[giroTitulo]; el.classList.remove('lv-gira-sai'); }, 350);
+    }, 5500);
 
     // Perguntas frequentes: uma aberta por vez.
     $$('#lv-faq .lv-qa').forEach(function (q) {

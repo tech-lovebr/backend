@@ -347,3 +347,14 @@ body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   #view-login#view-login #login-panel-forgot.is-enviado .lg-titulo { white-space: nowrap; font-size: clamp(32px, 2.8vw, 40px) !important; }
 }
+
+/* Acesse sua conta: E-mail e Senha escritos fora da caixa, em cima do campo
+   (sem o rótulo flutuando dentro), e Esqueceu a senha? à esquerda, abaixo da senha. */
+#view-login#view-login #login-panel-signin .lg-campo { display: flex; flex-direction: column; gap: 8px; }
+#view-login#view-login #login-panel-signin .lg-campo input + label { position: static; order: -1; top: auto; left: auto; font-size: 14px !important; font-weight: 500; letter-spacing: 0 !important; color: var(--lg-tinta) !important; pointer-events: auto; transition: none; }
+#view-login#view-login #login-panel-signin .lg-campo input { height: 48px; padding: 0 16px !important; }
+#view-login#view-login #login-panel-signin .lg-campo:has(.lg-olho) input { padding-right: 52px !important; }
+#view-login#view-login #login-panel-signin .lg-olho { top: auto; bottom: 6px; }
+#view-login#view-login #login-panel-signin .lg-campo-senha { margin-top: 8px; }
+#view-login#view-login #login-panel-signin .lg-linha { justify-content: flex-start; }
+body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo input + label { color: #FFFFFF !important; }

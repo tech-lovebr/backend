@@ -16344,3 +16344,13 @@ html body #modal-select-event-type #btn-submit-custom-type.tipo-evento-continuar
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #modal-select-event-type h3.tipo-evento-titulo:not(#love-h-a):not(#love-h-b) { font-size: 24px !important; }
 }
+
+/* Caixa do "Vamos criar um novo evento?": degradê pêssego / branco / azul
+   claro (referência enviada), translúcido sobre a colagem. */
+html body #tab-create-event-page .criar-evento-centro {
+  background:
+    radial-gradient(ellipse 55% 45% at 80% 20%, rgba(255, 255, 255, .7) 0%, rgba(255, 255, 255, 0) 100%),
+    radial-gradient(ellipse 45% 40% at 65% 62%, rgba(226, 234, 245, .7) 0%, rgba(226, 234, 245, 0) 100%),
+    radial-gradient(ellipse 60% 55% at 22% 72%, rgba(234, 196, 180, .7) 0%, rgba(234, 196, 180, 0) 100%),
+    rgba(241, 227, 218, .6);
+}

@@ -397,6 +397,9 @@ html, body { background: #0C1824 !important; }
 #view-login#view-login .lg-regras-lista li.is-ok { color: #EAF1F8; }
 #view-login#view-login .lg-regras-check { font-size: 13px; line-height: 1; color: rgba(234,241,248,.3); transition: color .15s ease; }
 #view-login#view-login .lg-regras-lista li.is-ok .lg-regras-check { color: #4CB782; }
+/* Celular: "Crie uma nova senha" numa linha só, como o Acesse sua conta. */
+#view-login#view-login #auth-view-nova { container-type: inline-size; }
+@media (max-width: 768px) { #view-login#view-login #auth-view-nova .lg-titulo { white-space: nowrap; font-size: min(32px, 9cqi) !important; } }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=4"></script>
@@ -503,7 +506,7 @@ html, body { background: #0C1824 !important; }
           <div id="auth-view-nova" class="lg-painel" hidden>
             <div class="lg-cabeca">
               <h1 class="lg-titulo" data-en="Create a new password">Crie uma nova senha</h1>
-              <p class="lg-sub" data-en="Choose a new password to access your account.">Escolha uma senha nova para acessar sua conta.</p>
+              <p class="lg-sub" id="nova-sub" data-en="Choose a new password to access your account.">Escolha uma senha nova para acessar sua conta.</p>
             </div>
             <form id="nova-form" class="lg-form" method="post" autocomplete="on" novalidate>
               <div class="lg-campo">
@@ -534,7 +537,6 @@ html, body { background: #0C1824 !important; }
               <button type="submit" id="nova-btn" class="lg-btn lg-btn-escuro"><span data-en="Save new password">Salvar nova senha</span><i aria-hidden="true"></i></button>
             </form>
             <div id="nova-invalido" hidden>
-              <p class="lg-esqueci-ok" data-en="This link is invalid or has expired. Request a new one.">Esse link é inválido ou já expirou. Peça um novo.</p>
               <button type="button" id="nova-pedir" class="lg-btn lg-btn-escuro lg-esqueci-login"><span data-en="Request a new link">Pedir um novo link</span><i aria-hidden="true"></i></button>
             </div>
           </div>
@@ -831,6 +833,22 @@ html, body { background: #0C1824 !important; }
       login.hidden = true; esqueci.hidden = true; painel.hidden = false;
       form.hidden = true;
 
+      var sub = document.getElementById('nova-sub');
+      var subOriginal = en ? 'Choose a new password to access your account.' : 'Escolha uma senha nova para acessar sua conta.';
+      var subInvalido = en ? 'This link is invalid or has expired. Request a new one.' : 'Esse link é inválido ou já expirou. Peça um novo.';
+      var abriuNormal = false;
+      function linkInvalido() {
+        form.hidden = true; invalido.hidden = false;
+        sub.textContent = subInvalido;
+      }
+      function abrirNormal(sessao) {
+        abriuNormal = true;
+        sub.textContent = subOriginal;
+        invalido.hidden = true; form.hidden = false;
+        campoEmail.value = sessao.user.email || '';
+        senha.focus();
+      }
+
       ligarRegrasDaSenha('nova-senha', 'nova-regras');
       painel.querySelectorAll('.lg-olho-nova').forEach(function (b) {
         b.addEventListener('click', function () {
@@ -865,11 +883,13 @@ html, body { background: #0C1824 !important; }
         if (!hashErro) {
           try { sessao = (await supabaseClient.auth.getSession()).data.session; } catch (e) { sessao = null; }
         }
-        if (!sessao) { invalido.hidden = false; return; }
-        campoEmail.value = sessao.user.email || '';
-        form.hidden = false;
-        senha.focus();
+        if (!sessao) { if (!abriuNormal) linkInvalido(); return; }
+        abrirNormal(sessao);
       })();
+      // Chegou depois uma sessão de recuperação válida: o painel volta ao normal.
+      supabaseClient.auth.onAuthStateChange(function (evento, sessao) {
+        if (evento === 'PASSWORD_RECOVERY' && sessao && !painel.hidden && !abriuNormal) abrirNormal(sessao);
+      });
 
       form.addEventListener('submit', async function (ev) {
         ev.preventDefault();
@@ -884,7 +904,7 @@ html, body { background: #0C1824 !important; }
         var r = await supabaseClient.auth.updateUser({ password: s });
         btn.disabled = false;
         if (r.error) {
-          erro.textContent = /different|same/i.test(r.error.message || '')
+          erro.textContent = (r.error.code === 'same_password' || /different from the old/i.test(r.error.message || ''))
             ? (en ? 'The new password must be different from the current one.' : 'A nova senha precisa ser diferente da atual.')
             : (en ? 'We couldn’t save the new password. Try again.' : 'Não foi possível salvar a nova senha. Tente de novo.');
           erro.classList.remove('hidden'); return;

@@ -1012,16 +1012,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }));
   }
 
-  async function loadNotificationsFeed() {
-    const userId = window.loveClienteSession?.user?.id;
-    const adminRows = await fetchAdminNotifications();
-    const readIds = userId ? await fetchReadNotificationIds(userId) : new Set();
-
-    // Balão (migration 114): não entra no sino; aparece no canto da tela
-    // até a pessoa fechar ou clicar (js/balao-aviso.js).
-    const baloes = adminRows.filter(n => n.formato === 'balao' && !readIds.has(n.id));
-    if (baloes.length && window.LoveBalao) {
-      window.LoveBalao.mostrar(baloes, {
+  // Balões do Admin esperam aqui até a pessoa ter um evento criado e estar
+  // na Home do painel (nunca durante a criação do primeiro evento).
+  /** @type {any[]} */
+  let baloesPendentes = [];
+  /** @type {any} */
+  let esperaDosBaloes = null;
+  function podeMostrarBaloes() {
+    const b = document.body;
+    return !!(state.hasEventCreated && state.events && state.events.length
+      && b.classList.contains('dashboard-mode')
+      && !b.classList.contains('first-access-locked')
+      && document.getElementById('tab-overview')?.classList.contains('active'));
+  }
+  function mostrarBaloesQuandoPuder() {
+    if (!baloesPendentes.length || !window.LoveBalao) return;
+    if (podeMostrarBaloes()) {
+      const lista = baloesPendentes;
+      baloesPendentes = [];
+      if (esperaDosBaloes) { clearInterval(esperaDosBaloes); esperaDosBaloes = null; }
+      window.LoveBalao.mostrar(lista, {
         aoVer: id => markNotificationRead(id),
         barra: '.sidebar-icon-rail',
         abrirLink: url => {
@@ -1030,7 +1040,22 @@ document.addEventListener('DOMContentLoaded', () => {
           return false;
         }
       });
+      return;
     }
+    if (!esperaDosBaloes) esperaDosBaloes = setInterval(mostrarBaloesQuandoPuder, 1500);
+  }
+
+  async function loadNotificationsFeed() {
+    const userId = window.loveClienteSession?.user?.id;
+    const adminRows = await fetchAdminNotifications();
+    const readIds = userId ? await fetchReadNotificationIds(userId) : new Set();
+
+    // Balão (migration 114): não entra no sino; aparece no canto da tela
+    // até a pessoa fechar ou clicar (js/balao-aviso.js).
+    // Conta recém-criada não vê balão enquanto cria o primeiro evento: ele
+    // só aparece com um evento criado e a Home do painel aberta.
+    baloesPendentes = adminRows.filter(n => n.formato === 'balao' && !readIds.has(n.id));
+    mostrarBaloesQuandoPuder();
 
     const adminItems = adminRows.filter(n => n.formato !== 'balao').map(n => {
       const theme = NOTIFICATION_THEMES[n.tema] || NOTIFICATION_THEMES.padrao;

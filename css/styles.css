@@ -16558,3 +16558,13 @@ html body #tab-create-event-page #btn-start-event-creation:hover svg { transform
     backdrop-filter: blur(20px) saturate(180%) !important;
   }
 }
+
+/* Celular, topo: ☰ e sino de volta a 24px e logo com 102px (o mesmo da
+   landing e do login no celular). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b) svg,
+  html body .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b):not(#love-h-c) svg { width: 24px !important; height: 24px !important; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-login:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { width: 102px; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-icone.logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { height: 28px; }
+  html body .dashboard-top-navbar > .logo-celular .logo-celular-nome.logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { height: 20px; }
+}

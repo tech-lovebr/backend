@@ -13,7 +13,7 @@
     'Love Hub, início': 'Love Hub, home', 'Escolha seu perfil': 'Choose your profile',
     'Para anfitriões': 'For hosts', 'Para fornecedores': 'For vendors',
     'CRM para vender mais': 'CRM to sell more', 'e gerenciar seus eventos': 'and manage your events',
-    'A plataforma completa para fornecedores de eventos.': 'The complete platform for event vendors.', 'Encontre novos clientes, envie propostas profissionais e gerencie cada entrega em um só lugar.': 'Find new clients, send professional proposals and manage every delivery in one place.',
+    'A plataforma completa para fornecedores de eventos.': 'The complete platform for event vendors.', 'Encontre novos clientes, envie propostas e gerencie suas entregas.': 'Find new clients, send proposals and manage your deliveries.',
     'Ver como funciona': 'See how it works',
     'Mesa comprida de festa ao ar livre, com guardanapos azuis, flores brancas e azuis e velas': 'Long outdoor party table with blue napkins, white and blue flowers and candles',
     'Casamento': 'Wedding', 'Aniversário': 'Birthday', 'Chá de bebê': 'Baby shower', 'Decoração': 'Decor', 'Bolos e doces': 'Cakes and sweets', 'Bufê': 'Catering',

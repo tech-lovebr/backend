@@ -330,3 +330,20 @@ body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !
 #view-login#view-login .password-strength-checklist li.is-met { color: #18181B; }
 #view-login#view-login .password-strength-check { font-size: 0.8rem; line-height: 1; color: #D4D4D8; transition: color .15s ease; }
 #view-login#view-login .password-strength-checklist li.is-met .password-strength-check { color: #16A34A; }
+
+/* Esqueceu a senha? → depois de enviar (igual ao Hub): o título vira
+   "Recuperação de senha", somem subtítulo, formulário e "Lembrou a senha?",
+   e ficam só o aviso e o botão Voltar para o login (seta para trás). */
+#view-login#view-login #login-panel-forgot .esq-depois,
+#view-login#view-login #login-panel-forgot.is-enviado .esq-antes,
+#view-login#view-login #login-panel-forgot.is-enviado .lg-sub,
+#view-login#view-login #login-panel-forgot.is-enviado .lg-novo { display: none !important; }
+#view-login#view-login #login-panel-forgot.is-enviado .esq-depois { display: inline !important; }
+#view-login#view-login .lg-esqueci-ok { margin: clamp(18px, 3vh, 28px) 0 0; font-size: 15.5px !important; line-height: 1.5 !important; color: var(--lg-mudo) !important; text-align: center; text-wrap: pretty; }
+#view-login#view-login #login-panel-forgot [hidden] { display: none !important; }
+#view-login#view-login .lg-esqueci-login { margin-top: 24px; width: 100%; }
+#view-login#view-login .lg-btn:not(.is-entrando) i.lg-seta-volta { transform: scaleX(-1); }
+#view-login#view-login .lg-btn:not(.is-entrando):hover i.lg-seta-volta { transform: scaleX(-1) translateX(3px); }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-login#view-login #login-panel-forgot.is-enviado .lg-titulo { white-space: nowrap; font-size: clamp(32px, 2.8vw, 40px) !important; }
+}

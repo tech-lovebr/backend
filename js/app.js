@@ -19018,9 +19018,26 @@ document.addEventListener('DOMContentLoaded', () => {
     panelSignin.classList.add('hidden');
     document.getElementById('login-panel-nova-senha')?.classList.add('hidden');
     panelForgot.classList.remove('hidden');
+    mostrarEsqueciEnviado(false);
     const forgotEmailInput = document.getElementById('login-forgot-email-input');
     if (forgotEmailInput && prefillEmail) forgotEmailInput.value = prefillEmail;
   }
+
+  // Depois de enviar o link (igual ao Hub): "Recuperação de senha" com o aviso
+  // e o botão Voltar para o login; ao abrir de novo, volta para o formulário.
+  function mostrarEsqueciEnviado(enviado) {
+    document.getElementById('login-panel-forgot')?.classList.toggle('is-enviado', enviado);
+    const form = document.getElementById('form-login-forgot');
+    const ok = document.getElementById('login-forgot-ok');
+    const voltar = document.getElementById('btn-forgot-ir-login');
+    if (form) form.hidden = enviado;
+    if (ok) ok.hidden = !enviado;
+    if (voltar) voltar.hidden = !enviado;
+  }
+  document.getElementById('btn-forgot-ir-login')?.addEventListener('click', () => {
+    mostrarEsqueciEnviado(false);
+    showLoginSigninPanel();
+  });
 
   function showLoginSigninPanel() {
     const panelSignin = document.getElementById('login-panel-signin');
@@ -19205,6 +19222,16 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const email = document.getElementById('login-forgot-email-input').value.trim();
       const submitBtn = document.getElementById('btn-do-forgot-password');
+      const erroForgot = document.getElementById('login-forgot-erro');
+      erroForgot?.classList.add('hidden');
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        if (erroForgot) {
+          erroForgot.textContent = window.LoveI18n ? window.LoveI18n.t('login.digiteEmailValido') : 'Digite um e-mail válido.';
+          erroForgot.classList.remove('hidden');
+        }
+        document.getElementById('login-forgot-email-input')?.focus();
+        return;
+      }
 
       submitBtn.disabled = true;
       // Em produção o link sempre aponta para love.com.br, mesmo que o pedido
@@ -19217,7 +19244,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       submitBtn.disabled = false;
 
-      showToast(window.LoveI18n ? window.LoveI18n.t('login.seEmailCadastradoRecuperacao') : 'Se esse e-mail estiver cadastrado, você vai receber um link de recuperação.', '✉️');
+      mostrarEsqueciEnviado(true);
     });
   }
 

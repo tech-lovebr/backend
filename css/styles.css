@@ -16353,3 +16353,8 @@ html body #tab-create-event-page .criar-evento-centro {
     radial-gradient(ellipse 65% 55% at 70% 90%, rgba(185, 207, 236, .55) 0%, rgba(185, 207, 236, 0) 100%),
     rgba(232, 240, 250, .45);
 }
+
+/* "Vamos criar um novo evento?": sem a colagem de fotos — o fundo é o mesmo
+   céu da Love do resto da plataforma (o do #view-event-os-dashboard aparece
+   por trás); só a caixa translúcida fica no meio. */
+html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a) { background: transparent !important; border-color: transparent !important; }

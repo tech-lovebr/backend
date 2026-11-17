@@ -16484,3 +16484,29 @@ body[data-theme="dark"] #tab-info-event .p-3.bg-white.border-2:not(#love-h-a):no
   html body .dashboard-top-navbar > .logo-celular .logo-celular-nome.logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { height: 23px; }
   html body:not([data-theme="dark"]) .dashboard-top-navbar > .logo-celular .logo-celular-login:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 116px; }
 }
+
+/* Celular, Home: topo igual ao da landing/login, sólido (sem transparência)
+   e EM CIMA da capa, não por cima dela: fundo #F7F8FA com a linha fina
+   embaixo, ☰ à esquerda, logo (tinta, igual às outras páginas) no centro e
+   sino à direita. A capa começa logo abaixo e fica um pouco menor. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .dashboard-top-navbar > .logo-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    position: absolute; left: 50%; top: env(safe-area-inset-top, 0px); bottom: 0; transform: translateX(-50%); margin: 0; display: flex; align-items: center;
+  }
+  html body:has(#tab-overview.active) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    height: calc(72px + env(safe-area-inset-top, 0px)) !important; min-height: 0 !important;
+    background: #F7F8FA !important; box-shadow: 0 1px 0 #E3E8EF !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html body:not([data-theme="dark"]):has(#tab-overview.active) .dashboard-top-navbar > .menu-celular-botao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e),
+  html body:not([data-theme="dark"]):has(#tab-overview.active) .dashboard-top-navbar #btn-notifications-menu:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { color: #18181B !important; }
+  html body:not([data-theme="dark"]):has(#tab-overview.active) .dashboard-top-navbar #btn-notifications-menu svg *:not(#love-h-a):not(#love-h-b) { stroke: currentColor !important; }
+  html body:not([data-theme="dark"]):has(#tab-overview.active) .dashboard-top-navbar > .logo-celular .logo-escuro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { display: none !important; }
+  html body:not([data-theme="dark"]):has(#tab-overview.active) .dashboard-top-navbar > .logo-celular .logo-celular-login:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { display: block !important; }
+  body[data-theme="dark"]:has(#tab-overview.active) .dashboard-top-navbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #1A1A1A !important; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) !important; }
+  html body #tab-overview .home-capa-celular-foto:not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 240px; }
+  html body #tab-overview .home-capa-celular-foto:not(#love-h-a):not(#love-h-b)::before { display: none; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview .home-capa-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-top: -40px; }
+}

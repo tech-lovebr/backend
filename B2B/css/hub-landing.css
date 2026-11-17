@@ -352,3 +352,6 @@ footer{padding-block:64px 36px}
 .nav .logo{width:102px}
 .nav .brand em{font-size:10px;letter-spacing:.16em;padding:3px 7px;white-space:nowrap}
 }
+
+/* Subtítulo do topo: no celular fica só a 2ª frase (Encontre novos clientes...). */
+@media (max-width:768px){.lede .so-desk{display:none}}

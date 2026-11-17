@@ -16670,4 +16670,9 @@ html body #tab-create-event-page #btn-create-event-continuar:hover svg { transfo
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-create-event-page #btn-create-event-continuar.criar-evento-continuar:not(#love-h-a):not(#love-h-b) { width: 100%; }
 }
-html body #tab-create-event-page #create-event-capa-moldura:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; border: 2px dashed #D4D4D8 !important; border-radius: 16px !important; }
+html body #tab-create-event-page #create-event-capa-moldura:not(#love-h-a):not(#love-h-b) { border: 2px dashed #D4D4D8 !important; border-radius: 16px !important; }
+
+/* Criar evento (formulário): rótulos (Início, Fim, Localização do Evento,
+   Descrição, Link personalizado) e o aviso do fuso um pouco maiores. */
+html body #tab-create-event-page #form-create-new-event-page label:not(#love-h-a):not(#love-h-b) { font-size: 14px !important; }
+html body #tab-create-event-page #form-create-new-event-page p.criar-evento-fuso:not(#love-h-a):not(#love-h-b) { font-size: 13px !important; }

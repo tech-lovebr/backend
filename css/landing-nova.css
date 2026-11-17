@@ -514,3 +514,10 @@
 
 /* Encontrar um evento (topo): lupa à esquerda do texto. */
 #view-public-site#view-public-site .lv-btn .lv-lupa{display:inline-block !important;flex-shrink:0;width:17px !important;height:17px !important;margin-right:-2px}
+
+/* Computador: título do topo mais contido, como Joy (56px) e Zola (64px) —
+   no máximo 60px — e subtítulo maior (20px / 32px, até ~660px), como no Joy. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-public-site#view-public-site .lv-hero .lv-dis { font-size: clamp(44px, 4.2vw, 60px) !important; line-height: 1.1 !important; max-width: 15em !important; }
+  #view-public-site#view-public-site .lv-hero .lv-lede { font-size: 20px !important; line-height: 1.6 !important; max-width: 660px !important; }
+}

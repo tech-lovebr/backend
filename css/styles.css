@@ -16326,7 +16326,7 @@ html body #tab-create-event-page .criar-evento-btn:focus-visible { outline: 2px 
 /* Criar novo evento (passo 1): caixa branca translúcida atrás do título,
    do texto e do botão (no lugar do véu radial). */
 html body #tab-create-event-page .criar-evento-colagem::before { content: none; }
-html body #tab-create-event-page .criar-evento-centro { max-width: 440px; padding: 36px 40px 40px; background: rgba(255, 255, 255, .78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, .9); border-radius: 10px; }
+html body #tab-create-event-page .criar-evento-centro { max-width: 440px; padding: 36px 40px 40px; background: rgba(255, 255, 255, .55); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, .9); border-radius: 10px; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-create-event-page .criar-evento-centro { max-width: 340px; padding: 28px 24px 32px; }
 }

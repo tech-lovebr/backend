@@ -356,3 +356,10 @@ footer{padding-block:64px 36px}
 
 /* Subtítulo do topo: no celular fica só a 2ª frase (Encontre novos clientes...). */
 @media (max-width:768px){.lede .so-desk{display:none}}
+
+/* Computador: título do topo mais contido, como na landing da Love (Joy 56px /
+   Zola 64px) — no máximo 60px — e subtítulo 20px / 32px, até 660px. */
+@media (min-width:769px){
+.hero .dis{font-size:clamp(44px,4.2vw,60px);line-height:1.1;max-width:15em}
+.hero .lede{font-size:20px;line-height:1.6;max-width:660px}
+}

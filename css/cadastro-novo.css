@@ -255,3 +255,10 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #cd#cd .onboard-step h1[data-love-i18n-html="cadastro.tituloAcesso"] { font-size: min(38px, 9.5cqi) !important; }
 }
+
+/* Mesma fonte do título (Outfit, traço leve) em todos os textos do cadastro:
+   inclusive Continuar com o Google. Textos em 300, botões, links e rótulos
+   em 400; títulos (h1) ficam como estão. */
+#cd#cd :is(#btn-onboard-google, #btn-onboard-apple), #cd#cd :is(#btn-onboard-google, #btn-onboard-apple) * { font-family: var(--cd-sans) !important; letter-spacing: 0 !important; }
+#cd#cd :is(p, span, label, input, li, small, legend):not(h1, h1 *) { font-weight: 300 !important; }
+#cd#cd#cd :is(button, button *, a, label, legend):not(h1, h1 *) { font-weight: 400 !important; }

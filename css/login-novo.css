@@ -358,3 +358,10 @@ body[data-theme="dark"] #view-login#view-login .lg-olho:hover { color: #FFFFFF !
 #view-login#view-login #login-panel-signin .lg-campo-senha { margin-top: 8px; }
 #view-login#view-login #login-panel-signin .lg-linha { justify-content: flex-start; }
 body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo input + label { color: #FFFFFF !important; }
+
+/* Mesma fonte do título (Outfit, traço leve) em todos os textos do login:
+   inclusive Continuar com o Google (antes Google Sans). Textos em 300,
+   botões, links e rótulos em 400; títulos ficam como estão. */
+#view-login#view-login #btn-google-login, #view-login#view-login #btn-google-login * { font-family: var(--lg-sans) !important; letter-spacing: 0 !important; }
+#view-login#view-login :is(.lg-painel, .lg-aviso) :is(p, span, label, input, li, a, button, small, legend):not(.lg-titulo, .lg-titulo *), #view-login#view-login .lg-aviso { font-weight: 300 !important; }
+#view-login#view-login .lg-painel :is(.lg-btn, .lg-btn *, .lg-link, a, label, legend):not(.lg-titulo, .lg-titulo *) { font-weight: 400 !important; }

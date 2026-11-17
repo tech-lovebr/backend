@@ -16525,3 +16525,12 @@ body[data-theme="dark"] #tab-info-event .p-3.bg-white.border-2:not(#love-h-a):no
 @media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
   html body #b2b-chat-selo-celular:not(#love-h-a):not(#love-h-b) { display: none !important; }
 }
+
+/* Pop-up "Que tipo de evento você quer criar?": sem o logo e o título numa
+   linha só (pop-up um pouco mais largo no computador; no celular a letra
+   acompanha a largura da tela). */
+html body #modal-select-event-type .tipo-evento-popup:not(#love-h-a) { max-width: 520px; }
+html body #modal-select-event-type h3.tipo-evento-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { white-space: nowrap; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #modal-select-event-type h3.tipo-evento-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: min(24px, calc((100vw - 88px) / 14.9)) !important; }
+}

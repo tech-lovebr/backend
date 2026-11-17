@@ -13743,3 +13743,30 @@ body[data-theme="dark"] :is(.topbar-search-trigger, .produtos-vazio-criar, .imag
 html.hub-claro body .b2b-topbar .topbar-search-trigger:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: transparent !important; background: rgba(24, 59, 84, 0.06) !important; }
 html.hub-claro body .b2b-topbar .topbar-search-trigger kbd:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: transparent !important; background: rgba(24, 59, 84, 0.06) !important; }
 html.hub-claro body[data-page="dashboard"] .b2b-content :is(.dash-card:not(.dash-ads-card), .dashboard-help-card):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { border-color: transparent !important; box-shadow: none !important; }
+
+/* Rodapé com o mesmo fundo do cabeçalho: claro = branco 82% (como o topo),
+   escuro = #0C1824 (como o topo). */
+html.hub-claro body .b2b-footer:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: rgba(255, 255, 255, 0.82) !important; }
+html:not(.hub-claro) body .b2b-footer:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #0C1824 !important; }
+
+/* Escuro, pegada de app (igual ao login e cadastro): caixas sólidas um tom acima
+   do fundo (#14283A, sem o vidro transparente que apagava o Olá e o nome da
+   empresa), sem contornos claros; campos e buscas como blocos preenchidos
+   (branco 7%, foco 11%), sem borda. */
+html:not(.hub-claro) body .hub-vidro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+  background-color: #14283A !important; -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+html:not(.hub-claro) body :is(.hub-borda, .dash-card, .dashboard-help-card, .dash-home-caixa, .dash-saldo-total, .topbar-search-trigger, .topbar-search-trigger kbd):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { border-color: transparent !important; box-shadow: none !important; }
+html:not(.hub-claro) body .hub-campo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e),
+html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search"], input[placeholder^="Pesquisar"]):not(.proposal-cell-input):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+  background-color: rgba(255, 255, 255, 0.07) !important; border-color: transparent !important; box-shadow: none !important;
+}
+html:not(.hub-claro) body .hub-campo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):is(:focus, :focus-visible),
+html:not(.hub-claro) body :is(.b2b-content, .form-drawer) :is(input[type="search"], input[placeholder^="Pesquisar"]):not(.proposal-cell-input):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):is(:hover, :focus) {
+  background-color: rgba(255, 255, 255, 0.11) !important; border-color: transparent !important;
+}
+html:not(.hub-claro) body :is(.btn-secondary, .btn-white, .love-tabela-botao, .op-pagina-btn, .header-btn-light):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background-color: rgba(255, 255, 255, 0.08) !important; border-color: transparent !important; }
+html:not(.hub-claro) body :is(.btn-secondary, .btn-white, .love-tabela-botao, .op-pagina-btn, .header-btn-light):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):is(:hover, :focus-visible):not(:disabled) { background-color: rgba(255, 255, 255, 0.12) !important; color: #FFFFFF !important; }
+html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-caixa, .dash-saldo-total, .dash-card:not(.dash-ads-card), .dashboard-help-card):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+  background: #14283A !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; border-color: transparent !important; box-shadow: none !important;
+}

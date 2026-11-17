@@ -2611,7 +2611,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (welcomeSubtitle) welcomeSubtitle.textContent = 'Comece a planejar seu grande dia ou crie a lista de presentes perfeita para celebrar seus momentos mais especiais.';
     } else {
       if (welcomeTitle) welcomeTitle.textContent = 'Vamos criar um novo evento?';
-      if (welcomeSubtitle) welcomeSubtitle.textContent = 'Crie um novo convite digital para celebrar uma data especial.';
+      if (welcomeSubtitle) welcomeSubtitle.textContent = 'Personalize o site da sua próxima celebração em minutos.';
     }
 
     if (goToForm) {

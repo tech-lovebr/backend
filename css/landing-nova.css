@@ -494,3 +494,13 @@
   #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-legal-voltar svg{width:20px;height:20px}
   #view-public-site#view-public-site:has(#legal-doc-page:not(.hidden)) .lv-legal-voltar:hover{color:var(--ink) !important}
 }
+
+/* Título da abertura: "seu casamento" alterna com outras celebrações (js/landing.js),
+   no mesmo azul mais forte do antigo "para suas celebrações". */
+#view-public-site#view-public-site .lv-dis .lv-gira { display: inline-block; white-space: nowrap; transition: opacity .35s ease, transform .35s ease; }
+#view-public-site#view-public-site .lv-dis .lv-gira.lv-gira-sai { opacity: 0; transform: translateY(.18em); }
+/* Celular: a letra do título diminui o suficiente para "seu chá de fraldas"
+   (a palavra mais longa) caber numa linha, sem a frase pular de altura. */
+@media (max-width: 768px) {
+  #view-public-site#view-public-site .lv-hero .lv-dis { font-size: min(44px, calc((100vw - 58px) / 7.7)) !important; }
+}

@@ -253,6 +253,20 @@
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) abrirMenu(false); });
     }
 
+    // Título da abertura: "seu casamento" alterna com "seu aniversário",
+    // "seu chá de fraldas" e "sua celebração" (data-palavras; em inglês vem
+    // do data-en-html). Com movimento reduzido, fica parado no primeiro.
+    var giroTitulo = 0;
+    setInterval(function () {
+      var el = $('.lv-gira');
+      if (!el || reduce || document.hidden || !visivel()) return;
+      var palavras = (el.getAttribute('data-palavras') || '').split('|').filter(Boolean);
+      if (palavras.length < 2) return;
+      giroTitulo = (giroTitulo + 1) % palavras.length;
+      el.classList.add('lv-gira-sai');
+      setTimeout(function () { el.textContent = palavras[giroTitulo]; el.classList.remove('lv-gira-sai'); }, 350);
+    }, 2600);
+
     // Perguntas frequentes: uma aberta por vez.
     $$('#lv-faq .lv-qa').forEach(function (q) {
       q.querySelector('button').addEventListener('click', function () {

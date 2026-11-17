@@ -98,7 +98,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261116_favcheio">
+  <link rel="stylesheet" href="css/styles.css?v=20261116_colagem3">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261116_legal2">
@@ -2964,63 +2964,14 @@
              ================================================================= -->
         <section id="tab-create-event-page" class="dashboard-tab-content space-y-6 pb-12">
           
-          <!-- PASSO 1: ESTADO INICIAL / BOAS-VINDAS (Joy Style) -->
-          <div id="create-event-welcome-step" class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 py-10 max-w-2xl mx-auto space-y-8 animate-fade-in">
-            
-            <!-- Mockup Ilustrado com Aquarela Flutuante Estilo Joy -->
-            <div class="relative flex items-center justify-center pt-4">
-              <!-- Mancha aquarela decorativa sutil de fundo -->
-              <div class="absolute -inset-10 bg-gradient-to-tr from-amber-100/70 via-rose-100/50 to-blue-100/70 rounded-full blur-2xl opacity-80 pointer-events-none"></div>
-              
-              <!-- Card Mockup Central Estilo Joy -->
-              <div class="relative w-80 sm:w-96 rounded-2xl overflow-hidden shadow-2xl border-4 border-white bg-white transform transition-transform hover:scale-[1.02] duration-300">
-                <div class="p-3 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                  <div class="flex items-center gap-1.5">
-                    <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                  </div>
-                  <span class="font-serif-title italic text-xs font-bold text-slate-700">Beatriz & Lucas</span>
-                  <div class="w-8"></div>
-                </div>
-                <div class="relative aspect-[16/10] overflow-hidden bg-slate-900">
-                  <img src="assets/wedding_hero_banner.jpg" alt="Exemplo de Evento" class="w-full h-full object-cover">
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-4 text-white">
-                    <div>
-                      <p class="text-[10px] uppercase font-bold tracking-widest text-blue-200">18 de Outubro de 2026</p>
-                      <h4 class="text-base font-bold font-serif-title">Nosso Casamento</h4>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Elementos flutuantes sutis decorativos -->
-              <div class="absolute -top-1 -left-3 w-8 h-8 rounded-full bg-purple-50 border border-purple-200 flex items-center justify-center text-xs shadow-md">
-                ✨
-              </div>
-              <div class="absolute -bottom-1 -right-3 w-8 h-8 rounded-full bg-blue-50 border border-blue-200 flex items-center justify-center text-xs shadow-md">
-                💙
-              </div>
+          <!-- PASSO 1: boas-vindas — colagem de fotos (assets/criar-evento-colagem.jpg,
+               com o centro vazio) e, no meio, título, texto e o botão Criar evento. -->
+          <div id="create-event-welcome-step" class="criar-evento-colagem">
+            <div class="criar-evento-centro">
+              <h2 id="create-event-welcome-title" class="criar-evento-titulo">Vamos criar um novo evento?</h2>
+              <p id="create-event-welcome-subtitle" class="criar-evento-texto">Adicione uma nova comemoração à sua conta e gerencie convidados, presentes e finanças em um só lugar.</p>
+              <button type="button" id="btn-start-event-creation" class="criar-evento-btn">Criar evento</button>
             </div>
-
-            <!-- Título e Subtítulo Exatos -->
-            <div class="space-y-3 max-w-lg">
-              <h2 id="create-event-welcome-title" class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-                Vamos criar um novo evento?
-              </h2>
-              <p id="create-event-welcome-subtitle" class="text-sm sm:text-base text-slate-500 leading-relaxed">
-                Adicione uma nova comemoração à sua conta e gerencie convidados, presentes e finanças em um só lugar.
-              </p>
-            </div>
-
-            <!-- Botão de Ação Estilo Joy: + Criar Evento -->
-            <div class="pt-2">
-              <button type="button" id="btn-start-event-creation" class="px-8 py-3.5 rounded-full bg-slate-900 hover:bg-[#537bae] text-white text-sm sm:text-base font-bold shadow-xl flex items-center gap-2.5 transition-colors duration-200 cursor-pointer">
-                <span class="text-lg font-black leading-none">+</span>
-                <span>Criar Evento</span>
-              </button>
-            </div>
-
           </div>
 
           <!-- PASSO 2: FORMULÁRIO COMPLETO DE CRIAÇÃO (Livre / Sem Caixas) -->

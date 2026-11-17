@@ -16279,3 +16279,24 @@ html body :is(.btn-toggle-card-fav, #btn-b2b-profile-favorite) svg[class*="c7305
   html body #btn-rfp-novo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):hover:not(:disabled) { background: #FFFFFF !important; border-color: #181D24 !important; color: #181D24 !important; }
   body[data-theme="dark"] #btn-rfp-novo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: transparent !important; border-color: #3F3F46 !important; color: #E4E4E7 !important; }
 }
+
+/* Criar novo evento (passo 1): colagem de fotos igual à da referência
+   (assets/criar-evento-colagem.jpg, centro vazio) com título, texto e botão no
+   meio. Título na letra dos cabeçalhos das outras telas (Outfit 500, #18181B,
+   -0.025em). Um véu claro no centro garante a leitura quando a colagem é
+   cortada (telas estreitas). */
+html body #tab-create-event-page #create-event-welcome-step.criar-evento-colagem:not(.hidden) { display: flex; }
+html body #tab-create-event-page .criar-evento-colagem { position: relative; margin: 24px 32px 0; align-items: center; justify-content: center; min-height: clamp(560px, calc(100vh - 200px), 860px); padding: 48px 24px; background: #F6F8FA url("../assets/criar-evento-colagem.jpg?v=20261116") center / cover no-repeat; border: 1px solid var(--borda-suave, rgba(0, 0, 0, .06)); border-radius: 10px; overflow: hidden; text-align: center; }
+html body #tab-create-event-page .criar-evento-colagem::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 30% 30% at 50% 50%, rgba(246, 248, 250, .9) 45%, rgba(246, 248, 250, 0) 100%); }
+html body #tab-create-event-page .criar-evento-centro { position: relative; max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+html body #view-event-os-dashboard #tab-create-event-page h2.criar-evento-titulo:not(#love-h-a):not(#love-h-b) { margin: 0; font-family: var(--fonte-love) !important; font-weight: 500 !important; font-size: 28px !important; line-height: 1.15 !important; letter-spacing: -0.025em !important; color: #18181B !important; text-wrap: balance; }
+html body #tab-create-event-page .criar-evento-texto { margin: 0; font-size: 15px; line-height: 1.55; color: #52525B; text-wrap: pretty; }
+html body #tab-create-event-page .criar-evento-btn { margin-top: 12px; height: 44px; padding: 0 24px; border: 0; border-radius: 999px; background: #183b54; color: #FFFFFF; font-family: var(--fonte-love); font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color .2s ease; }
+html body #tab-create-event-page .criar-evento-btn:hover { background: #122c3f; }
+html body #tab-create-event-page .criar-evento-btn:focus-visible { outline: 2px solid #183b54; outline-offset: 3px; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-create-event-page .criar-evento-colagem { margin: 8px 0 0; min-height: calc(100dvh - 190px); padding: 40px 20px; }
+  html body #tab-create-event-page .criar-evento-colagem::before { background: radial-gradient(ellipse 60% 34% at 50% 50%, rgba(246, 248, 250, .92) 50%, rgba(246, 248, 250, 0) 100%); }
+  html body #view-event-os-dashboard #tab-create-event-page h2.criar-evento-titulo:not(#love-h-a):not(#love-h-b) { font-size: 24px !important; }
+  html body #tab-create-event-page .criar-evento-centro { max-width: 300px; }
+}

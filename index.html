@@ -98,7 +98,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261117_olacriar">
+  <link rel="stylesheet" href="css/styles.css?v=20261117_continuar">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261117_logoazul">
@@ -3011,7 +3011,7 @@
               <div class="lg:col-span-5 space-y-4">
                 
                 <!-- Moldura pontilhada ao redor da foto de capa -->
-                <div class="w-full aspect-square rounded-2xl border-2 border-dashed border-zinc-300 p-3">
+                <div id="create-event-capa-moldura" class="w-full aspect-square rounded-2xl border-2 border-dashed border-zinc-300 p-3">
                   <!-- Card Foto de Capa com Botão de Câmera -->
                   <div class="relative w-full h-full rounded-xl overflow-hidden border border-zinc-200 bg-zinc-900 shadow-xs group">
                     <img id="page-new-event-cover-img" src="assets/wedding_hero_banner.jpg" alt="Capa do Evento" class="w-full h-full object-cover">
@@ -3114,11 +3114,11 @@
                   <p id="page-new-event-slug-status" class="text-xs font-semibold hidden"></p>
                 </div>
 
-                <!-- Botão Final: Continuar Ajustes -->
+                <!-- Botão Final: Continuar (pílula como o "Criar meu site grátis" da landing) -->
                 <div class="pt-3 pb-6">
-                  <button type="submit" class="btn-primary w-full justify-center">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    <span>Continuar Ajustes</span>
+                  <button type="submit" id="btn-create-event-continuar" class="criar-evento-continuar">
+                    <span>Continuar</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   </button>
                 </div>
 

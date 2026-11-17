@@ -18739,6 +18739,48 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginErrorMessage = document.getElementById('login-error-message');
   let loginFailedAttempts = 0;
 
+  // Força bruta: 5 senhas erradas para o mesmo e-mail em 15 min bloqueiam
+  // novas tentativas neste navegador por 15 min (sobrevive a recarregar).
+  // É só a barreira da tela — a de verdade é o limite de tentativas e o
+  // CAPTCHA do Supabase Auth, que valem para qualquer cliente.
+  const LOGIN_MAX_TENTATIVAS = 5;
+  const LOGIN_JANELA_MS = 15 * 60 * 1000;
+  const LOGIN_BLOQUEIO_MS = 15 * 60 * 1000;
+  const CHAVE_TENTATIVAS_LOGIN = 'love-login-tentativas';
+  /** @returns {Record<string, { n: number, desde: number, ate: number }>} */
+  function lerTentativasLogin() {
+    try { return JSON.parse(localStorage.getItem(CHAVE_TENTATIVAS_LOGIN) || '{}') || {}; } catch (e) { return {}; }
+  }
+  function gravarTentativasLogin(todas) {
+    try { localStorage.setItem(CHAVE_TENTATIVAS_LOGIN, JSON.stringify(todas)); } catch (e) {}
+  }
+  /** Minutos que ainda faltam de bloqueio para esse e-mail (0 = liberado). */
+  function minutosBloqueioLogin(email) {
+    const r = lerTentativasLogin()[String(email).toLowerCase()];
+    return r && r.ate > Date.now() ? Math.ceil((r.ate - Date.now()) / 60000) : 0;
+  }
+  /** Conta uma senha errada; devolve os minutos de bloqueio se chegou ao limite. */
+  function registrarFalhaLogin(email) {
+    const todas = lerTentativasLogin();
+    const chave = String(email).toLowerCase();
+    const agora = Date.now();
+    const r = todas[chave] && agora - todas[chave].desde < LOGIN_JANELA_MS ? todas[chave] : { n: 0, desde: agora, ate: 0 };
+    r.n += 1;
+    if (r.n >= LOGIN_MAX_TENTATIVAS) { r.ate = agora + LOGIN_BLOQUEIO_MS; r.n = 0; r.desde = agora; }
+    todas[chave] = r;
+    gravarTentativasLogin(todas);
+    return r.ate > agora ? Math.ceil(LOGIN_BLOQUEIO_MS / 60000) : 0;
+  }
+  function limparFalhasLogin(email) {
+    const todas = lerTentativasLogin();
+    delete todas[String(email).toLowerCase()];
+    gravarTentativasLogin(todas);
+  }
+  function mensagemBloqueioLogin(minutos) {
+    const modelo = window.LoveI18n ? window.LoveI18n.t('login.muitasTentativas') : 'Muitas tentativas com senha errada. Por segurança, tente de novo em {n} min ou redefina a senha em Esqueceu a senha?.';
+    return modelo.replace('{n}', String(minutos));
+  }
+
   // As notificações flutuantes (showToast) estão desativadas na plataforma —
   // o erro de login precisa aparecer no próprio formulário.
   function showLoginError(message) {
@@ -18780,6 +18822,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('login-password-input').value;
       const submitBtn = document.getElementById('btn-do-email-login');
       if (submitBtn.disabled) return; // já está entrando: ignora o segundo clique
+
+      // E-mail bloqueado por excesso de senhas erradas: nem tenta.
+      const minutosBloqueado = minutosBloqueioLogin(email);
+      if (minutosBloqueado) { showLoginError(mensagemBloqueioLogin(minutosBloqueado)); return; }
 
       // Resposta na hora: "Entrando…" com a rodinha, e o botão fica assim até
       // a plataforma abrir (só volta ao normal se der erro).
@@ -18824,6 +18870,12 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
+        const minutosNovoBloqueio = registrarFalhaLogin(email);
+        if (minutosNovoBloqueio) {
+          loginFailedAttempts = 0;
+          showLoginError(mensagemBloqueioLogin(minutosNovoBloqueio));
+          return;
+        }
         loginFailedAttempts++;
         if (loginFailedAttempts >= 3) {
           showLoginForgotPanel(email);
@@ -18834,6 +18886,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoginError(msgInvalido.replace('{n}', loginFailedAttempts));
         return;
       }
+
+      limparFalhasLogin(email);
 
       // Senha certa, mas essa plataforma é só pra quem tem cadastro de
       // anfitrião — login/B2B/Admin compartilham o mesmo Supabase Auth.
@@ -19140,7 +19194,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!novaSenhaInput || !novaSenhaPainelRegras) return;
     const valor = novaSenhaInput.value;
     /** @type {Record<string, boolean>} */
-    const regras = { length: valor.length >= 8, upper: /[A-Z]/.test(valor), lower: /[a-z]/.test(valor), number: /[0-9]/.test(valor) };
+    const contexto = { email: /** @type {HTMLInputElement|null} */ (document.getElementById('login-nova-senha-email'))?.value || '' };
+    const regras = { length: valor.length >= 8, upper: /[A-Z]/.test(valor), lower: /[a-z]/.test(valor), number: /[0-9]/.test(valor), facil: !!valor && !senhaEhFacil(valor, contexto) };
     const cumpridas = Object.values(regras).filter(Boolean).length;
     novaSenhaPainelRegras.querySelectorAll('li[data-rule]').forEach(li => {
       li.classList.toggle('is-met', !!regras[/** @type {HTMLElement} */ (li).dataset.rule || '']);
@@ -19149,10 +19204,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const rotulo = /** @type {HTMLElement} */ (document.getElementById('nova-senha-strength-label'));
     barra.classList.remove('is-weak', 'is-medium', 'is-strong');
     if (!valor) { barra.style.width = '0%'; rotulo.textContent = ''; }
-    else if (cumpridas <= 1) { barra.style.width = '25%'; barra.classList.add('is-weak'); rotulo.textContent = tLogin('cadastro.senhaFraca', 'Senha fraca'); }
-    else if (cumpridas <= 3) { barra.style.width = '65%'; barra.classList.add('is-medium'); rotulo.textContent = tLogin('cadastro.senhaMedia', 'Senha média'); }
+    else if (cumpridas <= 2) { barra.style.width = '25%'; barra.classList.add('is-weak'); rotulo.textContent = tLogin('cadastro.senhaFraca', 'Senha fraca'); }
+    else if (cumpridas <= 4) { barra.style.width = '65%'; barra.classList.add('is-medium'); rotulo.textContent = tLogin('cadastro.senhaMedia', 'Senha média'); }
     else { barra.style.width = '100%'; barra.classList.add('is-strong'); rotulo.textContent = tLogin('cadastro.senhaForte', 'Senha forte'); }
-    novaSenhaPainelRegras.classList.toggle('is-visible', document.activeElement === novaSenhaInput && cumpridas < 4);
+    novaSenhaPainelRegras.classList.toggle('is-visible', document.activeElement === novaSenhaInput && cumpridas < 5);
   }
   novaSenhaInput?.addEventListener('input', atualizarRegrasNovaSenha);
   novaSenhaInput?.addEventListener('focus', atualizarRegrasNovaSenha);
@@ -19183,7 +19238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mesmas regras de senha do cadastro (8+ caracteres, maiúscula, minúscula e
     // número). Sem mensagem: volta para a Nova senha com o quadro de regras aberto.
-    if (!senhaCumpreRegras(password)) { campoSenha.focus(); atualizarRegrasNovaSenha(); return; }
+    if (!senhaCumpreRegras(password, { email: campoEmail.value })) { campoSenha.focus(); atualizarRegrasNovaSenha(); return; }
     if (password !== campoConfirmar.value) {
       mostrarErro(tLogin('login.senhasNaoCoincidem', 'As senhas não coincidem. Digite a confirmação de novo.'));
       campoConfirmar.value = '';
@@ -19325,7 +19380,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const email = document.getElementById('register-email-input').value.trim();
       const password = document.getElementById('register-password-input').value;
       const submitBtn = document.getElementById('btn-register-submit');
-      if (!senhaCumpreRegras(password)) { showToast(MENSAGEM_REGRAS_SENHA, '⚠️'); return; }
+      if (!senhaCumpreRegras(password, { email, nome: name })) { showToast(MENSAGEM_REGRAS_SENHA, '⚠️'); return; }
 
       submitBtn.disabled = true;
       const { data: cadastro, error } = await supabaseClient.auth.signUp({
@@ -24079,7 +24134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmar = valor('settings-password-confirm');
     if (!atual || !nova || !confirmar) return avisar('Preencha os 3 campos de senha.');
     if (nova !== confirmar) return avisar('A confirmação não coincide com a nova senha.');
-    if (!senhaCumpreRegras(nova)) return avisar(MENSAGEM_REGRAS_SENHA);
+    if (!senhaCumpreRegras(nova, { email: session && session.user ? session.user.email : '', nome: session && session.user ? [session.user.user_metadata?.first_name, session.user.user_metadata?.last_name].filter(Boolean).join(' ') : '' })) return avisar(MENSAGEM_REGRAS_SENHA);
     if (!session || !btn) return;
     btn.disabled = true;
     try {

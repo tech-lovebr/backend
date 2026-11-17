@@ -685,6 +685,8 @@ const saldoCelular = { saldo: null, faturamento: null, contratos: null };
 const ICONE_OLHO_ABERTO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const ICONE_OLHO_FECHADO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a16 16 0 0 1-2.6 3.3M6.6 6.6A16 16 0 0 0 2.5 12s3.5 6 9.5 6a9 9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m3 3 18 18"/></svg>';
 function saldoEscondido() {
+  // Celular: sem o olho, os valores aparecem sempre (mesmo quem ocultou antes).
+  if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return false;
   try { return localStorage.getItem('b2b-fin-esconder') === '1'; } catch (e) { return false; }
 }
 function desenharSaldoCelular() {
@@ -993,29 +995,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (saldo && 'ResizeObserver' in window) new ResizeObserver(alinharCarrosselComSaldo).observe(saldo);
 });
 
-/* Celular: no Dashboard o cabeçalho rola junto com a página (sem ficar
-   preso no topo). Ele entra no começo da área que rola e volta para o
-   lugar no computador. */
-(function cabecalhoRolaNoCelular() {
-  const topo = document.getElementById('shell-topbar');
-  const conteudo = document.querySelector('.b2b-content');
-  if (!topo || !conteudo || typeof MQ_CELULAR_HUB === 'undefined') return;
-  const casa = { pai: topo.parentElement, depois: topo.nextSibling };
-  const ajustar = () => {
-    if (hubNoCelular()) {
-      if (topo.parentElement !== conteudo) conteudo.insertBefore(topo, conteudo.firstChild);
-      topo.classList.add('topo-rola-junto');
-    } else if (topo.parentElement === conteudo) {
-      topo.classList.remove('topo-rola-junto');
-      casa.pai.insertBefore(topo, casa.depois && casa.depois.parentNode === casa.pai ? casa.depois : null);
-    }
-  };
-  ajustar();
-  document.addEventListener('DOMContentLoaded', ajustar);
-  window.addEventListener('load', ajustar);
-  window.addEventListener('resize', ajustar);
-  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', ajustar);
-})();
+/* Celular: o cabeçalho do Dashboard fica fixo no topo (css), fora da área
+   que rola, igual ao Love — não é mais movido para dentro do conteúdo. */
 
 /* Desktop: Home como a do anfitrião (b5e1d5f0). Faixa azul (o azul do
    sidebar em degradê, como no Admin) no lugar da foto e, por cima dela, a

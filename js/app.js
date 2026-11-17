@@ -11669,7 +11669,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btn) {
       const qtd = convidadosSelecionados.size;
       btn.classList.toggle('hidden', qtd === 0);
-      btn.title = qtd === 1 ? 'Excluir 1 convidado selecionado' : `Excluir ${qtd} convidados selecionados`;
+      // Dica curta e direta: Remover 1, Remover 2... (data-dica: o title só vira dica na primeira vez).
+      const dica = `Remover ${qtd}`;
+      btn.removeAttribute('title');
+      btn.setAttribute('data-dica', dica);
+      btn.setAttribute('aria-label', dica);
     }
     const checks = Array.from(document.querySelectorAll('#rsvp-guests-table-body .guest-select-check'));
     const contagem = document.getElementById('rsvp-footer-count');

@@ -16316,3 +16316,9 @@ html body #tab-create-event-page .criar-evento-btn:focus-visible { outline: 2px 
   html body #tab-create-event-page.active:has(#create-event-welcome-step:not(.hidden)):not(#love-h-a) { animation: none !important; transform: none !important; }
   html body #tab-create-event-page .criar-evento-colagem:not(#love-h-a) { position: fixed; top: var(--navbar-height-mobile, 60px); left: 0; right: 0; bottom: 0; z-index: 1; margin: 0; min-height: 0; border: 0; border-radius: 0; }
 }
+
+/* Celular, Home: a linha ao lado dos títulos das seções (Presentes, Lista de
+   convidados, Benefícios...) é branca. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview .home-atalhos-titulo span:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+}

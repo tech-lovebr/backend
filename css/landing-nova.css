@@ -585,3 +585,18 @@
   #view-public-site#view-public-site .lv-nav .lv-in:not(:has(.lv-burger)) .lv-logo{width:102px !important;justify-self:center !important}
 }
 @media (max-width:860px){#view-public-site#view-public-site .lv-rod .lv-idioma{margin-left:0}}
+
+/* Rodapé (ajuste): botões à esquerda e redes + logo à direita na mesma
+   linha; segurança, Termos de uso e Privacidade juntos, à direita, na mesma
+   cor; "Criar site grátis" com o texto branco, como no topo. */
+#view-public-site#view-public-site .lv-rod-meio{margin-top:40px}
+#view-public-site#view-public-site .lv-rod-marca{display:flex;align-items:center;gap:28px}
+#view-public-site#view-public-site .lv-rod .lv-btn-d span{color:inherit !important}
+#view-public-site#view-public-site .lv-rod-direita{display:flex;align-items:center;gap:6px 20px;flex-wrap:wrap}
+#view-public-site#view-public-site .lv-rod-direita > *{font-size:13.5px !important;color:var(--soft) !important}
+#view-public-site#view-public-site .lv-rod-direita a:hover{color:var(--ink) !important}
+@media (max-width:860px){
+  #view-public-site#view-public-site .lv-rod-meio{flex-direction:column;align-items:flex-start;gap:28px;margin-top:32px}
+  #view-public-site#view-public-site .lv-rod-marca{width:100%;justify-content:space-between}
+  #view-public-site#view-public-site .lv-rod-direita{gap:8px 16px}
+}

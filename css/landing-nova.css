@@ -522,66 +522,60 @@
   #view-public-site#view-public-site .lv-hero .lv-lede { font-size: 20px !important; line-height: 1.6 !important; max-width: 660px !important; }
 }
 
-/* ===== Rodapé no formato do Joy =====
-   Claro (#F7F8FA): links grandes dos recursos (Outfit 300), links menores e a
-   marca. Faixa azul-noite com a frase que gira + "com Love". Parte escura
-   (primária): Love para anfitriões / Love Hub, idioma, botões e direitos. */
-#view-public-site#view-public-site footer.lv-rod{padding:0 !important;background:transparent !important;border:0 !important}
-#view-public-site#view-public-site .lv-rod-claro{background:#F7F8FA;padding:88px 0 96px;border-top:1px solid var(--line)}
-#view-public-site#view-public-site .lv-rod-cols{display:grid !important;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr);gap:48px !important;align-items:start}
-#view-public-site#view-public-site .lv-rod ul{list-style:none;margin:0;padding:0}
-#view-public-site#view-public-site .lv-rod-grandes{display:grid;gap:16px}
-#view-public-site#view-public-site .lv-rod-grandes a{font-size:36px !important;font-weight:300 !important;line-height:48px !important;letter-spacing:-.01em !important;color:var(--ink) !important;transition:color .2s}
-#view-public-site#view-public-site .lv-rod-grandes a:hover{color:var(--acc) !important}
-#view-public-site#view-public-site .lv-rod-menores{display:grid;gap:16px;padding-top:12px !important}
-#view-public-site#view-public-site .lv-rod-menores :is(a,button){font-size:16px !important;font-weight:500 !important;line-height:22px !important;color:var(--ink) !important;background:none;border:0;padding:0;text-align:left;cursor:pointer;transition:color .2s}
-#view-public-site#view-public-site .lv-rod-menores :is(a,button):hover{color:var(--acc) !important}
-#view-public-site#view-public-site .lv-rod-marca{display:grid;gap:16px;align-content:start;padding-top:12px}
-#view-public-site#view-public-site .lv-rod-marca .lv-flogo{width:120px}
-#view-public-site#view-public-site .lv-rod-marca .lv-ftexto{margin:0;font-size:14.5px !important;line-height:1.6 !important;color:var(--mute) !important;max-width:34ch !important}
-
-#view-public-site#view-public-site .lv-rod-faixa{background:#122C3F;color:#FFFFFF;padding:22px 0}
-#view-public-site#view-public-site .lv-rod-frase{font-size:36px !important;font-weight:300 !important;line-height:40px !important;letter-spacing:-.015em !important;color:#FFFFFF !important;white-space:nowrap;overflow:hidden}
-#view-public-site#view-public-site .lv-rod-frase b{font-weight:500 !important;color:#F2D3C6 !important}
-#view-public-site#view-public-site .lv-rod-gira{display:inline-block;transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1),filter .7s cubic-bezier(.4,0,.2,1)}
-#view-public-site#view-public-site .lv-rod-gira.is-saindo{opacity:0;transform:translateY(-.12em);filter:blur(4px)}
-
-#view-public-site#view-public-site .lv-rod-escuro{background:var(--deep);color:#FFFFFF;padding:48px 0 40px}
+/* ===== Rodapé claro (cor do topo, #F7F8FA), no formato do Joy =====
+   Linha 1: Love para anfitriões / Love Hub à esquerda; menus e idioma à
+   direita. Linha 2: redes à esquerda, logo colorido à direita. Linha 3: os
+   mesmos botões do topo e a segurança (Pix, criptografia, LGPD). Linha 4:
+   direitos à esquerda, Termos de uso & Privacidade à direita. */
+#view-public-site#view-public-site footer.lv-rod{padding:56px 0 36px !important;background:#F7F8FA !important;border-top:1px solid var(--line) !important}
 #view-public-site#view-public-site .lv-rod-linha{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
 #view-public-site#view-public-site .lv-rod-produtos{display:flex;gap:8px;flex-wrap:wrap}
-#view-public-site#view-public-site .lv-rod-produtos a{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:999px;font-size:14px !important;font-weight:500 !important;color:#FFFFFF !important;opacity:.75;transition:opacity .2s,background-color .2s}
-#view-public-site#view-public-site .lv-rod-produtos a:hover{opacity:1}
-#view-public-site#view-public-site .lv-rod-produtos a.is-ativo{background:rgba(255,255,255,.15);opacity:1}
-#view-public-site#view-public-site .lv-idioma{position:relative}
-#view-public-site#view-public-site .lv-idioma-btn{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 4px;background:none;border:0;color:#FFFFFF !important;font-size:15px !important;cursor:pointer}
+#view-public-site#view-public-site .lv-rod-produtos a{display:inline-flex;align-items:center;height:30px;padding:0 14px;border-radius:999px;font-size:14px !important;font-weight:500 !important;color:var(--mute) !important;transition:color .2s,background-color .2s}
+#view-public-site#view-public-site .lv-rod-produtos a:hover{color:var(--ink) !important}
+#view-public-site#view-public-site .lv-rod-produtos a.is-ativo{background:#E8EEF5;color:var(--deep) !important}
+#view-public-site#view-public-site .lv-rod-menus{flex:1 1 auto;display:flex;align-items:center;justify-content:space-between;gap:28px;flex-wrap:wrap}
+#view-public-site#view-public-site .lv-rod-links{display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap}
+#view-public-site#view-public-site .lv-rod-links :is(a,button){font-size:14px !important;font-weight:500 !important;color:var(--ink) !important;background:none;border:0;padding:0;cursor:pointer;transition:color .2s}
+#view-public-site#view-public-site .lv-rod-links :is(a,button):hover{color:var(--acc) !important}
+#view-public-site#view-public-site .lv-idioma{position:relative;margin-left:auto}
+#view-public-site#view-public-site .lv-idioma-btn{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0;background:none;border:0;color:var(--ink) !important;font-size:14px !important;font-weight:500 !important;cursor:pointer}
 #view-public-site#view-public-site .lv-idioma-btn svg{width:16px;height:16px;flex:none}
-#view-public-site#view-public-site .lv-idioma-btn .lv-idioma-seta{width:14px;height:14px;opacity:.7;transition:transform .2s}
+#view-public-site#view-public-site .lv-idioma-btn .lv-idioma-seta{width:14px;height:14px;opacity:.6;transition:transform .2s}
 #view-public-site#view-public-site .lv-idioma-btn[aria-expanded="true"] .lv-idioma-seta{transform:rotate(180deg)}
-#view-public-site#view-public-site .lv-idioma-menu{position:absolute;right:0;bottom:calc(100% + 8px);min-width:160px;padding:6px;background:#FFFFFF;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08);display:grid;z-index:5}
+#view-public-site#view-public-site .lv-idioma-menu{position:absolute;right:0;bottom:calc(100% + 8px);min-width:160px;padding:6px;background:#FFFFFF;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.08);display:grid;z-index:5}
 #view-public-site#view-public-site .lv-idioma-menu[hidden]{display:none !important}
 #view-public-site#view-public-site .lv-idioma-menu a{display:block;padding:9px 12px;border-radius:8px;font-size:14px !important;color:var(--ink) !important}
 #view-public-site#view-public-site .lv-idioma-menu a:hover{background:var(--sky)}
 #view-public-site#view-public-site .lv-idioma-menu a[aria-current]{font-weight:500 !important;color:var(--deep) !important}
-#view-public-site#view-public-site .lv-rod-botoes{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
-#view-public-site#view-public-site .lv-rod-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 20px;border:1px solid rgba(255,255,255,.4);border-radius:999px;font-size:15px !important;font-weight:500 !important;color:#FFFFFF !important;transition:border-color .2s}
-#view-public-site#view-public-site .lv-rod-btn:hover{border-color:#FFFFFF}
-#view-public-site#view-public-site .lv-rod-btn svg{width:18px;height:18px;flex:none}
-#view-public-site#view-public-site .lv-rod .lv-legal{margin-top:40px !important;padding-top:0 !important;border-top:0 !important;font-size:14px !important;color:rgba(255,255,255,.55) !important}
-#view-public-site#view-public-site .lv-rod .lv-legal a{color:rgba(255,255,255,.55) !important}
-#view-public-site#view-public-site .lv-rod .lv-legal a:hover{color:#FFFFFF !important}
+#view-public-site#view-public-site .lv-rod-meio{margin-top:36px}
+#view-public-site#view-public-site .lv-rod .lv-redes{display:flex;align-items:center;gap:20px;color:var(--ink)}
+#view-public-site#view-public-site .lv-rod .lv-redes a{color:var(--ink) !important}
+#view-public-site#view-public-site .lv-rod .lv-redes a:hover{color:var(--acc) !important}
+#view-public-site#view-public-site .lv-rod .lv-redes svg{width:22px;height:22px}
+#view-public-site#view-public-site .lv-rod .lv-flogo{width:120px;color:var(--deep) !important}
+#view-public-site#view-public-site .lv-rod-acoes{margin-top:36px}
+#view-public-site#view-public-site .lv-rod-botoes{display:flex;gap:12px;flex-wrap:wrap}
+#view-public-site#view-public-site .lv-rod-botoes .lv-btn-o{gap:10px !important}
+#view-public-site#view-public-site .lv-rod-botoes .lv-lupa{width:17px;height:17px;flex:none}
+#view-public-site#view-public-site .lv-rod-seguro{list-style:none;margin:0;padding:0;display:flex;gap:8px 22px;flex-wrap:wrap}
+#view-public-site#view-public-site .lv-rod-seguro li{display:inline-flex;align-items:center;gap:8px;font-size:13.5px !important;color:var(--mute) !important}
+#view-public-site#view-public-site .lv-rod-seguro svg{width:17px;height:17px;flex:none;color:var(--deep)}
+#view-public-site#view-public-site .lv-rod .lv-legal{margin-top:40px !important;padding-top:20px !important;border-top:1px solid var(--line) !important;display:flex !important;justify-content:space-between;gap:12px !important;flex-wrap:wrap;font-size:13.5px !important;color:var(--soft) !important}
+#view-public-site#view-public-site .lv-rod .lv-legal a{color:var(--soft) !important}
+#view-public-site#view-public-site .lv-rod .lv-legal a:hover{color:var(--ink) !important}
 
 @media (max-width:860px){
-  #view-public-site#view-public-site .lv-rod-claro{padding:56px 0 64px}
-  #view-public-site#view-public-site .lv-rod-cols{grid-template-columns:1fr !important;gap:40px !important}
-  #view-public-site#view-public-site .lv-rod-grandes{gap:8px}
-  #view-public-site#view-public-site .lv-rod-grandes a{font-size:28px !important;line-height:40px !important}
-  #view-public-site#view-public-site .lv-rod-menores,#view-public-site#view-public-site .lv-rod-marca{padding-top:0 !important}
-  #view-public-site#view-public-site .lv-rod-faixa{padding:18px 0}
-  #view-public-site#view-public-site .lv-rod-frase{font-size:24px !important;line-height:32px !important}
-  #view-public-site#view-public-site .lv-rod-escuro{padding:36px 0 32px}
+  #view-public-site#view-public-site footer.lv-rod{padding:44px 0 28px !important}
   #view-public-site#view-public-site .lv-rod-linha{flex-direction:column;align-items:flex-start;gap:20px}
+  #view-public-site#view-public-site .lv-rod-menus{flex-direction:column;align-items:flex-start;gap:18px}
+  #view-public-site#view-public-site .lv-rod-links{gap:12px 18px}
   #view-public-site#view-public-site .lv-idioma-menu{left:0;right:auto}
-  #view-public-site#view-public-site .lv-rod .lv-legal{flex-direction:column;gap:8px !important}
+  #view-public-site#view-public-site .lv-rod-meio{flex-direction:row;align-items:center;justify-content:space-between;margin-top:32px}
+  #view-public-site#view-public-site .lv-rod .lv-redes{gap:16px}
+  #view-public-site#view-public-site .lv-rod .lv-flogo{width:102px}
+  #view-public-site#view-public-site .lv-rod-acoes{margin-top:32px}
+  #view-public-site#view-public-site .lv-rod-seguro{flex-direction:column;gap:10px}
+  #view-public-site#view-public-site .lv-rod .lv-legal{flex-direction:column;gap:8px !important;margin-top:32px !important}
 }
 
 /* Encontrar evento, celular: sem ☰, o logo fica no centro (102px, como na
@@ -590,3 +584,4 @@
   #view-public-site#view-public-site .lv-nav .lv-in:not(:has(.lv-burger)){grid-template-columns:1fr auto 1fr !important;column-gap:0 !important}
   #view-public-site#view-public-site .lv-nav .lv-in:not(:has(.lv-burger)) .lv-logo{width:102px !important;justify-self:center !important}
 }
+@media (max-width:860px){#view-public-site#view-public-site .lv-rod .lv-idioma{margin-left:0}}

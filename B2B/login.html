@@ -400,6 +400,8 @@ html, body { background: #0C1824 !important; }
 /* Celular: "Crie uma nova senha" numa linha só, como o Acesse sua conta. */
 #view-login#view-login #auth-view-nova { container-type: inline-size; }
 @media (max-width: 768px) { #view-login#view-login #auth-view-nova .lg-titulo { white-space: nowrap; font-size: min(32px, 9cqi) !important; } }
+/* Continuar com o Google: cantos arredondados iguais aos do botão Entrar (pílula). */
+#view-login#view-login :is(#google-login-btn, #google-signup-btn) { border-radius: 999px !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>

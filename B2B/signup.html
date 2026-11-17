@@ -400,6 +400,8 @@ html, body { background: #0C1824 !important; }
 /* 2ª etapa: "Complete seu cadastro" numa linha só (a fonte diminui junto com a caixa). */
 #view-login#view-login #auth-view-signup { container-type: inline-size; }
 body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap; font-size: min(clamp(32px, 3.1vw, 44px), 9.2cqi) !important; }
+/* Continuar com o Google: cantos arredondados iguais aos do botão Entrar (pílula). */
+#view-login#view-login :is(#google-login-btn, #google-signup-btn) { border-radius: 999px !important; }
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>

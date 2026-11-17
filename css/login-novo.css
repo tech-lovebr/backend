@@ -377,3 +377,13 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
 #view-login#view-login#view-login :is(.lg-btn-claro, #btn-google-login) { background: rgba(24,59,84,.07) !important; }
 #view-login#view-login#view-login :is(.lg-btn-claro, #btn-google-login):is(:hover, :focus-visible) { background: rgba(24,59,84,.11) !important; border-color: transparent !important; }
 #view-login#view-login#view-login .password-strength-panel { background: rgba(24,59,84,.05) !important; }
+
+/* Mesmo vão entre o cabeçalho e a caixa no login e no cadastro: a caixa
+   começa logo abaixo do cabeçalho (32px no computador, 24px no celular),
+   em vez de centralizar na altura da tela. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #view-login#view-login#view-login .lg-pagina { align-items: start !important; align-content: start !important; padding-top: 32px !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login#view-login .lg-pagina { align-items: start !important; align-content: start !important; padding-top: 24px !important; }
+}

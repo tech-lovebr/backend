@@ -274,3 +274,13 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 #cd#cd#cd .type-card.is-selected, #cd#cd#cd .type-card.is-selected:hover { background: rgba(24,59,84,.14) !important; border-color: transparent !important; }
 #cd#cd#cd .password-strength-panel { background: rgba(24,59,84,.05) !important; }
 #cd#cd#cd .step-circle:not(.is-active):not(.is-done) { background: rgba(24,59,84,.07) !important; }
+
+/* Mesmo vão entre o cabeçalho e a caixa no login e no cadastro: a caixa
+   começa logo abaixo do cabeçalho (32px no computador, 24px no celular),
+   em vez de centralizar na altura da tela. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  #cd#cd#cd .cd-pagina { justify-content: flex-start !important; padding-top: 32px !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #cd#cd#cd .cd-pagina { justify-content: flex-start !important; padding-top: 24px !important; }
+}

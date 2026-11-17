@@ -387,3 +387,7 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   #view-login#view-login#view-login .lg-pagina { align-items: start !important; align-content: start !important; padding-top: 24px !important; }
 }
+
+/* Logo do login (entrar, esqueci a senha, nova senha...) no azul da
+   plataforma logada (#183B54). */
+#view-login#view-login#view-login .lg-logo { color: #183B54 !important; }

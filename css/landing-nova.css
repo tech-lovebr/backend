@@ -618,3 +618,6 @@
 /* Topo fixo da landing: o mesmo vidro do topo e da barra de baixo da
    plataforma no celular (45% com desfoque). */
 #view-public-site#view-public-site .lv-nav.lv-on{background:rgba(247,248,250,.45) !important;-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+/* Logo da landing (topo, menu e encontrar-evento) no azul da plataforma
+   logada (#183B54), em vez da tinta quase preta. O do rodapé continua colorido. */
+#view-public-site#view-public-site#view-public-site .lv-logo:not(.lv-flogo){color:#183B54 !important}

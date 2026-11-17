@@ -84,7 +84,7 @@ function pagina({ slug, titulo, conteudo, atualizadoEm }) {
   <header>
     <div class="barra">
       <a class="voltar" href="/" id="voltar" aria-label="Voltar" title="Voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></a>
-      <a class="logo" href="/" aria-label="Love — página inicial"><img src="/assets/love-logo-tinta.svg?v=2" alt="Love"></a>
+      <a class="logo" href="/" aria-label="Love — página inicial"><img src="/assets/love-logo-tinta.svg?v=3" alt="Love"></a>
     </div>
   </header>
   <main>

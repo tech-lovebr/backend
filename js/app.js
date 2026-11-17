@@ -2663,13 +2663,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Conta nova (sem nenhum evento): sem o "Voltar" do formulário — ela
     // fica aqui até terminar de criar o primeiro evento.
     const btnVoltar = document.getElementById('btn-back-to-welcome-step');
-    if (btnVoltar) btnVoltar.style.display = (!state.hasEventCreated || !state.events || !state.events.length) ? 'none' : '';
+    const semEvento = !state.hasEventCreated || !state.events || !state.events.length;
+    if (btnVoltar) btnVoltar.style.display = semEvento ? 'none' : '';
+    if (btnVoltar?.parentElement) btnVoltar.parentElement.style.display = semEvento ? 'none' : '';
     escreverOlaDoCriarEvento();
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // "Olá Victor, vamos criar um novo evento?" no topo do formulário, com o
+  // "Victor, vamos criar um novo evento?" no título do formulário, com o
   // primeiro nome da conta. Sempre numa linha: a letra diminui se não couber.
   function escreverOlaDoCriarEvento() {
     const titulo = document.getElementById('create-event-form-titulo');
@@ -2677,7 +2679,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const perfil = window.loveClienteProfile || {};
     const bruto = String(perfil.first_name || perfil.full_name || perfil.couple_name || '').split('(')[0].trim().split(/\s+/)[0] || '';
     const nome = bruto && typeof maiusculaNoNome === 'function' ? maiusculaNoNome(bruto) : bruto;
-    titulo.textContent = nome ? `Olá ${nome}, vamos criar um novo evento?` : 'Olá, vamos criar um novo evento?';
+    titulo.textContent = nome ? `${nome}, vamos criar um novo evento?` : 'Vamos criar um novo evento?';
     ajustarOlaDoCriarEvento();
   }
   function ajustarOlaDoCriarEvento() {

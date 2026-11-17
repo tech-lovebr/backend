@@ -16322,3 +16322,25 @@ html body #tab-create-event-page .criar-evento-btn:focus-visible { outline: 2px 
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-overview .home-atalhos-titulo span:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
 }
+
+/* Criar novo evento (passo 1): caixa branca translúcida atrás do título,
+   do texto e do botão (no lugar do véu radial). */
+html body #tab-create-event-page .criar-evento-colagem::before { content: none; }
+html body #tab-create-event-page .criar-evento-centro { max-width: 440px; padding: 36px 40px 40px; background: rgba(255, 255, 255, .78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, .9); border-radius: 10px; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-create-event-page .criar-evento-centro { max-width: 340px; padding: 28px 24px 32px; }
+}
+
+/* Pop-up "Criar um novo evento" (escolha do tipo): uma coluna só, sem a foto,
+   logo da Love no topo (ícone rosa + Love azul, como na assinatura do e-mail),
+   título na mesma letra do "Vamos criar um novo evento?" e Continuar no azul
+   do Criar evento, com a seta à direita. */
+html body #modal-select-event-type .tipo-evento-popup { max-width: 460px; }
+html body #modal-select-event-type .tipo-evento-logo { display: block; width: 116px; height: auto; }
+html body #modal-select-event-type h3.tipo-evento-titulo:not(#love-h-a):not(#love-h-b) { margin: 0; font-family: var(--fonte-love) !important; font-weight: 500 !important; font-size: 28px !important; line-height: 1.15 !important; letter-spacing: -0.025em !important; color: #18181B !important; text-wrap: balance; }
+html body #modal-select-event-type .tipo-evento-texto { margin: 8px auto 0; max-width: 340px; font-size: 14px; line-height: 1.55; color: #52525B; text-wrap: pretty; }
+html body #modal-select-event-type #btn-submit-custom-type.tipo-evento-continuar:not(#love-h-a) { background: #183b54 !important; border-color: #183b54 !important; color: #FFFFFF !important; flex-direction: row !important; }
+html body #modal-select-event-type #btn-submit-custom-type.tipo-evento-continuar:not(#love-h-a):hover { background: #122c3f !important; border-color: #122c3f !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #modal-select-event-type h3.tipo-evento-titulo:not(#love-h-a):not(#love-h-b) { font-size: 24px !important; }
+}

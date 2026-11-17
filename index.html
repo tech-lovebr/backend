@@ -98,7 +98,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261116_linhabranca">
+  <link rel="stylesheet" href="css/styles.css?v=20261116_popuptipo">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261116_headline2">
@@ -4116,7 +4116,7 @@
        MODAL: ESCOLHA DO TIPO DE EVENTO (Formato e Tamanho 2 Colunas com Showcase)
        ======================================================================= -->
   <div id="modal-select-event-type" class="modal-backdrop-custom fixed inset-0 bg-black/60 backdrop-blur-sm z-50 items-center justify-center p-4 hidden" style="display: none !important;">
-    <div class="modal-container-custom bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden relative grid grid-cols-1 md:grid-cols-2 min-h-[520px]">
+    <div class="modal-container-custom tipo-evento-popup bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden relative">
       
       <!-- Close Button (Absolute Top Right) -->
       <button data-close-modal class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-zinc-700 shadow-md flex items-center justify-center transition-all z-20 cursor-pointer" title="Fechar">✕</button>
@@ -4125,23 +4125,15 @@
       <div class="p-6 sm:p-10 flex flex-col justify-between bg-white space-y-6">
         
         <div class="space-y-5">
-          <!-- Ícone de criar novo (calendário com +), nas cores dos botões claros -->
+          <!-- Logo da Love (ícone rosa + Love azul), igual à assinatura do e-mail -->
           <div class="flex justify-center">
-            <div class="w-12 h-12 flex items-center justify-center" style="border-radius: 10px; background: #EAF0F5; color: #183b54;">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4M12 12.5v5M9.5 15h5"/>
-              </svg>
-            </div>
+            <img src="assets/love-assinatura-logo.png" alt="Love" class="tipo-evento-logo" width="116" height="32">
           </div>
 
           <!-- Headline & Subtítulo -->
           <div class="text-center space-y-1.5">
-            <h3 class="text-xl sm:text-2xl font-bold text-zinc-900 leading-tight">
-              Vamos criar um novo evento?
-            </h3>
-            <p class="text-xs sm:text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
-              Escolha a categoria, personalize o design e envie o convite em poucos cliques.
-            </p>
+            <h3 class="tipo-evento-titulo">Criar um novo evento</h3>
+            <p class="tipo-evento-texto">Escolha a categoria que mais se encaixa com o tipo de celebração que você deseja comemorar.</p>
           </div>
 
           <!-- Grade de Seleção Rápida de Tipos -->
@@ -4182,9 +4174,9 @@
 
         <!-- Botões de Ação Inferiores -->
         <div class="space-y-2.5 pt-2">
-          <button type="button" id="btn-submit-custom-type" class="btn-primary w-full justify-center">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          <button type="button" id="btn-submit-custom-type" class="btn-primary tipo-evento-continuar w-full justify-center">
             <span>Continuar</span>
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </button>
 
           <button type="button" id="btn-event-type-unsure" class="w-full py-2 text-center text-xs font-medium text-zinc-500 hover:text-zinc-800 transition-colors cursor-pointer">
@@ -4192,18 +4184,6 @@
           </button>
         </div>
 
-      </div>
-
-      <!-- Coluna Direita: Imagem / Showcase Visual Fiel ao Estilo da Referência -->
-      <div class="relative hidden md:block bg-slate-100 overflow-hidden h-full min-h-[480px]">
-        <img src="assets/landing/heroi.jpg" alt="Mesa de festa ao ar livre, com guardanapos azuis e flores brancas" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
-
-        <!-- Card Flutuante de Destaque no Showcase -->
-        <div class="absolute bottom-8 left-8 right-8 bg-white/95 backdrop-blur-md p-4 space-y-1" style="border-radius: 10px; border: 1px solid #E4E4E7; box-shadow: none;">
-          <span class="block text-xs font-bold text-zinc-900">Crie seu convite digital</span>
-          <p class="text-[11px] text-zinc-500">Monte seu site, gerencie convidados, receba presentes em dinheiro e contrate fornecedores, tudo num só lugar.</p>
-        </div>
       </div>
 
     </div>

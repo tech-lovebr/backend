@@ -504,3 +504,10 @@
 @media (max-width: 768px) {
   #view-public-site#view-public-site .lv-hero .lv-dis { font-size: min(44px, calc((100vw - 58px) / 7.7)) !important; }
 }
+
+/* Celular (até 860px, onde aparece o ☰): ☰ à esquerda, logo no centro da
+   tela e Entrar à direita (colunas 1fr auto 1fr). */
+@media (max-width:860px){
+  #view-public-site#view-public-site .lv-nav .lv-in:has(.lv-burger){grid-template-columns:1fr auto 1fr !important;column-gap:0 !important}
+  #view-public-site#view-public-site .lv-nav .lv-in:has(.lv-burger) .lv-logo{justify-self:center !important}
+}

@@ -636,9 +636,11 @@
     document.getElementById('form-onboard-register').addEventListener('submit', (e) => {
       e.preventDefault();
       mostrarErro('cd-erro-acesso', '');
+      // Senha fora das regras: sem mensagem, só volta para o campo com o
+      // quadro de regras aberto mostrando o que falta.
       if (!senhaCumpreRegras(passwordInput.value)) {
-        mostrarErro('cd-erro-acesso', MENSAGEM_REGRAS_SENHA);
         passwordInput.focus();
+        mostrarRegrasSeFaltar();
         return;
       }
       if (confirmarInput.value !== passwordInput.value) {
@@ -654,7 +656,7 @@
       mostrarErro('cd-erro-criar', '');
       if (!senhaCumpreRegras(passwordInput.value)) {
         goToStep(1);
-        mostrarErro('cd-erro-acesso', MENSAGEM_REGRAS_SENHA);
+        setTimeout(() => { passwordInput.focus(); mostrarRegrasSeFaltar(); }, 50);
         return;
       }
       const { first_name: firstName, last_name: lastName, full_name: fullName } = montarNomeCliente(

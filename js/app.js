@@ -19156,8 +19156,9 @@ document.addEventListener('DOMContentLoaded', () => {
     erroEl.classList.add('hidden');
     const password = campoSenha.value;
 
-    // Mesmas regras de senha do cadastro (8+ caracteres, maiúscula, minúscula e número).
-    if (!senhaCumpreRegras(password)) { mostrarErro(MENSAGEM_REGRAS_SENHA); campoSenha.focus(); return; }
+    // Mesmas regras de senha do cadastro (8+ caracteres, maiúscula, minúscula e
+    // número). Sem mensagem: volta para a Nova senha com o quadro de regras aberto.
+    if (!senhaCumpreRegras(password)) { campoSenha.focus(); atualizarRegrasNovaSenha(); return; }
     if (password !== campoConfirmar.value) {
       mostrarErro(tLogin('login.senhasNaoCoincidem', 'As senhas não coincidem. Digite a confirmação de novo.'));
       campoConfirmar.value = '';

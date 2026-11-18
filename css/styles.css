@@ -17969,3 +17969,24 @@ html body .ct-vazio-com-card .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a) { 
 @media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
   html body #rfp-empty-state .rfp-vazio-card strong:not(#love-h-a):not(#love-h-b) { white-space: nowrap; }
 }
+
+/* Nova solicitação de orçamento como Adicionar novo produto do Hub: uma
+   coluna só (até 760px, centralizada) e uma caixa branca única com o título
+   e o texto da etapa no topo, os campos e, embaixo, Cancelar/Voltar e
+   Continuar. Desktop e celular. */
+html body #b2b-pedidos-view #rfp-editor:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { display: flex !important; flex-direction: column; gap: 0; width: 100%; max-width: 760px !important; margin: 0 auto !important; padding-top: 24px !important; }
+html body #b2b-pedidos-view #rfp-editor .rfp-coluna:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { display: block; width: 100%; }
+html body #b2b-pedidos-view #rfp-editor .rfp-intro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { display: block !important; margin: 0 !important; padding: 24px 24px 8px !important; background: #FFFFFF !important; border: 0 !important; border-radius: 10px 10px 0 0 !important; }
+html body #b2b-pedidos-view #rfp-editor .rfp-etapa-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { margin: 0 !important; font-size: 24px !important; font-weight: 500 !important; line-height: 1.25 !important; letter-spacing: -0.03em; color: #18181B !important; }
+html body #b2b-pedidos-view #rfp-editor .rfp-etapa-sub:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { margin: 8px 0 0 !important; font-size: 14px !important; line-height: 1.6 !important; color: #52525B !important; }
+html body #b2b-pedidos-view #rfp-editor .rfp-passos:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { margin: 0 !important; padding: 8px 24px 0 !important; background: #FFFFFF !important; }
+html body #b2b-pedidos-view #rfp-editor .rfp-caixa-form:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { padding: 16px 24px !important; background: #FFFFFF !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+html body #b2b-pedidos-view #rfp-editor .rfp-rodape:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { margin: 0 !important; padding: 8px 24px 24px !important; background: #FFFFFF !important; border: 0 !important; border-radius: 0 0 10px 10px !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-pedidos-view #rfp-editor:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { padding-top: 16px !important; }
+  html body #b2b-pedidos-view #rfp-editor .rfp-intro:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { padding: 20px 16px 4px !important; }
+  html body #b2b-pedidos-view #rfp-editor .rfp-etapa-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { font-size: 20px !important; }
+  html body #b2b-pedidos-view #rfp-editor .rfp-passos:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { padding: 8px 16px 0 !important; }
+  html body #b2b-pedidos-view #rfp-editor .rfp-caixa-form:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { padding: 16px !important; }
+  html body #b2b-pedidos-view #rfp-editor .rfp-rodape:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { padding: 8px 16px 20px !important; }
+}

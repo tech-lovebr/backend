@@ -17733,3 +17733,9 @@ html body #recados-raiz .recados-vazio-titulo:not(#love-h-a):not(#love-h-b) { di
   html:has(body.ficha-aberta, #chk-modal:not([hidden]), #ficha-massa:not([hidden]), #modal-b2b-orcamento:not(.hidden), #orc-celular:not([hidden])) > body { overflow: hidden !important; overscroll-behavior: none; }
   html body #chk-modal:not(#love-h-a), html body #chk-modal :is(.chk-modal-card, .chk-form, textarea):not(#love-h-a) { overscroll-behavior: contain; }
 }
+
+/* Desktop — Convite digital, editar texto: sem o título "Tipografia" (fica
+   só o "Fonte" e o seletor). */
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html body .inspector-tipografia-titulo:not(#love-h-a):not(#love-h-b) { display: none !important; }
+}

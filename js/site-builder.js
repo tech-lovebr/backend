@@ -3815,7 +3815,8 @@ function renderStyleTab(el, flat, skipColor, semEstilo) {
   if (!STYLE_CAPABLE_TYPES.includes(el.type)) return '';
   const align = cascadedStyleValue(el, 'textAlign');
   const currentFont = cascadedStyleValue(el, 'fontFamily') || '';
-  const tipografiaHeading = flat ? `<span class="inspector-field-label">Tipografia</span>` : `<div class="inspector-section-title">Tipografia</div>`;
+  // Desktop esconde o título "Tipografia" (fica só o "Fonte"); ver .inspector-tipografia-titulo no styles.css.
+  const tipografiaHeading = flat ? `<span class="inspector-field-label inspector-tipografia-titulo">Tipografia</span>` : `<div class="inspector-section-title inspector-tipografia-titulo">Tipografia</div>`;
   return `
     ${tipografiaHeading}
     <div class="inspector-field">

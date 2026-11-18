@@ -838,6 +838,15 @@ document.addEventListener('DOMContentLoaded', () => {
       renderEventsSwitcher();
       loadNotificationsFeed();
 
+      if (!pendingInitialDashboardRoute && activeEvent) {
+        let fornecedorPendente = null;
+        try { fornecedorPendente = localStorage.getItem('love-fornecedor-pendente'); localStorage.removeItem('love-fornecedor-pendente'); } catch (e) {}
+        const rotaPendente = fornecedorPendente ? lerRota(fornecedorPendente) : null;
+        if (rotaPendente && rotaPendente.perfilId) {
+          history.replaceState(null, '', fornecedorPendente);
+          pendingInitialDashboardRoute = { type: 'tab', tab: 'b2b', rota: rotaPendente };
+        }
+      }
       if (pendingInitialDashboardRoute) {
         const route = pendingInitialDashboardRoute;
         pendingInitialDashboardRoute = null;
@@ -22064,16 +22073,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function handleB2BShare(item, triggerBtn) {
-    const shareText = `${item.name} — ${item.description || item.about || ''}`.trim();
+    // O link abre a página do fornecedor dentro da Love: quem está logado
+    // cai direto nela; quem não tem conta passa pelo cadastro e volta para
+    // ela (ver love-fornecedor-pendente).
+    const link = window.location.origin + rotaPerfilFornecedor(item);
+    const shareText = `${item.name} na Love: ${link}`;
     const marcarCopiado = () => {
       if (!triggerBtn) return;
       triggerBtn.classList.add('text-emerald-600');
       setTimeout(() => triggerBtn.classList.remove('text-emerald-600'), 2000);
     };
+    const copiar = () => navigator.clipboard?.writeText?.(link).then(() => { marcarCopiado(); showToast('Link do fornecedor copiado', '🔗'); }).catch(() => {});
     if (navigator.share) {
-      navigator.share({ title: item.name, text: shareText }).catch(() => {});
-    } else if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(shareText).then(marcarCopiado).catch(() => {});
+      navigator.share({ title: item.name, text: `${item.name} na Love`, url: link }).catch((e) => { if (e?.name !== 'AbortError') copiar(); });
+    } else {
+      copiar();
     }
   }
 
@@ -25405,6 +25419,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // consumido (switchView('dashboard') nunca roda).
   const initialRoute = lerRota(window.location.pathname);
   const initialRailTab = initialRoute ? initialRoute.tab : null;
+  // Link compartilhado de um fornecedor (/fornecedores/<empresa>-<id8>) sem
+  // ninguém logado: guarda o fornecedor e leva para criar a conta; depois do
+  // cadastro (ou do login) e com um evento aberto, o painel abre nele.
+  const linkDeFornecedorSemConta = () => {
+    if (!(initialRoute && initialRoute.tab === 'b2b' && initialRoute.perfilId)) return false;
+    try { localStorage.setItem('love-fornecedor-pendente', window.location.pathname); } catch (e) {}
+    window.location.replace('/cadastro');
+    return true;
+  };
 
   // /notificacoes não é uma aba do rail (sem ícone próprio) — mesma lógica
   // de rota "direta" das legais/abas, só que abrindo a página de notificações.
@@ -25450,7 +25473,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (/** @type {any} */ (window).__loveNovaSenha || (isLoginRoute && !hasPlausibleSession)) {
     switchView('login');
   } else if (!hasPlausibleSession) {
-    switchView('public');
+    if (!linkDeFornecedorSemConta()) switchView('public');
   }
   // Se houver pista de sessão e não for /login, state.currentView já nasce
   // 'public' (valor padrão) sem a função ter sido chamada — initClienteSession
@@ -25483,6 +25506,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (/** @type {any} */ (window).__loveNovaSenha) { abrirPainelNovaSenha(); return; }
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) {
+      if (linkDeFornecedorSemConta()) return;
       // Cobre o palpite de sessão (localStorage tinha a chave, mas o token
       // não se confirmou) — sem a classe ainda presente, switchView() nunca
       // chegou a rodar (ela mesma se encarrega de removê-la), e sem isso

@@ -2302,5 +2302,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Adicionar anfitrião":"Add co-host",
 "Sair":"Log out",
 "{x} co-anfitrião":"{x} co-host",
-"{x} co-anfitriões":"{x} co-hosts"
+"{x} co-anfitriões":"{x} co-hosts",
+"Conversar":"Chat",
+"Link do fornecedor copiado":"Vendor link copied"
 });

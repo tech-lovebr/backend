@@ -20818,9 +20818,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   })();
 
-  /** "São Paulo, SP" (cidade + UF) ou "Todas as cidades". */
+  /** "São Paulo, SP" (cidade + UF); em todas as cidades, vazio (fica só o ícone de local). */
   function textoDaCidadeCelular() {
-    if (!b2bSelectedCity) return 'Todas as cidades';
+    if (!b2bSelectedCity) return '';
     const achada = cidadesDaVitrine().find(c => cidadeNormalizada(c.city) === cidadeNormalizada(b2bSelectedCity));
     const uf = achada && achada.uf ? achada.uf : (cidadeNormalizada(b2bSelectedCity) === cidadeNormalizada('São Paulo') ? 'SP' : '');
     return uf ? `${b2bSelectedCity}, ${uf}` : b2bSelectedCity;

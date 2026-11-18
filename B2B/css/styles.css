@@ -14368,3 +14368,22 @@ html:not(.hub-claro) body .forms-vazio .produtos-vazio-criar:not(#love-h-a):not(
   }
   html:not(.hub-claro) body #leads-acoes-topo [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: rgba(255, 255, 255, 0.08) !important; color: #E4E4E7 !important; }
 }
+
+/* Meus ganhos: o valor do saldo na mesma fonte do Saldo disponível e dos
+   Contratos ativos da Dashboard (Outfit 28px leve, algarismos tabulares). */
+html body .fin-resumo .cart-numero.love-saldo-valor:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+  font-family: var(--fonte-love, 'Outfit'), "Helvetica Neue", Arial, sans-serif !important; font-size: 28px !important; font-weight: 300 !important;
+  font-variation-settings: normal !important; letter-spacing: -0.02em !important; font-variant-numeric: tabular-nums; color: #16202F !important;
+}
+html:not(.hub-claro) body .fin-resumo .cart-numero.love-saldo-valor:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { color: #FFFFFF !important; }
+
+/* Orçamentos (desktop): o "+" de novo orçamento no mesmo formato dos ícones
+   Salvas e Filtrar por de Oportunidades (38px, fundo .07, cantos 8px). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #op-propostas-novo:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    width: 38px; height: 38px; min-width: 38px; background: rgba(24, 59, 84, 0.07); border-radius: 8px; color: #3F3F46; transition: background-color .15s ease, color .15s ease;
+  }
+  html body #op-propostas-novo:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background: rgba(24, 59, 84, 0.11); color: #181D24; }
+  html body #op-propostas-novo svg:not(#love-h-a):not(#love-h-b) { width: 18px; height: 18px; }
+  html:not(.hub-claro) body #op-propostas-novo:not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: rgba(255, 255, 255, 0.08); color: #E4E4E7 !important; }
+}

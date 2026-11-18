@@ -14100,3 +14100,21 @@ html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-cai
   html:not(.hub-claro) body .menu-celular :is(.menu-celular-conversas-caixa, .menu-celular-link-sair::before):not(#love-h-a) { border-color: rgba(255, 255, 255, 0.08); }
   html:not(.hub-claro) body .menu-celular .menu-celular-link-sair:not(#love-h-a)::before { background: rgba(255, 255, 255, 0.08); }
 }
+
+/* ==========================================================================
+   Celular — Parte 6: telas cheias, gavetas de baixo e Conversas.
+   - Tela cheia aberta (Adicionar/Editar): a página de trás não rola
+     (overscroll contido na tela e nos textareas).
+   - Gaveta de baixo sem a alça.
+   - Conversas do tamanho exato da tela (100dvh) e sem a página rolar atrás.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html:has(.form-drawer.ficha-celular.show), html body:has(.form-drawer.ficha-celular.show) { overflow: hidden !important; overscroll-behavior: none; }
+  html body:has(.form-drawer.ficha-celular.show) .b2b-content:not(#love-h-a):not(#love-h-b):not(#love-h-c) { overflow: hidden !important; }
+  html body .form-drawer.ficha-celular :is(.form-drawer-body, textarea):not(#love-h-a):not(#love-h-b) { overscroll-behavior: contain; }
+
+  html body .gaveta-opcoes-alca:not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  html:has(> body[data-page="chat"]), html body[data-page="chat"]:not(#love-h-a) { height: 100%; overflow: hidden !important; overscroll-behavior: none; }
+  html body[data-page="chat"] :is(.b2b-shell, .b2b-main):not(#love-h-a):not(#love-h-b):not(#love-h-c) { height: 100dvh !important; min-height: 0 !important; max-height: 100dvh !important; }
+}

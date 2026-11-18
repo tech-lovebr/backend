@@ -1242,6 +1242,11 @@ function ligarBarraDeBaixo() {
   barra.addEventListener('click', (e) => {
     const item = e.target instanceof Element ? e.target.closest('.mobile-nav-item') : null;
     if (!item || !noCelular()) return;
+    // Tela cheia aberta (Adicionar/Editar): tocar na barra de baixo fecha.
+    document.querySelectorAll('.form-drawer.show').forEach(d => {
+      const fechar = d.querySelector('.ficha-voltar-celular') || d.querySelector('.form-drawer-close');
+      if (fechar instanceof HTMLElement) fechar.click();
+    });
     irAoTopo();
     if (!item.classList.contains('active')) return;
     e.preventDefault();
@@ -1530,10 +1535,22 @@ function colocarXNoCabecalho() {
   cab.appendChild(x);
 }
 
+/* Celular: "Conversas" no lugar de "Mensagens" no título do chat (o
+   desktop continua como está). */
+function textosDoCelular() {
+  const titulo = document.body.dataset.page === 'chat' ? document.querySelector('.b2b-content > .b2b-header-bar h2') : null;
+  if (!titulo) return;
+  const original = titulo.textContent || '';
+  const trocar = () => { titulo.textContent = noCelular() && original.trim() === 'Mensagens' ? 'Conversas' : original; };
+  trocar();
+  window.matchMedia(MQ_CELULAR).addEventListener?.('change', trocar);
+}
+
 document.addEventListener('shell:ready', () => {
   ligarBarraDeBaixo();
   montarMenuDoCelular();
   colocarXNoCabecalho();
+  textosDoCelular();
 });
 
 /* Faixa central de 1280px (como no anfitrião): a largura da área de

@@ -12896,8 +12896,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         <span>Adicionar</span>
       </button>
-      <button type="button" role="menuitem" data-add="contatos">
+      <button type="button" role="menuitem" data-add="massa">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>
+        <span>Adicionar em massa</span>
+      </button>
+      <button type="button" role="menuitem" data-add="contatos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.75v11.5m0 0-4.25-4.25M12 15.25l4.25-4.25M4.5 15.5v2.75A2 2 0 0 0 6.5 20.25h11a2 2 0 0 0 2-2V15.5"/></svg>
         <span>Importar contatos</span>
       </button>`;
     document.body.appendChild(menu);
@@ -12925,6 +12929,95 @@ document.addEventListener('DOMContentLoaded', () => {
       fecharMenuAddConvidado();
       importarContatosParaALista(naHome);
     });
+    menu.querySelector('[data-add="massa"]')?.addEventListener('click', () => {
+      fecharMenuAddConvidado();
+      if (naHome) window.loveIrPara?.('rsvp', 'all');
+      abrirAdicionarEmMassa();
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // Celular — Adicionar em massa: a mesma tela de Adicionar convidado, só
+  // com uma caixa de texto. Cada linha (ou cada nome separado por vírgula)
+  // vira um convidado; depois é só tocar no nome para completar os dados.
+  // ------------------------------------------------------------------
+  function fichaDoAdicionarEmMassa() {
+    let ficha = document.getElementById('ficha-massa');
+    if (ficha) return ficha;
+    ficha = document.createElement('div');
+    ficha.id = 'ficha-massa';
+    ficha.className = 'ficha-convidado is-editando ficha-massa';
+    ficha.hidden = true;
+    ficha.setAttribute('role', 'dialog');
+    ficha.setAttribute('aria-modal', 'true');
+    ficha.setAttribute('aria-labelledby', 'ficha-massa-titulo');
+    ficha.innerHTML = `
+      <div class="ficha-topo">
+        <button type="button" class="ficha-voltar" data-massa="voltar" aria-label="Voltar">${ICONE_VOLTAR_FICHA}</button>
+        <h2 class="ficha-titulo" id="ficha-massa-titulo">Adicionar em massa</h2>
+        <button type="button" class="ficha-pilula is-salvar" data-massa="salvar">Salvar</button>
+      </div>
+      <div class="ficha-corpo">
+        <section class="ficha-cartao">
+          <h3>Nomes dos convidados</h3>
+          <textarea class="ficha-massa-texto" id="ficha-massa-texto" rows="10" autocapitalize="words" autocomplete="off" placeholder="Digite os nomes dos convidados. Pule uma linha ou separe com vírgula para salvar a lista de convidados em massa." aria-label="Nomes dos convidados"></textarea>
+          <p class="ficha-erro" id="ficha-massa-erro" hidden></p>
+        </section>
+      </div>`;
+    document.body.appendChild(ficha);
+    ficha.querySelector('[data-massa="voltar"]')?.addEventListener('click', fecharAdicionarEmMassa);
+    ficha.querySelector('[data-massa="salvar"]')?.addEventListener('click', salvarAdicionarEmMassa);
+    return ficha;
+  }
+  function abrirAdicionarEmMassa() {
+    const ficha = fichaDoAdicionarEmMassa();
+    const caixa = /** @type {HTMLTextAreaElement|null} */ (ficha.querySelector('#ficha-massa-texto'));
+    const erro = ficha.querySelector('#ficha-massa-erro');
+    if (caixa) caixa.value = '';
+    if (erro) /** @type {HTMLElement} */ (erro).hidden = true;
+    ficha.hidden = false;
+    document.body.classList.add('ficha-aberta');
+  }
+  function fecharAdicionarEmMassa() {
+    const ficha = document.getElementById('ficha-massa');
+    if (ficha) ficha.hidden = true;
+    if (document.getElementById('ficha-convidado')?.hidden !== false) document.body.classList.remove('ficha-aberta');
+  }
+  async function salvarAdicionarEmMassa() {
+    const ficha = document.getElementById('ficha-massa');
+    const caixa = /** @type {HTMLTextAreaElement|null} */ (ficha?.querySelector('#ficha-massa-texto'));
+    const erro = /** @type {HTMLElement|null} */ (ficha?.querySelector('#ficha-massa-erro'));
+    const botao = /** @type {HTMLButtonElement|null} */ (ficha?.querySelector('[data-massa="salvar"]'));
+    const ev = getActiveEvent();
+    if (!caixa || !ev) return;
+    const nomes = caixa.value.split(/[\n,;]+/).map(n => nomeComMaiusculas(n.replace(/\s+/g, ' ').trim())).filter(Boolean);
+    if (!nomes.length) {
+      if (erro) { erro.textContent = 'Digite pelo menos um nome.'; erro.hidden = false; }
+      caixa.focus();
+      return;
+    }
+    if (!Array.isArray(ev.guests)) ev.guests = [];
+    if (botao) botao.disabled = true;
+    const novos = convidadosDoCsv([['Nome', 'Telefone', 'E-mail'], ...nomes.map(n => [n, '', ''])], ev.guests);
+    let falhas = 0;
+    for (const g of novos) {
+      ev.guests.push(g);
+      const { error } = await salvarConvidadoNoBanco(g).catch(err => ({ error: err }));
+      if (error) { falhas++; ev.guests.splice(ev.guests.indexOf(g), 1); }
+    }
+    if (botao) botao.disabled = false;
+    renderGuestsTable();
+    renderFloorPlanGuestCards();
+    updateAllCelebrationData();
+    fecharAdicionarEmMassa();
+    const ok = novos.length - falhas;
+    setTimeout(() => {
+      const linha = document.getElementById('rsvp-total-celular');
+      if (!linha) return;
+      const antes = linha.textContent;
+      linha.textContent = ok ? `${ok} ${ok === 1 ? 'convidado adicionado' : 'convidados adicionados'}` : 'Nenhum convidado novo para adicionar';
+      setTimeout(() => { linha.textContent = antes; }, 4000);
+    }, 300);
   }
 
   /** Abre o seletor de arquivo de contatos (.vcf). @returns {Promise<string|null>} */

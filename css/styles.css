@@ -17077,3 +17077,16 @@ html body .org-nome-texto .guest-nome-resto:not(#love-h-a) { font-weight: 600 !i
   html body .sidebar-icon-rail #rail-mais-celular .rail-mais-circulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #E8E8EB; color: #18181B; }
   html body .sidebar-icon-rail #rail-mais-celular:active .rail-mais-circulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #DEDEE2; }
 }
+
+/* Celular — Adicionar em massa: mesma tela de Adicionar convidado, com uma
+   caixa de texto (vazia branca com a linha fina; preenchida no cinza). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .ficha-massa .ficha-massa-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+    display: block; width: 100%; min-height: 240px; box-sizing: border-box; padding: 12px 14px; resize: vertical;
+    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; outline: none; box-shadow: none !important;
+    font-family: var(--fonte-love, 'Outfit'), sans-serif; font-size: 16px; line-height: 24px; color: #18181B;
+  }
+  html body .ficha-massa .ficha-massa-texto:not(:placeholder-shown):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: rgba(24, 59, 84, 0.06) !important; border-color: transparent !important; }
+  html body .ficha-massa .ficha-massa-texto::placeholder { color: #A1A1AA; }
+  html body .ficha-massa .ficha-erro:not([hidden]) { margin: 8px 0 0; }
+}

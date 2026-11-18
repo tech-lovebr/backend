@@ -2283,5 +2283,12 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Texto copiado. Cole onde quiser compartilhar.":"Text copied. Paste it wherever you want to share.",
 "Copie o texto e cole onde quiser compartilhar.":"Copy the text and paste it wherever you want to share.",
 "{x}, sua lista ainda está vazia.":"{x}, your registry is still empty.",
-"Sua lista ainda está vazia.":"Your registry is still empty."
+"Sua lista ainda está vazia.":"Your registry is still empty.",
+"Adicionar em massa":"Add in bulk",
+"Nomes dos convidados":"Guest names",
+"Digite os nomes dos convidados. Pule uma linha ou separe com vírgula para salvar a lista de convidados em massa.":"Type the guest names. Use a new line or a comma between names to save the guest list in bulk.",
+"Digite pelo menos um nome.":"Type at least one name.",
+"{x} convidado adicionado":"{x} guest added",
+"{x} convidados adicionados":"{x} guests added",
+"Nenhum convidado novo para adicionar":"No new guests to add"
 });

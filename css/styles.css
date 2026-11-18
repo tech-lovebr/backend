@@ -17958,3 +17958,14 @@ html body .ct-vazio-com-card .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a) { 
   html body #view-event-os-dashboard #btn-checklist-nova:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) * { color: inherit !important; font-size: inherit !important; font-weight: inherit !important; }
   html body #view-event-os-dashboard #btn-checklist-nova:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):hover { background: #FFFFFF !important; border-color: #181D24 !important; color: #181D24 !important; }
 }
+
+/* Minhas Solicitações vazio: no desktop "Crie uma nova solicitação" numa
+   linha só; no celular continua "Crie a sua primeira solicitação". */
+.rfp-so-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #rfp-empty-state .rfp-so-desktop:not(#love-h-a) { display: none; }
+  html body #rfp-empty-state .rfp-so-celular:not(#love-h-a) { display: inline; }
+}
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html body #rfp-empty-state .rfp-vazio-card strong:not(#love-h-a):not(#love-h-b) { white-space: nowrap; }
+}

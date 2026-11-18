@@ -2313,5 +2313,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Sacar Pix":"Withdraw via Pix",
 "Encontre o fornecedor ideal":"Find the ideal vendor",
 "Você ainda não possui contratos ativos":"You don't have any active contracts yet",
-"Encontre um fornecedor ideal, contrate-o para o seu evento e organize as entregas.":"Find the ideal vendor, hire them for your event and organize the deliveries."
+"Encontre um fornecedor ideal, contrate-o para o seu evento e organize as entregas.":"Find the ideal vendor, hire them for your event and organize the deliveries.",
+"Crie uma nova solicitação":"Create a new request"
 });

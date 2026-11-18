@@ -1065,8 +1065,9 @@ function atualizarBotoesDaPagina() {
   const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
   // Celular: só "Salvar" (que também publica na primeira vez — ver o clique).
   document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || noCelular || !!paginasJaPublicadas[currentPageKey]);
-  document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate);
-  document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate);
+  // Celular: no Convite Digital o Compartilhar (do próprio aparelho) fica no lugar do Ver convite.
+  document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate || noCelular);
+  document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate && !noCelular);
   document.getElementById('builder-share-menu')?.classList.add('hidden');
 }
 
@@ -5880,7 +5881,15 @@ function initCompartilharSaveTheDate() {
   const fechar = () => { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); };
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
-    if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches && navigator.share) {
+    const celular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+    // Celular, Convite Digital: compartilha o link do convite (como o link da Home).
+    if (celular && currentPageKey !== 'savethedate') {
+      const url = urlDaPaginaPublicada();
+      if (navigator.share) { try { await navigator.share({ title: 'Convite', url }); } catch (err) { /* cancelado */ } }
+      else window.open(url, '_blank', 'noopener');
+      return;
+    }
+    if (celular && navigator.share) {
       const ok = await compartilharSaveTheDate('sistema', status);
       if (ok && typeof window.markPlatformTaskAchieved === 'function') window.markPlatformTaskAchieved('savethedate');
       return;

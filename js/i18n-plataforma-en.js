@@ -2205,5 +2205,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "{x}, falta apenas 1 dia para o seu evento. Está tudo pronto? Que tal conferir os últimos detalhes?":"{x}, just 1 day left until your event. All set? Why not check the final details?",
 "{x}, chegou o grande dia! Aproveite cada momento do seu evento.":"{x}, the big day is here! Enjoy every moment of your event.",
 "Chegou o grande dia! Aproveite cada momento do seu evento.":"The big day is here! Enjoy every moment of your event.",
-"Salvar esta lista de contatos":"Save this contact list"
+"Salvar esta lista de contatos":"Save this contact list",
+"Ver como convidado":"View as guest"
 });

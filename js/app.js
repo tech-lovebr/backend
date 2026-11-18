@@ -101,6 +101,29 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', esconder, true);
   })();
 
+  // Nome do convidado e dos acompanhantes: cada palavra começa com
+  // maiúscula enquanto a pessoa digita ("ana maria" → "Ana Maria"), no
+  // computador e no celular. "da", "de", "do", "dos", "das" e "e" no meio
+  // do nome voltam para minúscula depois do espaço ("Maria da Silva").
+  /** @param {string} v */
+  function nomeComMaiusculas(v) {
+    return v.replace(/(^|[\s(-])(\p{Ll})/gu, (_, antes, letra) => antes + letra.toUpperCase())
+      .replace(/(\S\s+)(D[aeo]s?|E)(?=\s)/g, (_, antes, palavra) => antes + palavra.toLowerCase());
+  }
+  const CAMPOS_DE_NOME = '[data-nome-maiusculas], #ficha-primeiro, #ficha-apelido, .ficha-acomp-nome, .guest-companion-name-input';
+  document.addEventListener('input', (e) => {
+    const campo = e.target;
+    if (!(campo instanceof HTMLInputElement) || !campo.matches(CAMPOS_DE_NOME)) return;
+    const novo = nomeComMaiusculas(campo.value);
+    if (novo === campo.value) return;
+    const ini = campo.selectionStart, fim = campo.selectionEnd;
+    campo.value = novo; // só troca maiúscula/minúscula: o cursor fica no mesmo lugar
+    try { campo.setSelectionRange(ini, fim); } catch (err) { /* campo sem seleção */ }
+  });
+  document.addEventListener('focusin', (e) => {
+    if (e.target instanceof HTMLInputElement && e.target.matches(CAMPOS_DE_NOME)) e.target.setAttribute('autocapitalize', 'words');
+  });
+
   // Campos de data e horário: o ícone do navegador (com a dica "Mostrar seletor
   // de datas/horário") some; fica o nosso ícone e o clique abre o seletor.
   document.addEventListener('click', (e) => {
@@ -11437,7 +11460,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Iniciais sem o apelido entre parênteses ("Rafael (Bolinha)" = R).
         const partesSemApelido = nomeLimpo.replace(/\s*\([^)]*\)\s*$/, '').split(/\s+/).filter(Boolean);
         const iniciais = generico ? '+1' : ((partesSemApelido[0] || '')[0] || '') + (partesSemApelido.length > 1 ? (partesSemApelido[partesSemApelido.length - 1][0] || '') : '');
-        const nomeEmPartes = `<span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}`;
+        // Primeiro nome normal e sobrenome em negrito; o apelido entre
+        // parênteses no fim ("Rafael Lima (Bolinha)") fica sem negrito.
+        const apelidoDaLinha = (nomeLimpo.match(/\s*(\([^)]*\))\s*$/) || [])[1] || '';
+        const partesDoNome = apelidoDaLinha ? partesSemApelido : partes;
+        const nomeEmPartes = `<span class="guest-nome-primeiro">${escaparHtml(partesDoNome[0] || '')}</span>${partesDoNome.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partesDoNome.slice(1).join(' '))}</span>` : ''}${apelidoDaLinha ? ` <span class="guest-nome-apelido">${escaparHtml(apelidoDaLinha)}</span>` : ''}`;
         // Mesma cor para o convidado e seus acompanhantes (o grupo alterna,
         // não cada linha); o acompanhante aparece como subitem do convidado.
         row.className = `group ${indiceGrupo % 2 ? 'grupo-par' : 'grupo-impar'}${attendee.isPrimary ? '' : ' is-acompanhante-row'}`;
@@ -11716,7 +11743,7 @@ document.addEventListener('DOMContentLoaded', () => {
     linha.dataset.id = id || `comp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     linha.innerHTML = `
       <div class="ficha-acomp-topo"><span class="ficha-rotulo ficha-acomp-rotulo"></span><button type="button" class="ficha-acomp-remover" data-remover-acomp aria-label="Remover acompanhante">${ICONE_REMOVER_ACOMP}</button></div>
-      <input type="text" class="ficha-input ficha-acomp-nome" value="${escaparHtml(/^acompanhante$/i.test(nome) ? '' : nome)}" placeholder="Nome do acompanhante" autocomplete="off" aria-label="Nome do acompanhante">
+      <input type="text" class="ficha-input ficha-acomp-nome" value="${escaparHtml(/^acompanhante$/i.test(nome) ? '' : nome)}" placeholder="Nome do acompanhante" autocomplete="off" autocapitalize="words" aria-label="Nome do acompanhante">
       <select class="ficha-input ficha-acomp-idade" aria-label="Faixa etária">
         ${Object.entries(GUEST_AGE_GROUP_LABELS).map(([v, r]) => `<option value="${v}"${v === ageGroup ? ' selected' : ''}>${r}</option>`).join('')}
       </select>
@@ -11784,7 +11811,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor, /** @type {string} */ id, /** @type {string} */ tipo, /** @type {string} */ dica, opcional = false) => fichaEditando
-      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}${opcional ? ' <span class="ficha-opcional">(opcional)</span>' : ''}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
+      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}${opcional ? ' <span class="ficha-opcional">(opcional)</span>' : ''}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}${tipo === 'text' ? ' autocapitalize="words"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
       : `<div class="ficha-linha"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor${valor ? '' : ' is-vazio'}${tipo === 'email' && valor ? ' is-email' : ''}">${escaparHtml(valor || '—')}</span></div>`;
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-contato')).innerHTML =
       linha('Nome completo', nomeCompleto, 'ficha-primeiro', 'text', 'Nome completo')
@@ -12195,7 +12222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     row.innerHTML = `
       <label class="block text-xs font-bold text-zinc-700 mb-1.5">Nome do acompanhante</label>
       <div class="flex items-center gap-2">
-      <input type="text" class="field-input guest-companion-name-input" aria-label="Nome do acompanhante" value="${name.replace(/"/g, '&quot;')}">
+      <input type="text" class="field-input guest-companion-name-input" autocapitalize="words" aria-label="Nome do acompanhante" value="${name.replace(/"/g, '&quot;')}">
       <select class="field-input guest-companion-age-input" style="flex: 0 0 auto; width: 150px;" aria-label="Faixa etária">
         ${Object.entries(GUEST_AGE_GROUP_LABELS).map(([val, label]) => `<option value="${val}" ${val === ageGroup ? 'selected' : ''}>${label}</option>`).join('')}
       </select>
@@ -21418,10 +21445,10 @@ document.addEventListener('DOMContentLoaded', () => {
       campo.focus();
     }, 150);
   });
-  document.getElementById('home-link-abrir')?.addEventListener('click', () => {
+  ['home-link-abrir', 'home-link-ver-convidado'].forEach(id => document.getElementById(id)?.addEventListener('click', () => {
     const url = urlDoConviteDaHome();
     if (url) window.open(url, '_blank', 'noopener');
-  });
+  }));
   document.getElementById('home-link-compartilhar')?.addEventListener('click', async () => {
     const url = urlDoConviteDaHome();
     if (!url) return;

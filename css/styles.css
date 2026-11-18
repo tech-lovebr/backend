@@ -16822,3 +16822,25 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::b
   html body .listas-salvas-painel .listas-salvas-novo.is-botao:not(#love-h-a):active { border-color: #181D24; color: #181D24; }
   html body .love-dica:not(#love-h-a) { display: none !important; }
 }
+
+/* Celular — Home, caixa do link: sem o ícone de abrir; embaixo do link o
+   botão "Ver como convidado" (abre o convite) e os ícones de editar e
+   compartilhar um pouco maiores. Desktop não muda. */
+.home-link-ver-convidado { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-overview #home-link-convite:not(#love-h-a):not(#love-h-b) { flex-wrap: wrap !important; row-gap: 8px !important; }
+  html body #home-link-convite #home-link-abrir:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #home-link-convite button.home-link-botao:not(#love-h-a) svg { width: 21px !important; height: 21px !important; }
+  html body #home-link-convite .home-link-ver-convidado:not(#love-h-a) {
+    display: flex; align-items: center; justify-content: center; flex: 0 0 calc(100% + 6px); height: 40px; margin: 0 0 0 -6px; max-width: none;
+    background: rgba(24, 59, 84, 0.07); border: 0; border-radius: 8px; cursor: pointer;
+    font-family: var(--fonte-love, 'Outfit'), sans-serif; font-size: 14px; font-weight: 500; color: #3F3F46;
+  }
+  html body #home-link-convite .home-link-ver-convidado:not(#love-h-a):active { background: rgba(24, 59, 84, 0.11); color: #181D24; }
+}
+
+/* Meus convidados (celular e desktop): primeiro nome normal e sobrenome
+   em negrito; o apelido entre parênteses sem negrito. */
+html body #rsvp-guests-table-body .guest-nome-btn:not(#love-h-a) { font-weight: 400 !important; }
+html body #rsvp-guests-table-body .guest-nome-btn .guest-nome-resto:not(#love-h-a) { font-weight: 600 !important; }
+html body #rsvp-guests-table-body .guest-nome-btn .guest-nome-apelido:not(#love-h-a) { font-weight: 400 !important; }

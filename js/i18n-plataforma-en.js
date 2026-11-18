@@ -2299,5 +2299,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Para adicionar em massa, pule uma linha ou separe com vírgula para salvar diversos convidados de uma vez.":"To add in bulk, start a new line or separate with commas to save several guests at once.",
 "{x} contato":"{x} contact",
 "{x} contatos":"{x} contacts",
-"Adicionar anfitrião":"Add co-host"
+"Adicionar anfitrião":"Add co-host",
+"Sair":"Log out"
 });

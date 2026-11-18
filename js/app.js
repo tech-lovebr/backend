@@ -428,6 +428,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ['btn-account-profile-data', 'Configurações'],
       ['btn-account-faq', 'Central de Ajuda']
     ];
+    const SIMPLES = true;
+    const ICONE_SAIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg>';
     const ICONE_CRIAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>';
     const abertos = (/** @type {Element} */ el, /** @type {boolean} */ ligado) => {
       el.classList.toggle('is-aberta', ligado);
@@ -470,6 +472,20 @@ document.addEventListener('DOMContentLoaded', () => {
         selo.textContent = n;
         selo.hidden = !seloOrig || seloOrig.classList.contains('hidden') || !n || n === '0';
       }
+      // Menu simplificado: no lugar das seções, só os itens da conta
+      // (Criar Novo Evento, Ver Meu Site, Financeiro, Configurações, Central
+      // de Ajuda) e o Sair — cada um repassa o toque ao botão original.
+      if (SIMPLES) {
+        ITENS_CONTA.forEach(([id, rotulo]) => {
+          const orig = document.getElementById(id);
+          if (!orig) return;
+          const ic = id === 'btn-dropdown-create-new-event' ? ICONE_CRIAR : (orig.querySelector('svg')?.outerHTML || '');
+          html += `<button type="button" class="menu-celular-link menu-celular-link-conta" data-repassar="${id}">${ic}<span>${escaparHtml(rotulo)}</span></button>`;
+        });
+        html += `<button type="button" class="menu-celular-link menu-celular-link-conta menu-celular-link-sair" data-repassar="btn-account-logout">${ICONE_SAIR}<span>Sair</span></button>`;
+        nav.innerHTML = html;
+        return;
+      }
       SECOES.forEach(([tab, titulo]) => {
         const cfg = /** @type {any} */ (railTabsConfig)[tab];
         if (!cfg || !areaPermitida(tab)) return;
@@ -484,6 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gaveta.querySelector('[data-alternar="mensagens"]')?.addEventListener('click', () => repassar(document.getElementById('btn-dash-header-chat')));
     nav.addEventListener('click', (e) => {
       const b = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('.menu-celular-link')) : null;
+      if (b?.dataset.repassar) { repassar(document.getElementById(b.dataset.repassar)); return; }
       if (b) irPara(b.dataset.tab || '', b.dataset.sub || '');
     });
 
@@ -549,6 +566,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const abrir = () => {
       desenharNav();
       preencherConta();
+      // O cabeçalho (foto, nome e evento) só abre a troca de evento quando há mais de um.
+      gaveta.classList.toggle('tem-varios-eventos', document.querySelectorAll('#events-switcher-items > *').length > 1);
       document.getElementById('dropdown-user-account')?.classList.add('hidden');
       abertos(gaveta, true);
       abertos(fundo, true);
@@ -568,7 +587,7 @@ document.addEventListener('DOMContentLoaded', () => {
     abrirBtn.addEventListener('click', (e) => { e.stopPropagation(); abrir(); });
     gaveta.querySelector('.menu-celular-fechar')?.addEventListener('click', fechar);
     fundo.addEventListener('click', fechar);
-    gaveta.querySelector('.menu-celular-conta')?.addEventListener('click', abrirConta);
+    gaveta.querySelector('.menu-celular-conta')?.addEventListener('click', () => { if (gaveta.classList.contains('tem-varios-eventos')) abrirConta(); });
     conta.querySelector('.menu-conta-fechar')?.addEventListener('click', fecharConta);
     contaFundo.addEventListener('click', fecharConta);
     conta.querySelector('.menu-conta-sair')?.addEventListener('click', () => repassar(document.getElementById('btn-account-logout')));

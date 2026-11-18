@@ -21276,7 +21276,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="flex items-start justify-between gap-3 flex-nowrap">
               <div class="min-w-0 flex-1">
                 <div class="min-w-0">
-                  <h4 class="text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight group-hover:text-[#537bae] transition-colors" title="${escaparHtml(tituloDoCard(item))}">
+                  <h4 class="b2b-card-titulo text-base sm:text-lg font-bold text-zinc-900 truncate font-sans tracking-tight transition-colors">
                     ${escaparHtml(tituloDoCard(item))}
                   </h4>
                   <p class="text-sm text-zinc-400 font-medium font-sans truncate">por ${escaparHtml(item.name)}</p>
@@ -21374,7 +21374,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       <div class="p-4 flex flex-col gap-2.5 flex-1">
         <div class="flex items-start justify-between gap-2 min-w-0">
-          <h4 class="text-base font-bold text-zinc-900 truncate font-sans tracking-tight min-w-0" title="${escaparHtml(tituloDoCard(item))}">${escaparHtml(tituloDoCard(item))}</h4>
+          <h4 class="b2b-card-titulo text-base font-bold text-zinc-900 truncate font-sans tracking-tight min-w-0 transition-colors">${escaparHtml(tituloDoCard(item))}</h4>
           ${cidadeDoCardHtml(item)}
         </div>
 

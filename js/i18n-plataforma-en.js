@@ -2319,5 +2319,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Nenhum presente ainda":"No gifts yet",
 "A lista de presentes está sendo montada.":"The gift list is being put together.",
 "Os anfitriões ainda não informaram o local do evento.":"The hosts haven't shared the event location yet.",
-"Os anfitriões ainda não definiram o dress code.":"The hosts haven't set the dress code yet."
+"Os anfitriões ainda não definiram o dress code.":"The hosts haven't set the dress code yet.",
+"Confirme sua presença":"Confirm your attendance"
 });

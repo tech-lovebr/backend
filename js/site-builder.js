@@ -4860,7 +4860,7 @@ function renderConfirmarPresencaPublica(root) {
 
   root.innerHTML = telaPublicaHtml('Confirmar presença', `
     <form class="convite-form" data-convite-rsvp novalidate>
-      <label for="rsvp-nome">Seu nome</label>
+      <label for="rsvp-nome">${(() => { const ev = conviteDadosPublicos.evento || {}; const nome = String(ev.titulo || conviteDadosPublicos.titulo || "").trim(); return nome ? `Confirme sua presença em ${escaparPublico(nome)}` : "Confirme sua presença"; })()}</label>
       <div class="convite-rsvp-campo">
         <input type="text" id="rsvp-nome" name="nome" maxlength="120" autocomplete="off" placeholder="Digite seu nome" role="combobox" aria-expanded="false" aria-controls="rsvp-opcoes" aria-describedby="rsvp-ajuda">
         <div class="convite-rsvp-opcoes" id="rsvp-opcoes" data-rsvp-opcoes role="listbox" aria-label="Nomes na lista" hidden></div>

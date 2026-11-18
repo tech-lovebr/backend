@@ -18024,11 +18024,9 @@ html body #rfp-empty-state .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a):not(
 html body .convite-tela :is(.convite-botao, .convite-presente-botao, .convite-carrinho-botao):not(#love-h-a):not(#love-h-b) { background: var(--bx-primary, #537bae) !important; color: var(--convite-botao-texto, #FFFFFF) !important; }
 html body .convite-tela .convite-presente-check[aria-pressed="true"]:not(#love-h-a):not(#love-h-b) { color: var(--convite-botao-texto, #FFFFFF) !important; }
 html body .convite-tela.convite-tela-com-cor:not(#love-h-a) { color: var(--convite-texto); }
-html body .convite-tela.convite-tela-com-cor :is(.convite-tela-titulo, .convite-form > label, .convite-form .convite-rsvp-ajuda, .convite-vazio, .convite-sobre-texto):not(#love-h-a):not(#love-h-b),
+html body .convite-tela.convite-tela-com-cor :is(.convite-form > label, .convite-form .convite-rsvp-ajuda, .convite-vazio, .convite-sobre-texto):not(#love-h-a):not(#love-h-b),
 html body .convite-tela.convite-tela-com-cor :is(.convite-info-rotulo, .convite-info-valor):not(.convite-info-caixa *):not(#love-h-a):not(#love-h-b) { color: var(--convite-texto) !important; }
 html body .convite-tela.convite-tela-com-cor .convite-form .convite-rsvp-ajuda:not(#love-h-a):not(#love-h-b) { opacity: .8; }
-html body .convite-tela.convite-tela-com-cor .convite-voltar:not(#love-h-a):not(#love-h-b),
-html body .convite-tela.convite-tela-com-cor .convite-voltar:not(#love-h-a):not(#love-h-b):hover { color: var(--convite-texto) !important; }
 html body .convite-tela.convite-tela-com-cor.is-texto-claro .convite-form input:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) {
   background: rgba(0, 0, 0, 0.22) !important; border-color: transparent !important; color: var(--convite-texto) !important;
   -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%);
@@ -18077,3 +18075,12 @@ html body .convite-tela .convite-presentes-vazio .convite-presentes-vazio-texto:
   html body #organizadores-tabela .org-nome-texto .guest-nome-primeiro:not(#love-h-a):not(#love-h-b) { font-weight: 400; }
   html body #organizadores-tabela .org-nome-texto .guest-nome-resto:not(#love-h-a):not(#love-h-b) { font-weight: 600; }
 }
+
+/* Encontrar Fornecedor: o nome do lugar só fica "clicável" (azul) com o
+   mouse em cima dele — passar no coração da capa não mexe no nome. */
+@media (hover: hover) {
+  html body :is(#b2b-cards-list-container, #b2b-explore-view) .b2b-card-titulo:hover:not(#love-h-a) { color: #537bae !important; }
+}
+/* Telas do convite publicado: nada passa da largura da tela (sem rolagem
+   para o lado). */
+html body .convite-tela:not(#love-h-a) { max-width: 100%; overflow-x: clip; }

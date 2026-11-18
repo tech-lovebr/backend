@@ -10692,6 +10692,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (item) item.click(); else switchGiftsSubSection('gift-settings');
   });
   // Seta de voltar em Configurações (celular): volta para Meus Presentes.
+  document.getElementById('btn-gifts-config-fechar')?.addEventListener('click', () => document.getElementById('btn-gifts-config-voltar')?.click());
   document.getElementById('btn-gifts-config-voltar')?.addEventListener('click', () => {
     const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="my-gifts"]'));
     if (item) item.click(); else switchGiftsSubSection('my-gifts');

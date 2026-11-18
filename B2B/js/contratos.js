@@ -168,14 +168,17 @@ function renderFinanceStats() {
 
   const temConta = !!((typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.pixKey) || window.b2bTemContaBancaria);
   document.getElementById('fin-dica-conta').hidden = temConta;
-  // Celular: o mesmo aviso solto no céu, acima dos saldos (a frase toda abre Contas bancárias).
-  const avisoCelular = document.getElementById('fin-aviso-conta-celular');
-  if (avisoCelular) avisoCelular.hidden = temConta;
+  // Sem conta bancária, o Sacar leva ao cadastro da conta (Configurações >
+  // Contas bancárias) em vez de abrir o saque.
   const sacar = document.getElementById('request-withdrawal-btn');
-  sacar.disabled = !(disponivel > 0 && temConta);
+  sacar.dataset.semConta = temConta ? '' : '1';
+  sacar.disabled = temConta ? !(disponivel > 0) : false;
   if (!sacar.dataset.ligado) {
     sacar.dataset.ligado = '1';
-    sacar.addEventListener('click', openWithdrawalModal);
+    sacar.addEventListener('click', (e) => {
+      if (sacar.dataset.semConta) { location.href = 'configuracoes?tab=banco'; return; }
+      openWithdrawalModal(e);
+    });
     document.querySelectorAll('[data-fin-ver]').forEach(b => b.addEventListener('click', () => {
       mostrarListaFinanceira(b.dataset.finVer);
       document.getElementById('finance-lista-titulo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });

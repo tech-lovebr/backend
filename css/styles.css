@@ -17659,3 +17659,7 @@ html body .btn-message-supplier.b2b-botao-icone svg:not(#love-h-a) { width: 18px
   }
   html body #view-event-os-dashboard #btn-open-add-expense:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):active { background: rgba(24, 59, 84, 0.11) !important; }
 }
+
+/* Meus Recados vazio (desktop e celular): título em negrito acima da frase,
+   como o "Adicionar presente" de Meus Presentes. */
+html body #recados-raiz .recados-vazio-titulo:not(#love-h-a):not(#love-h-b) { display: block; margin: 0 0 4px; font-size: 16px !important; font-weight: 600 !important; line-height: 1.4; color: #18181B !important; }

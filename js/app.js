@@ -123,6 +123,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('focusin', (e) => {
     if (e.target instanceof HTMLInputElement && e.target.matches(CAMPOS_DE_NOME)) e.target.setAttribute('autocapitalize', 'words');
   });
+  // E-mail (computador e celular): sempre em minúscula — o teclado do
+  // celular não põe maiúscula na primeira letra e o que for digitado ou
+  // colado em maiúscula vira minúscula na hora.
+  const CAMPOS_DE_EMAIL = 'input[type="email"], #ficha-email';
+  document.addEventListener('input', (e) => {
+    const campo = e.target;
+    if (!(campo instanceof HTMLInputElement) || !campo.matches(CAMPOS_DE_EMAIL)) return;
+    const novo = campo.value.toLowerCase();
+    if (novo === campo.value) return;
+    let ini = null, fim = null;
+    try { ini = campo.selectionStart; fim = campo.selectionEnd; } catch (err) { /* type=email não tem seleção */ }
+    campo.value = novo;
+    try { if (ini !== null) campo.setSelectionRange(ini, fim); } catch (err) { /* type=email não tem seleção */ }
+  });
+  document.addEventListener('focusin', (e) => {
+    if (e.target instanceof HTMLInputElement && e.target.matches(CAMPOS_DE_EMAIL)) { e.target.setAttribute('autocapitalize', 'none'); e.target.setAttribute('autocorrect', 'off'); e.target.spellcheck = false; }
+  });
 
   // Campos de data e horário: o ícone do navegador (com a dica "Mostrar seletor
   // de datas/horário") some; fica o nosso ícone e o clique abre o seletor.
@@ -11811,7 +11828,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor, /** @type {string} */ id, /** @type {string} */ tipo, /** @type {string} */ dica, opcional = false) => fichaEditando
-      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}${opcional ? ' <span class="ficha-opcional">(opcional)</span>' : ''}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}${tipo === 'text' ? ' autocapitalize="words"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
+      ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}${opcional ? ' <span class="ficha-opcional">(opcional)</span>' : ''}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}${tipo === 'text' ? ' autocapitalize="words"' : ''}${tipo === 'email' ? ' autocapitalize="none" autocorrect="off" spellcheck="false"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
       : `<div class="ficha-linha"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-valor${valor ? '' : ' is-vazio'}${tipo === 'email' && valor ? ' is-email' : ''}">${escaparHtml(valor || '—')}</span></div>`;
     /** @type {HTMLElement} */ (ficha.querySelector('#ficha-contato')).innerHTML =
       linha('Nome completo', nomeCompleto, 'ficha-primeiro', 'text', 'Nome completo')

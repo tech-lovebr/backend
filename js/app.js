@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', () => {
     /** @param {Element} alvo */
     function mostrar(alvo) {
       const texto = textoDe(alvo);
-      if (!texto) return;
+      // Celular: sem dicas nos ícones (só no computador, ao passar o mouse).
+      if (!texto || window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
       alvoAtual = alvo;
       if (!dica) {
         dica = document.createElement('div');
@@ -10956,7 +10957,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <p class="listas-salvas-erro" hidden></p>
           <div class="listas-salvas-form-acoes"><button type="button" class="listas-salvas-cancelar">Cancelar</button><button type="submit" class="listas-salvas-confirmar">Salvar</button></div>
         </form>`
-      : '<button type="button" class="listas-salvas-novo">+ Salvar os convidados deste evento</button>';
+      : (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches
+        ? '<button type="button" class="listas-salvas-novo is-botao">Salvar esta lista de contatos</button>'
+        : '<button type="button" class="listas-salvas-novo">+ Salvar os convidados deste evento</button>');
     painel.innerHTML = `<p class="listas-salvas-titulo">Listas salvas</p>${itens}${rodape ? `<div class="listas-salvas-rodape">${rodape}</div>` : ''}`;
     posicionarPainelDasListas();
 
@@ -11574,7 +11577,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
         <section class="ficha-cartao">
-          <h3>Informações de contato</h3>
+          <h3 id="ficha-contato-titulo">Informações de contato</h3>
           <div id="ficha-contato"></div>
         </section>
         <section class="ficha-cartao ficha-so-leitura">
@@ -11732,7 +11735,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function vinculoDaFicha(guest) {
     let anfitrioes = /** @type {string[]} */ ([]);
     try { anfitrioes = getClienteHostNames() || []; } catch (e) { anfitrioes = []; }
-    const anfitriao = String(guest.relationshipHost || '');
+    // Um anfitrião só: já vem escolhido e sem o "—" (o traço só aparece
+    // para escolher quando o evento tem mais de um anfitrião).
+    const soUmAnfitriao = anfitrioes.length === 1 && (!guest.relationshipHost || guest.relationshipHost === anfitrioes[0]);
+    const anfitriao = soUmAnfitriao ? anfitrioes[0] : String(guest.relationshipHost || '');
     if (anfitriao && !anfitrioes.includes(anfitriao)) anfitrioes = [...anfitrioes, anfitriao];
     const relacoes = Array.from(/** @type {NodeListOf<HTMLOptionElement>} */ (document.querySelectorAll('#guest-title-input option')))
       .map(o => ({ valor: o.value, rotulo: o.textContent || o.value }));
@@ -11741,7 +11747,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const opcao = (/** @type {string} */ valor, /** @type {string} */ rotulo, /** @type {string} */ atual) => `<option value="${escaparHtml(valor)}"${valor === atual ? ' selected' : ''}>${escaparHtml(rotulo)}</option>`;
     const campo = (/** @type {string} */ rotulo, /** @type {string} */ id, /** @type {string} */ opcoes) =>
       `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}</span><span class="ficha-campo is-escolha"><select id="${id}" class="ficha-input">${opcoes}</select></span></label>`;
-    return campo('Convidado de quem?', 'ficha-anfitriao', opcao('', '—', anfitriao) + anfitrioes.map(n => opcao(n, n, anfitriao)).join(''))
+    return campo('Convidado de quem?', 'ficha-anfitriao', (soUmAnfitriao ? '' : opcao('', '—', anfitriao)) + anfitrioes.map(n => opcao(n, n, anfitriao)).join(''))
       + campo('Relação', 'ficha-relacao', relacoes.map(r => opcao(r.valor, r.rotulo, relacao)).join(''));
   }
 
@@ -11766,6 +11772,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const selo = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-status'));
     selo.textContent = status;
     selo.dataset.status = guest.status || 'pending';
+    // Celular: sem iniciais/nome/status no topo; o cartão já começa com o
+    // nome completo e, no canto direito, o status.
+    const tituloContato = /** @type {HTMLElement} */ (ficha.querySelector('#ficha-contato-titulo'));
+    if (!novo && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
+      tituloContato.classList.add('ficha-contato-com-nome');
+      tituloContato.innerHTML = `<span class="ficha-contato-nome">${escaparHtml(nomeCompleto || 'Convidado')}</span><span class="ficha-contato-status" data-status="${escaparHtml(guest.status || 'pending')}">${status}</span>`;
+    } else {
+      tituloContato.classList.remove('ficha-contato-com-nome');
+      tituloContato.textContent = 'Informações de contato';
+    }
 
     const linha = (/** @type {string} */ rotulo, /** @type {string} */ valor, /** @type {string} */ id, /** @type {string} */ tipo, /** @type {string} */ dica, opcional = false) => fichaEditando
       ? `<label class="ficha-linha is-editando" for="${id}"><span class="ficha-rotulo">${rotulo}${opcional ? ' <span class="ficha-opcional">(opcional)</span>' : ''}</span><span class="ficha-campo"><input id="${id}" class="ficha-input" type="${tipo}" value="${escaparHtml(valor)}" placeholder="${dica}" autocomplete="off"${tipo === 'tel' ? ' inputmode="tel"' : ''}><button type="button" class="ficha-limpar" data-limpar="${id}" aria-label="Limpar ${rotulo.toLowerCase()}">${ICONE_LIMPAR_CAMPO}</button></span></label>`
@@ -11877,7 +11893,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ev.totalConvidados = (ev.totalConvidados || 0) + (novo ? 1 + companionsDetailed.length : companionsDetailed.length - acompanhantesAntes);
     if (novo) { fichaRascunho = null; fichaGuestId = guest.id; }
     fichaEditando = false;
-    desenharFichaDoConvidado();
+    // Celular: convidado novo salvo volta direto para a lista.
+    if (novo && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) fecharFichaDoConvidado();
+    else desenharFichaDoConvidado();
     renderGuestsTable();
     try { renderFloorPlanGuestCards(); renderFloorPlanCanvas(); } catch (e) { /* planta ainda não montada */ }
     updateAllCelebrationData();
@@ -12551,9 +12569,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleHostSelect = document.getElementById('guest-title-host-input');
     if (titleHostSelect) {
       const hostNames = getClienteHostNames();
-      titleHostSelect.innerHTML = '<option value="">—</option>' +
+      // Um anfitrião só: já vem escolhido e sem o "—".
+      const soUm = hostNames.length === 1 && (!guest.relationshipHost || guest.relationshipHost === hostNames[0]);
+      titleHostSelect.innerHTML = (soUm ? '' : '<option value="">—</option>') +
         hostNames.map(name => `<option value="${name}">${name}</option>`).join('');
-      titleHostSelect.value = guest.relationshipHost || '';
+      titleHostSelect.value = soUm ? hostNames[0] : (guest.relationshipHost || '');
     }
     const titleSelect = document.getElementById('guest-title-input');
     if (titleSelect) titleSelect.value = guest.relationshipTitle || 'Convidado';
@@ -12642,8 +12662,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <span>Ver lista</span>
       </button>` : ''}
       <button type="button" role="menuitem" data-add="manual">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
-        <span>Adicionar manual</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Adicionar</span>
       </button>
       <button type="button" role="menuitem" data-add="contatos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>

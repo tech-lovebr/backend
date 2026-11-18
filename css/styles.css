@@ -16746,18 +16746,18 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::b
 }
 
 /* Celular — Editar convite: no lugar do "Publicar" (ícone), o botão
-   "Salvar" com o mesmo jeito do "Salvar lista" de Meus convidados no
-   desktop (branco, linha fina cinza, texto #3F3F46). O primeiro Salvar de
+   "Salvar" na cor do "Adicionar novo" de Meus presentes no desktop (bloco
+   azul bem clarinho, texto #3F3F46). O primeiro Salvar de
    um convite que nunca foi ao ar já publica (site-builder.js). */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #view-event-os-dashboard #tab-edit-site #builder-publish:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { display: none !important; }
   html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
     display: inline-flex !important; align-items: center; justify-content: center; width: auto !important; min-width: 0 !important;
     height: 38px !important; padding: 0 14px !important; margin: 0 !important; border-radius: 8px !important;
-    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important;
+    background: rgba(24, 59, 84, 0.07) !important; border: 1px solid transparent !important; box-shadow: none !important;
     color: #3F3F46 !important; font-family: var(--fonte-love, 'Outfit'), sans-serif !important; font-size: 13px !important; font-weight: 500 !important; line-height: 1 !important; white-space: nowrap;
   }
-  html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):hover:not(:disabled) { border-color: #181D24 !important; color: #181D24 !important; background: #FFFFFF !important; }
+  html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):hover:not(:disabled) { background: rgba(24, 59, 84, 0.11) !important; color: #181D24 !important; }
   html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):disabled { opacity: .6; }
 }
 
@@ -16787,4 +16787,38 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::b
     margin: 0 0 4px !important; font-size: 11px !important; font-weight: 600 !important; line-height: 1.3 !important; color: #71717A !important; letter-spacing: 0.06em;
   }
   html body #notifications-list-container > div.py-16:not(#love-h-a) { background: rgba(255, 255, 255, 0.72); border-radius: 12px; }
+}
+
+/* Celular — Meus convidados:
+   - "+" do topo na mesma cor do "+" de Meus presentes;
+   - ficha do convidado: sem iniciais/nome/status no topo; o cartão começa
+     com o nome completo e o status no canto direito;
+   - Adicionar/Editar: os campos ficam dentro de uma caixa branca;
+   - Listas salvas: "Salvar esta lista de contatos" como botão (igual ao
+     "Salvar lista" do desktop). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-rsvp #btn-host-add-guest:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    background: rgba(24, 59, 84, 0.07) !important; color: #3F3F46 !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body #tab-rsvp #btn-host-add-guest:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):active { background: rgba(24, 59, 84, 0.11) !important; color: #181D24 !important; }
+
+  html body .ficha-convidado :is(.ficha-avatar, .ficha-nome, #ficha-status):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .ficha-convidado .ficha-cartao:first-of-type:not(#love-h-a):not(#love-h-b) { margin-top: 8px !important; }
+  html body .ficha-convidado h3.ficha-contato-com-nome:not(#love-h-a) { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ficha-convidado .ficha-contato-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ficha-convidado .ficha-contato-status { flex-shrink: 0; display: inline-flex; align-items: center; height: 26px; padding: 0 8px; border-radius: 6px; background: #F4F4F5; color: #52525B; font-size: 12px; font-weight: 600; letter-spacing: 0; }
+  .ficha-convidado .ficha-contato-status[data-status="confirmed"] { background: #ECFDF3; color: #0E9F6E; }
+  .ficha-convidado .ficha-contato-status[data-status="declined"] { background: #FBEFF3; color: #b04369; }
+
+  html body .ficha-convidado.is-editando .ficha-cartao:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    background: #FFFFFF !important; border-radius: 10px !important; padding: 16px !important;
+  }
+
+  html body .listas-salvas-painel .listas-salvas-novo.is-botao:not(#love-h-a) {
+    display: flex; align-items: center; justify-content: center; width: 100%; height: 38px; padding: 0 14px; box-sizing: border-box;
+    background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; text-align: center;
+    font-size: 13px; font-weight: 500; color: #3F3F46;
+  }
+  html body .listas-salvas-painel .listas-salvas-novo.is-botao:not(#love-h-a):active { border-color: #181D24; color: #181D24; }
+  html body .love-dica:not(#love-h-a) { display: none !important; }
 }

@@ -18014,3 +18014,27 @@ html body #rfp-empty-state .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a):not(
   html body #tab-rsvp table.guests-table:not(#love-h-a):not(#love-h-b):not(#love-h-c) { table-layout: auto !important; }
   html body #tab-rsvp table.guests-table tbody td:first-child:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 100% !important; }
 }
+
+/* Telas do convite publicado (Confirmar presença, Lista de presentes,
+   Informações…): os botões na cor dos botões da página principal (fundo e
+   texto escolhidos na seção Botões) — no lugar da cor principal antiga — e,
+   sobre o fundo colorido, títulos, rótulos e textos na cor do texto
+   escolhida. Com texto claro, os campos viram um vidro mais escuro para o
+   texto (claro) ficar legível. */
+html body .convite-tela :is(.convite-botao, .convite-presente-botao, .convite-carrinho-botao):not(#love-h-a):not(#love-h-b) { background: var(--bx-primary, #537bae) !important; color: var(--convite-botao-texto, #FFFFFF) !important; }
+html body .convite-tela .convite-presente-check[aria-pressed="true"]:not(#love-h-a):not(#love-h-b) { color: var(--convite-botao-texto, #FFFFFF) !important; }
+html body .convite-tela.convite-tela-com-cor:not(#love-h-a) { color: var(--convite-texto); }
+html body .convite-tela.convite-tela-com-cor :is(.convite-tela-titulo, .convite-form > label, .convite-form .convite-rsvp-ajuda, .convite-vazio, .convite-info-rotulo, .convite-info-valor, .convite-sobre-texto):not(#love-h-a):not(#love-h-b) { color: var(--convite-texto) !important; }
+html body .convite-tela.convite-tela-com-cor .convite-form .convite-rsvp-ajuda:not(#love-h-a):not(#love-h-b) { opacity: .8; }
+html body .convite-tela.convite-tela-com-cor .convite-voltar:not(#love-h-a):not(#love-h-b),
+html body .convite-tela.convite-tela-com-cor .convite-voltar:not(#love-h-a):not(#love-h-b):hover { color: var(--convite-texto) !important; }
+html body .convite-tela.convite-tela-com-cor.is-texto-claro .convite-form input:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) {
+  background: rgba(0, 0, 0, 0.22) !important; border-color: transparent !important; color: var(--convite-texto) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%); backdrop-filter: blur(20px) saturate(160%);
+}
+html body .convite-tela.convite-tela-com-cor.is-texto-claro .convite-form input:focus:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) { background: rgba(0, 0, 0, 0.3) !important; box-shadow: none !important; }
+html body .convite-tela.convite-tela-com-cor.is-texto-claro .convite-form input:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h)::placeholder { color: var(--convite-texto) !important; opacity: .7; }
+html body .convite-tela.convite-tela-com-cor.is-texto-escuro .convite-form input:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) { color: var(--convite-texto) !important; }
+/* Dentro das caixas brancas (cards de presente, lista de nomes) o texto
+   continua escuro, mesmo com o texto da tela claro. */
+html body .convite-tela.convite-tela-com-cor :is(.convite-presente, .convite-rsvp-opcoes):not(#love-h-a):not(#love-h-b) { color: #18181B; }

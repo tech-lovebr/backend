@@ -4575,10 +4575,49 @@ function corDeFundoDosBotoes() {
   return qn.bg || resolveAdjacentSectionBg(qn) || '';
 }
 
+/** Cor clara (texto branco/rosa-claro…)? Luminância de 0 a 1 acima de 0,6. @param {string} cor */
+function corDoConviteEhClara(cor) {
+  const txt = String(cor || '').trim();
+  let rgb = null;
+  const hex = txt.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hex) {
+    const h = hex[1].length === 3 ? hex[1].split('').map(c => c + c).join('') : hex[1];
+    rgb = [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16));
+  } else {
+    const fn = txt.match(/^rgba?\(([^)]+)\)$/i);
+    if (fn) rgb = fn[1].split(',').slice(0, 3).map(v => parseFloat(v));
+  }
+  if (!rgb || rgb.some(v => isNaN(v))) return false;
+  return (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255 > 0.6;
+}
+
+/**
+ * Cores dos botões da página principal do convite (seção Botões): o fundo e o
+ * texto que o anfitrião escolheu. As telas de Confirmar presença, Lista de
+ * presentes, Informações… usam essas mesmas cores nos botões e no texto.
+ */
+function coresDosBotoesDoConvite() {
+  const conv = estadoDoConvite();
+  const qn = (conv && conv.sections || []).find(sec => sec.isQuickNav) || {};
+  return { fundo: qn.buttonBgColor || '', texto: qn.textColor || '' };
+}
+
 function telaPublicaHtml(titulo, conteudo, { comCapa = false, fundoBranco = false } = {}) {
   const fundo = fundoBranco ? '#FFFFFF' : corDeFundoDosBotoes();
+  // Botões (Confirmar minha presença, Presentear…) na cor dos botões da página
+  // principal; no fundo colorido, os textos da tela na cor do texto escolhida.
+  const cores = coresDosBotoesDoConvite();
+  const estilo = [
+    fundo ? `background-color:${fundo}` : '',
+    cores.fundo ? `--bx-primary:${cores.fundo}` : '',
+    cores.texto ? `--convite-botao-texto:${cores.texto}` : '',
+    (!fundoBranco && cores.texto) ? `--convite-texto:${cores.texto}` : ''
+  ].filter(Boolean).join(';');
+  const classes = ['convite-tela'];
+  if (fundoBranco) classes.push('convite-tela-branca');
+  else if (cores.texto) classes.push('convite-tela-com-cor', corDoConviteEhClara(cores.texto) ? 'is-texto-claro' : 'is-texto-escuro');
   return `
-    <div class="convite-tela${fundoBranco ? ' convite-tela-branca' : ''}"${fundo ? ` style="background-color:${escaparPublico(fundo)};"` : ''}>
+    <div class="${classes.join(' ')}"${estilo ? ` style="${escaparPublico(estilo)}"` : ''}>
       <div class="convite-tela-topo">
         <!-- Voltar: só uma setinha numa caixinha cinza-clara, ao lado do título -->
         <button type="button" class="convite-voltar" data-convite-voltar aria-label="Voltar ao convite" title="Voltar ao convite">

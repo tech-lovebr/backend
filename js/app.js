@@ -12945,19 +12945,37 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="ficha-topo">
         <button type="button" class="ficha-voltar" data-massa="voltar" aria-label="Voltar">${ICONE_VOLTAR_FICHA}</button>
         <h2 class="ficha-titulo" id="ficha-massa-titulo">Adicionar em massa</h2>
-        <button type="button" class="ficha-pilula is-salvar" data-massa="salvar">Salvar</button>
       </div>
       <div class="ficha-corpo">
-        <section class="ficha-cartao">
-          <h3>Nomes dos convidados</h3>
-          <textarea class="ficha-massa-texto" id="ficha-massa-texto" rows="10" autocapitalize="words" autocomplete="off" placeholder="Digite os nomes dos convidados. Pule uma linha ou separe com vírgula para salvar a lista de convidados em massa." aria-label="Nomes dos convidados"></textarea>
+        <section class="ficha-cartao ficha-massa-cartao">
+          <h3 class="ficha-massa-titulo-caixa">Insira os nomes</h3>
+          <p class="ficha-massa-dica">Para adicionar em massa, pule uma linha ou separe com vírgula para salvar diversos convidados de uma vez.</p>
+          <p class="ficha-massa-conta" id="ficha-massa-conta" aria-live="polite">0 contatos</p>
+          <textarea class="ficha-massa-texto" id="ficha-massa-texto" rows="10" autocapitalize="words" autocomplete="off" placeholder="Maria Silva&#10;João Souza&#10;Ana Lima" aria-label="Insira os nomes"></textarea>
           <p class="ficha-erro" id="ficha-massa-erro" hidden></p>
+          <div class="ficha-massa-rodape">
+            <button type="button" class="ficha-massa-salvar" data-massa="salvar" disabled>Salvar</button>
+          </div>
         </section>
       </div>`;
     document.body.appendChild(ficha);
     ficha.querySelector('[data-massa="voltar"]')?.addEventListener('click', fecharAdicionarEmMassa);
     ficha.querySelector('[data-massa="salvar"]')?.addEventListener('click', salvarAdicionarEmMassa);
+    ficha.querySelector('#ficha-massa-texto')?.addEventListener('input', contarNomesDoAdicionarEmMassa);
     return ficha;
+  }
+  /** Nomes digitados na caixa (um por linha, ou separados por vírgula/ponto e vírgula). @param {string} texto */
+  const nomesDoAdicionarEmMassa = (texto) => texto.split(/[\n,;]+/).map(n => nomeComMaiusculas(n.replace(/\s+/g, ' ').trim())).filter(Boolean);
+  // "1 contato", "2 contatos"... acima da caixa, enquanto a pessoa digita;
+  // o Salvar só acende com pelo menos um nome.
+  function contarNomesDoAdicionarEmMassa() {
+    const ficha = document.getElementById('ficha-massa');
+    const caixa = /** @type {HTMLTextAreaElement|null} */ (ficha?.querySelector('#ficha-massa-texto'));
+    const conta = ficha?.querySelector('#ficha-massa-conta');
+    const botao = /** @type {HTMLButtonElement|null} */ (ficha?.querySelector('[data-massa="salvar"]'));
+    const n = caixa ? nomesDoAdicionarEmMassa(caixa.value).length : 0;
+    if (conta) conta.textContent = `${n} ${n === 1 ? 'contato' : 'contatos'}`;
+    if (botao) botao.disabled = n === 0;
   }
   function abrirAdicionarEmMassa() {
     const ficha = fichaDoAdicionarEmMassa();
@@ -12965,6 +12983,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const erro = ficha.querySelector('#ficha-massa-erro');
     if (caixa) caixa.value = '';
     if (erro) /** @type {HTMLElement} */ (erro).hidden = true;
+    contarNomesDoAdicionarEmMassa();
     ficha.hidden = false;
     document.body.classList.add('ficha-aberta');
   }
@@ -12980,7 +12999,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const botao = /** @type {HTMLButtonElement|null} */ (ficha?.querySelector('[data-massa="salvar"]'));
     const ev = getActiveEvent();
     if (!caixa || !ev) return;
-    const nomes = caixa.value.split(/[\n,;]+/).map(n => nomeComMaiusculas(n.replace(/\s+/g, ' ').trim())).filter(Boolean);
+    const nomes = nomesDoAdicionarEmMassa(caixa.value);
     if (!nomes.length) {
       if (erro) { erro.textContent = 'Digite pelo menos um nome.'; erro.hidden = false; }
       caixa.focus();

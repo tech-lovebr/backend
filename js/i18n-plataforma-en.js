@@ -2294,5 +2294,9 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Vamos te ajudar a organizar o seu orçamento":"Let's help you organize your budget",
 "Ver todos os serviços":"See all services",
 "Mensagem":"Message",
-"Solicitar":"Request"
+"Solicitar":"Request",
+"Insira os nomes":"Enter the names",
+"Para adicionar em massa, pule uma linha ou separe com vírgula para salvar diversos convidados de uma vez.":"To add in bulk, start a new line or separate with commas to save several guests at once.",
+"{x} contato":"{x} contact",
+"{x} contatos":"{x} contacts"
 });

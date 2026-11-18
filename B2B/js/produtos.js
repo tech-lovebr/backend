@@ -405,6 +405,15 @@ function renderProducts() {
     </div>
   `).join('');
 
+  // Celular (como Meus presentes do index): o cartão inteiro abre o produto.
+  grid.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (typeof hubNoCelular !== 'function' || !hubNoCelular()) return;
+      if (e.target instanceof Element && e.target.closest('button, a, input')) return;
+      /** @type {HTMLElement|null} */ (card.querySelector('[data-edit-product]'))?.click();
+    });
+  });
+
   grid.querySelectorAll('[data-edit-product]').forEach(btn => {
     btn.addEventListener('click', () => openProductDrawer(btn.dataset.editProduct));
   });

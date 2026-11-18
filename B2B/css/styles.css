@@ -14436,3 +14436,19 @@ html:not(.hub-claro) body .fin-resumo .cart-numero.love-saldo-valor:not(#love-h-
   html body:not([data-page="dashboard"]):has(.b2b-content > .b2b-header-bar) .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) { margin-bottom: 16px !important; }
   html:not(.hub-claro) body:not([data-page="dashboard"]):has(.b2b-content > .b2b-header-bar) .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: #0C1824 !important; border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; }
 }
+/* Celular — as abas (submenus) grudadas no cabeçalho do topo, sem o respiro. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-header-bar:has(+ :is(.category-tabs-bar, .work-view-tabs, .submenu-celular, [role="tablist"])):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i) { margin-bottom: 0 !important; }
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-header-bar + :is(.category-tabs-bar, .work-view-tabs, .submenu-celular, [role="tablist"]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { margin-top: 0 !important; }
+}
+/* Celular — a descrição da página sai de baixo do cabeçalho do topo (estava
+   com margem negativa, escondida atrás dele) e fica solta logo abaixo; onde
+   as abas vêm em seguida (Vendas), a descrição some para as abas grudarem. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-header-bar + p:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) {
+    margin: 0 0 16px !important; padding: 0 !important; background: transparent !important; border: 0 !important; width: auto !important; position: static !important;
+  }
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-header-bar + p:has(+ :is(.category-tabs-bar, .work-view-tabs, .submenu-celular, .sales-view-tabs, [role="tablist"])):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) { display: none !important; }
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-header-bar:has(+ p + :is(.category-tabs-bar, .work-view-tabs, .submenu-celular, .sales-view-tabs, [role="tablist"])):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i) { margin-bottom: 0 !important; }
+  html body:not([data-page="dashboard"]) .b2b-content > .b2b-header-bar + p + :is(.category-tabs-bar, .work-view-tabs, .submenu-celular, .sales-view-tabs, [role="tablist"]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { margin-top: 0 !important; }
+}

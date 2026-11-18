@@ -17903,6 +17903,14 @@ html body #rfp-empty-state .rfp-vazio-card:not(#love-h-a):not(#love-h-b):not(#lo
   width: 100%; max-width: 260px; min-height: 240px; margin: 0 auto; cursor: pointer;
 }
 html body #rfp-empty-state .rfp-vazio-card strong:not(#love-h-a) { font-size: 16px; font-weight: 600; color: #18181B; }
+/* Sem a caixa tracejada ao redor de "Crie uma nova solicitação" — pedido do
+   cliente, só aqui em Minhas Solicitações. */
+html body #rfp-empty-state .rfp-vazio-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+  border: 0 !important; background: transparent !important;
+}
+html body #rfp-empty-state .rfp-vazio-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):hover {
+  border-color: transparent !important;
+}
 
 /* Desktop — Minhas Solicitações: sem as colunas Evento e Local. */
 @media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {

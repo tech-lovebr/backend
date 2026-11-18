@@ -17773,3 +17773,28 @@ html body .be-countdown-unit:not(#love-h-a):not(#love-h-b) { border: 0 !importan
   html body #gifts-panel-settings .gift-fee-card:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 8px !important; }
   html body #gifts-panel-settings .gift-fee-card.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(24, 59, 84, 0.06) !important; }
 }
+
+/* Celular — Carteira Digital: Saldo disponível numa caixa com o "Sacar" à
+   direita do valor; Saldo pendente numa caixa própria logo abaixo. No
+   Extrato, Data, Convidado e Valor alinhados no alto de cada linha. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-wallet #carteira-raiz .cart-caixa.cart-resumo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    padding: 0 !important; background: transparent !important; background-color: transparent !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html body #tab-wallet #carteira-raiz .cart-resumo-topo:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #tab-wallet #carteira-raiz .cart-resumo .cart-resumo-cols:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    display: flex !important; flex-direction: column; gap: 12px; padding: 0 !important;
+  }
+  html body #tab-wallet #carteira-raiz .cart-resumo-col:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: grid !important; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 4px; align-items: center;
+    padding: 16px !important; margin: 0 !important; border: 0 !important; border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.75);
+    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  }
+  html body #tab-wallet #carteira-raiz .cart-resumo-col > *:not(#love-h-a):not(#love-h-b) { grid-column: 1 / -1; margin: 0 !important; }
+  html body #tab-wallet #carteira-raiz .cart-resumo-col > :is(.cart-rotulo, .cart-numero):not(#love-h-a):not(#love-h-b) { grid-column: 1; }
+  html body #tab-wallet #carteira-raiz .cart-resumo-col > .cart-sacar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { grid-column: 2; grid-row: 1 / span 2; align-self: center; width: auto !important; min-width: 96px; }
+  html body #tab-wallet #carteira-raiz .cart-resumo-col > .cart-ver:not(#love-h-a):not(#love-h-b) { margin-top: 8px !important; justify-self: start; }
+  html body #tab-wallet .cart-lista table tbody td:not(#love-h-a):not(#love-h-b):not(#love-h-c) { vertical-align: top !important; }
+}

@@ -12987,6 +12987,19 @@ document.addEventListener('DOMContentLoaded', () => {
     ficha.hidden = false;
     document.body.classList.add('ficha-aberta');
   }
+  // Celular: tocar em qualquer item da barra de baixo (ou nas abas do
+  // submenu) sai das telas que ficam por cima — Adicionar em massa, a
+  // página de Solicitar orçamento e um recado aberto —, como já acontece
+  // em Adicionar convidado.
+  document.addEventListener('click', (e) => {
+    const alvo = /** @type {HTMLElement} */ (e.target);
+    if (!alvo.closest?.('.rail-icon-btn, #rail-mais-celular, #submenu-celular')) return;
+    if (document.getElementById('ficha-massa')?.hidden === false) fecharAdicionarEmMassa();
+    const orcamento = document.getElementById('modal-b2b-orcamento');
+    if (orcamento && !orcamento.classList.contains('hidden')) closeModal(orcamento);
+    const recado = document.getElementById('recado-ficha');
+    if (recado && !recado.hidden && getComputedStyle(recado).display !== 'none') /** @type {HTMLElement|null} */ (recado.querySelector('[data-recado-ficha-voltar]'))?.click();
+  }, true);
   function fecharAdicionarEmMassa() {
     const ficha = document.getElementById('ficha-massa');
     if (ficha) ficha.hidden = true;

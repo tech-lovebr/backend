@@ -17861,3 +17861,17 @@ html body .be-countdown-unit:not(#love-h-a):not(#love-h-b) { border: 0 !importan
   html body .builder-gaveta-titulo.is-generico:not(#love-h-a):not(#love-h-b) { visibility: hidden; }
   html body .builder-gaveta-topo:not(#love-h-a) { padding-top: 8px; }
 }
+
+/* Desktop — Encontrar Fornecedor (lista e grade): o coração de favoritar
+   em bolinha branca no canto de cima da capa (como no celular), no lugar
+   do coração ao lado de Conversas/Orçamento. */
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html body #b2b-cards-list-container .btn-toggle-card-fav:not(.b2b-fav-capa):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #b2b-cards-list-container .b2b-fav-capa:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex !important; align-items: center; justify-content: center; position: absolute; top: 10px; right: 10px; z-index: 2;
+    width: 36px !important; height: 36px !important; padding: 0 !important; border: 0 !important; border-radius: 50% !important; background: #FFFFFF !important; color: #A1A1AA;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); cursor: pointer; transition: color .15s ease;
+  }
+  html body #b2b-cards-list-container .b2b-fav-capa:hover:not(#love-h-a):not(#love-h-b) { color: #c7305b; }
+  html body #b2b-cards-list-container .b2b-fav-capa svg:not(#love-h-a) { width: 17px; height: 17px; }
+}

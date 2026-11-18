@@ -540,7 +540,6 @@
         <div class="chk-corpo">
           ${destinoDaTarefa(t) ? `<button type="button" class="chk-titulo chk-titulo-link" data-chk-ir>${esc(t.titulo)}</button>` : `<p class="chk-titulo">${esc(t.titulo)}</p>`}
           <div class="chk-meta">
-            <span class="chk-tag">${esc(t.categoria)}</span>
             <span class="chk-prazo${prazo.atrasada ? ' is-atrasada' : ''}">${esc(prazo.texto)}</span>
             ${extras ? `<span class="chk-extra">${esc(extras)}</span>` : ''}
           </div>
@@ -565,6 +564,17 @@
           <div class="chk-menu-wrap">
             <button type="button" class="chk-mais" data-chk-menu aria-label="Mais ações">${ICONE_MAIS}</button>
             <div class="chk-menu" role="menu" hidden>
+              <div class="chk-menu-celular">
+                <p class="chk-resp-titulo">Responsável</p>
+                ${opcoesDeResponsavel().map(([valor, rotulo]) => `
+                  <button type="button" role="menuitemradio" aria-checked="${(t.responsavel || '') === valor}" class="chk-resp-opcao${(t.responsavel || '') === valor ? ' is-ativo' : ''}" data-chk-resp-valor="${esc(valor)}">
+                    <span class="chk-avatar${valor ? '' : ' is-vazio'}">${valor ? esc(iniciais(rotulo)) : ICONE_PESSOA}</span>
+                    <span class="chk-resp-nome">${esc(rotulo)}</span>
+                    ${(t.responsavel || '') === valor ? `<span class="chk-resp-ok">${ICONE_CHECK}</span>` : ''}
+                  </button>`).join('')}
+                <span class="chk-menu-divisor" aria-hidden="true"></span>
+                ${busca ? `<button type="button" role="menuitem" data-chk-buscar="${esc(t.busca_fornecedor)}">Pesquisar fornecedores</button>` : ''}
+              </div>
               <button type="button" role="menuitem" data-chk-acao="prazo">Editar prazo</button>
               <button type="button" role="menuitem" data-chk-acao="notas">Adicionar notas e orçamento</button>
               <button type="button" role="menuitem" data-chk-acao="editar">Editar tarefa</button>

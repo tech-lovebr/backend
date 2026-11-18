@@ -12265,7 +12265,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // "Pesquisar fornecedores" de uma tarefa do checklist: abre o Explorar já
   // filtrado pela categoria (ex.: Contratar o buffet → Buffet e Gastronomia).
   // Atalho para abrir uma página da plataforma (ex.: tarefas prontas do Checklist).
-  document.getElementById('btn-b2b-explorar-celular')?.addEventListener('click', () => window.loveIrPara?.('b2b', 'explore'));
+  // Celular, em Conversas: o X volta para o Início (como em Notificações).
+  document.getElementById('btn-b2b-explorar-celular')?.addEventListener('click', () => switchRailTab('overview'));
   window.loveIrPara = (/** @type {string} */ tab, /** @type {string} */ sub) => {
     if (state.currentTab === tab) { abrirSubItem(tab, sub); registrarRota(caminhoSubRota(tab, sub)); return; }
     pendingSubItemId = sub;

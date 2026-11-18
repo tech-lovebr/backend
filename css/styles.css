@@ -17265,3 +17265,73 @@ html body #site-builder-root .std-celular-conversa:not(#love-h-a):not(#love-h-b)
   html:not(#love-h-a) { --love-selo: #C9937E; }
   html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #C9937E !important; background-color: #C9937E !important; color: #FFFFFF !important; }
 }
+
+/* Checklist (desktop e celular): sem a etiqueta de categoria; o prazo
+   ("Venceu há X dias") um pouco maior. */
+html body .chk-prazo:not(#love-h-a) { font-size: 13px; }
+.chk-menu-celular { display: none; }
+
+/* Celular — Checklist: só o botão de três bolinhas à direita (contorno
+   cinza claro; aberto, na cor dos ícones). O menu dele mostra também quem é
+   o responsável e o Pesquisar fornecedores. A caixa do grupo deixa de
+   cortar o menu. Concluídas no azul do fundo. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #event-checklist-list .chk-grupo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { overflow: visible !important; }
+  html body #event-checklist-list .chk-tarefa:not(#love-h-a):not(#love-h-b) { flex-wrap: nowrap !important; align-items: flex-start; gap: 12px; }
+  html body #event-checklist-list .chk-acoes:not(#love-h-a):not(#love-h-b) { width: auto !important; padding-left: 0 !important; }
+  html body #event-checklist-list .chk-acoes > :is(.chk-resp-wrap, .chk-buscar):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #event-checklist-list button.chk-mais:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    width: 36px; height: 36px; background: transparent !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; color: #A1A1AA !important;
+  }
+  html body #event-checklist-list .chk-menu-wrap:has(> .chk-menu:not([hidden])) > button.chk-mais:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: #183b54 !important; color: #183b54 !important; }
+  html body #event-checklist-list .chk-menu:not(#love-h-a):not(#love-h-b) { min-width: 240px; max-width: calc(100vw - 48px); }
+  html body #event-checklist-list .chk-menu-celular:not(#love-h-a) { display: block; }
+  html body #event-checklist-list .chk-menu-celular .chk-resp-titulo:not(#love-h-a) { margin: 4px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #A1A1AA; }
+  html body #event-checklist-list .chk-menu button.chk-resp-opcao:not(#love-h-a):not(#love-h-b) { display: flex; align-items: center; gap: 10px; }
+  html body #event-checklist-list .chk-menu .chk-resp-opcao .chk-resp-nome:not(#love-h-a) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  html body #event-checklist-list .chk-menu .chk-resp-ok svg:not(#love-h-a) { width: 14px; height: 14px; color: #183b54; }
+  html body #event-checklist-list .chk-menu .chk-avatar:not(#love-h-a) { width: 26px; height: 26px; flex-shrink: 0; }
+  html body #event-checklist-list .chk-menu-divisor:not(#love-h-a) { display: block; height: 1px; margin: 4px 6px; background: rgba(0, 0, 0, 0.06); }
+  html body #event-checklist-list .chk-prazo:not(#love-h-a):not(#love-h-b) { font-size: 14px; }
+  html body #event-checklist-list .chk-contadores > .chk-contador:last-child:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #E4EDF8 !important; }
+}
+
+/* Celular — Conversas parecida com Notificações: o céu da Home no fundo,
+   cada conversa num balão com o vidro das caixas da Home (branco a 75% com
+   desfoque) e sem mudar de cor ao tocar; X no topo volta para o Início. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.b2b-chat-mode:not(.chat-conversa-aberta):not([data-theme="dark"]) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) {
+    background:
+      radial-gradient(ellipse 30% 28% at 50% 50%, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%),
+      radial-gradient(ellipse 42% 38% at 82% 15%, #F4E2D9 0%, rgba(244, 226, 217, 0) 100%),
+      radial-gradient(ellipse 38% 36% at 15% 85%, #B9D1EE 0%, rgba(185, 209, 238, 0) 100%),
+      #E4EDF8 !important;
+    background-attachment: fixed !important;
+  }
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #tab-b2b:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-messages-view :is(.b2b-chat-contacts-column, #b2b-chat-contacts-list):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    background-color: transparent !important; background-image: none !important; border: 0 !important;
+  }
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-chat-contacts-list:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: flex !important; flex-direction: column; gap: 10px; padding: 12px 16px 16px !important;
+  }
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-chat-contacts-list .conv-item:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-chat-contacts-list .conv-item:not(#love-h-a):not(#love-h-b):not(#love-h-c):is(:hover, :active, .is-ativa) {
+    padding: 14px 16px !important; border: 0 !important; border-radius: 12px !important; box-shadow: none !important;
+    background-color: rgba(255, 255, 255, 0.75) !important; background-image: none !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important; backdrop-filter: blur(20px) saturate(180%) !important;
+  }
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-chat-contacts-list .conv-item.is-ativa h4:not(#love-h-a):not(#love-h-b) { color: #18181B !important; font-weight: 500 !important; }
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-chat-contacts-list .conv-linha:not(#love-h-a):not(#love-h-b) { border: 0 !important; box-shadow: none !important; background: transparent !important; }
+  html body #view-event-os-dashboard #btn-b2b-explorar-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    width: 44px !important; height: 44px !important; margin-right: -10px !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 8px !important; color: #18181B !important;
+  }
+  html body #view-event-os-dashboard #btn-b2b-explorar-celular svg:not(#love-h-a):not(#love-h-b) { width: 24px !important; height: 24px !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #view-event-os-dashboard #tab-b2b > #b2b-top-search-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-bottom: 0 !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-messages-view > .bg-white:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+}

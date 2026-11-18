@@ -63,6 +63,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     ], leadsFiltrados()),
     aoMudar: () => renderLeadsTable()
   });
+  leadsPosicionarFiltro();
+  window.matchMedia?.(MQ_CELULAR_HUB).addEventListener?.('change', leadsPosicionarFiltro);
   montarLixeiraDeLeads();
   renderLeadsTable(); // põe a contagem ao lado da busca, já na barra
 
@@ -914,3 +916,15 @@ document.addEventListener('click', (e) => {
     ]
   });
 });
+
+/* Desktop: o ícone de Filtrar por de Clientes fica no cabeçalho, à direita
+   (como o de Oportunidades). Celular: volta para a barra da lista. */
+function leadsPosicionarFiltro() {
+  const card = document.getElementById('leads-table-card');
+  const topo = document.getElementById('leads-acoes-topo');
+  const filtro = document.querySelector('#leads-table-card .tabela-filtro-wrap, #leads-acoes-topo .tabela-filtro-wrap');
+  if (!card || !topo || !filtro) return;
+  const celular = window.matchMedia?.(MQ_CELULAR_HUB).matches;
+  if (celular) card.querySelector(':scope > .tabela-barra .tabela-barra-acoes')?.prepend(filtro);
+  else topo.append(filtro);
+}

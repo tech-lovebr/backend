@@ -14348,3 +14348,23 @@ html body .forms-vazio .produtos-vazio-criar:not(#love-h-a):not(#love-h-b):not(#
 }
 html body .forms-vazio .produtos-vazio-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):hover { background: transparent !important; border-color: #A1A1AA !important; }
 html:not(.hub-claro) body .forms-vazio .produtos-vazio-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: transparent !important; border-color: #404040 !important; }
+
+/* Clientes (desktop): o ícone de Filtrar por no cabeçalho, à direita, igual
+   ao de Oportunidades (38px, fundo .07, contador em bolinha). */
+.leads-acoes-topo { display: none; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #leads-acoes-topo:not([hidden]):not(:empty):not(#love-h-a) { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  html body #leads-acoes-topo [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+    position: relative; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0 !important;
+    width: 38px !important; height: 38px !important; min-width: 38px !important; min-height: 38px !important; padding: 0 !important; font-size: 0 !important;
+    background: rgba(24, 59, 84, 0.07) !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #3F3F46 !important; cursor: pointer;
+  }
+  html body #leads-acoes-topo [data-tabela-filtrar] svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 18px !important; height: 18px !important; flex-shrink: 0; }
+  html body #leads-acoes-topo [data-tabela-filtrar] > span:not(.tabela-filtro-contador):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #leads-acoes-topo [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):is(:hover, [aria-expanded="true"], .is-ativo) { background: rgba(24, 59, 84, 0.11) !important; color: #181D24 !important; }
+  html body #leads-acoes-topo [data-tabela-filtrar] .tabela-filtro-contador:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 6px; background: #183b54; color: #FFFFFF; font-size: 10px !important; font-weight: 600; line-height: 1;
+  }
+  html:not(.hub-claro) body #leads-acoes-topo [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: rgba(255, 255, 255, 0.08) !important; color: #E4E4E7 !important; }
+}

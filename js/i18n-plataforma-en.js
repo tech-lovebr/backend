@@ -2314,5 +2314,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Encontre o fornecedor ideal":"Find the ideal vendor",
 "Você ainda não possui contratos ativos":"You don't have any active contracts yet",
 "Encontre um fornecedor ideal, contrate-o para o seu evento e organize as entregas.":"Find the ideal vendor, hire them for your event and organize the deliveries.",
-"Crie uma nova solicitação":"Create a new request"
+"Crie uma nova solicitação":"Create a new request",
+"Crie uma nova solicitação de serviço e encontre o fornecedor ideal para o seu evento.":"Create a new service request and find the ideal vendor for your event."
 });

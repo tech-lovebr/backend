@@ -1322,25 +1322,21 @@ document.addEventListener('DOMContentLoaded', () => {
     badge.classList.toggle('hidden', unreadCount === 0);
   }
 
-  /** Celular: só o horário da notificação ("14:22"). @param {any} n */
+  /** Celular: só o dia e o mês da notificação ("25/10"). @param {any} n */
   function tempoCurtoDaNotificacao(n) {
     let d = n.quando ? new Date(n.quando) : null;
     // Sem a data original: entende o texto já pronto
     // ("Hoje, às 14:22", "Ontem, às 9:10", "24/08/2026" ou "24/08/2026, 14:22").
     if (!d || isNaN(d.getTime())) {
       const texto = String(n.time || '');
-      const hm = texto.match(/(\d{1,2}):(\d{2})/);
       const dma = texto.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
       d = null;
       if (dma) d = new Date(Number(dma[3].length === 2 ? `20${dma[3]}` : dma[3]), Number(dma[2]) - 1, Number(dma[1]));
       else if (/^(hoje|ontem)/i.test(texto)) { d = new Date(); if (/^ontem/i.test(texto)) d.setDate(d.getDate() - 1); }
       if (!d) return `<span>${texto}</span>`;
-      // Celular: só o horário (sem data).
-      if (hm) return `<span>${hm[1].padStart(2, '0')}:${hm[2]}</span>`;
-      return `<span>${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>`;
     }
-    const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    return `<span>${hora}</span>`;
+    // Celular: só dia e mês ("25/10"), sem ano e sem horário.
+    return `<span>${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>`;
   }
 
   function renderNotificationsPage() {
@@ -1353,7 +1349,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     listEl.innerHTML = notificationsFeedCache.map((n, i) => `
-      <div class="notification-row py-4 flex items-start gap-3.5 cursor-pointer transition-colors -mx-2 px-2 rounded-xl ${n.unread ? 'bg-[#EBF4FF] hover:bg-[#DCEBFF]' : 'bg-zinc-50/80 hover:bg-zinc-100'}" data-index="${i}">
+      <div class="notification-row${n.unread ? '' : ' notif-lida'} py-4 flex items-start gap-3.5 cursor-pointer transition-colors -mx-2 px-2 rounded-xl ${n.unread ? 'bg-[#EBF4FF] hover:bg-[#DCEBFF]' : 'bg-zinc-50/80 hover:bg-zinc-100'}" data-index="${i}">
         <div class="w-10 h-10 rounded-xl ${n.iconBox || 'bg-zinc-100 text-zinc-600'} flex items-center justify-center flex-shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="${n.iconPath}"/></svg>
         </div>

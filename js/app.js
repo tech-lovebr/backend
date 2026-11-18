@@ -466,12 +466,12 @@ document.addEventListener('DOMContentLoaded', () => {
         b.setAttribute('aria-pressed', String(ativo));
       });
       const seloOrig = document.querySelector('#btn-dash-header-chat .badge-header-chat');
-      const selo = /** @type {HTMLElement|null} */ (gaveta.querySelector('.menu-celular-alternar-selo'));
-      if (selo) {
+      gaveta.querySelectorAll('.menu-celular-alternar-selo, .menu-celular-conversas-selo').forEach(s => {
+        const selo = /** @type {HTMLElement} */ (s);
         const n = (seloOrig?.textContent || '').trim();
         selo.textContent = n;
         selo.hidden = !seloOrig || seloOrig.classList.contains('hidden') || !n || n === '0';
-      }
+      });
       // Menu simplificado: no lugar das seções, só os itens da conta
       // (Criar Novo Evento, Ver Meu Site, Financeiro, Configurações, Central
       // de Ajuda) e o Sair — cada um repassa o toque ao botão original.
@@ -496,6 +496,17 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       nav.innerHTML = html;
     };
+    // Conversas: botão largo logo abaixo do nome e do evento (no lugar do
+    // alternador Início | Conversas), com a bolinha das não lidas.
+    const contaBtn = gaveta.querySelector('.menu-celular-conta');
+    if (contaBtn && !gaveta.querySelector('.menu-celular-conversas')) {
+      const caixa = document.createElement('div');
+      caixa.className = 'menu-celular-conversas-caixa';
+      const iconeConversas = gaveta.querySelector('[data-alternar="mensagens"] svg')?.outerHTML || '';
+      caixa.innerHTML = `<button type="button" class="menu-celular-conversas">${iconeConversas}<span>Conversas</span><span class="menu-celular-conversas-selo" hidden></span></button>`;
+      contaBtn.after(caixa);
+      caixa.querySelector('button')?.addEventListener('click', () => repassar(document.getElementById('btn-dash-header-chat')));
+    }
     gaveta.querySelector('[data-alternar="inicio"]')?.addEventListener('click', () => irPara('overview'));
     gaveta.querySelector('[data-alternar="mensagens"]')?.addEventListener('click', () => repassar(document.getElementById('btn-dash-header-chat')));
     nav.addEventListener('click', (e) => {

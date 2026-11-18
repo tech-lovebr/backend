@@ -17203,3 +17203,65 @@ html body #site-builder-root .std-celular-conversa:not(#love-h-a):not(#love-h-b)
   html body #view-event-os-dashboard #b2b-contracted-list-container .ct-barra-topo .love-tabela-busca:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { flex: 1 1 auto; }
   html body #view-event-os-dashboard #b2b-contracted-list-container #ct-busca:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 100% !important; }
 }
+
+/* Celular — Meus Convidados e Meus Presentes como Fornecedores: o céu da
+   Home no fundo, contagem e Pesquisar soltos no céu e a lista dentro de
+   caixas brancas com o mesmo vidro das caixas da Home (branco a 75% com
+   desfoque). O mesmo vidro vale para as caixas de Fornecedores e para as
+   caixas de Adicionar presente / lista pronta. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]):has(#tab-rsvp.active, #tab-gifts.active #gifts-panel-products:not(.hidden)) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    background:
+      radial-gradient(ellipse 30% 28% at 50% 50%, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%),
+      radial-gradient(ellipse 42% 38% at 82% 15%, #F4E2D9 0%, rgba(244, 226, 217, 0) 100%),
+      radial-gradient(ellipse 38% 36% at 15% 85%, #B9D1EE 0%, rgba(185, 209, 238, 0) 100%),
+      #E4EDF8 !important;
+    background-attachment: fixed !important;
+  }
+  html body:not([data-theme="dark"]) :is(#tab-rsvp .love-tabela-busca input, #gifts-search-input):not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(24, 59, 84, 0.06) !important; }
+  html body #tab-rsvp .rsvp-caixa-abaixo-das-abas > .love-tabela-barra:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #tab-gifts #gifts-barra .love-tabela-barra:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-bottom: 0 !important; background: transparent !important; }
+
+  /* Vidro da Home. */
+  html body #tab-rsvp .rsvp-caixa-abaixo-das-abas > .overflow-x-auto:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #view-event-os-dashboard #host-gifts-grid > .group:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #view-event-os-dashboard #host-gifts-grid > .group:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover,
+  html body #host-gifts-grid > .presentes-vazio .presentes-vazio-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e),
+  html body .presentes-vazio .lista-pronta-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e),
+  html body #b2b-cards-list-container .b2b-item-card:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d),
+  html body #rfp-caixa #rfp-empty-state:not(.hidden):not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #b2b-contracted-list-container .ct-vazio:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    background-color: rgba(255, 255, 255, 0.75) !important; background-image: none !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+  }
+
+  /* Convidados: a lista numa caixa de cantos 10px, com 16px nas laterais. */
+  html body #tab-rsvp .rsvp-caixa-abaixo-das-abas > .overflow-x-auto:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    margin: 0 16px 16px !important; min-height: 0 !important; border-radius: 10px !important; overflow: hidden !important;
+  }
+  html body #tab-rsvp .rsvp-caixa-abaixo-das-abas .tabela-com-linhas-vazias:not(#love-h-a):not(#love-h-b):not(#love-h-c) { min-height: 0 !important; }
+  html body:not([data-theme="dark"]) #tab-rsvp .guests-table tbody td.guest-celula-arraste > .guest-card-arraste:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+  html body #tab-rsvp .guests-table tbody tr:last-child td.guest-celula-arraste > div:first-child:not(#love-h-a):not(#love-h-b):not(#love-h-c) { box-shadow: none !important; }
+
+  /* Presentes: a grade dentro da margem, cada presente numa caixa. */
+  html body #view-event-os-dashboard #host-gifts-grid:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-left: 0 !important; margin-right: 0 !important; width: 100% !important; gap: 12px !important; }
+  html body #view-event-os-dashboard #host-gifts-grid > .group:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-radius: 10px !important; overflow: hidden !important; }
+
+  /* Presentes vazio: a frase numa caixa própria, separada das caixas de adicionar. */
+  html body #host-gifts-grid > .presentes-vazio:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    min-height: 0 !important; justify-content: flex-start !important; padding: 0 !important;
+    background: transparent !important; border: 0 !important; border-radius: 0 !important;
+  }
+  html body #host-gifts-grid > .presentes-vazio .presentes-vazio-texto:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    width: 100%; box-sizing: border-box; margin: 0 0 12px !important; padding: 20px 16px; border-radius: 10px;
+  }
+  html body #host-gifts-grid > .presentes-vazio .presentes-vazio-cards:not(#love-h-a):not(#love-h-b) { gap: 12px; }
+}
+
+/* Desktop — bolinhas de Notificações e Mensagens (topo, menu lateral e
+   submenu) na cor do coração preenchido de Encontrar Fornecedor. */
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html:not(#love-h-a) { --love-selo: #C9937E; }
+  html body .sidebar-icon-rail .rail-chat-selo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #C9937E !important; background-color: #C9937E !important; color: #FFFFFF !important; }
+}

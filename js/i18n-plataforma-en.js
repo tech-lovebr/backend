@@ -2290,5 +2290,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Digite pelo menos um nome.":"Type at least one name.",
 "{x} convidado adicionado":"{x} guest added",
 "{x} convidados adicionados":"{x} guests added",
-"Nenhum convidado novo para adicionar":"No new guests to add"
+"Nenhum convidado novo para adicionar":"No new guests to add",
+"Vamos te ajudar a organizar o seu orçamento":"Let's help you organize your budget"
 });

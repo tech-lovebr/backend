@@ -2696,7 +2696,7 @@ document.addEventListener('DOMContentLoaded', () => {
           
           let badgeMarkup = '';
           if (item.id === 'messages' && unreadCount > 0) {
-            badgeMarkup = `<span class="badge-recados-count px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm ml-auto" style="background-color: #c7305b !important; color: #FFFFFF !important;">${unreadCount}</span>`;
+            badgeMarkup = `<span class="badge-recados-count px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm ml-auto" style="background-color: var(--love-selo, #c7305b) !important; color: #FFFFFF !important;">${unreadCount}</span>`;
           }
 
           btn.innerHTML = `<span>${item.label}</span>${badgeMarkup}`;
@@ -22768,7 +22768,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!badge) {
           badge = document.createElement('span');
           badge.className = 'badge-recados-count chat-unread-count ml-auto';
-          badge.style.cssText = 'background-color: #c7305b !important; color: #FFFFFF !important;';
+          badge.style.cssText = 'background-color: var(--love-selo, #c7305b) !important; color: #FFFFFF !important;';
           itemChat.appendChild(badge);
         }
         badge.textContent = texto;

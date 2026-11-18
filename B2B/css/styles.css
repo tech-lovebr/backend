@@ -13979,3 +13979,50 @@ html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-cai
   /* Lista vazia: sem a contagem nem a caixa; frase solta no céu. */
   html.hub-claro body .dash-card.lista-celular.tem-vazio-celular > .tabela-total-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { display: none !important; }
 }
+
+/* ==========================================================================
+   Celular — Parte 3: estados vazios e avisos soltos no céu (sem caixa e
+   sem ícone), centralizados, 16px #18181B. Tabela vazia: título 16/600
+   acima da frase. "Você ainda não possui..." normal e a chamada em negrito
+   na linha de baixo. Cartão de cadastrar (produtos) no vidro.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html.hub-claro body :is(.dash-card.lista-celular > .vazio-celular:not([hidden]), #conv-list > .vazio-celular, .vazio-celular):not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    min-height: 0 !important; margin: 24px 0 !important; padding: 0 8px !important; flex: 0 0 auto !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html.hub-claro body .vazio-celular :is(.vazio-celular-lottie, .vazio-celular-icone):not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: none !important; }
+  html.hub-claro body .vazio-celular .vazio-celular-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin: 0; padding: 0; background: none; border: 0; font-family: inherit; font-size: 16px !important; font-weight: 600 !important; line-height: 22px; color: #18181B !important; }
+  html.hub-claro body .vazio-celular :is(.vazio-celular-texto, .vazio-celular-nenhum):not(#love-h-a):not(#love-h-b):not(#love-h-c) { max-width: none; margin: 2px 0 0; font-size: 16px !important; font-weight: 400; line-height: 22px; color: #18181B !important; }
+
+  /* Oportunidades sem produtos e Produtos vazio. */
+  html.hub-claro body :is(#op-sem-produtos, .produtos-vazio):not([hidden]):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    min-height: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: flex-start !important;
+    background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important;
+  }
+  html.hub-claro body #op-sem-produtos > p:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin: 0; padding: 0 8px; text-align: center; font-size: 16px !important; font-weight: 600 !important; line-height: 22px; color: #18181B !important; }
+  html.hub-claro body #op-sem-produtos > p.op-sem-produtos-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-top: 24px; font-weight: 400 !important; }
+  html.hub-claro body :is(#op-sem-produtos, .produtos-vazio) .produtos-vazio-cards:not(#love-h-a):not(#love-h-b) { width: 100%; margin-top: 24px; }
+  html.hub-claro body :is(#op-sem-produtos, .produtos-vazio) .produtos-vazio-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    width: 100%; box-sizing: border-box; border: 0 !important; border-radius: 10px !important; box-shadow: none !important;
+    background-color: rgba(255, 255, 255, 0.75) !important; -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* Notificações vazio. */
+  html.hub-claro body #notifications-list > div:only-child:not([class*="notif"]):not(#love-h-a):not(#love-h-b) { padding: 24px 8px !important; font-size: 16px !important; line-height: 22px; color: #18181B !important; }
+
+  /* Avisos (ex.: editar o site no computador): texto solto, sem caixa e sem ícone. */
+  html.hub-claro body .construtor-celular-aviso:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    min-height: 0 !important; margin: 24px 0 !important; padding: 0 8px !important; text-align: center;
+    background: transparent !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important;
+  }
+  html.hub-claro body .construtor-celular-aviso-icone:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html.hub-claro body .construtor-celular-aviso-titulo:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 16px !important; font-weight: 600 !important; line-height: 22px; color: #18181B !important; }
+  html.hub-claro body .construtor-celular-aviso-texto:not(#love-h-a):not(#love-h-b) { margin: 2px 0 0; font-size: 16px !important; font-weight: 400 !important; line-height: 22px; color: #18181B !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html.hub-claro body #op-sem-produtos > p:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { margin: 2px 0 0 !important; height: auto !important; line-height: 22px !important; }
+  html.hub-claro body #op-sem-produtos > p.op-sem-produtos-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { margin: 24px 0 0 !important; }
+  html.hub-claro body .construtor-celular-aviso .construtor-celular-aviso-titulo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { font-weight: 600 !important; }
+}

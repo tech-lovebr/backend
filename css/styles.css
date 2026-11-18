@@ -17335,3 +17335,100 @@ html body .chk-prazo:not(#love-h-a) { font-size: 13px; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body.b2b-chat-mode:not(.chat-conversa-aberta) #b2b-messages-view > .bg-white:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; border: 0 !important; box-shadow: none !important; }
 }
+
+/* Encontrar Fornecedor (desktop e celular): Mensagem só com o ícone. No
+   celular o Solicitar volta ao card, também só com o ícone. */
+.b2b-so-celular, .b2b-perfil-fechar-celular, .orc-ficha-topo { display: none; }
+html body #view-event-os-dashboard .btn-message-supplier.b2b-botao-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+  width: 38px; min-width: 38px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+}
+html body .btn-message-supplier.b2b-botao-icone svg:not(#love-h-a) { width: 18px; height: 18px; }
+
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-message-supplier.b2b-botao-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { width: 40px; min-width: 40px; height: 40px !important; }
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-hire-supplier:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+    display: inline-flex !important; align-items: center; justify-content: center; width: 40px; min-width: 40px; height: 40px !important; padding: 0 !important; flex: 0 0 auto;
+  }
+  html body #b2b-cards-list-container .b2b-item-card .btn-hire-supplier .b2b-so-celular:not(#love-h-a) { display: block; width: 19px; height: 19px; }
+  html body #b2b-cards-list-container .b2b-item-card .btn-hire-supplier .b2b-so-desktop:not(#love-h-a) { display: none; }
+
+  /* Página do fornecedor: sem o caminho; o topo continua "Encontrar
+     Fornecedor" com um X que volta para a lista. */
+  html body #view-event-os-dashboard #tab-b2b:has(#b2b-vendor-profile-view:not(.hidden)) > #b2b-top-search-bar.hidden:not(#love-h-a):not(#love-h-b) { display: flex !important; }
+  html body #view-event-os-dashboard #tab-b2b:has(#b2b-vendor-profile-view:not(.hidden)) #b2b-top-search-bar > :not(:first-child):not(#btn-b2b-perfil-fechar-celular):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #view-event-os-dashboard #tab-b2b:has(#b2b-vendor-profile-view:not(.hidden)) #btn-b2b-perfil-fechar-celular:not(#love-h-a):not(#love-h-b) {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: 0 -10px 0 auto; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer;
+  }
+  html body #btn-b2b-perfil-fechar-celular svg:not(#love-h-a) { width: 24px; height: 24px; }
+  html body #b2b-vendor-profile-view #b2b-profile-breadcrumb:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #b2b-vendor-profile-view:not(.hidden):not(#love-h-a):not(#love-h-b) { padding: 16px !important; }
+
+  /* Tudo em caixas brancas (o vidro das caixas da Home). */
+  html body #b2b-vendor-profile-view > .b2b-perfil-capa:not(#love-h-a):not(#love-h-b) { border-radius: 10px !important; }
+  html body #b2b-vendor-profile-view > div:not(.b2b-perfil-topo):not(.b2b-perfil-capa):not(.hidden):not(#love-h-a):not(#love-h-b) {
+    margin: 12px 0 0 !important; padding: 16px !important; border: 0 !important; border-radius: 10px !important;
+    background-color: rgba(255, 255, 255, 0.75) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  }
+  html body #b2b-vendor-profile-view > .b2b-perfil-cabeca:not(#love-h-a):not(#love-h-b) { gap: 16px !important; }
+  html body #b2b-vendor-profile-view > .b2b-perfil-cabeca > div:first-child:not(#love-h-a) { align-items: center !important; gap: 12px !important; }
+  html body #b2b-vendor-profile-view > .b2b-perfil-cabeca > div:first-child > div:not(.b2b-perfil-icones-celular):not(#love-h-a) { flex: 1 1 auto; padding-top: 0 !important; }
+  html body #b2b-vendor-profile-view #b2b-profile-avatar-img:not(#love-h-a):not(#love-h-b) { width: 56px !important; height: 56px !important; border-radius: 8px !important; }
+  html body #b2b-vendor-profile-view > .b2b-perfil-cabeca > div:last-child:empty:not(#love-h-a),
+  html body #b2b-vendor-profile-view > .b2b-perfil-cabeca > div:last-child:not(:has(:not(.hidden):not(:empty))):not(#love-h-a) { display: none !important; }
+  html body #b2b-vendor-profile-view > .b2b-perfil-cabeca > div:last-child:not(#love-h-a) { align-items: flex-start !important; }
+  .b2b-perfil-icones-celular { display: flex; align-items: center; gap: 8px; flex-shrink: 0; align-self: flex-start; }
+  html body .b2b-perfil-icones-celular > button:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 40px !important; height: 40px !important; flex: 0 0 40px; }
+  .b2b-perfil-botoes-celular { display: flex; gap: 8px; width: 100%; }
+  html body .b2b-perfil-botoes-celular > button:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { flex: 1 1 0; min-width: 0; height: 44px !important; justify-content: center; font-size: 15px !important; }
+
+  /* Ver todos os serviços: botão no meio, igual ao Ver como convidado da Home. */
+  html body #b2b-vendor-profile-view #b2b-profile-ver-mais-servicos-wrap:not(.hidden):not(#love-h-a):not(#love-h-b) { display: block !important; padding-top: 12px !important; }
+  html body #b2b-vendor-profile-view #b2b-profile-ver-mais-servicos:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; align-items: center; justify-content: center; width: 100%; height: 40px; padding: 0;
+    background: rgba(24, 59, 84, 0.07); border: 0; border-radius: 8px; cursor: pointer;
+    font-family: var(--fonte-love, 'Outfit'), sans-serif; font-size: 14px !important; font-weight: 500 !important; color: #3F3F46 !important;
+  }
+  html body #b2b-vendor-profile-view #b2b-profile-ver-mais-servicos:not(#love-h-a):active { background: rgba(24, 59, 84, 0.11); color: #181D24 !important; }
+  html body #b2b-vendor-profile-view #b2b-profile-ver-mais-servicos svg:not(#love-h-a) { display: none; }
+
+  /* Solicitar orçamento: página inteira como Adicionar convidado (fundo
+     cinza clarinho, barra branca com voltar, título e Enviar; o serviço e os
+     campos em caixas brancas). */
+  html body #modal-b2b-orcamento:not(#love-h-a):not(#love-h-b) {
+    padding: 0 !important; align-items: stretch !important; justify-content: stretch !important;
+    bottom: var(--bottom-bar-height-mobile, 64px) !important; background: #F4F6F7 !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html body #modal-b2b-orcamento .orc-modal:not(#love-h-a):not(#love-h-b) {
+    width: 100% !important; max-width: none !important; height: 100% !important; max-height: none !important;
+    border-radius: 0 !important; box-shadow: none !important; background: #F4F6F7 !important; overflow: hidden !important; transform: none !important;
+  }
+  html body #modal-b2b-orcamento .orc-ficha-topo:not(#love-h-a) {
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0; height: 64px; box-sizing: border-box;
+    padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 8px; background: #FFFFFF;
+  }
+  html body #modal-b2b-orcamento .orc-ficha-voltar:not(#love-h-a) { width: 44px; height: 44px; margin-left: -6px; display: inline-flex; align-items: center; justify-content: flex-start; flex-shrink: 0; padding: 0; background: transparent; border: 0; color: #18181B; cursor: pointer; }
+  html body #modal-b2b-orcamento .orc-ficha-voltar svg:not(#love-h-a) { width: 24px; height: 24px; }
+  html body #modal-b2b-orcamento .orc-ficha-titulo:not(#love-h-a) { flex: 1 1 auto; min-width: 0; margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -0.025em; color: #18181B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body #modal-b2b-orcamento .orc-ficha-enviar:not(#love-h-a) { height: 44px; padding: 0 18px; flex-shrink: 0; background: #FFFFFF; border: 1px solid rgba(0, 0, 0, 0.06); border-radius: 8px; font-family: inherit; font-size: 16px; font-weight: 600; color: #183b54; cursor: pointer; }
+  html body #modal-b2b-orcamento .orc-ficha-enviar:disabled { opacity: 0.6; }
+  html body #modal-b2b-orcamento:has(#orcamento-sucesso:not(.hidden)) .orc-ficha-enviar:not(#love-h-a) { display: none; }
+  html body #modal-b2b-orcamento #orcamento-form:not(#love-h-a):not(#love-h-b) { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 16px 16px 32px; box-sizing: border-box; gap: 12px; }
+  html body #modal-b2b-orcamento .orc-topo:not(#love-h-a):not(#love-h-b),
+  html body #modal-b2b-orcamento .orc-corpo:not(#love-h-a):not(#love-h-b) {
+    flex-shrink: 0; margin: 0 !important; padding: 16px !important; background: #FFFFFF !important; border: 0 !important; border-radius: 10px !important; overflow: visible !important; max-height: none !important;
+  }
+  html body #modal-b2b-orcamento .orc-fechar:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #modal-b2b-orcamento .orc-rodape:not(#love-h-a):not(#love-h-b) { flex-shrink: 0; margin: 0 !important; padding: 0 4px !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+  html body #modal-b2b-orcamento .orc-rodape .orc-enviar:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #modal-b2b-orcamento #orcamento-sucesso:not(.hidden):not(#love-h-a) { margin: 16px; background: #FFFFFF; border-radius: 10px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #b2b-vendor-profile-view .b2b-perfil-botoes-celular > button:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { height: 44px !important; min-height: 44px; font-size: 15px !important; }
+  html body #view-event-os-dashboard #b2b-vendor-profile-view .b2b-perfil-acoes:not(:has(button)):not(#love-h-a):not(#love-h-b) { display: none !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-message-supplier.b2b-botao-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { height: 40px !important; min-height: 40px !important; }
+}

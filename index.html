@@ -56,7 +56,7 @@
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
   <script src="js/i18n.js?v=20261117_menus2"></script>
-  <script src="js/i18n-plataforma.js?v=20261118_en1"></script>
+  <script src="js/i18n-plataforma.js?v=20261118_en2"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -114,7 +114,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261118_conv3">
+  <link rel="stylesheet" href="css/styles.css?v=20261118_forn3">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261117_logoazul">
@@ -3471,6 +3471,10 @@
             <button type="button" id="btn-b2b-cidade-celular" class="b2b-cidade-celular" aria-haspopup="dialog" aria-expanded="false" title="Trocar a cidade">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg><span id="b2b-cidade-celular-nome">São Paulo, SP</span>
             </button>
+            <!-- Celular, na página de um fornecedor: X volta para a lista -->
+            <button type="button" id="btn-b2b-perfil-fechar-celular" class="b2b-perfil-fechar-celular" aria-label="Fechar" title="Fechar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
             <!-- Celular, em Conversas: X volta para o Início (como em Notificações) -->
             <button type="button" id="btn-b2b-explorar-celular" class="b2b-explorar-celular" aria-label="Fechar" title="Fechar">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
@@ -3628,7 +3632,7 @@
               <!-- Página do serviço: leva para a página da empresa, com todos os serviços. -->
               <div id="b2b-profile-ver-mais-servicos-wrap" class="flex justify-end pt-3 hidden">
                 <button type="button" id="b2b-profile-ver-mais-servicos" class="text-xs sm:text-sm font-semibold text-[#333333] hover:text-[#000000] flex items-center gap-1 transition-colors cursor-pointer font-sans group">
-                  <span>Ver mais serviços</span>
+                  <span>Ver todos os serviços</span>
                   <svg class="w-4 h-4 text-[#333333] group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
                 </button>
               </div>
@@ -4689,6 +4693,12 @@
 
   <div id="modal-b2b-orcamento" class="modal-backdrop-custom fixed inset-0 bg-black/50 backdrop-blur-sm z-50 items-end sm:items-center justify-center p-0 sm:p-4 hidden" style="display: none !important;" role="dialog" aria-modal="true" aria-labelledby="orcamento-titulo">
     <div class="modal-container-custom orc-modal bg-white w-full sm:max-w-xl relative max-h-[92vh] flex flex-col">
+      <!-- Celular: a mesma barra de Adicionar convidado (voltar, título e Enviar) -->
+      <div class="orc-ficha-topo">
+        <button type="button" data-close-modal class="orc-ficha-voltar" aria-label="Voltar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg></button>
+        <h2 class="orc-ficha-titulo">Solicitar orçamento</h2>
+        <button type="button" id="btn-orcamento-enviar-topo" class="orc-ficha-enviar">Enviar</button>
+      </div>
 
       <div id="orcamento-form" class="flex flex-col min-h-0">
         <!-- A. Card do fornecedor/serviço -->
@@ -5785,7 +5795,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261118_conv"></script>
+  <script src="js/app.js?v=20261118_forn"></script>
   <script src="js/landing.js?v=20261117_gira55"></script>
   <script src="js/carteira.js?v=20261117_menus2"></script>
   <script src="js/checklist.js?v=20261118_menu"></script>

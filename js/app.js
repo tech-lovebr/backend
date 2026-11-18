@@ -2803,6 +2803,11 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
+        if (state.currentTab === tab && tab === 'b2b' && perfilDoFornecedorAberto()) {
+          voltarDoPerfilParaLista();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
         // Se clicar mais 1 vez no ícone da aba ativa (exceto 'overview' que não possui submenu):
         // Faz o reverso: se o submenu estiver aberto, fecha; se estiver fechado, reabre!
         if (state.currentTab === tab && tab !== 'overview' && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
@@ -21186,11 +21191,9 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="flex items-center gap-2.5 shrink-0">
                 <!-- Favoritar à esquerda do Mensagens (saiu de cima da foto) -->
                 <button type="button" class="btn-toggle-card-fav w-10 h-10 shrink-0 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer" data-dica="Favoritar" aria-label="Favoritar"><svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
-                <button type="button" class="btn-message-supplier btn-secondary">
-                  <span>Mensagem</span>
-                </button>
-                <button type="button" class="btn-hire-supplier px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer">
-                  Solicitar
+                <button type="button" class="btn-message-supplier btn-secondary b2b-botao-icone" data-dica="Mensagem" aria-label="Mensagem"><svg class="b2b-icone-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/><path d="M8.25 12h.008M12 12h.008M15.75 12h.008" stroke-width="2.4"/></svg></button>
+                <button type="button" class="btn-hire-supplier px-5 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs sm:text-sm font-bold transition-all shadow-xs cursor-pointer" aria-label="Solicitar">
+                  <svg class="b2b-so-celular" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M12 11.5v6M9 14.5h6"/></svg><span class="b2b-so-desktop">Solicitar</span>
                 </button>
               </div>
             </div>
@@ -21300,9 +21303,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <div class="flex items-center gap-2 mt-auto pt-2">
           <button type="button" class="btn-toggle-card-fav w-9 h-9 shrink-0 rounded-full bg-white shadow-md text-zinc-300 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer" data-dica="Favoritar" aria-label="Favoritar"><svg class="w-4 h-4 ${item.isFavorite ? 'fill-[#c7305b] text-[#c7305b]' : 'fill-none text-zinc-300'} stroke-current" stroke-width="1.75" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg></button>
-          <button type="button" class="btn-message-supplier btn-secondary flex-1 justify-center !px-3 !text-xs">
-            <span>Mensagem</span>
-          </button>
+          <button type="button" class="btn-message-supplier btn-secondary b2b-botao-icone shrink-0" data-dica="Mensagem" aria-label="Mensagem"><svg class="b2b-icone-msg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/><path d="M8.25 12h.008M12 12h.008M15.75 12h.008" stroke-width="2.4"/></svg></button>
           <button type="button" class="btn-hire-supplier flex-1 px-3 py-2.5 rounded-xl bg-[#333333] hover:bg-[#222222] text-white text-xs font-bold transition-all cursor-pointer">
             Solicitar
           </button>
@@ -22343,8 +22344,9 @@ document.addEventListener('DOMContentLoaded', () => {
     renderB2BExplore();
   }
 
-  // (Antigo botão "Voltar para Explorar" — hoje o caminho do topo faz isso.)
-  document.getElementById('btn-b2b-profile-back')?.addEventListener('click', () => {
+  // Volta da página do fornecedor para a lista (antigo "Voltar para
+  // Explorar"; hoje o X do topo no celular e o toque de novo em Fornecedores).
+  function voltarDoPerfilParaLista() {
     // Aberta a partir da lista nesta sessão: volta pelo histórico (o popstate
     // remonta a lista certa — Explorar ou Favoritos).
     if (history.state?.voltarComHistorico) { history.back(); return; }
@@ -22353,7 +22355,42 @@ document.addEventListener('DOMContentLoaded', () => {
     closeB2BVendorProfile();
     const lista = caminhoSubRota('b2b', currentB2BView);
     history.replaceState({ loveRoute: lista }, '', lista);
-  });
+  }
+  document.getElementById('btn-b2b-profile-back')?.addEventListener('click', voltarDoPerfilParaLista);
+  document.getElementById('btn-b2b-perfil-fechar-celular')?.addEventListener('click', voltarDoPerfilParaLista);
+  /** Página do fornecedor aberta? */
+  const perfilDoFornecedorAberto = () => !!document.getElementById('b2b-vendor-profile-view') && !document.getElementById('b2b-vendor-profile-view')?.classList.contains('hidden');
+
+  // Celular: Compartilhar e Favoritar ao lado do nome, e Mensagem e Solicitar
+  // na largura toda embaixo, tudo na caixa branca do cabeçalho. No
+  // computador os quatro voltam para o topo, à direita.
+  (function arrumarAcoesDoPerfil() {
+    const consulta = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+    const acoes = document.querySelector('#b2b-vendor-profile-view .b2b-perfil-acoes');
+    const cabeca = document.querySelector('#b2b-vendor-profile-view .b2b-perfil-cabeca');
+    const linhaDoNome = cabeca && cabeca.firstElementChild;
+    const ids = ['btn-b2b-profile-share', 'btn-b2b-profile-favorite', 'btn-b2b-profile-message', 'btn-b2b-profile-hire'];
+    const botoes = ids.map(id => document.getElementById(id));
+    if (!acoes || !cabeca || !linhaDoNome || botoes.some(b => !b)) return;
+    const icones = document.createElement('div');
+    icones.className = 'b2b-perfil-icones-celular';
+    const largos = document.createElement('div');
+    largos.className = 'b2b-perfil-botoes-celular';
+    const arrumar = () => {
+      if (consulta.matches) {
+        icones.append(/** @type {HTMLElement} */ (botoes[0]), /** @type {HTMLElement} */ (botoes[1]));
+        largos.append(/** @type {HTMLElement} */ (botoes[2]), /** @type {HTMLElement} */ (botoes[3]));
+        linhaDoNome.appendChild(icones);
+        linhaDoNome.after(largos);
+      } else {
+        botoes.forEach(b => acoes.appendChild(/** @type {HTMLElement} */ (b)));
+        icones.remove();
+        largos.remove();
+      }
+    };
+    arrumar();
+    consulta.addEventListener('change', arrumar);
+  })();
 
   document.getElementById('btn-b2b-profile-message')?.addEventListener('click', () => {
     if (!activeB2BProfileItem) return;
@@ -22366,6 +22403,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('btn-orcamento-enviar')?.addEventListener('click', enviarPedidoOrcamento);
+  document.getElementById('btn-orcamento-enviar-topo')?.addEventListener('click', enviarPedidoOrcamento);
   document.getElementById('btn-orcamento-ir-chat')?.addEventListener('click', () => {
     closeModal(document.getElementById('modal-b2b-orcamento'));
     if (orcamentoFornecedor) abrirChatComFornecedor(orcamentoFornecedor.id);

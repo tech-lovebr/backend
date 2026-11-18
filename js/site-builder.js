@@ -4493,9 +4493,19 @@ async function initPublicPreview() {
   renderTelaPublica(root);
 }
 
+// Cada tela do convite abre do topo (header no lugar, rodapé no fim). O site
+// tem scroll-behavior: smooth, e a rolagem suave era cortada no meio quando a
+// página trocava — por isso rola na hora, antes e depois de montar a tela.
 function renderTelaPublica(root) {
+  const irAoTopo = () => window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  irAoTopo();
+  montarTelaPublica(root);
+  irAoTopo();
+  requestAnimationFrame(irAoTopo);
+}
+
+function montarTelaPublica(root) {
   const tela = window.location.hash.replace('#', '');
-  window.scrollTo(0, 0);
   if (tela === 'informacoes') return renderInformacoesPublicas(root);
   if (tela === 'localizacao') return renderLocalizacaoPublica(root);
   if (tela === 'dresscode') return renderDresscodePublico(root);

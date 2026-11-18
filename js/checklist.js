@@ -575,8 +575,8 @@
                 <span class="chk-menu-divisor" aria-hidden="true"></span>
                 ${busca ? `<button type="button" role="menuitem" data-chk-buscar="${esc(t.busca_fornecedor)}">Pesquisar fornecedores</button>` : ''}
               </div>
-              <button type="button" role="menuitem" data-chk-acao="prazo">Editar prazo</button>
-              <button type="button" role="menuitem" data-chk-acao="notas">Adicionar notas e orçamento</button>
+              <button type="button" role="menuitem" class="chk-menu-so-desktop" data-chk-acao="prazo">Editar prazo</button>
+              <button type="button" role="menuitem" class="chk-menu-so-desktop" data-chk-acao="notas">Adicionar notas e orçamento</button>
               <button type="button" role="menuitem" data-chk-acao="editar">Editar tarefa</button>
               <button type="button" role="menuitem" data-chk-acao="excluir">Excluir</button>
             </div>

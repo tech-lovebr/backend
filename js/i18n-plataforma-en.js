@@ -2305,5 +2305,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "{x} co-anfitriões":"{x} co-hosts",
 "Conversar":"Chat",
 "Link do fornecedor copiado":"Vendor link copied",
-"Você ainda não recebeu recados":"You haven't received any messages yet"
+"Você ainda não recebeu recados":"You haven't received any messages yet",
+"Sacar":"Withdraw"
 });

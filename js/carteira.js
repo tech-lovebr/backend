@@ -202,24 +202,26 @@
     const ev = evento();
     const podeSacar = !(ev && ev.souOrganizador);
     const temConta = contas().length > 0;
+    // Celular: o "Cadastre uma conta..." vira um aviso no topo, acima da caixa dos saldos.
     return `
+      ${podeSacar && !temConta ? '<p class="cart-aviso-celular">Cadastre uma conta em <button type="button" class="cart-link-texto" data-cart-aba="contas">Contas Bancárias</button> para sacar.</p>' : ''}
       <section class="cart-caixa cart-resumo">
         <div class="cart-resumo-topo">
           <button type="button" class="love-olho" data-love-olho aria-label="${document.documentElement.classList.contains('love-saldo-oculto') ? 'Mostrar saldo' : 'Ocultar saldo'}" aria-pressed="${document.documentElement.classList.contains('love-saldo-oculto')}">${document.documentElement.classList.contains('love-saldo-oculto') ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></svg>'}</button>
         </div>
         <div class="cart-resumo-cols">
           <div class="cart-resumo-col">
-            <p class="cart-rotulo">Saldo disponível para saque</p>
+            <p class="cart-rotulo"><span class="cart-so-desktop">Saldo disponível para saque</span><span class="cart-so-celular">Saldo disponível</span></p>
             <p class="cart-numero">${valor(n.disponivel)}</p>
             ${podeSacar ? `
-              <button type="button" class="btn-primary cart-sacar" data-cart-sacar ${n.disponivel > 0 && temConta ? '' : 'disabled'}>Solicitar saque</button>
-              ${temConta ? '' : '<p class="cart-dica">Cadastre uma conta em <button type="button" class="cart-link-texto" data-cart-aba="contas">Contas Bancárias</button> para sacar.</p>'}` : '<p class="cart-dica">Só o criador do evento pode solicitar saques.</p>'}
+              <button type="button" class="btn-primary cart-sacar" data-cart-sacar ${n.disponivel > 0 && temConta ? '' : 'disabled'}><span class="cart-so-desktop">Solicitar saque</span><span class="cart-so-celular">Sacar</span></button>
+              ${temConta ? '' : '<p class="cart-dica cart-dica-conta">Cadastre uma conta em <button type="button" class="cart-link-texto" data-cart-aba="contas">Contas Bancárias</button> para sacar.</p>'}` : '<p class="cart-dica">Só o criador do evento pode solicitar saques.</p>'}
             <button type="button" class="cart-link-texto cart-ver" data-cart-vista="saques" ${vista === 'saques' ? 'aria-current="true"' : ''}>Ver histórico de saques</button>
           </div>
           <div class="cart-resumo-col">
             <p class="cart-rotulo">Saldo pendente</p>
             <p class="cart-numero">${valor(n.pendente)}</p>
-            <p class="cart-dica">Saques solicitados, a caminho da sua conta.</p>
+            <p class="cart-dica cart-dica-pendente">Saques solicitados, a caminho da sua conta.</p>
             <button type="button" class="cart-link-texto cart-ver" data-cart-vista="extrato" ${vista === 'extrato' ? 'aria-current="true"' : ''}>Ver extrato completo</button>
           </div>
         </div>

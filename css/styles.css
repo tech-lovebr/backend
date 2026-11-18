@@ -18024,7 +18024,8 @@ html body #rfp-empty-state .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a):not(
 html body .convite-tela :is(.convite-botao, .convite-presente-botao, .convite-carrinho-botao):not(#love-h-a):not(#love-h-b) { background: var(--bx-primary, #537bae) !important; color: var(--convite-botao-texto, #FFFFFF) !important; }
 html body .convite-tela .convite-presente-check[aria-pressed="true"]:not(#love-h-a):not(#love-h-b) { color: var(--convite-botao-texto, #FFFFFF) !important; }
 html body .convite-tela.convite-tela-com-cor:not(#love-h-a) { color: var(--convite-texto); }
-html body .convite-tela.convite-tela-com-cor :is(.convite-tela-titulo, .convite-form > label, .convite-form .convite-rsvp-ajuda, .convite-vazio, .convite-info-rotulo, .convite-info-valor, .convite-sobre-texto):not(#love-h-a):not(#love-h-b) { color: var(--convite-texto) !important; }
+html body .convite-tela.convite-tela-com-cor :is(.convite-tela-titulo, .convite-form > label, .convite-form .convite-rsvp-ajuda, .convite-vazio, .convite-sobre-texto):not(#love-h-a):not(#love-h-b),
+html body .convite-tela.convite-tela-com-cor :is(.convite-info-rotulo, .convite-info-valor):not(.convite-info-caixa *):not(#love-h-a):not(#love-h-b) { color: var(--convite-texto) !important; }
 html body .convite-tela.convite-tela-com-cor .convite-form .convite-rsvp-ajuda:not(#love-h-a):not(#love-h-b) { opacity: .8; }
 html body .convite-tela.convite-tela-com-cor .convite-voltar:not(#love-h-a):not(#love-h-b),
 html body .convite-tela.convite-tela-com-cor .convite-voltar:not(#love-h-a):not(#love-h-b):hover { color: var(--convite-texto) !important; }
@@ -18038,3 +18039,23 @@ html body .convite-tela.convite-tela-com-cor.is-texto-escuro .convite-form input
 /* Dentro das caixas brancas (cards de presente, lista de nomes) o texto
    continua escuro, mesmo com o texto da tela claro. */
 html body .convite-tela.convite-tela-com-cor :is(.convite-presente, .convite-rsvp-opcoes):not(#love-h-a):not(#love-h-b) { color: #18181B; }
+
+/* Convite publicado — Localização: o mapa do local logo abaixo da caixa e
+   o "Como chegar?" embaixo do mapa. */
+.convite-mapa { margin: 0 0 12px; border-radius: 10px; overflow: hidden; background: rgba(255, 255, 255, 0.5); }
+.convite-mapa iframe { display: block; width: 100%; height: 240px; border: 0; }
+.convite-mapa-como-chegar { margin: 0 0 1rem; }
+.convite-mapa-como-chegar .convite-como-chegar { margin: 0; }
+
+/* Convite publicado — Lista de presentes vazia: o ícone do presente,
+   "Nenhum presente ainda" e o texto numa caixa tracejada de vidro, como
+   na plataforma logada. */
+.convite-presentes-vazio {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 220px; padding: 32px 20px; box-sizing: border-box; text-align: center;
+  background-color: rgba(255, 255, 255, 0.75); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  border: 1px dashed #D4D4D8; border-radius: 10px; color: #18181B;
+}
+.convite-presentes-vazio svg { width: 40px; height: 40px; margin-bottom: 8px; color: #A1A1AA; }
+html body .convite-tela .convite-presentes-vazio .convite-presentes-vazio-titulo:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 16px; font-weight: 600; color: #18181B !important; }
+html body .convite-tela .convite-presentes-vazio .convite-presentes-vazio-texto:not(#love-h-a):not(#love-h-b) { margin: 0; font-size: 14px; line-height: 1.5; color: #71717A !important; }

@@ -2315,5 +2315,9 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Você ainda não possui contratos ativos":"You don't have any active contracts yet",
 "Encontre um fornecedor ideal, contrate-o para o seu evento e organize as entregas.":"Find the ideal vendor, hire them for your event and organize the deliveries.",
 "Crie uma nova solicitação":"Create a new request",
-"Crie uma nova solicitação de serviço e encontre o fornecedor ideal para o seu evento.":"Create a new service request and find the ideal vendor for your event."
+"Crie uma nova solicitação de serviço e encontre o fornecedor ideal para o seu evento.":"Create a new service request and find the ideal vendor for your event.",
+"Nenhum presente ainda":"No gifts yet",
+"A lista de presentes está sendo montada.":"The gift list is being put together.",
+"Os anfitriões ainda não informaram o local do evento.":"The hosts haven't shared the event location yet.",
+"Os anfitriões ainda não definiram o dress code.":"The hosts haven't set the dress code yet."
 });

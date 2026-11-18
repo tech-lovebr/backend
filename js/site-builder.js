@@ -4437,7 +4437,7 @@ async function initPublicPreview() {
   // Botões do convite: Localização/Dress code → Informações, Lista de
   // Presentes → presentes, Confirmar presença → formulário. Cada tela tem
   // um #hash, então o voltar do navegador também funciona.
-  const destinoDoBotao = { 'qn-loc': 'informacoes', 'qn-dress': 'informacoes', 'qn-gifts': 'presentes', 'qn-rsvp': 'confirmar', 'qn-about': 'sobre' };
+  const destinoDoBotao = { 'qn-loc': 'localizacao', 'qn-dress': 'dresscode', 'qn-gifts': 'presentes', 'qn-rsvp': 'confirmar', 'qn-about': 'sobre' };
   // Só volta pelo histórico se a tela foi aberta por um botão do convite;
   // se o visitante entrou direto em /<slug>#presentes, voltar = ir ao convite.
   let abriuPeloConvite = false;
@@ -4497,6 +4497,8 @@ function renderTelaPublica(root) {
   const tela = window.location.hash.replace('#', '');
   window.scrollTo(0, 0);
   if (tela === 'informacoes') return renderInformacoesPublicas(root);
+  if (tela === 'localizacao') return renderLocalizacaoPublica(root);
+  if (tela === 'dresscode') return renderDresscodePublico(root);
   if (tela === 'presentes') return renderPresentesPublicos(root);
   if (tela.startsWith('presente=')) return renderPresentePublico(root, decodeURIComponent(tela.slice('presente='.length)));
   if (tela.startsWith('checkout=')) return renderCheckoutPublico(root, decodeURIComponent(tela.slice('checkout='.length)));
@@ -4745,18 +4747,64 @@ function telaInformacoesHtml(ev) {
   return telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>', { comCapa: true });
 }
 
-// "Sobre" → o que foi preenchido em Personalizar Evento → Anfitriões.
+/** Um item (rótulo + valor) das caixas brancas das telas do convite. */
+function blocoInfoPublico(rotulo, valor, extra = '') {
+  return valor ? `
+    <div class="convite-info">
+      <p class="convite-info-rotulo">${rotulo}</p>
+      <p class="convite-info-valor">${escaparPublico(valor).replace(/\n/g, '<br>')}</p>
+      ${extra}
+    </div>` : '';
+}
+const caixaInfoPublica = (/** @type {string} */ html) => html ? `<div class="convite-info-caixa">${html}</div>` : '';
+
+// "Localização" → só o local: nome, endereço e ponto de referência, o mapa
+// do lugar logo abaixo e, embaixo do mapa, o "Como chegar?".
+function renderLocalizacaoPublica(root) {
+  if (!conviteDadosPublicos) return semDadosPublicos(root, 'Localização');
+  const ev = conviteDadosPublicos.evento || {};
+  const enderecoCompleto = enderecoComCidade(ev.endereco, ev.cidade, ev.uf);
+  const destino = (enderecoCompleto || '').trim() || (ev.local || '').trim();
+  const mapa = destino ? `
+    <div class="convite-mapa">
+      <iframe src="https://maps.google.com/maps?q=${encodeURIComponent(destino)}&z=15&output=embed" title="Mapa do local" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+    </div>
+    <div class="convite-mapa-como-chegar">${botoesDeMapaHtml(ev.local, enderecoCompleto)}</div>` : '';
+  const conteudo = caixaInfoPublica(
+    blocoInfoPublico('Local', ev.local) +
+    blocoInfoPublico('Endereço', enderecoCompleto) +
+    blocoInfoPublico('Ponto de referência', ev.referencia)
+  ) + mapa;
+  root.innerHTML = telaPublicaHtml('Localização', conteudo || '<p class="convite-vazio">Os anfitriões ainda não informaram o local do evento.</p>');
+}
+
+// "Dress code" → só a caixa do dress code.
+function renderDresscodePublico(root) {
+  if (!conviteDadosPublicos) return semDadosPublicos(root, 'Dress code');
+  const ev = conviteDadosPublicos.evento || {};
+  const conteudo = caixaInfoPublica(blocoInfoPublico('Dress code', (ev.dresscode || '').trim()));
+  root.innerHTML = telaPublicaHtml('Dress code', conteudo || '<p class="convite-vazio">Os anfitriões ainda não definiram o dress code.</p>');
+}
+
+// "Sobre" → os anfitriões (nome completo) e a data do evento, o local, o
+// dress code e as informações gerais, e o texto de Personalizar Evento → Anfitriões.
 function renderSobrePublico(root) {
   if (!conviteDadosPublicos) return semDadosPublicos(root, 'Sobre');
   const sobre = conviteDadosPublicos.sobre || {};
   const ev = conviteDadosPublicos.evento || {};
   const titulo = sobre.titulo || 'Sobre';
-  const conteudo = (sobre.texto || ev.anfitrioes)
-    ? `
-      ${ev.anfitrioes ? `<p class="convite-info-rotulo">Anfitriões</p><p class="convite-info-valor convite-sobre-nomes">${escaparPublico(ev.anfitrioes)}</p>` : ''}
-      ${sobre.texto ? `<p class="convite-sobre-texto">${escaparPublico(sobre.texto).replace(/\n/g, '<br>')}</p>` : ''}`
-    : '<p class="convite-vazio">Os anfitriões ainda não contaram a história deles por aqui.</p>';
-  root.innerHTML = telaPublicaHtml(titulo, conteudo);
+  const quando = formatarDataPublica(ev.data, ev.hora);
+  const ate = ev.data_fim ? formatarDataPublica(ev.data_fim, ev.hora_fim) : (ev.hora_fim ? `até ${ev.hora_fim}` : '');
+  const conteudo =
+    caixaInfoPublica(
+      blocoInfoPublico('Anfitriões', ev.anfitrioes) +
+      blocoInfoPublico('Quando', [quando, ate].filter(Boolean).join(' — ')) +
+      blocoInfoPublico('Local', ev.local)
+    ) +
+    caixaInfoPublica(blocoInfoPublico('Dress code', (ev.dresscode || '').trim())) +
+    caixaInfoPublica(blocoInfoPublico('Informações gerais', (ev.informacoes || '').trim())) +
+    (sobre.texto ? `<p class="convite-sobre-texto">${escaparPublico(sobre.texto).replace(/\n/g, '<br>')}</p>` : '');
+  root.innerHTML = telaPublicaHtml(titulo, conteudo || '<p class="convite-vazio">Os anfitriões ainda não contaram a história deles por aqui.</p>');
 }
 
 function renderPresentesPublicos(root) {
@@ -4793,7 +4841,12 @@ function renderPresentesPublicos(root) {
           </div>
         </div>
       `).join('')}
-    </div>` : '<p class="convite-vazio">A lista de presentes ainda está sendo montada.</p>';
+    </div>` : `
+    <div class="convite-presentes-vazio" role="status">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9 3 11 5 12 8c1-3 3-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>
+      <p class="convite-presentes-vazio-titulo">Nenhum presente ainda</p>
+      <p class="convite-presentes-vazio-texto">A lista de presentes está sendo montada.</p>
+    </div>`;
 
   root.innerHTML = telaPublicaHtml('Lista de Presentes', conteudo);
 }

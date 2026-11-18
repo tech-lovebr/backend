@@ -17672,7 +17672,7 @@ html body #recados-raiz .recados-vazio-titulo:not(#love-h-a):not(#love-h-b) { di
     font-size: 16px !important; font-weight: 400 !important; line-height: 22px; letter-spacing: 0; color: #18181B !important;
   }
   html body #host-gifts-grid > .presentes-vazio .presentes-vazio-texto b:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
-    display: inline !important; margin: 0 !important; font-size: inherit !important; font-weight: 600 !important; line-height: inherit !important; color: #18181B !important;
+    display: block !important; margin: 2px 0 0 !important; font-size: inherit !important; font-weight: 600 !important; line-height: inherit !important; color: #18181B !important;
   }
 }
 

@@ -600,14 +600,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Lista de Presentes: Configurações sai das abas (ícone ao lado do +).
         .filter(i => /** @type {HTMLElement} */ (i).dataset.routeSub !== 'gift-settings')
         // Fornecedores: Explorar (coroinha em Mensagens / ☰), Mensagens (barra de baixo) e Favoritos (☰) saem das abas; Convidados: Checklist (já está na Home).
-        .filter(i => !['explore', 'messages', 'favorites', 'checklist'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''));
+        .filter(i => !['explore', 'messages', 'favorites', 'checklist'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''))
+        // Convite: Co-anfitriões sai das abas (fica no "+" do meio como Adicionar anfitrião).
+        .filter(i => /** @type {HTMLElement} */ (i).dataset.routeSub !== 'about');
       // Só redesenha quando os itens mudam (redesenhar sempre engolia os
       // toques) — mas "mudam" tem que levar em conta os ELEMENTOS em si, não
       // só o texto: trocar de aba e voltar recria os .sub-drawer-item do
       // zero (mesmo texto/estado, elementos novos), e os botões da barra
       // ficavam presos aos elementos antigos (removidos), parecendo travados.
       // Checklist é um menu à parte: sem as abas Meus Convidados / Mapa do Evento embaixo.
-      const noChecklist = !!lista.querySelector('.sub-drawer-item.active[data-route-sub="checklist"]');
+      // Co-anfitriões (aberto pelo "+" do meio) também fica sem as abas.
+      const noChecklist = !!lista.querySelector('.sub-drawer-item.active:is([data-route-sub="checklist"], [data-route-sub="about"])');
       const assinatura = (noChecklist ? 'chk#' : '') + itens.map(i => (i.classList.contains('active') ? '*' : '') + i.textContent.trim()).join('|');
       const mesmosElementos = itens.length === itensAnteriores.length && itens.every((el, i) => el === itensAnteriores[i]);
       if (mesmosElementos && assinatura === barra.dataset.assinatura) { posicionar(); return; }
@@ -1497,6 +1500,7 @@ document.addEventListener('DOMContentLoaded', () => {
       presente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2Zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12Zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>',
       evento: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>', // só o +, como Criar Novo Evento no menu da conta
       fornecedor: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6l4 6l5-4-2 10H5L3 8l5 4 4-6z"/></svg>', // a coroa de Fornecedores
+      anfitriao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19.5a6 6 0 0 1 12 0"/><circle cx="16.5" cy="9" r="2.5"/><path d="M16 14.1a5 5 0 0 1 5.5 5.4"/></svg>',
       contratos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
       seta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
     };
@@ -1517,6 +1521,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="presentes">${ICONES.presente}<span>Criar lista de presentes</span></button>
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="fornecedor">${ICONES.fornecedor}<span>Encontrar Fornecedor</span></button>
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="contratos">${ICONES.contratos}<span>Meus Contratos</span></button>
+          <button type="button" role="menuitem" class="atalhos-item" data-atalho="anfitriao">${ICONES.anfitriao}<span>Adicionar anfitrião</span></button>
         </div>
         <div class="atalhos-grupo">
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="evento">${ICONES.evento}<span>Criar Novo Evento</span></button>
@@ -1532,7 +1537,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (atalho === 'presentes') { fechar(); window.loveIrPara?.('gifts', 'gift-lists'); return; }
         if (atalho === 'evento') { fechar(); openCreateEventPage(); return; }
         if (atalho === 'fornecedor') { fechar(); window.loveIrPara?.('b2b', 'explore'); return; }
-        if (atalho === 'contratos') { fechar(); window.loveIrPara?.('b2b', 'contracted'); }
+        if (atalho === 'contratos') { fechar(); window.loveIrPara?.('b2b', 'contracted'); return; }
+        if (atalho === 'anfitriao') { fechar(); window.loveIrPara?.('edit-site', 'about'); }
       });
     }
     botao.addEventListener('click', (e) => { e.stopPropagation(); if (menu) fechar(); else abrir(); });

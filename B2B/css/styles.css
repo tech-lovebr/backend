@@ -14067,3 +14067,36 @@ html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-cai
   html.hub-claro body :is(#dash-saldo-celular-sacar.is-sem-saldo, #request-withdrawal-btn:disabled):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { opacity: 0.5 !important; }
   html.hub-claro body #dash-saldo-celular-sacar:not(#love-h-a):not(#love-h-b) * { color: inherit !important; stroke: currentColor; }
 }
+
+/* ==========================================================================
+   Celular — Parte 5: menu ☰ como o do anfitrião. Em cima a foto numa
+   caixinha (52px, cantos 10px) com o nome da empresa e o da pessoa embaixo;
+   o botão largo Conversas (.07, 44px, bolinha de não lidas); linha fina e
+   os itens da conta (Adicionar empresa, Meu site, Produtos, Workshops,
+   Configurações, Adicionar colaborador, Planos e recursos, Central de ajuda
+   e Sair). Sem lista de seções, sem alternador, sem X.
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .menu-celular .menu-celular-conta:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    order: 0; flex-shrink: 0; padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 16px !important; border: 0 !important; background: transparent !important;
+  }
+  html body .menu-celular .menu-celular-conta-seta:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .menu-celular .menu-celular-avatar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { width: 52px !important; height: 52px !important; min-width: 52px !important; border-radius: 10px !important; font-size: 17px; }
+  html body .menu-celular .menu-celular-avatar :is(img, .b2b-avatar, svg):not(#love-h-a):not(#love-h-b) { border-radius: 10px !important; }
+  html body .menu-celular .menu-celular-conversas-caixa:not(#love-h-a) { order: 1; flex-shrink: 0; padding: 0 20px 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
+  html body .menu-celular .menu-celular-conversas:not(#love-h-a):not(#love-h-b) {
+    width: 100%; height: 44px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px;
+    background: rgba(24, 59, 84, 0.07); border: 0; border-radius: 8px; font-size: 15px; font-weight: 500; color: #18181B; text-decoration: none;
+  }
+  html body .menu-celular .menu-celular-conversas:active:not(#love-h-a) { background: rgba(24, 59, 84, 0.11); }
+  html body .menu-celular .menu-celular-conversas svg:not(#love-h-a) { width: 20px; height: 20px; flex-shrink: 0; }
+  html body .menu-celular .menu-celular-conversas-selo:not(#love-h-a) { min-width: 18px; height: 18px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: #183b54; color: #FFFFFF; font-size: 11px; font-weight: 600; }
+  html body .menu-celular .menu-celular-conversas-selo[hidden]:not(#love-h-a) { display: none; }
+  html body .menu-celular .menu-celular-nav:not(#love-h-a):not(#love-h-b):not(#love-h-c) { order: 2; padding: 8px 12px calc(16px + env(safe-area-inset-bottom, 0px)) !important; }
+  html body .menu-celular .menu-celular-nav > :first-child:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-top: 0 !important; }
+  html body .menu-celular .menu-celular-link-sair:not(#love-h-a):not(#love-h-b) { margin-top: 8px; position: relative; font-family: inherit; text-align: left; cursor: pointer; }
+  html body .menu-celular .menu-celular-link-sair:not(#love-h-a)::before { content: ""; position: absolute; top: -4px; left: 8px; right: 8px; height: 1px; background: rgba(0, 0, 0, 0.06); }
+  html:not(.hub-claro) body .menu-celular .menu-celular-conversas:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: rgba(255, 255, 255, 0.08); color: #FFFFFF; }
+  html:not(.hub-claro) body .menu-celular :is(.menu-celular-conversas-caixa, .menu-celular-link-sair::before):not(#love-h-a) { border-color: rgba(255, 255, 255, 0.08); }
+  html:not(.hub-claro) body .menu-celular .menu-celular-link-sair:not(#love-h-a)::before { background: rgba(255, 255, 255, 0.08); }
+}

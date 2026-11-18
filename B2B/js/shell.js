@@ -1265,19 +1265,14 @@ function ligarBarraDeBaixo() {
 function montarMenuDoCelular() {
   const abrirBtn = document.getElementById('btn-menu-celular');
   if (!abrirBtn || document.getElementById('menu-celular')) return;
-  // Topo do menu: alternador Início | Conversas (igual ao index), sem o X —
-  // fecha tocando fora. Dashboard não repete na lista.
+  // Como no anfitrião: em cima a foto (caixinha de 52px) com o nome da
+  // empresa e o da pessoa embaixo; logo abaixo o botão largo Conversas; uma
+  // linha fina e os itens da conta. Sem lista de seções, sem alternador e
+  // sem X (fecha tocando fora). Tocar na conta abre o pop-up (empresas, tema).
 
   document.body.insertAdjacentHTML('beforeend', `
     <div class="menu-celular-fundo" aria-hidden="true"></div>
     <aside id="menu-celular" class="menu-celular" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
-      <div class="menu-celular-topo">
-        <div class="menu-celular-alternar" role="group" aria-label="Início ou Conversas">
-          <a href="dashboard" data-alternar="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg><span>Início</span></a>
-          <a href="chat" data-alternar="conversas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg><span>Conversas</span><span class="menu-celular-alternar-selo" hidden></span></a>
-        </div>
-      </div>
-      <nav class="menu-celular-nav" aria-label="Seções"></nav>
       <button type="button" class="menu-celular-conta" aria-haspopup="dialog">
         <span class="menu-celular-avatar" aria-hidden="true"></span>
         <span class="menu-celular-conta-textos">
@@ -1286,6 +1281,10 @@ function montarMenuDoCelular() {
         </span>
         <svg class="menu-celular-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
       </button>
+      <div class="menu-celular-conversas-caixa">
+        <a href="chat" class="menu-celular-conversas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg><span>Conversas</span><span class="menu-celular-conversas-selo" hidden></span></a>
+      </div>
+      <nav class="menu-celular-nav" aria-label="Minha conta"></nav>
     </aside>
     <div class="menu-conta-fundo" aria-hidden="true"></div>
     <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" aria-hidden="true">
@@ -1353,90 +1352,40 @@ function montarMenuDoCelular() {
   const linha = (/** @type {string} */ href, /** @type {string} */ rotulo, /** @type {string} */ ic, /** @type {boolean} */ ativo) =>
     `<a href="${escapeHtml(href)}" class="menu-celular-link${ativo ? ' is-ativo' : ''}"${ativo ? ' aria-current="page"' : ''}>${ic}<span>${escapeHtml(rotulo)}</span></a>`;
 
-  // Seções da sidebar: primeiro os itens soltos (Dashboard, Produtos,
-  // Clientes, Contratos, Financeiro); depois as categorias, cada uma com o
-  // título e os itens embaixo — Construtor (Editar meu site, Formulários),
-  // Gestão (Tarefas, Agenda) — juntas em Minha empresa (Cobranças fica
-  // logo abaixo de Meus ganhos) e, no fim, Mais (Configurações, Workshops, Dúvidas).
-  const ICONE_TAREFAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5L7.5 11M3.5 18l1.5 1.5L7.5 17"/></svg>';
-  const ICONE_AGENDA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
-  const ICONE_COBRANCAS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a3.5 3.5 0 0 0 5 0l4-4a3.5 3.5 0 0 0-5-5l-.5.5"/><path d="M14 10a3.5 3.5 0 0 0-5 0l-4 4a3.5 3.5 0 0 0 5 5l.5-.5"/></svg>';
+  const ICONE_ADICIONAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>';
+  const ICONE_SAIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg>';
   const desenharNav = () => {
     const sidebar = document.querySelector('.b2b-sidebar');
-    if (!sidebar) return;
-    let soltos = '';
-    let categorias = '';
-    // Construtor e Gestão juntos numa seção só: Minha empresa.
-    let temMinhaEmpresa = false;
-    const abrirMinhaEmpresa = () => {
-      if (temMinhaEmpresa) return;
-      temMinhaEmpresa = true;
-      categorias += '<p class="menu-celular-secao">Minha empresa</p>';
-    };
-    const naCobrancas = pagina === 'contratos' && !!document.querySelector('#payments-view-tabs [data-view="receber"].active');
-    gaveta.querySelectorAll('[data-alternar]').forEach(b => {
-      const ativo = /** @type {HTMLElement} */ (b).dataset.alternar === 'conversas' ? pagina === 'chat' : pagina === 'dashboard';
-      b.classList.toggle('is-ativo', ativo);
-      if (ativo) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
-    });
-    const selo = /** @type {HTMLElement|null} */ (gaveta.querySelector('.menu-celular-alternar-selo'));
+    const doMenu = (/** @type {string} */ href) => document.querySelector('#avatar-dropdown > .topbar-dropdown-item[href="' + href + '"]');
+    const daSidebar = (/** @type {string} */ sel) => sidebar ? sidebar.querySelector(sel) : null;
     const seloOrig = document.getElementById('nav-msg-badge-mobile') || document.getElementById('nav-msg-badge');
+    const selo = /** @type {HTMLElement|null} */ (gaveta.querySelector('.menu-celular-conversas-selo'));
     if (selo) {
       const n = (seloOrig?.textContent || '').trim();
       selo.textContent = n;
       selo.hidden = !seloOrig || seloOrig.style.display === 'none' || !n || n === '0';
     }
-    sidebar.querySelectorAll('.sidebar-nav > .sidebar-nav-item[data-page], .sidebar-nav > .sidebar-nav-group').forEach(el => {
-      if (/** @type {HTMLElement} */ (el).dataset.page === 'dashboard') return;
-      if (el.classList.contains('sidebar-nav-group')) {
-        const titulo = (el.querySelector('.sidebar-nav-text')?.textContent || '').trim();
-        const ic = icone(el.querySelector('.sidebar-nav-toggle'));
-        const aba = new URLSearchParams(location.search).get('tab') || 'editar';
-        abrirMinhaEmpresa();
-        el.querySelectorAll('.sidebar-subnav-item').forEach(sub => {
-          const a = /** @type {HTMLAnchorElement} */ (sub);
-          const ativo = pagina === 'paginas-site' && a.dataset.construtorAba === aba;
-          categorias += linha(a.getAttribute('href') || '', (a.textContent || '').trim(), ic, ativo);
-        });
-        return;
-      }
-      const a = /** @type {HTMLAnchorElement} */ (el);
-      if (a.dataset.page === 'agenda') {
-        // Gestão: Tarefas e Agenda separados (abrem a aba certa da página).
-        const abaAtiva = document.querySelector('#work-view-tabs .category-tab.active')?.getAttribute('data-view') || new URLSearchParams(location.search).get('view') || 'agenda';
-        const naGestao = pagina === 'agenda';
-        abrirMinhaEmpresa();
-        categorias += linha('agenda?view=quadro', 'Tarefas', ICONE_TAREFAS, naGestao && abaAtiva === 'quadro');
-        categorias += linha('agenda?view=agenda', 'Agenda', ICONE_AGENDA, naGestao && abaAtiva === 'agenda');
-        return;
-      }
-      soltos += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active') && !(a.dataset.page === 'contratos' && naCobrancas));
-      // Cobranças logo abaixo de Meus ganhos: a lista de links de pagamento.
-      if (a.dataset.page === 'contratos') soltos += linha('pagamentos?tab=receber', 'Cobranças', ICONE_COBRANCAS, naCobrancas);
+    gaveta.querySelector('.menu-celular-conversas')?.classList.toggle('is-ativo', pagina === 'chat');
+    let html = '';
+    if (document.querySelector('#avatar-dropdown .topbar-item-adicionar-empresa')) html += linha('nova-empresa', 'Adicionar empresa', ICONE_ADICIONAR, pagina === 'nova-empresa');
+    html += linha('paginas-site', 'Meu site', icone(daSidebar('.sidebar-nav-group .sidebar-nav-toggle')), pagina === 'paginas-site');
+    html += linha('produtos', 'Produtos', icone(daSidebar('.sidebar-nav-item[data-page="produtos"]')), pagina === 'produtos');
+    html += linha('workshops', 'Workshops', icone(daSidebar('.sidebar-nav-item[data-page="workshops"]')), pagina === 'workshops');
+    [['configuracoes', 'Configurações', 'configuracoes'], ['funcoes', 'Adicionar colaborador', 'funcoes'], ['planos', 'Planos e recursos', 'planos'], ['central-de-ajuda', 'Central de ajuda', 'faq']].forEach(([href, rotulo, pg]) => {
+      const orig = doMenu(href);
+      html += linha(href, (orig?.textContent || '').trim() || rotulo, icone(orig), pagina === pg);
     });
-    let html = soltos + categorias;
-    const extras = Array.from(sidebar.querySelectorAll('.sidebar-bottom > .sidebar-nav-item[data-page]'));
-    if (extras.length) {
-      html += '<p class="menu-celular-secao">Mais</p>';
-      // Configurações fica aqui (antes de Workshops), não no menu Minha conta.
-      const config = document.querySelector('#avatar-dropdown > .topbar-dropdown-item[href="configuracoes"]');
-      if (config) html += linha('configuracoes', 'Configurações', icone(config), pagina === 'configuracoes');
-      extras.forEach(el => {
-        const a = /** @type {HTMLAnchorElement} */ (el);
-        html += linha(a.getAttribute('href') || '', (a.querySelector('.sidebar-nav-text')?.textContent || '').trim(), icone(a), a.classList.contains('active'));
-      });
-    }
+    html += `<button type="button" class="menu-celular-link menu-celular-link-sair">${ICONE_SAIR}<span>Sair</span></button>`;
     nav.innerHTML = html;
   };
-  gaveta.querySelector('.menu-celular-alternar')?.addEventListener('click', (e) => {
-    const b = e.target instanceof Element ? e.target.closest('[data-alternar]') : null;
-    if (!b) return;
+  gaveta.querySelector('.menu-celular-conversas')?.addEventListener('click', (e) => {
     fechar();
-    if (b.classList.contains('is-ativo')) { e.preventDefault(); irAoTopo(); }
+    if (pagina === 'chat') { e.preventDefault(); irAoTopo(); }
   });
   nav.addEventListener('click', (e) => {
     const link = e.target instanceof Element ? e.target.closest('.menu-celular-link') : null;
     if (!link) return;
+    if (link.classList.contains('menu-celular-link-sair')) { repassar(document.querySelector('#avatar-dropdown [data-logout]')); return; }
     fechar();
     if (link.classList.contains('is-ativo')) { e.preventDefault(); irAoTopo(); }
   });

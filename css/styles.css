@@ -17853,3 +17853,11 @@ html body .be-countdown-unit:not(#love-h-a):not(#love-h-b) { border: 0 !importan
   html body #tab-wallet #carteira-raiz .cart-sacar:not(:disabled):active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #122c3f !important; }
   html body #tab-wallet #carteira-raiz .cart-sacar:not(#love-h-a):not(#love-h-b) { white-space: nowrap; }
 }
+
+/* Celular — Convite (editor): a gaveta de baixo sem a "alça" (não dá para
+   puxar como em app) e sem o título genérico "Editar elemento". */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .builder-gaveta-alca:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .builder-gaveta-titulo.is-generico:not(#love-h-a):not(#love-h-b) { visibility: hidden; }
+  html body .builder-gaveta-topo:not(#love-h-a) { padding-top: 8px; }
+}

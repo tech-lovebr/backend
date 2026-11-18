@@ -6047,6 +6047,8 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
       // título sem parar (tradutor × este observador) e travava a página.
       const atual = titulo && (window.LoveI18nPlataforma ? window.LoveI18nPlataforma.original(titulo) : titulo.textContent);
       if (titulo && atual !== texto) titulo.textContent = texto;
+      // "Editar elemento" (o título genérico, ex.: ao tocar no fundo) não diz nada: some.
+      titulo?.classList.toggle('is-generico', texto === 'Editar elemento');
       if (agora && !estavaEditando) abrir();
       // Sem elemento escolhido não há o que mostrar (a lista de adicionar saiu).
       if (!agora && estavaEditando && gaveta.classList.contains('is-aberta')) {

@@ -1057,7 +1057,7 @@ document.addEventListener('DOMContentLoaded', () => {
       rotulo: 'PRESENTE RECEBIDO',
       iconPath: NOTIFICATION_ICONS.gift,
       titleHtml: '',
-      bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(g.guestName)}</strong> comprou <strong class="text-zinc-900 font-bold">${escapeNotificationText(g.giftTitle)}</strong>, pelo valor de R$ ${Number(g.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}. O saldo já está na sua conta.`,
+      bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(g.guestName)}</strong> comprou <strong class="text-zinc-900 font-bold">${escapeNotificationText(g.giftTitle)}</strong> por R$ ${Number(g.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`,
       time: g.date || '',
       quando: g.dateIso || '',
       unread: false,
@@ -1120,39 +1120,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const hoje = hojeLocal();
     if (lista.some(l => l.hoje === hoje)) return; // um por dia
     const nome = primeiroNomeDoAnfitriao();
-    const falta = n === 1 ? 'falta apenas 1 dia para o seu evento' : `faltam apenas ${n} dias para o seu evento`;
+    // Mensagens curtas: cabem em até 2 linhas no balão do celular.
+    const falta = n === 1 ? 'falta 1 dia' : `faltam ${n} dias`;
     const inicio = nome ? `${nome}, ${falta}` : falta.charAt(0).toUpperCase() + falta.slice(1);
     const checklist = await contarChecklistDoEvento(ev);
     /** @type {{tema:string, rotulo:string, texto:string, tab:string, sub:string}[]} */
     const opcoes = [];
     if (n === 0) {
-      opcoes.push({ tema: 'hoje', rotulo: 'É HOJE', texto: `${nome ? `${nome}, c` : 'C'}hegou o grande dia! Aproveite cada momento do seu evento.`, tab: 'overview', sub: '' });
+      opcoes.push({ tema: 'hoje', rotulo: 'É HOJE', texto: `${nome ? `${nome}, c` : 'C'}hegou o grande dia! Aproveite cada momento.`, tab: 'overview', sub: '' });
     } else if (n === 7) {
-      opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: `${inicio}. Garanta que o checklist esteja completo.`, tab: 'rsvp', sub: 'checklist' });
+      opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: `${inicio}! Garanta que o checklist esteja completo.`, tab: 'rsvp', sub: 'checklist' });
     } else {
       const convidados = ev.guests || [];
       const semResposta = convidados.filter((/** @type {any} */ g) => g.status === 'pending').length;
       if (!isQuickStartTaskAchieved('website', ev)) {
-        opcoes.push({ tema: 'convite', rotulo: 'CONVITE DIGITAL', texto: `${inicio} e percebemos que você ainda não editou o seu convite digital. Que tal dar uma olhada?`, tab: 'edit-site', sub: 'home' });
+        opcoes.push({ tema: 'convite', rotulo: 'CONVITE DIGITAL', texto: `${inicio} e seu convite ainda não foi editado. Vamos lá?`, tab: 'edit-site', sub: 'home' });
       }
       if (!convidados.length) {
-        opcoes.push({ tema: 'convidados', rotulo: 'LISTA DE CONVIDADOS', texto: `${inicio} e a sua lista de convidados ainda está vazia. Que tal começar agora?`, tab: 'rsvp', sub: 'all' });
+        opcoes.push({ tema: 'convidados', rotulo: 'LISTA DE CONVIDADOS', texto: `${inicio} e sua lista de convidados está vazia.`, tab: 'rsvp', sub: 'all' });
       } else if (semResposta) {
         opcoes.push({ tema: 'convidados', rotulo: 'LEMBRETE', texto: semResposta === 1
-          ? `${inicio} e 1 convidado ainda não respondeu se vai. Que tal mandar um lembrete?`
-          : `${inicio} e ${semResposta} convidados ainda não responderam se vão. Que tal mandar um lembrete?`, tab: 'rsvp', sub: 'all' });
+          ? `${inicio} e 1 convidado ainda não respondeu.`
+          : `${inicio} e ${semResposta} convidados ainda não responderam.`, tab: 'rsvp', sub: 'all' });
       }
       if (checklist && checklist.abertas) {
         opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: checklist.abertas === 1
-          ? `${inicio} e ainda falta 1 tarefa no seu checklist. Que tal riscar essa também?`
-          : `${inicio} e ainda faltam ${checklist.abertas} tarefas no seu checklist. Que tal riscar mais algumas?`, tab: 'rsvp', sub: 'checklist' });
+          ? `${inicio} e ainda há 1 tarefa no checklist.`
+          : `${inicio} e ainda há ${checklist.abertas} tarefas no checklist.`, tab: 'rsvp', sub: 'checklist' });
       } else if (checklist && !checklist.total) {
-        opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: `${inicio}. Garanta que o checklist esteja completo.`, tab: 'rsvp', sub: 'checklist' });
+        opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: `${inicio}! Garanta que o checklist esteja completo.`, tab: 'rsvp', sub: 'checklist' });
       }
       if (!(ev.giftList || []).length) {
-        opcoes.push({ tema: 'presentes', rotulo: 'PRESENTES', texto: `${inicio} e a sua lista de presentes ainda está vazia. Que tal escolher alguns presentes?`, tab: 'gifts', sub: 'my-gifts' });
+        opcoes.push({ tema: 'presentes', rotulo: 'PRESENTES', texto: `${inicio} e sua lista de presentes está vazia.`, tab: 'gifts', sub: 'my-gifts' });
       }
-      opcoes.push({ tema: 'contagem', rotulo: 'CONTAGEM REGRESSIVA', texto: `${inicio}. Está tudo pronto? Que tal conferir os últimos detalhes?`, tab: 'overview', sub: '' });
+      opcoes.push({ tema: 'contagem', rotulo: 'CONTAGEM REGRESSIVA', texto: `${inicio}! Que tal conferir os últimos detalhes?`, tab: 'overview', sub: '' });
     }
     const ontem = lista.length ? lista[lista.length - 1].tema : '';
     const escolhido = opcoes.find(o => o.tema !== ontem) || opcoes[0];
@@ -1321,7 +1322,7 @@ document.addEventListener('DOMContentLoaded', () => {
     badge.classList.toggle('hidden', unreadCount === 0);
   }
 
-  /** Data curta do celular: "25/10/26" e o horário embaixo. @param {any} n */
+  /** Celular: só o horário da notificação ("14:22"). @param {any} n */
   function tempoCurtoDaNotificacao(n) {
     let d = n.quando ? new Date(n.quando) : null;
     // Sem a data original: entende o texto já pronto
@@ -1334,12 +1335,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (dma) d = new Date(Number(dma[3].length === 2 ? `20${dma[3]}` : dma[3]), Number(dma[2]) - 1, Number(dma[1]));
       else if (/^(hoje|ontem)/i.test(texto)) { d = new Date(); if (/^ontem/i.test(texto)) d.setDate(d.getDate() - 1); }
       if (!d) return `<span>${texto}</span>`;
-      const so = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
-      return hm ? `<span>${so}</span><span>${hm[1].padStart(2, '0')}:${hm[2]}</span>` : `<span>${so}</span>`;
+      // Celular: só o horário (sem data).
+      if (hm) return `<span>${hm[1].padStart(2, '0')}:${hm[2]}</span>`;
+      return `<span>${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>`;
     }
-    const data = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
     const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    return `<span>${data}</span><span>${hora}</span>`;
+    return `<span>${hora}</span>`;
   }
 
   function renderNotificationsPage() {
@@ -1385,6 +1386,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // Celular: o X no topo de Notificações volta para o Início.
+  document.getElementById('btn-notifications-fechar')?.addEventListener('click', () => switchRailTab('overview'));
 
   function openNotificationsPage(opts = {}) {
     fecharTodosOsDrawers();

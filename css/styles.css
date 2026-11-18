@@ -16844,3 +16844,26 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::b
 html body #rsvp-guests-table-body .guest-nome-btn:not(#love-h-a) { font-weight: 400 !important; }
 html body #rsvp-guests-table-body .guest-nome-btn .guest-nome-resto:not(#love-h-a) { font-weight: 600 !important; }
 html body #rsvp-guests-table-body .guest-nome-btn .guest-nome-apelido:not(#love-h-a) { font-weight: 400 !important; }
+
+/* Celular — Notificações: respiro acima do primeiro balão, texto com no
+   máximo 2 linhas, só o horário e um X no topo que volta para o Início.
+   Barra de baixo: Presentes, Convidados, Início (no meio), Convite e
+   Fornecedores. */
+.notif-fechar { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #notifications-list-container:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-top: 12px !important; }
+  html body #notifications-list-container .notification-row p:not(.notif-rotulo):not(#love-h-a) {
+    display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+  }
+  html body #tab-notifications .notif-fechar:not(#love-h-a) {
+    display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: 0 -10px 0 0; padding: 0;
+    background: transparent; border: 0; border-radius: 8px; color: #18181B; cursor: pointer;
+  }
+  html body #tab-notifications .notif-fechar svg { width: 24px; height: 24px; }
+
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="gifts"]:not(#love-h-a):not(#love-h-b) { order: 1 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="rsvp"]:not(#love-h-a):not(#love-h-b) { order: 2 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="overview"]:not(#love-h-a):not(#love-h-b) { order: 3 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="edit-site"]:not(#love-h-a):not(#love-h-b) { order: 4 !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="b2b"]:not(#love-h-a):not(#love-h-b) { order: 6 !important; }
+}

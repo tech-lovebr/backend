@@ -1515,9 +1515,11 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="atalhos-grupo">
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="convidados">${ICONES.convidado}<span>Adicionar convidados</span></button>
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="presentes">${ICONES.presente}<span>Criar lista de presentes</span></button>
-          <button type="button" role="menuitem" class="atalhos-item" data-atalho="evento">${ICONES.evento}<span>Criar Novo Evento</span></button>
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="fornecedor">${ICONES.fornecedor}<span>Encontrar Fornecedor</span></button>
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="contratos">${ICONES.contratos}<span>Meus Contratos</span></button>
+        </div>
+        <div class="atalhos-grupo">
+          <button type="button" role="menuitem" class="atalhos-item" data-atalho="evento">${ICONES.evento}<span>Criar Novo Evento</span></button>
         </div>`;
       document.body.appendChild(m);
       menu = m;

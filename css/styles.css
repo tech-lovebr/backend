@@ -17996,3 +17996,11 @@ html body #b2b-pedidos-view #rfp-editor .rfp-rodape:not(#love-h-a):not(#love-h-b
    outros vazios), sempre do mesmo tamanho ao sair e voltar da página. */
 html body #rfp-empty-state svg.rfp-vazio-lupa:not(#love-h-a):not(#love-h-b) { display: block; flex: 0 0 auto; width: 64px !important; height: 64px !important; margin: 0 auto 6px; color: #D4D4D8; overflow: hidden; }
 html body #rfp-empty-state .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a):not(#love-h-b) { white-space: normal; line-height: 1.5; }
+
+/* Celular — barra de baixo: o Início com o ícone do Dashboard do Hub (quatro
+   quadrados) no lugar da casinha. Desktop continua com a casinha. */
+.rail-icone-so-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="overview"] svg.rail-icone-so-desktop:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="overview"] svg.rail-icone-so-celular:not(#love-h-a):not(#love-h-b) { display: block !important; }
+}

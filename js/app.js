@@ -8183,6 +8183,19 @@ document.addEventListener('DOMContentLoaded', () => {
   /** @param {HTMLElement} corpo */
   function linhasDosOrganizadores(corpo) {
     alinharLinhasVaziasDaTabela(corpo);
+    // Celular: "N co-anfitriões" no topo da caixa da lista, como em Meus Convidados.
+    const caixaDaLista = document.querySelector('#organizadores-caixa > .overflow-x-auto');
+    if (caixaDaLista) {
+      let total = document.getElementById('org-total-celular');
+      if (!total) {
+        total = document.createElement('p');
+        total.id = 'org-total-celular';
+        total.className = 'rsvp-total-celular org-total-celular';
+        caixaDaLista.parentElement?.insertBefore(total, caixaDaLista);
+      }
+      const n = corpo.querySelectorAll('tr.org-linha-criador, tr[data-organizador-id]').length;
+      total.textContent = `${n} ${n === 1 ? 'co-anfitrião' : 'co-anfitriões'}`;
+    }
     const tabela = corpo.closest('table');
     if (observadorDosOrganizadores || !tabela || typeof ResizeObserver === 'undefined') return;
     observadorDosOrganizadores = new ResizeObserver(() => alinharLinhasVaziasDaTabela(corpo));

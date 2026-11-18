@@ -17143,3 +17143,11 @@ html body .org-nome-texto .guest-nome-resto:not(#love-h-a) { font-weight: 600 !i
   }
   html body #event-checklist-list .chk-lista:not(#love-h-a):not(#love-h-b):not(#love-h-c) { margin-top: 12px !important; }
 }
+
+/* Celular — Checklist, contadores: Tarefas pendentes na cor do coração
+   preenchido dos Favoritos (#C9937E, texto branco) e Concluídas toda branca. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #event-checklist-list .chk-contadores > .chk-contador:first-child:not(#love-h-a):not(#love-h-b) { background: #C9937E !important; color: #FFFFFF !important; }
+  html body #event-checklist-list .chk-contadores > .chk-contador:first-child b:not(#love-h-a):not(#love-h-b) { color: #FFFFFF !important; }
+  html body #event-checklist-list .chk-contadores > .chk-contador:last-child:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+}

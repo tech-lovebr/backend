@@ -16744,3 +16744,47 @@ html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa::b
   }
   html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background: #F1F3F5 !important; color: #18181B !important; }
 }
+
+/* Celular — Editar convite: no lugar do "Publicar" (ícone), o botão
+   "Salvar" com o mesmo jeito do "Salvar lista" de Meus convidados no
+   desktop (branco, linha fina cinza, texto #3F3F46). O primeiro Salvar de
+   um convite que nunca foi ao ar já publica (site-builder.js). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #tab-edit-site #builder-publish:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { display: none !important; }
+  html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+    display: inline-flex !important; align-items: center; justify-content: center; width: auto !important; min-width: 0 !important;
+    height: 38px !important; padding: 0 14px !important; margin: 0 !important; border-radius: 8px !important;
+    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important;
+    color: #3F3F46 !important; font-family: var(--fonte-love, 'Outfit'), sans-serif !important; font-size: 13px !important; font-weight: 500 !important; line-height: 1 !important; white-space: nowrap;
+  }
+  html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):hover:not(:disabled) { border-color: #181D24 !important; color: #181D24 !important; background: #FFFFFF !important; }
+  html body #view-event-os-dashboard #tab-edit-site #builder-save:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):disabled { opacity: .6; }
+}
+
+/* Notificações — etiqueta pequena em cima da mensagem (CONFIRMAÇÃO DE
+   PRESENÇA, CONVITE DIGITAL, LEMBRETE...). */
+.notif-rotulo { margin: 0 0 3px; font-family: var(--fonte-love, 'Outfit'), sans-serif; font-size: 11px; font-weight: 600; line-height: 1.3; letter-spacing: 0.06em; text-transform: uppercase; color: #A1A1AA; }
+
+/* Celular — Notificações em balõezinhos flutuantes: fundo azul-claro da
+   página e cada notificação numa caixinha branca com transparência e blur
+   (o Hub usa a mesma ideia no escuro). Sem ícone; ponto de não lida e
+   horário à direita. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #notifications-list-container:not(#love-h-a):not(#love-h-b) {
+    margin: 0 !important; max-width: none !important; display: flex; flex-direction: column; gap: 10px;
+  }
+  html body #notifications-list-container.divide-y > :not([hidden]) ~ :not([hidden]):not(#love-h-a) { border-top-width: 0 !important; }
+  html body #notifications-list-container .notification-row:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    margin: 0 !important; padding: 14px 16px !important; border: 0 !important; border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.72) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 8px 24px rgba(24, 59, 84, 0.08) !important;
+  }
+  html body #notifications-list-container .notification-row:not(#love-h-a):not(#love-h-b):not(#love-h-c):active { background: rgba(255, 255, 255, 0.9) !important; }
+  html body #notifications-list-container .notification-row > div:first-child:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #notifications-list-container .notification-row p:not(#love-h-a):not(#love-h-b) { color: #18181B !important; }
+  html body #notifications-list-container .notification-row p.notif-rotulo:not(#love-h-a):not(#love-h-b) {
+    margin: 0 0 4px !important; font-size: 11px !important; font-weight: 600 !important; line-height: 1.3 !important; color: #71717A !important; letter-spacing: 0.06em;
+  }
+  html body #notifications-list-container > div.py-16:not(#love-h-a) { background: rgba(255, 255, 255, 0.72); border-radius: 12px; }
+}

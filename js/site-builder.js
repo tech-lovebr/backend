@@ -1063,7 +1063,8 @@ function atualizarBotoesDaPagina() {
   const raiz = document.getElementById('site-builder-root');
   if (raiz) raiz.dataset.pagina = currentPageKey;
   const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
-  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || (!noCelular && !!paginasJaPublicadas[currentPageKey]));
+  // Celular: só "Salvar" (que também publica na primeira vez — ver o clique).
+  document.getElementById('builder-publish')?.classList.toggle('hidden', ehSaveTheDate || noCelular || !!paginasJaPublicadas[currentPageKey]);
   document.getElementById('builder-preview-link')?.classList.toggle('hidden', ehSaveTheDate);
   document.getElementById('builder-share-wrap')?.classList.toggle('hidden', !ehSaveTheDate);
   document.getElementById('builder-share-menu')?.classList.add('hidden');
@@ -4124,7 +4125,23 @@ function initSiteBuilder() {
   const classicRedoBtn = document.getElementById('classic-editor-redo');
   if (classicRedoBtn) classicRedoBtn.addEventListener('click', redo);
   const saveBtn = document.getElementById('builder-save');
-  if (saveBtn) saveBtn.addEventListener('click', () => persistBuilderState(false));
+  if (saveBtn) saveBtn.addEventListener('click', async () => {
+    const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+    // Celular não tem "Publicar": o primeiro "Salvar" de um convite que
+    // nunca foi ao ar já publica (depois disso, salvar mantém o ar em dia).
+    if (noCelular && currentPageKey !== 'savethedate' && !paginasJaPublicadas[currentPageKey]) {
+      persistBuilderState(true);
+      const keys = pagePublishedKeys(currentPageKey);
+      try { localStorage.setItem(keys.flag, '1'); localStorage.setItem(keys.state, JSON.stringify(builderState)); } catch (e) { /* sem espaço no navegador: o banco vale */ }
+      const paginaDoClique = currentPageKey;
+      if (await publicarConviteNoAr(saveBtn)) {
+        paginasJaPublicadas[paginaDoClique] = true;
+        if (paginaDoClique === currentPageKey) atualizarBotoesDaPagina();
+      }
+      return;
+    }
+    persistBuilderState(false);
+  });
   const publishBtn = document.getElementById('builder-publish');
   if (publishBtn) publishBtn.addEventListener('click', async () => {
     persistBuilderState(true);
@@ -5999,7 +6016,11 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
       const titulo = gaveta.querySelector('.builder-gaveta-titulo');
       const rotulo = /** @type {HTMLElement|null} */ (painel.querySelector('[data-cel-titulo]'));
       const texto = (rotulo && rotulo.dataset.celTitulo) || 'Editar elemento';
-      if (titulo && titulo.textContent !== texto) titulo.textContent = texto;
+      // Compara com o português original: no planwithlove.com o tradutor
+      // troca o texto para o inglês, e comparar com o traduzido reescrevia o
+      // título sem parar (tradutor × este observador) e travava a página.
+      const atual = titulo && (window.LoveI18nPlataforma ? window.LoveI18nPlataforma.original(titulo) : titulo.textContent);
+      if (titulo && atual !== texto) titulo.textContent = texto;
       if (agora && !estavaEditando) abrir();
       // Sem elemento escolhido não há o que mostrar (a lista de adicionar saiu).
       if (!agora && estavaEditando && gaveta.classList.contains('is-aberta')) {

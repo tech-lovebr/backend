@@ -957,6 +957,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   let notificationsFeedCache = [];
+  /** Etiqueta em cima da mensagem (tema escolhido no Admin). @type {Record<string,string>} */
+  const ROTULO_DO_TEMA = { padrao: 'LOVE', viagens: 'VIAGENS', beneficios: 'BENEFÍCIOS', novidades: 'NOVIDADES', aviso: 'AVISO' };
 
   function escapeNotificationText(s) {
     return (s || '').replace(/</g, '&lt;');
@@ -991,8 +993,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function markAllNotificationsRead() {
     const userId = window.loveClienteSession?.user?.id;
+    notificationsFeedCache.filter(n => (n.kind === 'lembrete' || n.kind === 'rsvp') && n.unread).forEach(n => { n.unread = false; marcarNotificacaoLocalLida(n); });
     const unreadIds = notificationsFeedCache.filter(n => n.kind === 'admin' && n.unread).map(n => n.id);
-    if (!userId || !unreadIds.length) return;
+    if (!userId || !unreadIds.length) { renderNotificationsPage(); updateNotificationsBadge(); return; }
     const rows = unreadIds.map(id => ({ notificacao_id: id, user_id: userId }));
     const { error } = await supabaseClient
       .from('notificacao_leituras')
@@ -1010,6 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return gifts.map(g => ({
       kind: 'gift',
       id: `gift-${g.id}`,
+      rotulo: 'PRESENTE RECEBIDO',
       iconPath: NOTIFICATION_ICONS.gift,
       titleHtml: '',
       bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(g.guestName)}</strong> comprou <strong class="text-zinc-900 font-bold">${escapeNotificationText(g.giftTitle)}</strong>, pelo valor de R$ ${Number(g.amount || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}. O saldo já está na sua conta.`,
@@ -1019,6 +1023,174 @@ document.addEventListener('DOMContentLoaded', () => {
       onClick: () => switchRailTab('gifts')
     }));
   }
+
+  // -------------------------------------------------------------------------
+  // Lembretes da reta final e confirmações de presença (geradas aqui no
+  // navegador, sem tabela própria; o que já foi lido fica no localStorage).
+  //  - Lembrete: a partir de 7 dias do evento, UM por dia, escolhido pelo que
+  //    ainda falta (convite não editado, convidados sem resposta, checklist,
+  //    presentes...) e sem repetir o assunto do dia anterior quando há outro.
+  //  - Confirmação: convidado que confirmou pelo convite (hora em
+  //    extra.confirmado_em — migration 133 —, ou pela chave de 1 hora da
+  //    migration 102, ou pelos consentimentos que ele preencheu em seguida).
+  // -------------------------------------------------------------------------
+  /** @param {string} chave @param {any} padrao */
+  function lerJsonLocal(chave, padrao) {
+    try { const v = JSON.parse(localStorage.getItem(chave) || 'null'); return v == null ? padrao : v; } catch (e) { return padrao; }
+  }
+  /** @param {string} chave @param {any} valor */
+  function gravarJsonLocal(chave, valor) {
+    try { localStorage.setItem(chave, JSON.stringify(valor)); } catch (e) { /* navegador sem espaço */ }
+  }
+  function primeiroNomeDoAnfitriao() {
+    const perfil = window.loveClienteProfile || {};
+    const bruto = String(perfil.first_name || perfil.full_name || perfil.couple_name || '').split('(')[0].trim().split(/\s+/)[0] || '';
+    return bruto && typeof maiusculaNoNome === 'function' ? maiusculaNoNome(bruto) : bruto;
+  }
+  /** Dias inteiros até o dia do evento (0 = hoje; null = sem data). @param {any} ev */
+  function diasParaOEvento(ev) {
+    const iso = ev ? ((ev.eventDetails && ev.eventDetails.date) || ev.date || '') : '';
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso));
+    if (!m) return null;
+    const hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    return Math.round((new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).getTime() - hoje.getTime()) / 86400000);
+  }
+  function hojeLocal() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  /** Tarefas do checklist do evento: { total, abertas } (null se não deu para ler). @param {any} ev */
+  async function contarChecklistDoEvento(ev) {
+    if (!ev || !/^[0-9a-f-]{36}$/i.test(String(ev.id)) || typeof supabaseClient === 'undefined') return null;
+    try {
+      const { data, error } = await supabaseClient.from('checklist_tarefas').select('concluida').eq('evento_id', ev.id);
+      if (error || !data) return null;
+      return { total: data.length, abertas: data.filter((/** @type {any} */ t) => !t.concluida).length };
+    } catch (e) { return null; }
+  }
+
+  /** Gera (no máximo) o lembrete de hoje do evento ativo. @param {any} ev */
+  async function gerarLembreteDoDia(ev) {
+    const n = diasParaOEvento(ev);
+    if (!ev || n === null || n < 0 || n > 7) return;
+    const chave = `love-lembretes-${ev.id}`;
+    /** @type {any[]} */
+    const lista = lerJsonLocal(chave, []);
+    const hoje = hojeLocal();
+    if (lista.some(l => l.hoje === hoje)) return; // um por dia
+    const nome = primeiroNomeDoAnfitriao();
+    const falta = n === 1 ? 'falta apenas 1 dia para o seu evento' : `faltam apenas ${n} dias para o seu evento`;
+    const inicio = nome ? `${nome}, ${falta}` : falta.charAt(0).toUpperCase() + falta.slice(1);
+    const checklist = await contarChecklistDoEvento(ev);
+    /** @type {{tema:string, rotulo:string, texto:string, tab:string, sub:string}[]} */
+    const opcoes = [];
+    if (n === 0) {
+      opcoes.push({ tema: 'hoje', rotulo: 'É HOJE', texto: `${nome ? `${nome}, c` : 'C'}hegou o grande dia! Aproveite cada momento do seu evento.`, tab: 'overview', sub: '' });
+    } else if (n === 7) {
+      opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: `${inicio}. Garanta que o checklist esteja completo.`, tab: 'rsvp', sub: 'checklist' });
+    } else {
+      const convidados = ev.guests || [];
+      const semResposta = convidados.filter((/** @type {any} */ g) => g.status === 'pending').length;
+      if (!isQuickStartTaskAchieved('website', ev)) {
+        opcoes.push({ tema: 'convite', rotulo: 'CONVITE DIGITAL', texto: `${inicio} e percebemos que você ainda não editou o seu convite digital. Que tal dar uma olhada?`, tab: 'edit-site', sub: 'home' });
+      }
+      if (!convidados.length) {
+        opcoes.push({ tema: 'convidados', rotulo: 'LISTA DE CONVIDADOS', texto: `${inicio} e a sua lista de convidados ainda está vazia. Que tal começar agora?`, tab: 'rsvp', sub: 'all' });
+      } else if (semResposta) {
+        opcoes.push({ tema: 'convidados', rotulo: 'LEMBRETE', texto: semResposta === 1
+          ? `${inicio} e 1 convidado ainda não respondeu se vai. Que tal mandar um lembrete?`
+          : `${inicio} e ${semResposta} convidados ainda não responderam se vão. Que tal mandar um lembrete?`, tab: 'rsvp', sub: 'all' });
+      }
+      if (checklist && checklist.abertas) {
+        opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: checklist.abertas === 1
+          ? `${inicio} e ainda falta 1 tarefa no seu checklist. Que tal riscar essa também?`
+          : `${inicio} e ainda faltam ${checklist.abertas} tarefas no seu checklist. Que tal riscar mais algumas?`, tab: 'rsvp', sub: 'checklist' });
+      } else if (checklist && !checklist.total) {
+        opcoes.push({ tema: 'checklist', rotulo: 'CHECKLIST', texto: `${inicio}. Garanta que o checklist esteja completo.`, tab: 'rsvp', sub: 'checklist' });
+      }
+      if (!(ev.giftList || []).length) {
+        opcoes.push({ tema: 'presentes', rotulo: 'PRESENTES', texto: `${inicio} e a sua lista de presentes ainda está vazia. Que tal escolher alguns presentes?`, tab: 'gifts', sub: 'my-gifts' });
+      }
+      opcoes.push({ tema: 'contagem', rotulo: 'CONTAGEM REGRESSIVA', texto: `${inicio}. Está tudo pronto? Que tal conferir os últimos detalhes?`, tab: 'overview', sub: '' });
+    }
+    const ontem = lista.length ? lista[lista.length - 1].tema : '';
+    const escolhido = opcoes.find(o => o.tema !== ontem) || opcoes[0];
+    lista.push({ id: `lembrete-${ev.id}-${hoje}`, hoje, ...escolhido, quando: new Date().toISOString(), lida: false });
+    gravarJsonLocal(chave, lista.slice(-30));
+  }
+
+  /** @param {any} ev */
+  function buildLembreteNotifications(ev) {
+    if (!ev) return [];
+    return lerJsonLocal(`love-lembretes-${ev.id}`, []).map((/** @type {any} */ l) => ({
+      kind: 'lembrete',
+      id: l.id,
+      evId: ev.id,
+      iconPath: NOTIFICATION_ICONS.admin,
+      iconBox: 'bg-[#EBF4FF] text-[#183b54]',
+      rotulo: l.rotulo,
+      titleHtml: '',
+      bodyHtml: escapeNotificationText(l.texto),
+      time: formatCommentDate(l.quando),
+      quando: l.quando,
+      unread: !l.lida,
+      onClick: () => { if (l.tab === 'overview' || !l.sub) switchRailTab(l.tab); else window.loveIrPara(l.tab, l.sub); }
+    }));
+  }
+
+  /** Hora em que o convidado confirmou pelo convite (null se não dá para saber). @param {any} g */
+  function horaDaConfirmacao(g) {
+    let d = null;
+    if (g.confirmado_em) d = new Date(g.confirmado_em);
+    else if (g.chave_dados_expira) d = new Date(new Date(g.chave_dados_expira).getTime() - 3600000);
+    else if (g.consentimentos && g.consentimentos.origem === 'convite' && g.consentimentos.em) d = new Date(g.consentimentos.em);
+    return d && !isNaN(d.getTime()) ? d : null;
+  }
+
+  /** @param {any} ev */
+  function buildConfirmacaoNotifications(ev) {
+    if (!ev) return [];
+    // Confirmações de antes desta função existir já entram como lidas.
+    let desde = lerJsonLocal('love-notif-confirmacoes-desde', null);
+    if (!desde) { desde = new Date().toISOString(); gravarJsonLocal('love-notif-confirmacoes-desde', desde); }
+    const desdeMs = new Date(desde).getTime();
+    const lidas = new Set(lerJsonLocal(`love-notif-lidas-${ev.id}`, []));
+    const confirmados = (ev.guests || []).filter((/** @type {any} */ g) => g.status === 'confirmed');
+    const comHora = confirmados.map((/** @type {any} */ g) => ({ g, d: horaDaConfirmacao(g) }))
+      .filter((/** @type {any} */ x) => x.d).sort((/** @type {any} */ a, /** @type {any} */ b) => a.d - b.d);
+    const semHora = confirmados.length - comHora.length; // confirmados pelo anfitrião
+    return comHora.map((/** @type {any} */ x, /** @type {number} */ i) => {
+      const total = semHora + i + 1;
+      const id = `rsvp-${x.g.id}`;
+      return {
+        kind: 'rsvp',
+        id,
+        evId: ev.id,
+        iconPath: NOTIFICATION_ICONS.admin,
+        iconBox: 'bg-green-50 text-green-700',
+        rotulo: 'CONFIRMAÇÃO DE PRESENÇA',
+        titleHtml: '',
+        bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(x.g.name || 'Um convidado')}</strong> confirmou. ${total === 1 ? 'Agora é 1 pessoa na sua lista.' : `Agora são ${total} pessoas na sua lista.`}`,
+        time: formatCommentDate(x.d),
+        quando: x.d.toISOString(),
+        unread: !lidas.has(id) && x.d.getTime() >= desdeMs,
+        onClick: () => window.loveIrPara('rsvp', 'all')
+      };
+    });
+  }
+
+  /** Grava a leitura de uma notificação gerada aqui (lembrete/confirmação). @param {any} n */
+  function marcarNotificacaoLocalLida(n) {
+    if (n.kind === 'lembrete') {
+      const chave = `love-lembretes-${n.evId}`;
+      gravarJsonLocal(chave, lerJsonLocal(chave, []).map((/** @type {any} */ l) => l.id === n.id ? { ...l, lida: true } : l));
+    } else if (n.kind === 'rsvp') {
+      const chave = `love-notif-lidas-${n.evId}`;
+      const lidas = lerJsonLocal(chave, []);
+      if (!lidas.includes(n.id)) { lidas.push(n.id); gravarJsonLocal(chave, lidas.slice(-2000)); }
+    }
+  }
+  const TIPOS_COM_LEITURA = ['admin', 'lembrete', 'rsvp'];
 
   // Balões do Admin esperam aqui até a pessoa ter um evento criado e estar
   // na Home do painel (nunca durante a criação do primeiro evento).
@@ -1070,6 +1242,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const item = {
         kind: 'admin',
         id: n.id,
+        rotulo: ROTULO_DO_TEMA[n.tema] || 'LOVE',
+        fixada: !!n.fixada,
         iconPath: theme.icon,
         iconBox: theme.box,
         titleHtml: escapeNotificationText(n.titulo),
@@ -1088,7 +1262,12 @@ document.addEventListener('DOMContentLoaded', () => {
       return item;
     });
 
-    notificationsFeedCache = [...adminItems, ...buildGiftNotifications()];
+    const ev = getActiveEvent();
+    try { await gerarLembreteDoDia(ev); } catch (e) { console.error('Erro ao gerar o lembrete do dia:', e); }
+    const outras = [...adminItems.filter(n => !n.fixada), ...buildLembreteNotifications(ev), ...buildConfirmacaoNotifications(ev), ...buildGiftNotifications()];
+    const ms = (/** @type {any} */ n) => { const t = n.quando ? new Date(n.quando).getTime() : NaN; return isNaN(t) ? 0 : t; };
+    outras.sort((a, b) => ms(b) - ms(a));
+    notificationsFeedCache = [...adminItems.filter(n => n.fixada), ...outras];
     renderNotificationsPage();
     updateNotificationsBadge();
   }
@@ -1096,7 +1275,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateNotificationsBadge() {
     const badge = document.querySelector('.badge-header-notifications');
     if (!badge) return;
-    const unreadCount = notificationsFeedCache.filter(n => n.kind === 'admin' && n.unread).length;
+    const unreadCount = notificationsFeedCache.filter(n => TIPOS_COM_LEITURA.includes(n.kind) && n.unread).length;
     badge.textContent = String(unreadCount);
     badge.classList.toggle('hidden', unreadCount === 0);
   }
@@ -1138,6 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="flex-1 min-w-0 flex items-start justify-between gap-3">
           <div class="min-w-0">
+            ${n.rotulo ? `<p class="notif-rotulo">${escapeNotificationText(n.rotulo)}</p>` : ''}
             ${n.titleHtml ? `<p class="text-sm font-bold text-zinc-900 font-sans">${n.titleHtml}</p>` : ''}
             <p class="text-sm ${n.titleHtml ? 'text-zinc-600 mt-0.5' : 'text-zinc-800'} leading-snug font-sans">${n.bodyHtml}</p>
           </div>
@@ -1154,9 +1334,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const n = notificationsFeedCache[parseInt(row.dataset.index, 10)];
       if (!n) return;
       row.addEventListener('click', () => {
-        if (n.kind === 'admin' && n.unread) {
+        if (TIPOS_COM_LEITURA.includes(n.kind) && n.unread) {
           n.unread = false;
-          markNotificationRead(n.id);
+          if (n.kind === 'admin') markNotificationRead(n.id); else marcarNotificacaoLocalLida(n);
           updateNotificationsBadge();
           renderNotificationsPage();
         }

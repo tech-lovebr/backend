@@ -1271,7 +1271,7 @@ function montarMenuDoCelular() {
   const abrirBtn = document.getElementById('btn-menu-celular');
   if (!abrirBtn || document.getElementById('menu-celular')) return;
   // Como no anfitrião: em cima a foto (caixinha de 52px) com o nome da
-  // empresa e o da pessoa embaixo; logo abaixo o botão largo Conversas; uma
+  // empresa e o da pessoa embaixo; logo abaixo o Light | Dark; uma
   // linha fina e os itens da conta. Sem lista de seções, sem alternador e
   // sem X (fecha tocando fora). Tocar na conta abre o pop-up (empresas, tema).
 
@@ -1286,8 +1286,9 @@ function montarMenuDoCelular() {
         </span>
         <svg class="menu-celular-conta-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>
       </button>
-      <div class="menu-celular-conversas-caixa">
-        <a href="chat" class="menu-celular-conversas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg><span>Conversas</span><span class="menu-celular-conversas-selo" hidden></span></a>
+      <div class="menu-celular-tema" role="group" aria-label="Tema">
+        <button type="button" data-tema="light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/></svg><span>Light</span></button>
+        <button type="button" data-tema="dark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008"/></svg><span>Dark</span></button>
       </div>
       <nav class="menu-celular-nav" aria-label="Minha conta"></nav>
     </aside>
@@ -1363,14 +1364,6 @@ function montarMenuDoCelular() {
     const sidebar = document.querySelector('.b2b-sidebar');
     const doMenu = (/** @type {string} */ href) => document.querySelector('#avatar-dropdown > .topbar-dropdown-item[href="' + href + '"]');
     const daSidebar = (/** @type {string} */ sel) => sidebar ? sidebar.querySelector(sel) : null;
-    const seloOrig = document.getElementById('nav-msg-badge-mobile') || document.getElementById('nav-msg-badge');
-    const selo = /** @type {HTMLElement|null} */ (gaveta.querySelector('.menu-celular-conversas-selo'));
-    if (selo) {
-      const n = (seloOrig?.textContent || '').trim();
-      selo.textContent = n;
-      selo.hidden = !seloOrig || seloOrig.style.display === 'none' || !n || n === '0';
-    }
-    gaveta.querySelector('.menu-celular-conversas')?.classList.toggle('is-ativo', pagina === 'chat');
     let html = '';
     if (document.querySelector('#avatar-dropdown .topbar-item-adicionar-empresa')) html += linha('nova-empresa', 'Adicionar empresa', ICONE_ADICIONAR, pagina === 'nova-empresa');
     html += linha('paginas-site', 'Meu site', icone(daSidebar('.sidebar-nav-group .sidebar-nav-toggle')), pagina === 'paginas-site');
@@ -1383,10 +1376,6 @@ function montarMenuDoCelular() {
     html += `<button type="button" class="menu-celular-link menu-celular-link-sair">${ICONE_SAIR}<span>Sair</span></button>`;
     nav.innerHTML = html;
   };
-  gaveta.querySelector('.menu-celular-conversas')?.addEventListener('click', (e) => {
-    fechar();
-    if (pagina === 'chat') { e.preventDefault(); irAoTopo(); }
-  });
   nav.addEventListener('click', (e) => {
     const link = e.target instanceof Element ? e.target.closest('.menu-celular-link') : null;
     if (!link) return;
@@ -1468,6 +1457,7 @@ function montarMenuDoCelular() {
   };
 
   const abrir = () => {
+    marcarTema();
     desenharNav();
     preencherConta();
     abertos(gaveta, true);
@@ -1477,12 +1467,19 @@ function montarMenuDoCelular() {
   };
   const marcarTema = () => {
     const claro = document.documentElement.classList.contains('hub-claro');
-    conta.querySelectorAll('[data-tema]').forEach(b => {
+    [...conta.querySelectorAll('[data-tema]'), ...gaveta.querySelectorAll('[data-tema]')].forEach(b => {
       const ativo = /** @type {HTMLElement} */ (b).dataset.tema === (claro ? 'light' : 'dark');
       b.classList.toggle('is-ativo', ativo);
       b.setAttribute('aria-pressed', String(ativo));
     });
   };
+  // Light | Dark na gaveta (no lugar do Conversas).
+  gaveta.querySelector('.menu-celular-tema')?.addEventListener('click', (e) => {
+    const b = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-tema]')) : null;
+    if (!b) return;
+    /** @type {HTMLElement|null} */ (document.querySelector('.theme-toggle-btn[data-theme-option="' + b.dataset.tema + '"]'))?.click();
+    marcarTema();
+  });
   conta.querySelector('.menu-conta-tema')?.addEventListener('click', (e) => {
     const b = e.target instanceof Element ? /** @type {HTMLElement|null} */ (e.target.closest('[data-tema]')) : null;
     if (!b) return;

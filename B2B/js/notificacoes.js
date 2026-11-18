@@ -29,13 +29,12 @@ function formatNotificationTime(iso) {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-/* Celular: data curta "25/10/26" e o horário embaixo (como no anfitrião). */
+/* Celular: data curta "25/10" (como no anfitrião). */
 function tempoCurtoDaNotificacao(iso) {
   const d = iso ? new Date(iso) : null;
   if (!d || isNaN(d.getTime())) return '';
-  const data = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
-  const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  return `<span>${data}</span><span>${hora}</span>`;
+  // Como no anfitrião: só dia e mês ("25/10"), sem ano e sem horário.
+  return `<span>${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })}</span>`;
 }
 
 function unreadNotificationsCount() {
@@ -104,6 +103,7 @@ function renderNotificationsPage() {
       </div>
       <div class="flex-1 min-w-0 flex items-start justify-between gap-3">
         <div class="min-w-0">
+          <p class="notif-rotulo">LOVE</p>
           <p class="text-sm font-bold text-zinc-900">${escapeHtml(n.titulo)}</p>
           <p class="text-sm text-zinc-600 mt-0.5 leading-snug">${escapeHtml(n.mensagem)}</p>
           ${n.linkUrl && n.linkLabel ? `<p class="text-xs font-semibold mt-1.5" style="color:#537bae;">${escapeHtml(n.linkLabel)} →</p>` : ''}

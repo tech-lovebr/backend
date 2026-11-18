@@ -56,7 +56,7 @@
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
   <script src="js/i18n.js?v=20261117_menus2"></script>
-  <script src="js/i18n-plataforma.js?v=20261118_en12"></script>
+  <script src="js/i18n-plataforma.js?v=20261118_en13"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -114,7 +114,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261118_cidades">
+  <link rel="stylesheet" href="css/styles.css?v=20261118_rfpvazio">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261117_logoazul">
@@ -3777,11 +3777,13 @@
                       </thead>
                       <tbody id="rfp-lista"></tbody>
                     </table>
-                    <!-- Vazio: igual ao de Meus Convidados -->
+                    <!-- Vazio: a caixinha tracejada clicável, igual à de Adicionar presente -->
                     <div id="rfp-empty-state" class="hidden">
-                      <dotlottie-wc class="rsvp-vazio-icone rsvp-vazio-animado" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
-                      <p class="rsvp-vazio-titulo" id="rfp-vazio-titulo"><button type="button" class="rsvp-vazio-link" data-rfp-criar>Crie a sua primeira solicitação</button></p>
-                      <p id="rfp-vazio-texto">Conte o que você precisa e receba propostas de fornecedores para o seu evento.</p>
+                      <button type="button" class="lista-pronta-card lista-pronta-criar rfp-vazio-card" data-rfp-criar>
+                        <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
+                        <strong>Crie a sua primeira solicitação</strong>
+                        <span class="lista-pronta-qtd">Encontre o fornecedor ideal</span>
+                      </button>
                     </div>
                   </div>
                   <div class="guests-pagination rfp-paginacao" id="rfp-paginacao" hidden></div>

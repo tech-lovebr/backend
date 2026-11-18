@@ -17896,3 +17896,29 @@ html body .be-countdown-unit:not(#love-h-a):not(#love-h-b) { border: 0 !importan
   html body .b2b-cidades-fileira button.love-tab-item.active:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: #FFFFFF !important; color: #181D24 !important; font-weight: 600 !important; }
   html body .b2b-cidades-fileira button.love-tab-item:not(#love-h-a):not(#love-h-b):not(#love-h-c)::after { display: none !important; }
 }
+
+/* Minhas Solicitações — vazio: a caixinha tracejada de Adicionar presente
+   (desktop e celular), com hover de clicável. */
+html body #rfp-empty-state .rfp-vazio-card:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+  width: 100%; max-width: 260px; min-height: 240px; margin: 0 auto; cursor: pointer;
+}
+html body #rfp-empty-state .rfp-vazio-card strong:not(#love-h-a) { font-size: 16px; font-weight: 600; color: #18181B; }
+
+/* Desktop — Minhas Solicitações: sem as colunas Evento e Local. */
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html body #rfp-tabela thead tr > :is(:nth-child(2), :nth-child(3)):not(#love-h-a):not(#love-h-b),
+  html body #rfp-tabela tbody tr.rfp-post > :is(:nth-child(2), :nth-child(3)):not(#love-h-a):not(#love-h-b) { display: none !important; }
+}
+
+/* Celular — Minhas Solicitações vazio: só a caixinha tracejada (vidro, como a
+   de Adicionar presente), sem a caixa tracejada de fora. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #rfp-caixa #rfp-empty-state:not(.hidden):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    min-height: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  html body #rfp-empty-state .rfp-vazio-card:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    max-width: none; background-color: rgba(255, 255, 255, 0.75) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important; backdrop-filter: blur(20px) saturate(180%) !important;
+  }
+}

@@ -17834,3 +17834,14 @@ html body .be-countdown-unit:not(#love-h-a):not(#love-h-b) { border: 0 !importan
   html body #tab-rsvp-tables .aviso-computador-celular svg:not(#love-h-a):not(#love-h-b) { display: none !important; }
   html body #tab-rsvp-tables .aviso-computador-celular b:not(#love-h-a) { font-weight: 600; }
 }
+
+/* Celular — Carteira Digital: "Cadastre uma conta bancária para sacar seu
+   saldo." solto no céu, como a frase de Meus Presentes vazio (sem caixa),
+   e a frase inteira é o toque que abre Contas Bancárias. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #carteira-raiz .cart-aviso-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: block; width: 100%; margin: 0 0 12px; padding: 4px 0; border: 0; border-radius: 0; text-align: center; cursor: pointer;
+    background: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+    font-family: inherit; font-size: 16px; font-weight: 400; line-height: 22px; color: #18181B; -webkit-tap-highlight-color: transparent;
+  }
+}

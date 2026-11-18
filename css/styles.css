@@ -16875,3 +16875,24 @@ html body #rsvp-guests-table-body .guest-nome-btn .guest-nome-apelido:not(#love-
     background: rgba(255, 255, 255, 0.4) !important; box-shadow: 0 4px 16px rgba(24, 59, 84, 0.04) !important;
   }
 }
+
+/* Celular — Criar/Editar presente igual a Adicionar convidado: fundo cinza
+   clarinho, cabeçalho branco e os campos dentro de uma caixa branca
+   (campos com a linha fina cinza, como na ficha do convidado). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #drawer-add-gift #form-add-gift:not(#love-h-a):not(#love-h-b) {
+    background: #FFFFFF !important; border-radius: 10px !important; padding: 16px !important; box-sizing: border-box;
+  }
+  html body #drawer-add-gift #form-add-gift :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, select, .field-input):not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; box-shadow: none !important;
+  }
+  html body #drawer-add-gift #form-add-gift :is(input, textarea, select, .field-input):focus:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border-color: rgba(24, 29, 36, 0.22) !important; }
+}
+
+/* "Adicionar presente" e "Adicionar lista pronta" (Meus presentes vazio e
+   Adicione uma lista): de volta a linha tracejada com cantos arredondados
+   em volta de cada card — desktop e celular. */
+html body .lista-pronta-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+  border: 1px dashed #D4D4D8 !important; border-radius: 10px !important;
+}
+html body .lista-pronta-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):hover { border-color: #A1A1AA !important; }

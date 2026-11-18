@@ -17458,3 +17458,9 @@ html body .btn-message-supplier.b2b-botao-icone svg:not(#love-h-a) { width: 18px
   html body .atalhos-celular .atalhos-item:not(#love-h-a):not(#love-h-b) { font-weight: 400 !important; }
   html body .atalhos-celular .atalhos-item span:not(#love-h-a) { font-weight: 400 !important; }
 }
+
+/* Celular — Meus Convidados: a faixa das letras em branco chapado. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-rsvp .guests-table tbody tr.guest-letra-linha:not(#love-h-a):not(#love-h-b) td:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #tab-rsvp .guests-table tbody tr.guest-letra-linha:not(#love-h-a):not(#love-h-b) td > *:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
+}

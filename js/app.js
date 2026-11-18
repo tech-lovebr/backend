@@ -10051,7 +10051,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         container.innerHTML = `
           <div class="col-span-full presentes-vazio">
-            <p class="presentes-vazio-texto">Sua lista está vazia. <b>Que tal adicionar presentes?</b></p>
+            <p class="presentes-vazio-texto">${(() => { const nome = primeiroNomeDoAnfitriao(); return nome ? `${escaparHtml(nome)}, sua lista ainda está vazia.` : "Sua lista ainda está vazia."; })()} <b>Que tal adicionar presentes?</b></p>
             <div class="presentes-vazio-cards">
               <button type="button" class="lista-pronta-card lista-pronta-criar" data-vazio="presente">
                 <dotlottie-wc class="lista-pronta-lottie presente-lottie" src="/assets/lottie/adicionar-presente.lottie?v=5" autoplay loop aria-hidden="true"></dotlottie-wc>

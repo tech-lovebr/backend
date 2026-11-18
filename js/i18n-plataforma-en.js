@@ -2281,5 +2281,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Encontrar Fornecedor":"Find a vendor",
 "Criar Solicitação de orçamento":"Create quote request",
 "Texto copiado. Cole onde quiser compartilhar.":"Text copied. Paste it wherever you want to share.",
-"Copie o texto e cole onde quiser compartilhar.":"Copy the text and paste it wherever you want to share."
+"Copie o texto e cole onde quiser compartilhar.":"Copy the text and paste it wherever you want to share.",
+"{x}, sua lista ainda está vazia.":"{x}, your registry is still empty.",
+"Sua lista ainda está vazia.":"Your registry is still empty."
 });

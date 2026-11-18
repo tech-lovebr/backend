@@ -1,6 +1,6 @@
 // Fornecedores › Contratos (anfitrião).
 //
-// Proposta aceita em Minhas solicitações = contrato. A lista mostra quem você
+// Proposta aceita em Minhas Solicitações = contrato. A lista mostra quem você
 // contratou, para qual serviço, o valor combinado, quanto já pagou e quanto
 // falta. Clicando no título ou no fornecedor abre a visão geral: valores,
 // pagamentos (parcelas), datas de entrega, descrição e as atualizações com
@@ -172,7 +172,7 @@
     desenharLista(el);
   }
 
-  // Barra do topo da caixa, como em Meus convidados: Pesquisar à esquerda e
+  // Barra do topo da caixa, como em Meus Convidados: Pesquisar à esquerda e
   // Exportar à direita (aparece mesmo sem nenhum contrato).
   const BARRA_DOS_CONTRATOS = `
         <div class="love-tabela-barra ct-barra-topo">
@@ -186,7 +186,7 @@
 
   function desenharLista(el) {
     if (!contratos.length) {
-      // Sem contrato: a mesma caixa branca de Meus convidados, com o cabeçalho
+      // Sem contrato: a mesma caixa branca de Meus Convidados, com o cabeçalho
       // da tabela e o vazio animado no meio.
       el.innerHTML = `
         <div class="dash-card love-tabela-caixa ct-caixa ct-caixa-vazia">
@@ -197,7 +197,7 @@
           <div class="ct-vazio">
             <dotlottie-wc class="rsvp-vazio-icone rsvp-vazio-animado" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
             <p class="ct-vazio-titulo"><button type="button" class="rsvp-vazio-link" data-ct-solicitar>Nenhum contrato ainda</button></p>
-            <p class="ct-vazio-texto">Quando você aceitar a proposta de um fornecedor em Minhas solicitações, o contrato aparece aqui com o valor combinado, os pagamentos e as datas de entrega.</p>
+            <p class="ct-vazio-texto">Quando você aceitar a proposta de um fornecedor em Minhas Solicitações, o contrato aparece aqui com o valor combinado, os pagamentos e as datas de entrega.</p>
           </div>
         </div>`;
       return;
@@ -284,7 +284,7 @@
       <div class="ct-painel" ${abaDaPagina === 'detalhes' ? '' : 'hidden'}>${htmlDetalhes(c)}</div>
       <div class="ct-painel" ${abaDaPagina === 'config' ? '' : 'hidden'}>
         <div class="dash-card ct-cartao">
-          <h3 class="ct-cartao-titulo">Lista de convidados</h3>
+          <h3 class="ct-cartao-titulo">Lista de Convidados</h3>
           <p class="ct-cartao-sub">Escolha o que esse fornecedor pode ver e fazer na sua lista de convidados.</p>
           <div id="contracted-vendor-permissions-list"></div>
         </div>

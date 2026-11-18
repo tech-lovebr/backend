@@ -1,5 +1,5 @@
 /* ==========================================================================
-   LOVE — Construtor visual da Aparência (Personalizar evento > Aparência)
+   LOVE — Construtor visual da Aparência (Personalizar Evento > Aparência)
    Baseado no motor do construtor do B2B ("Editar meu site"), adaptado para
    um convite de casamento: uma única seção/coluna, mobile-first.
    Somente front-end. Estado salvo em localStorage (sem backend ainda).
@@ -445,7 +445,7 @@ function loadBuilderState() {
 }
 
 // Bloco fixo "Meus Presentes": puxa ao vivo a lista de presentes cadastrada em
-// Personalizar evento > Lista de Presentes (window.LOVE_DATA), não é editável em
+// Personalizar Evento > Lista de Presentes (window.LOVE_DATA), não é editável em
 // conteúdo — só a cor de fundo, cor do texto/subtítulo e presentes por coluna
 // podem ser ajustados aqui no construtor.
 function defaultGiftsBlockSection() {
@@ -2032,10 +2032,10 @@ function renderGiftsBlockSectionHtml(section, mode) {
           </div>
         </div>
       `).join('')
-    : `<p class="builder-giftsblock-empty">Nenhum presente cadastrado ainda. Adicione presentes em "Meus presentes".</p>`;
+    : `<p class="builder-giftsblock-empty">Nenhum presente cadastrado ainda. Adicione presentes em "Meus Presentes".</p>`;
 
   return `
-    <section class="builder-section builder-giftsblock-section" id="${section.id}" data-section-id="${section.id}" style="background-color:${sectionBg};" title="${mode === 'edit' ? 'Lista de Presentes fixa — sincronizada com Meus presentes' : ''}">
+    <section class="builder-section builder-giftsblock-section" id="${section.id}" data-section-id="${section.id}" style="background-color:${sectionBg};" title="${mode === 'edit' ? 'Lista de Presentes fixa — sincronizada com Meus Presentes' : ''}">
       ${toolbar}
       <div class="builder-giftsblock-inner">
         <div class="builder-giftsblock-grid" style="grid-template-columns:repeat(${perColumn}, 1fr);">
@@ -4417,7 +4417,7 @@ async function initPublicPreview() {
   }
 
   if (!publishedState || !Array.isArray(publishedState.sections) || !publishedState.sections.length) {
-    root.innerHTML = '<div class="public-preview-empty">Este convite ainda não foi publicado.<br>Volte para "Personalizar evento" → "Aparência" e clique em "Publicar".</div>';
+    root.innerHTML = '<div class="public-preview-empty">Este convite ainda não foi publicado.<br>Volte para "Personalizar Evento" → "Aparência" e clique em "Publicar".</div>';
     return;
   }
 
@@ -4704,7 +4704,7 @@ function telaInformacoesHtml(ev) {
   return telaPublicaHtml('Informações', conteudo || '<p class="convite-vazio">Os anfitriões ainda não preencheram as informações do evento.</p>', { comCapa: true });
 }
 
-// "Sobre" → o que foi preenchido em Personalizar evento → Anfitriões.
+// "Sobre" → o que foi preenchido em Personalizar Evento → Anfitriões.
 function renderSobrePublico(root) {
   if (!conviteDadosPublicos) return semDadosPublicos(root, 'Sobre');
   const sobre = conviteDadosPublicos.sobre || {};
@@ -5557,7 +5557,7 @@ document.addEventListener('DOMContentLoaded', initPublicPreview);
 
 /* ==========================================================================
    Prévia real nas abas clássicas (Informações, Anfitriões, Convite online,
-   Produzir convite) — mesmo motor de renderização do Convite Digital, para
+   Produzir Convite) — mesmo motor de renderização do Convite Digital, para
    sempre refletir exatamente o que foi criado em Aparência.
    ========================================================================== */
 
@@ -5890,7 +5890,7 @@ function initCompartilharSaveTheDate() {
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fechar(); });
 }
 window.switchBuilderPage = switchBuilderPage;
-// Mesmo seletor de cor do inspector, usado também no pop-up da mesa (Mapa do evento).
+// Mesmo seletor de cor do inspector, usado também no pop-up da mesa (Mapa do Evento).
 window.colorSwatchPopoverHtml = colorSwatchPopoverHtml;
 window.wireColorSwatchPopovers = wireColorSwatchPopovers;
 

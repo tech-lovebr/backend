@@ -227,7 +227,7 @@
       ${vista === 'saques' ? htmlHistorico() : htmlExtrato()}`;
   }
 
-  /** Barra da tabela (busca à esquerda, contagem à direita), como em Meus convidados. @param {string} placeholder @param {string} contagem */
+  /** Barra da tabela (busca à esquerda, contagem à direita), como em Meus Convidados. @param {string} placeholder @param {string} contagem */
   const barraDaTabela = (placeholder, contagem) => `
     <div class="love-tabela-barra">
       <div class="love-tabela-barra-esq">
@@ -298,7 +298,7 @@
 
   // --------------------------------------------------------------------------
   // Contas bancárias: verificação de identidade (antes da primeira conta),
-  // tabela das contas (padrão Meus convidados, sem busca) e cadastro na caixa.
+  // tabela das contas (padrão Meus Convidados, sem busca) e cadastro na caixa.
   // --------------------------------------------------------------------------
   /** Cadastro de conta aberto dentro da caixa (no lugar da tabela), sem pop-up. */
   let cadastrando = false;

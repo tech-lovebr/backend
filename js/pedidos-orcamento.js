@@ -60,7 +60,7 @@
     { id: 'musica', nome: 'Música, banda ou DJ', icone: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
       tags: ['DJ', 'Banda ao vivo', 'Banda de sertanejo', 'Samba e pagode', 'Rock e pop', 'MPB e bossa nova', 'Forró', 'Música eletrônica', 'Voz e violão', 'Quarteto de cordas', 'Violino na cerimônia', 'Saxofonista', 'Coral', 'Música na cerimônia', 'Som e iluminação', 'Telão e projeção', 'Pista de dança', 'Fumaça e efeitos', 'Animação infantil', 'Mestre de cerimônias'] },
     { id: 'assessoria', nome: 'Assessoria e Cerimonial', icone: '<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2ZM9 13l2 2 4-4"/>',
-      tags: ['Assessoria completa', 'Assessoria do dia', 'Assessoria parcial', 'Cerimonialista', 'Celebrante', 'Roteiro e cronograma', 'Gestão de fornecedores', 'Recepcionistas', 'Lista de convidados e RSVP', 'Destination wedding', 'Planejamento de orçamento', 'Seguranças', 'Manobristas', 'Equipe de limpeza'] },
+      tags: ['Assessoria completa', 'Assessoria do dia', 'Assessoria parcial', 'Cerimonialista', 'Celebrante', 'Roteiro e cronograma', 'Gestão de fornecedores', 'Recepcionistas', 'Lista de Convidados e RSVP', 'Destination wedding', 'Planejamento de orçamento', 'Seguranças', 'Manobristas', 'Equipe de limpeza'] },
     { id: 'bebidas', nome: 'Bar e bebidas', icone: '<path d="M8 3h8l-1 8a3 3 0 0 1-6 0L8 3ZM12 14v7M8 21h8"/>',
       tags: ['Open bar', 'Drinks autorais', 'Bartender', 'Bar de caipirinhas', 'Gin bar', 'Cervejas especiais', 'Chopp', 'Vinhos e espumantes', 'Whisky bar', 'Drinks sem álcool', 'Sucos naturais', 'Café e espresso', 'Bar de chás', 'Brinde com espumante', 'Gelo e refrigeração', 'Taças e copos'] },
     { id: 'doces', nome: 'Doces e Bolo', icone: '<path d="M4 21h16M5 21v-6h14v6M7 15v-3h10v3M12 12V8M12 8c-1 0-1.5-1-1-2l1-2 1 2c.5 1 0 2-1 2Z"/>',
@@ -143,7 +143,7 @@
     { titulo: 'Descreva o que você precisa e o orçamento', sub: 'Conte os detalhes do que você precisa e informe quanto planeja gastar para receber propostas realistas dos fornecedores.' },
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
   ];
-  const TITULO_DA_LISTA = 'Minhas solicitações';
+  const TITULO_DA_LISTA = 'Minhas Solicitações';
   const TITULO_DA_NOVA = 'Criar solicitação de orçamento';
   const DESCRICAO_MIN = 50;
   const DESCRICAO_MAX = 600;
@@ -427,11 +427,11 @@
     const criar = document.getElementById('btn-rfp-novo');
     const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
     if (titulo && pedidosAberto) titulo.textContent = aberta ? (noCelular() ? 'Criar solicitação' : TITULO_DA_NOVA) : TITULO_DA_LISTA;
-    // Computador: na nova solicitação a setinha volta para Minhas solicitações
+    // Computador: na nova solicitação a setinha volta para Minhas Solicitações
     // (no celular a setinha é a do próprio cabeçalho do celular).
-    if (voltar) { voltar.hidden = !aberta || noCelular(); if (aberta) voltar.setAttribute('aria-label', 'Voltar para Minhas solicitações'); }
+    if (voltar) { voltar.hidden = !aberta || noCelular(); if (aberta) voltar.setAttribute('aria-label', 'Voltar para Minhas Solicitações'); }
     if (vendoPropostas && aberta) vendoPropostas = false;
-    // Minhas solicitações: o botão "Criar solicitação" fica no topo, à direita.
+    // Minhas Solicitações: o botão "Criar solicitação" fica no topo, à direita.
     if (criar) criar.classList.toggle('hidden', aberta || !pedidosAberto);
   }
 
@@ -491,7 +491,7 @@
     window.scrollTo({ top: 0 });
   }
 
-  /** Sai da nova solicitação para a aba Minhas solicitações. */
+  /** Sai da nova solicitação para a aba Minhas Solicitações. */
   function sair() {
     if (publicando) return;
     mostrarAba('minhas');
@@ -1125,7 +1125,7 @@
   // Criar solicitação (um formulário só): tipo de celebração e um ou mais
   // serviços na etapa 1. Cada serviço vira uma solicitação independente (fica
   // no feed do nicho certo no Hub); com 2+ serviços, todas saem ligadas pelo
-  // mesmo lote_id (migration 084) e aparecem juntas em Minhas solicitações.
+  // mesmo lote_id (migration 084) e aparecem juntas em Minhas Solicitações.
   // --------------------------------------------------------------------------
   const TEXTOS_DO_LOTE = [
     { titulo: 'Encontre os fornecedores perfeitos para o seu evento', sub: 'Conte o tipo de celebração e escolha um ou mais serviços. Os dados do evento valem para todos.' },
@@ -1961,7 +1961,7 @@
     }
   }
 
-  /** Selos do lote em Minhas solicitações ("DJ e música: 3 propostas"). @param {any[]} pedidos @param {string} quando */
+  /** Selos do lote em Minhas Solicitações ("DJ e música: 3 propostas"). @param {any[]} pedidos @param {string} quando */
   function linhaDoLote(pedidos, quando) {
     const selos = pedidos.map(p => {
       const n = numerosDasPropostas[p.id] || { total: p.propostas_recebidas || 0 };
@@ -2155,7 +2155,7 @@
   // Seleção para excluir em massa: "r:<id>" (rascunho) ou "p:<id>" (publicada).
   /** @type {Set<string>} */
   const selecionadas = new Set();
-  // Paginação igual a Meus convidados: 15 por página (ou 25/50).
+  // Paginação igual a Meus Convidados: 15 por página (ou 25/50).
   let porPagina = 15;
   let pagina = 1;
   /** @type {any[]} */
@@ -2193,7 +2193,7 @@
   /** Mensagem dentro da tabela (Carregando…, entrar na conta, erro). @param {string} texto */
   const listaVazia = (texto) => `<tr class="rfp-linha-msg"><td colspan="7"><p class="rfp-msg">${esc(texto)}</p></td></tr>`;
 
-  /** Vazio de verdade: a mesma animação, título-link e texto de Meus convidados. @param {boolean} mostrar */
+  /** Vazio de verdade: a mesma animação, título-link e texto de Meus Convidados. @param {boolean} mostrar */
   function vazioDaLista(mostrar) {
     const vazio = document.getElementById('rfp-empty-state');
     vazio?.classList.toggle('hidden', !mostrar);
@@ -2249,7 +2249,7 @@
       ? menuDaLinha(loteDosDados(it.r.dados || {}).categorias.length > 1 ? [['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']] : [['editar-titulo', 'Editar título'], ['editar', 'Editar rascunho'], ['remover-rascunho', 'Remover']])
       : menuDaLinha([['ver-propostas', 'Ver propostas'], ['editar-titulo', 'Editar título'], ['duplicar', 'Duplicar'], ['excluir', 'Remover']]);
     const botao = '';
-    // Celular (como Meus convidados): ícone do serviço numa bolinha e, embaixo
+    // Celular (como Meus Convidados): ícone do serviço numa bolinha e, embaixo
     // do título, evento · data · situação.
     const idCat = it.tipo === 'rascunho' ? loteDosDados(it.r.dados || {}).categorias[0] : it.p.categoria;
     const catIcone = idCat ? categoriaPorId(/** @type {any} */ (idCat)) : null;
@@ -2343,7 +2343,7 @@
     // O número da aba conta tudo o que aparece na lista: solicitações e rascunhos.
     const ativas = pedidos.length + rascunhos.length;
     const abaMinhas = document.querySelector('#pedidos-abas [data-pedidos-aba="minhas"]');
-    if (abaMinhas) abaMinhas.textContent = ativas ? `Minhas solicitações (${ativas})` : 'Minhas solicitações';
+    if (abaMinhas) abaMinhas.textContent = ativas ? `Minhas Solicitações (${ativas})` : 'Minhas Solicitações';
     numerosDasPropostas = {};
     if (pedidos.length) {
       const { data: props, error } = await supabaseClient.from('propostas_pedido')
@@ -2381,7 +2381,7 @@
     const paginas = Math.max(1, Math.ceil(total / porPagina));
     pagina = Math.min(Math.max(1, pagina), paginas);
     const daPagina = lista.slice((pagina - 1) * porPagina, pagina * porPagina);
-    // Sem nenhuma solicitação: o vazio de Meus convidados. Só a busca sem resultado: uma linha avisando.
+    // Sem nenhuma solicitação: o vazio de Meus Convidados. Só a busca sem resultado: uma linha avisando.
     vazioDaLista(!itensDaLista.length);
     // Celular: "N solicitações" acima da busca (como "N convidados").
     const totalCelular = document.getElementById('rfp-total-celular');
@@ -2540,7 +2540,7 @@
     caixa.innerHTML = `
       <div class="rfp-detalhe">
         <div class="rfp-detalhe-cabeca">
-          <button type="button" class="rfp-detalhe-voltar" data-rfp-detalhe-voltar aria-label="Voltar para Minhas solicitações">
+          <button type="button" class="rfp-detalhe-voltar" data-rfp-detalhe-voltar aria-label="Voltar para Minhas Solicitações">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
           </button>
           <div class="rfp-detalhe-nome">
@@ -2655,7 +2655,7 @@
     const titulo = document.getElementById('b2b-toolbar-title');
     const voltar = document.getElementById('btn-rfp-voltar');
     if (titulo) titulo.textContent = ligado ? 'Propostas recebidas' : TITULO_DA_LISTA;
-    if (voltar) { voltar.hidden = !ligado; voltar.setAttribute('aria-label', 'Voltar para Minhas solicitações'); }
+    if (voltar) { voltar.hidden = !ligado; voltar.setAttribute('aria-label', 'Voltar para Minhas Solicitações'); }
     document.getElementById('btn-rfp-novo')?.classList.toggle('hidden', ligado);
   }
 
@@ -2870,7 +2870,7 @@
   /** Pedido de abrir direto a nova solicitação (ex.: "Criar solicitação" em Contratos). */
   let novaPedida = false;
   function pedirNova() { novaPedida = true; }
-  /** Entrar em Fornecedores › Minhas solicitações: abre a lista, ou a nova
+  /** Entrar em Fornecedores › Minhas Solicitações: abre a lista, ou a nova
    *  solicitação quando alguém pediu (Checklist com serviço, Contratos, rascunho). */
   function entrar() {
     const nova = novaPedida || !!servicoPedido || !!rascunhoPendente;

@@ -2255,5 +2255,21 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Ver todas as {x} atrasadas":"See all {x} overdue",
 "Venceu ontem":"Due yesterday",
 "Vence hoje":"Due today",
-"Remover":"Remove"
+"Remover":"Remove",
+"Personalizar Evento":"Customize event",
+"Meus Convidados":"My guests",
+"Mapa do Evento":"Event map",
+"Fornecedores de Meus Contratos aparecem como sugestão.":"Vendors from My contracts appear as suggestions.",
+"Voltar para Meus Presentes":"Back to My gifts",
+"Produzir Convite e papelaria":"Order invitations and stationery",
+"Minhas Solicitações":"My requests",
+"Produzir Convite":"Create invitation",
+"{x} presentes, somando {x}, entram em Meus Presentes. Depois dá para editar ou remover cada um.":"{x} gifts, totaling {x}, will be added to My gifts. You can edit or remove each one later.",
+"Quando você aceitar a proposta de um fornecedor em Minhas Solicitações, o contrato aparece aqui com o valor combinado, os pagamentos e as datas de entrega.":"When you accept a vendor's proposal in My requests, the contract shows up here with the agreed amount, payments and delivery dates.",
+"Lista de Convidados e RSVP":"Guest list and RSVP",
+"Voltar para Minhas Solicitações":"Back to My requests",
+"Minhas Solicitações ({x})":"My requests ({x})",
+"Nenhuma lista adicionada ainda. Em Meus Presentes, use \"Adicionar novo\".":"No lists added yet. In My gifts, use \"Add new\".",
+"Meus Recados":"My messages",
+"Meus Contratos":"My contracts"
 });

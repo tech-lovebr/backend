@@ -418,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ICONES = /** @type {Record<string, string>} */ ({"inicio":"<path d=\"m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25\"/>","all":"<path d=\"M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z\"/>","tables":"<path d=\"M3.75 3.75h16.5v16.5H3.75zM3.75 12h5.25M12.75 3.75V7.5M12.75 12v8.25M12.75 15.75h7.5M12.75 7.5a3.75 3.75 0 0 0-3.75 4.5\"/>","checklist":"<path d=\"M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75\"/>","my-gifts":"<path d=\"M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z\"/>","gift-messages":"<path d=\"M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75\"/>","gift-settings":"<path d=\"M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75\"/>","home":"<path d=\"M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.44-3.42\"/>","data":"<path d=\"m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z\"/>","about":"<path d=\"M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z\"/>","pedidos":"<path d=\"M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z\"/>","explore":"<path d=\"M12 6l4 6l5-4-2 10H5L3 8l5 4 4-6z\"/>","messages":"<path d=\"M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155\"/>","contracted":"<path d=\"M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12\"/>","favorites":"<path d=\"M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z\"/>"});
     const icone = (/** @type {string} */ id) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[id] || ''}</svg>`;
     // Ordem das seções na gaveta (os itens vêm do railTabsConfig).
-    const SECOES = [['rsvp', 'Lista de convidados'], ['gifts', 'Presentes'], ['edit-site', 'Personalizar evento'], ['b2b', 'Fornecedores']];
+    const SECOES = [['rsvp', 'Lista de Convidados'], ['gifts', 'Presentes'], ['edit-site', 'Personalizar Evento'], ['b2b', 'Fornecedores']];
     // Criar novo evento fica no topo da lista (acima de Ver meu site); o
     // seletor de eventos só mostra os eventos que a pessoa tem.
     const ITENS_CONTA = [
@@ -597,7 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
       agendado = false;
       const itens = Array.from(lista.querySelectorAll('.sub-drawer-item'))
         .filter(i => !i.classList.contains('hidden') && /** @type {HTMLElement} */ (i).style.display !== 'none')
-        // Lista de presentes: Configurações sai das abas (ícone ao lado do +).
+        // Lista de Presentes: Configurações sai das abas (ícone ao lado do +).
         .filter(i => /** @type {HTMLElement} */ (i).dataset.routeSub !== 'gift-settings')
         // Fornecedores: Explorar (coroinha em Mensagens / ☰), Mensagens (barra de baixo) e Favoritos (☰) saem das abas; Convidados: Checklist (já está na Home).
         .filter(i => !['explore', 'messages', 'favorites', 'checklist'].includes(/** @type {HTMLElement} */ (i).dataset.routeSub || ''));
@@ -621,8 +621,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ativo) botao.setAttribute('aria-current', 'page');
         const rotulo = document.createElement('span');
         rotulo.textContent = (orig.querySelector('span') || orig).textContent.trim();
-        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && /^(Meus convidados|Minha lista)$/.test(rotulo.textContent)) rotulo.textContent = 'Meus convidados';
-        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'contracted' && textoOriginalPt(rotulo) === 'Contratos') rotulo.textContent = 'Meus contratos';
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && /^(Meus Convidados|Minha lista)$/.test(rotulo.textContent)) rotulo.textContent = 'Meus Convidados';
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'contracted' && textoOriginalPt(rotulo) === 'Contratos') rotulo.textContent = 'Meus Contratos';
         botao.appendChild(rotulo);
         const contador = orig.querySelector('.badge-recados-count');
         if (contador && contador.textContent.trim()) {
@@ -757,9 +757,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // dava pra ver esse "pulo" pela Visão Geral antes da página certa aparecer.
   let pendingInitialDashboardRoute = null;
 
-  // Presentes marcados na caixinha do card (Meus presentes) — exclusão em massa.
+  // Presentes marcados na caixinha do card (Meus Presentes) — exclusão em massa.
   const presentesSelecionados = new Set();
-  // Convidados marcados na caixinha da tabela (Meus convidados) — exclusão em massa.
+  // Convidados marcados na caixinha da tabela (Meus Convidados) — exclusão em massa.
   const convidadosSelecionados = new Set();
 
   // Navegação programática (ex.: botão "Checklist do Evento" no dashboard)
@@ -1677,7 +1677,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
   }
 
-  // Aviso de Meus presentes → Suas informações, já no primeiro campo vazio.
+  // Aviso de Meus Presentes → Suas informações, já no primeiro campo vazio.
   window.loveAbrirSuasInformacoes = () => {
     openAccountSettingsPage({ aba: 'conta' });
     setTimeout(() => {
@@ -1949,7 +1949,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Dúvidas (FAQ) ----
   // Ordem fixa das categorias pedidas; outras criadas no Admin vêm depois, em
   // ordem alfabética.
-  const FAQ_CATEGORIAS_ORDEM = ['Fornecedores', 'Carteira digital', 'Lista de convidados', 'Meus presentes', 'Editar meu site', 'Convite digital', 'Meu Evento', 'Benefícios', 'Serviços'];
+  const FAQ_CATEGORIAS_ORDEM = ['Fornecedores', 'Carteira digital', 'Lista de Convidados', 'Meus Presentes', 'Editar meu site', 'Convite digital', 'Meu Evento', 'Benefícios', 'Serviços'];
 
   // Usada só quando a tabela `faq` não existe ou está vazia.
   const FAQ_PADRAO = [
@@ -2311,13 +2311,13 @@ document.addEventListener('DOMContentLoaded', () => {
       subItems: [] // Sem sub-sidebar: Visão Geral é tela principal direta com métricas
     },
     'edit-site': {
-      title: 'Personalizar evento',
+      title: 'Personalizar Evento',
       actionText: null,
       subItems: [
         { id: 'home', label: 'Aparência' },
         { id: 'data', label: 'Informações' },
         { id: 'about', label: 'Co-anfitriões' },
-        { id: 'invite-print', label: 'Produzir convite', oculto: true }
+        { id: 'invite-print', label: 'Produzir Convite', oculto: true }
       ]
     },
     gifts: {
@@ -2325,8 +2325,8 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'my-gifts', label: 'Meus presentes' },
-        { id: 'gift-messages', label: 'Recados recebidos' },
+        { id: 'my-gifts', label: 'Meus Presentes' },
+        { id: 'gift-messages', label: 'Meus Recados' },
         { id: 'gift-settings', label: 'Configurações' },
         // Listas prontas: página própria (/presentes/listas), aberta pelo botão "Listas".
         { id: 'gift-lists', label: 'Listas', oculto: true }
@@ -2337,8 +2337,8 @@ document.addEventListener('DOMContentLoaded', () => {
       actionText: null,
       actionHandler: null,
       subItems: [
-        { id: 'all', label: 'Meus convidados' },
-        { id: 'tables', label: 'Mapa do evento' },
+        { id: 'all', label: 'Meus Convidados' },
+        { id: 'tables', label: 'Mapa do Evento' },
         { id: 'checklist', label: 'Checklist' }
       ]
     },
@@ -2348,7 +2348,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'wallet-digital', label: 'Carteira Digital' },
-        { id: 'wallet-budget', label: 'Gerenciar despesas' }
+        { id: 'wallet-budget', label: 'Gerenciar Despesas' }
         // Extrato saiu do menu: ele fica no fim da Carteira Digital.
       ]
     },
@@ -2358,7 +2358,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actionHandler: null,
       subItems: [
         { id: 'explore', label: 'Explorar' },
-        { id: 'pedidos', label: 'Minhas solicitações' },
+        { id: 'pedidos', label: 'Minhas Solicitações' },
         { id: 'messages', label: 'Mensagens' },
         { id: 'contracted', label: 'Contratos' },
         // Benefícios: guardado, mas fora do menu por enquanto (oculto: true).
@@ -2452,7 +2452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gifts: { 'my-gifts': '', 'gift-messages': 'recados', 'gift-settings': 'configuracoes', 'gift-lists': 'listas' },
     rsvp: { all: '', tables: 'mesas', checklist: 'checklist' },
     wallet: { 'wallet-digital': '', 'wallet-budget': 'orcamento' },
-    // Fornecedores abre em Explorar (/fornecedores); Minhas solicitações em /fornecedores/solicitacoes.
+    // Fornecedores abre em Explorar (/fornecedores); Minhas Solicitações em /fornecedores/solicitacoes.
     b2b: { explore: '', pedidos: 'solicitacoes', messages: 'chat', contracted: 'contratos', insurance: 'beneficios', favorites: 'favoritos' }
   };
 
@@ -2846,7 +2846,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Data na Home: abre Personalizar evento › Informações, já no campo da data.
+  // Data na Home: abre Personalizar Evento › Informações, já no campo da data.
   const homeEventDateBadge = document.getElementById('dash-hub-event-date-badge');
   if (homeEventDateBadge) {
     homeEventDateBadge.addEventListener('click', () => {
@@ -3331,7 +3331,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const walletPixLabel = document.getElementById('wallet-pix-key-label');
 
     if (giftsTitle) giftsTitle.textContent = tituloDosPresentes();
-    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de convidados' : 'Meus convidados';
+    if (rsvpTitle) rsvpTitle.textContent = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de Convidados' : 'Meus Convidados';
     if (walletTitle) walletTitle.textContent = 'Carteira Digital';
     if (walletPixLabel) walletPixLabel.textContent = `Chave PIX: ${activeEvent.wallet.chavePix}`;
     updateBudgetKPIs();
@@ -3838,7 +3838,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title.textContent = 'Convite online';
         renderOnlineInvitesTable();
       } else if (subId === 'invite-print') {
-        title.textContent = 'Produzir convite';
+        title.textContent = 'Produzir Convite';
       } else {
         title.textContent = subLabel || 'Personalizar';
       }
@@ -4251,7 +4251,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <select class="music-track-placement w-full px-3 py-2 text-xs border border-[#EAEAEA] rounded bg-white focus:outline-none focus:border-[#537bae] text-zinc-800 cursor-pointer appearance-none pr-7 font-sans" data-track-index="${idx}">
             <option value="all">Todas as páginas</option>
             <option value="localizacao">Localização</option>
-            <option value="lista_presentes">Lista de presentes</option>
+            <option value="lista_presentes">Lista de Presentes</option>
             <option value="anfitrioes">Anfitriões</option>
             <option value="confirmacao_presenca">Confirmação de presença</option>
             <option value="dress_code">Dress code</option>
@@ -7800,7 +7800,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Monta as barras das tabelas da plataforma (uma vez; os elementos existem desde o carregamento).
   // ==========================================
-  // IMPORTAR CONVIDADOS (CSV) — Meus convidados, ao lado do Exportar
+  // IMPORTAR CONVIDADOS (CSV) — Meus Convidados, ao lado do Exportar
   // ==========================================
   const ICONE_IMPORTAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 15V3m0 12-4.5-4.5M12 15l4.5-4.5"/></svg>';
 
@@ -7923,7 +7923,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function montarBarrasDasTabelas() {
-    // Meus convidados: busca e "Adicionar" estavam no cabeçalho — a busca desce
+    // Meus Convidados: busca e "Adicionar" estavam no cabeçalho — a busca desce
     // para a caixa; "Filtrar por" aciona as abas de status já existentes.
     const tabelaConvidados = document.querySelector('#rsvp-guests-table-body')?.closest('table');
     const buscaConvidados = document.getElementById('rsvp-search-input')?.closest('.relative');
@@ -7964,7 +7964,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Co-anfitriões (Personalizar evento): pesquisa e exportar, como em Meus convidados.
+    // Co-anfitriões (Personalizar Evento): pesquisa e exportar, como em Meus Convidados.
     const tabelaOrganizadores = document.getElementById('organizadores-tabela');
     if (tabelaOrganizadores) {
       montarBarraDaTabela(tabelaOrganizadores, {
@@ -7995,9 +7995,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const AREAS_ORGANIZADOR = [
     { id: 'aparencia', label: 'Aparência', tab: 'edit-site', sub: 'home' },
     { id: 'informacoes', label: 'Informações', tab: 'edit-site', sub: 'data' },
-    { id: 'presentes', label: 'Lista de presentes', tab: 'gifts' },
-    { id: 'convidados', label: 'Meus convidados', tab: 'rsvp', sub: 'all' },
-    { id: 'mesas', label: 'Mapa do evento', tab: 'rsvp', sub: 'tables' },
+    { id: 'presentes', label: 'Lista de Presentes', tab: 'gifts' },
+    { id: 'convidados', label: 'Meus Convidados', tab: 'rsvp', sub: 'all' },
+    { id: 'mesas', label: 'Mapa do Evento', tab: 'rsvp', sub: 'tables' },
     { id: 'checklist', label: 'Checklist', tab: 'rsvp', sub: 'checklist' },
     { id: 'fornecedores', label: 'Fornecedores', tab: 'b2b' },
     { id: 'carteira', label: 'Carteira (sem saque)', tab: 'wallet' }
@@ -8111,7 +8111,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Celular: avatar com iniciais + primeiro nome leve e o resto em negrito
-  // (igual Meus convidados). No desktop o avatar fica escondido.
+  // (igual Meus Convidados). No desktop o avatar fica escondido.
   function nomeDoOrganizadorHtml(nome) {
     const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
     const iniciais = ((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '');
@@ -8158,7 +8158,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </tr>` : ''}`;
   }
 
-  // Linhas vazias abaixo dos co-anfitriões (como em Meus convidados): mede
+  // Linhas vazias abaixo dos co-anfitriões (como em Meus Convidados): mede
   // de novo sempre que a tabela aparece ou muda de tamanho.
   /** @type {ResizeObserver|null} */
   let observadorDosOrganizadores = null;
@@ -8614,7 +8614,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Desktop: sem pop-up. A ficha de criar/editar presente abre dentro da própria
-  // caixa de Meus presentes, ocupando o espaço da lista; ao fechar, a lista volta.
+  // caixa de Meus Presentes, ocupando o espaço da lista; ao fechar, a lista volta.
   const MQ_DESKTOP_PRESENTE = '(min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px)';
   /** @param {HTMLElement|null} drawer @returns {boolean} true quando abriu dentro da página */
   function abrirPresenteNaPagina(drawer) {
@@ -8778,7 +8778,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // LISTAS PRONTAS (Meus presentes › ícone de lista)
+  // LISTAS PRONTAS (Meus Presentes › ícone de lista)
   // ==========================================
   /** @type {{ titulo: string, subtitulo?: string, listas: { nome: string, img: string, itens: [string, number, string?][] }[] }[]} */
   const LISTAS_PRONTAS = [
@@ -9629,7 +9629,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Presente de uma lista pronta no formato de Meus presentes.
+   * Presente de uma lista pronta no formato de Meus Presentes.
    * @param {{ nome: string, img: string }} lista @param {[string, number, string?]} item
    */
   function presenteDaListaPronta(lista, [titulo, preco, foto]) {
@@ -9666,14 +9666,14 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAllCelebrationData();
   }
 
-  /** Coloca todos os presentes da lista em Meus presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number, string?][] }} lista */
+  /** Coloca todos os presentes da lista em Meus Presentes (pergunta antes). @param {{ nome: string, img: string, itens: [string, number, string?][] }} lista */
   async function adicionarListaPronta(lista) {
     const ev = getActiveEvent();
     if (!ev) return;
     const total = lista.itens.reduce((t, it) => t + it[1], 0);
     const ok = await confirmarNaLove({
       titulo: `Adicionar a lista "${lista.nome}"?`,
-      texto: `${lista.itens.length} presentes, somando ${reaisDaLista(total)}, entram em Meus presentes. Depois dá para editar ou remover cada um.`,
+      texto: `${lista.itens.length} presentes, somando ${reaisDaLista(total)}, entram em Meus Presentes. Depois dá para editar ou remover cada um.`,
       botao: 'Adicionar lista completa',
       aoConfirmar: async () => {
         if (!ev.giftList) ev.giftList = [];
@@ -9719,7 +9719,7 @@ document.addEventListener('DOMContentLoaded', () => {
       grupos.get(nome).push(g);
     }
     if (!grupos.size) {
-      corpo.innerHTML = '<tr class="linha-vazia"><td colspan="6" class="text-center text-sm text-zinc-500 py-10">Nenhuma lista adicionada ainda. Em Meus presentes, use "Adicionar novo".</td></tr>';
+      corpo.innerHTML = '<tr class="linha-vazia"><td colspan="6" class="text-center text-sm text-zinc-500 py-10">Nenhuma lista adicionada ainda. Em Meus Presentes, use "Adicionar novo".</td></tr>';
       return;
     }
     corpo.innerHTML = [...grupos].map(([nome, presentes]) => {
@@ -9800,7 +9800,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /** Remove os presentes disponíveis da lista; os já comprados ficam em Meus presentes. @param {string} nome */
+  /** Remove os presentes disponíveis da lista; os já comprados ficam em Meus Presentes. @param {string} nome */
   async function removerLista(nome) {
     const ev = getActiveEvent();
     if (!ev) return;
@@ -9824,7 +9824,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAllCelebrationData();
   }
 
-  /** Troca entre Meus presentes e Listas prontas (cada uma com a sua URL). @param {boolean} listas */
+  /** Troca entre Meus Presentes e Listas prontas (cada uma com a sua URL). @param {boolean} listas */
   function irParaListasProntas(listas) {
     const sub = listas ? 'gift-lists' : 'my-gifts';
     abrirSubItem('gifts', sub);
@@ -10127,7 +10127,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       // Disponível: o cartão abre o editar. Comprado: não edita mais; o
-      // cartão abre o recado de quem deu em Recados recebidos.
+      // cartão abre o recado de quem deu em Meus Recados.
       card.classList.add('gift-card-clicavel');
       card.addEventListener('click', (e) => {
         if (e.target instanceof Element && e.target.closest('.gift-card-mais')) return;
@@ -10621,17 +10621,17 @@ document.addEventListener('DOMContentLoaded', () => {
     setGiftCategoryTag((gift && gift.categoryTag) || '');
   }
 
-  // Alternar sub-seção da Lista de Presentes (Meus presentes vs Configurações)
-  // No celular o cabeçalho de Meus presentes se chama "Lista de presentes".
-  function tituloDosPresentes() { return window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de presentes' : 'Meus presentes'; }
+  // Alternar sub-seção da Lista de Presentes (Meus Presentes vs Configurações)
+  // No celular o cabeçalho de Meus Presentes se chama "Lista de Presentes".
+  function tituloDosPresentes() { return window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches ? 'Lista de Presentes' : 'Meus Presentes'; }
   (function tituloDosPresentesAoGirar() {
     const mq = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
     const trocar = () => {
       const t = document.getElementById('gifts-header-title');
-      if (t && /^(Meus presentes|Lista de presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
-      // Meus convidados: no celular o cabeçalho é "Lista de convidados".
+      if (t && /^(Meus Presentes|Lista de Presentes)$/.test(t.textContent.trim())) t.textContent = tituloDosPresentes();
+      // Meus Convidados: no celular o cabeçalho é "Lista de Convidados".
       const c = document.getElementById('rsvp-header-title');
-      if (c && /^(Meus convidados|Minha lista|Convidados|Lista de convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de convidados' : 'Meus convidados';
+      if (c && /^(Meus Convidados|Minha lista|Convidados|Lista de Convidados)$/.test(c.textContent.trim())) c.textContent = mq.matches ? 'Lista de Convidados' : 'Meus Convidados';
     };
     mq.addEventListener?.('change', trocar);
     trocar();
@@ -10640,7 +10640,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="gift-settings"]'));
     if (item) item.click(); else switchGiftsSubSection('gift-settings');
   });
-  // Seta de voltar em Configurações (celular): volta para Meus presentes.
+  // Seta de voltar em Configurações (celular): volta para Meus Presentes.
   document.getElementById('btn-gifts-config-voltar')?.addEventListener('click', () => {
     const item = /** @type {HTMLElement|null} */ (elements.drawerSubItemsList?.querySelector('.sub-drawer-item[data-route-sub="my-gifts"]'));
     if (item) item.click(); else switchGiftsSubSection('my-gifts');
@@ -10660,12 +10660,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (panelMessages) panelMessages.classList.toggle('hidden', subId !== 'gift-messages');
     if (subId !== 'gift-messages') { recadoAberto = null; document.getElementById('btn-recado-voltar')?.setAttribute('hidden', ''); }
     if (subId === 'gift-messages') {
-      // Recados recebidos: só a tabela de recados (sem a busca/ação dos presentes no cabeçalho).
+      // Meus Recados: só a tabela de recados (sem a busca/ação dos presentes no cabeçalho).
       if (topSearchBar) topSearchBar.classList.add('hidden');
       if (panelProducts) panelProducts.classList.add('hidden');
       if (panelSettings) panelSettings.classList.add('hidden');
       if (summaryStats) summaryStats.classList.add('hidden');
-      if (headerTitle) headerTitle.textContent = 'Recados recebidos';
+      if (headerTitle) headerTitle.textContent = 'Meus Recados';
       document.getElementById('btn-gifts-listas-voltar')?.setAttribute('hidden', '');
       renderRecadosRecebidos();
       return;
@@ -10688,7 +10688,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (headerSub) headerSub.textContent = 'Os presentes adicionados são apenas fictícios para os seus convidados, você recebe o valor em dinheiro.';
       const searchInput = document.getElementById('gifts-search-input');
       renderHostGifts(searchInput ? searchInput.value : '');
-      // Listas prontas ficam no lugar dos presentes (o item do menu continua "Meus presentes").
+      // Listas prontas ficam no lugar dos presentes (o item do menu continua "Meus Presentes").
       mostrarListasProntas(subId === 'gift-lists');
       if (headerTitle) headerTitle.textContent = subId === 'gift-lists' ? 'Adicione uma lista' : tituloDosPresentes();
       if (subId === 'gift-lists') {
@@ -10703,7 +10703,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Clicar no nome abre o recado na própria tabela (sem drawer nem pop-up).
   // ==========================================
   let recadosBusca = '';
-  // Paginação igual a Meus convidados: "Mostrar 15/25/50" + "Página X de Y".
+  // Paginação igual a Meus Convidados: "Mostrar 15/25/50" + "Página X de Y".
   let recadosPorPagina = 15;
   let recadosPagina = 1;
   /** @type {Set<string>} */
@@ -10760,7 +10760,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }).observe(document.body, { childList: true, subtree: true });
   })();
-  /** Presente comprado: vai para Recados recebidos com o recado de quem deu aberto. @param {any} gift */
+  /** Presente comprado: vai para Meus Recados com o recado de quem deu aberto. @param {any} gift */
   function abrirRecadoDoPresente(gift) {
     const ev = getActiveEvent();
     const recados = recadosDoEvento(ev);
@@ -10794,7 +10794,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
     return (((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '')).toUpperCase() || '?';
   }
-  /** Primeiro nome leve e o resto em negrito (igual Meus convidados). @param {string} nome */
+  /** Primeiro nome leve e o resto em negrito (igual Meus Convidados). @param {string} nome */
   function nomeDoRecadoHtml(nome) {
     const partes = String(nome || 'Convidado').trim().split(/\s+/).filter(Boolean);
     return `<span class="guest-nome-primeiro">${escaparHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="guest-nome-resto">${escaparHtml(partes.slice(1).join(' '))}</span>` : ''}`;
@@ -10862,7 +10862,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aberto = recadoAberto ? recados.find(/** @param {any} g */ g => String(g.id) === recadoAberto) : null;
     if (!aberto) recadoAberto = null;
     const titulo = document.getElementById('gifts-header-title');
-    if (titulo) titulo.textContent = aberto ? (aberto.guestName || 'Convidado') : 'Recados recebidos';
+    if (titulo) titulo.textContent = aberto ? (aberto.guestName || 'Convidado') : 'Meus Recados';
     document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', !aberto);
     const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
     fichaDoRecado(noCelular ? aberto : null);
@@ -10870,7 +10870,7 @@ document.addEventListener('DOMContentLoaded', () => {
       raiz.innerHTML = `<div class="dash-card love-tabela-caixa recados-caixa is-carta">${cartaDoRecado(aberto)}</div>`;
       return;
     }
-    if (aberto && titulo) titulo.textContent = 'Recados recebidos';
+    if (aberto && titulo) titulo.textContent = 'Meus Recados';
     document.getElementById('btn-recado-voltar')?.toggleAttribute('hidden', noCelular || !aberto);
     const termo = recadosBusca.trim().toLowerCase();
     const lista = termo ? recados.filter(/** @param {any} g */ g => `${g.guestName} ${g.giftTitle} ${g.message}`.toLowerCase().includes(termo)) : recados;
@@ -11028,7 +11028,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let rsvpChaveCelular = '';
   let rsvpTotalCelular = 0;
 
-  // Sub-seções de Lista de Convidados: Meus convidados / Mapear mesas / Checklist.
+  // Sub-seções de Lista de Convidados: Meus Convidados / Mapear mesas / Checklist.
   function switchRsvpSubSection(id) {
     document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
     if (id === 'tables') {
@@ -11048,7 +11048,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ==========================================
   // LISTAS SALVAS. A lista é da CONTA, não do evento (tabela
   // listas_convidados, migration 128): a pessoa salva os convidados de um
-  // evento com um nome e usa em qualquer outro evento. Em Meus convidados:
+  // evento com um nome e usa em qualquer outro evento. Em Meus Convidados:
   // ícone de salvos (computador) / "Minhas listas" (celular) abre as listas;
   // "Salvar lista" aparece quando o evento já tem convidados.
   // ==========================================
@@ -11174,7 +11174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('') + '</ul>';
     const sugestao = `Convidados · ${(ev && (ev.title || ev.name)) || 'meu evento'}`;
     const rodape = painelSoGerenciar
-      ? '<p class="listas-salvas-aviso">As listas valem para todos os seus eventos. Para usar uma, abra Meus convidados no evento.</p>'
+      ? '<p class="listas-salvas-aviso">As listas valem para todos os seus eventos. Para usar uma, abra Meus Convidados no evento.</p>'
       : !convidados.length ? '' : salvando
       ? `<form class="listas-salvas-form">
           <label class="listas-salvas-rotulo" for="listas-salvas-nome-novo">Nome da lista (${convidados.length} convidado${convidados.length === 1 ? '' : 's'})</label>
@@ -11234,7 +11234,7 @@ document.addEventListener('DOMContentLoaded', () => {
     desenharPainelDasListas(false);
   }
 
-  // Clicar numa lista: os convidados dela entram em Meus convidados (quem já
+  // Clicar numa lista: os convidados dela entram em Meus Convidados (quem já
   // está no evento, pelo nome, não entra de novo). Mesa a definir e pendente.
   /** @param {string} id @param {HTMLButtonElement} botao */
   async function usarListaSalva(id, botao) {
@@ -11671,7 +11671,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // não cada linha); o acompanhante aparece como subitem do convidado.
         row.className = `group ${indiceGrupo % 2 ? 'grupo-par' : 'grupo-impar'}${attendee.isPrimary ? '' : ' is-acompanhante-row'}`;
         // Avatar na cor da restrição alimentar (mesma lógica do assento no
-        // Mapa do evento); sem restrição, fica na cor neutra de sempre.
+        // Mapa do Evento); sem restrição, fica na cor neutra de sempre.
         const corDaRestricaoDoAvatar = opcaoComCor(attendee.isPrimary ? guest.restricaoAlimentar : attendee.restricaoAlimentar);
         const estiloDoAvatar = corDaRestricaoDoAvatar ? ` style="--cor-restricao:${corDaRestricaoDoAvatar.fundo || corDaRestricaoDoAvatar.cor}; --cor-restricao-borda:${corDaRestricaoDoAvatar.cor}"` : '';
         row.innerHTML = `
@@ -11885,7 +11885,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!desenharFichaDoConvidado()) return;
     ficha.hidden = false;
     // Computador: sem pop-up. A ficha abre dentro da própria página de
-    // Meus convidados, no lugar das abas e da tabela (como Criar presente);
+    // Meus Convidados, no lugar das abas e da tabela (como Criar presente);
     // o botão de fechar no topo dela volta para a lista. Celular: tela cheia.
     if (!abrirFichaNaPagina(ficha)) document.body.classList.add('ficha-aberta');
     const corpo = ficha.querySelector('.ficha-corpo');
@@ -12147,7 +12147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     caixa.style.setProperty('--fim-das-linhas', `${fimDasLinhas}px`);
   }
 
-  /** Pessoas na tabela de Meus convidados (o número entre parênteses ao lado de "Convidados"). */
+  /** Pessoas na tabela de Meus Convidados (o número entre parênteses ao lado de "Convidados"). */
   var totalNaTabelaDeConvidados = 0; // var: a tabela pode ser desenhada antes desta linha rodar
 
   // Lixeira ao lado do "Filtrar por" (barra da tabela): aparece com algum
@@ -12238,7 +12238,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const RSVP_SHARE_PERMISSIONS = [
     {
       key: 'viewGuestList',
-      label: 'Lista de convidados',
+      label: 'Lista de Convidados',
       desc: 'Ver nomes, quantidade de acompanhantes e status de confirmação.',
       child: { key: 'canContactGuests', label: 'Permitir contato com os convidados', desc: 'O fornecedor pode entrar em contato diretamente com os convidados.' }
     },
@@ -12542,7 +12542,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * @typedef {{ restrictionType: TipoDeRestricao, details?: string }} RestricaoAlimentar
    */
   /**
-   * Opções com a cor da bolinha (cor = bolinha; fundo = assento no Mapa do evento).
+   * Opções com a cor da bolinha (cor = bolinha; fundo = assento no Mapa do Evento).
    * @type {{ valor: TipoDeRestricao, rotulo: string, cor?: string, fundo?: string }[]}
    */
   const OPCOES_DE_RESTRICAO = [
@@ -12716,7 +12716,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Restrição de quem está num assento do Mapa do evento (convidado ou
+   * Restrição de quem está num assento do Mapa do Evento (convidado ou
    * acompanhante), pelo nome com que aparece na planta.
    * @param {string} nomeNoAssento
    */
@@ -13592,7 +13592,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'bg-white rounded-[var(--radius-card,10px)] border border-zinc-200/80 p-5 shadow-xs flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow font-sans';
       
-      // Lista de convidados acomodados
+      // Lista de Convidados acomodados
       let guestsListMarkup = '';
       if (tblGuests.length === 0) {
         guestsListMarkup = `
@@ -13918,7 +13918,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // PLANTA DO SALÃO (Mapear mesas → painel "Lista de convidados" + espaço livre de drag-and-drop)
+  // PLANTA DO SALÃO (Mapear mesas → painel "Lista de Convidados" + espaço livre de drag-and-drop)
   // Mesmo padrão do construtor "Editar meu site": painel fixo à esquerda com a Mesa
   // arrastável e os cards de convidados; arraste "Mesa" para a planta e depois
   // arraste um convidado da lista até a mesa para acomodá-lo num assento.
@@ -14221,7 +14221,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let floorplanGuestStatusFilter = 'all';
 
   // Em qual mesa (se houver) o convidado está sentado — usado pra mostrar "Mesa N"
-  // ao lado do nome no painel "Lista de convidados".
+  // ao lado do nome no painel "Lista de Convidados".
   function findFloorPlanTableNumberForGuest(guestName, elements) {
     if (!guestName || !guestName.trim()) return null;
     const els = elements || getFloorPlanElements();
@@ -14319,7 +14319,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================
-  // "MOVER CONVIDADO PARA" (lista de convidados do Mapa do evento)
+  // "MOVER CONVIDADO PARA" (lista de convidados do Mapa do Evento)
   // ==========================================
   /** Nomes marcados na lista (checkbox). Função (e não const) para já existir
    * mesmo se a lista for desenhada antes desta parte do código rodar. @returns {Set<string>} */
@@ -14571,7 +14571,7 @@ document.addEventListener('DOMContentLoaded', () => {
     delta = Math.max(caixa.top + 16 - topo, Math.min(caixa.bottom - 16 - base, delta));
     hint.style.transform = `translateY(${Math.round(delta)}px)`;
   }
-  // Altura (na tela) do ícone do vazio de Meus convidados no celular, guardada
+  // Altura (na tela) do ícone do vazio de Meus Convidados no celular, guardada
   // junto com a altura da tela para só valer no mesmo aparelho/orientação.
   function guardarAlturaDoVazioDeConvidados() {
     if (!plantaNoCelular()) return;
@@ -16109,7 +16109,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ==========================================================================
-  // Mapa do evento no celular: a planta ocupa a tela (sem a lista de
+  // Mapa do Evento no celular: a planta ocupa a tela (sem a lista de
   // convidados), o botão flutuante abre a gaveta de mesas e itens (toque para
   // pôr no meio ou arraste até o lugar) e tocar numa mesa abre a tela dela,
   // com as opções da mesa e quem está sentado. Mesas e itens se arrastam com
@@ -16960,7 +16960,7 @@ document.addEventListener('DOMContentLoaded', () => {
       closeAddGuestDrawer();
       renderGuestsTable();
       renderFloorPlanGuestCards();
-      // A cor da restrição alimentar aparece no assento do Mapa do evento.
+      // A cor da restrição alimentar aparece no assento do Mapa do Evento.
       renderFloorPlanCanvas();
       updateAllCelebrationData();
       showToast(wasNew ? `Convidado ${name} adicionado à lista de ${activeEvent.title}!` : `Convidado ${name} atualizado!`, '👤');
@@ -16997,7 +16997,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const w = /** @type {any} */ (window);
         if (w.LoveCarteira) w.LoveCarteira.render();
       } else if (subId === 'wallet-budget') {
-        title.textContent = 'Gerenciar despesas';
+        title.textContent = 'Gerenciar Despesas';
         // Sem subtítulo: o cabeçalho termina na linha, como nas outras telas.
         if (desc) desc.classList.add('hidden');
         checkAndPromptBudgetSetup();
@@ -17164,7 +17164,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Mesmo padrão de célula de Meus convidados: título em semi-negrito,
+    // Mesmo padrão de célula de Meus Convidados: título em semi-negrito,
     // demais colunas em cinza 13px (o espaçamento vem de .guests-table td).
     transactions.forEach(tx => {
       const isNegative = tx.amount < 0;
@@ -17289,7 +17289,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tela.innerHTML = `
       <header class="orc-cel-topo">
         <button type="button" class="orc-cel-icone" data-orc-cel="fechar" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12"/></svg></button>
-        <h2 id="orc-celular-titulo">Gerenciar despesas</h2>
+        <h2 id="orc-celular-titulo">Gerenciar Despesas</h2>
         <div class="orc-cel-topo-acoes">
           <button type="button" class="orc-cel-icone" data-orc-cel="adicionar" aria-label="Adicionar despesa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
           <button type="button" class="orc-cel-icone" data-orc-cel="definir" aria-label="Definir orçamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></button>
@@ -17401,10 +17401,10 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('wallet');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', textoOriginalPt(b).includes('Gerenciar despesas'));
+        b.classList.toggle('active', textoOriginalPt(b).includes('Gerenciar Despesas'));
       });
     }
-    switchWalletSubSection('wallet-budget', 'Gerenciar despesas');
+    switchWalletSubSection('wallet-budget', 'Gerenciar Despesas');
     if (orcamentoNoCelular()) {
       orcCelularVoltarPara = vinhaDe;
       const ev = getActiveEvent();
@@ -17414,7 +17414,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Home (Mais recursos › Save the Date e o passo "Escolher Save the Date" do
-  // guia): abre Personalizar evento › Aparência já na página Save the Date.
+  // guia): abre Personalizar Evento › Aparência já na página Save the Date.
   // Guia › "Personalizar site do evento": Aparência já no Convite Digital.
   window.navigateToConviteDigital = function() {
     state.activeSubSection = 'home';
@@ -17444,7 +17444,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('rsvp');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', textoOriginalPt(b).includes('Mapa do evento'));
+        b.classList.toggle('active', textoOriginalPt(b).includes('Mapa do Evento'));
       });
     }
     document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
@@ -17458,10 +17458,10 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('edit-site');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', textoOriginalPt(b).includes('Produzir convite'));
+        b.classList.toggle('active', textoOriginalPt(b).includes('Produzir Convite'));
       });
     }
-    switchEditorSubSection('invite-print', 'Produzir convite');
+    switchEditorSubSection('invite-print', 'Produzir Convite');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -17780,7 +17780,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return list;
   }
 
-  // Contratos fechados com fornecedores (Meus contratos) viram itens do
+  // Contratos fechados com fornecedores (Meus Contratos) viram itens do
   // orçamento automaticamente: valor do contrato = custo real, já pago =
   // pago. Não dá para apagar daqui — eles vêm do contrato.
   function itensDeContratosParaOrcamento() {
@@ -18005,7 +18005,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const noOrcamento = !document.getElementById('wallet-sub-budget')?.classList.contains('hidden');
     if (estavaAberta && noOrcamento) {
       const titulo = document.getElementById('wallet-header-title');
-      if (titulo) titulo.textContent = 'Gerenciar despesas';
+      if (titulo) titulo.textContent = 'Gerenciar Despesas';
       document.getElementById('wallet-header-actions')?.classList.remove('hidden');
     }
   }
@@ -18781,7 +18781,7 @@ document.addEventListener('DOMContentLoaded', () => {
     complementInput: document.getElementById('page-new-event-complement')
   });
 
-  // Mesmo autocomplete na sub-seção "Informações" (Personalizar evento) —
+  // Mesmo autocomplete na sub-seção "Informações" (Personalizar Evento) —
   // aqui o endereço é um campo único, sem número/complemento separados.
   wirePartnerVenueAutocomplete(
     document.getElementById('editor-data-location'),
@@ -21636,7 +21636,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) { if (vez === consultaDoLinkDaHome) marcar(false); }
   }
   window.loveAtualizarLinkDaHome = atualizarLinkDaHome;
-  // Lápis: Personalizar evento › Informações, já no campo do endereço (URL).
+  // Lápis: Personalizar Evento › Informações, já no campo do endereço (URL).
   document.getElementById('home-link-editar')?.addEventListener('click', () => {
     // Troca de página de verdade (sai da Home), não só a seção interna.
     window.loveIrPara('edit-site', 'data');
@@ -22852,7 +22852,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (elements.drawerSubItemsList) {
       const b2bItemMap = {
         'explore': 'Explorar',
-        'pedidos': 'Minhas solicitações',
+        'pedidos': 'Minhas Solicitações',
         'messages': 'Mensagens',
         'contracted': 'Contratos',
         'insurance': 'Benefícios',
@@ -22875,7 +22875,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pedidosView?.classList.toggle('hidden', !ehPedidos);
     document.getElementById('btn-rfp-novo')?.classList.add('hidden');
     if (ehPedidos) {
-      // Minhas solicitações: a lista; "Criar solicitação" fica no topo.
+      // Minhas Solicitações: a lista; "Criar solicitação" fica no topo.
       document.body.classList.remove('b2b-chat-mode');
       document.getElementById('b2b-toolbar-controls')?.classList.add('hidden');
       if (searchBar) searchBar.classList.remove('hidden');
@@ -22905,7 +22905,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove('b2b-chat-mode');
       if (searchBar) searchBar.classList.remove('hidden');
       if (messagesView) messagesView.classList.add('hidden');
-      // Meus contratos é sempre em lista — sem o seletor grade/lista no cabeçalho.
+      // Meus Contratos é sempre em lista — sem o seletor grade/lista no cabeçalho.
       document.getElementById('b2b-view-toggle')?.classList.toggle('hidden', viewId === 'contracted');
       if (viewId === 'contracted') {
         if (exploreView) exploreView.classList.add('hidden');
@@ -23995,7 +23995,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const TIPOS_DE_EVENTO = { wedding: 'Casamento', birthday: 'Aniversário', anniversary: 'Bodas', baby_shower: 'Chá de bebê / fraldas', baby: 'Chá de bebê / fraldas', bridal_shower: 'Chá de panela', gender_reveal: 'Chá revelação', corporate: 'Corporativo', other: 'Outro' };
   const eventosSelecionados = new Set();
 
-  // Lixeira e contagem acompanham os checks (como em Meus convidados).
+  // Lixeira e contagem acompanham os checks (como em Meus Convidados).
   function atualizarLixeiraDeEventos() {
     const checks = Array.from(document.querySelectorAll('#config-lista-eventos .config-evento-check'));
     const ids = new Set(checks.map(c => /** @type {HTMLInputElement} */ (c).value));
@@ -25563,7 +25563,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Celular: Fornecedores. A busca ("Pesquisar fornecedores" + "Em Local") sai do
 // cabeçalho e fica logo abaixo das abas, como em Convidados e Presentes; em
-// Criar solicitação as abas internas somem e "Minhas solicitações" vira o
+// Criar solicitação as abas internas somem e "Minhas Solicitações" vira o
 // ícone de lista no cabeçalho (lá dentro, o + volta a criar). Desktop não muda.
 (function fornecedoresNoCelular() {
   const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
@@ -25595,7 +25595,7 @@ document.addEventListener('DOMContentLoaded', () => {
     arrumar();
     document.getElementById('btn-rfp-voltar-explorar-celular')?.addEventListener('click', () => {
       if (/** @type {any} */ (window).LovePedidos?.voltarEtapa?.()) return;
-      // Na 1ª etapa da nova solicitação, volta para Minhas solicitações.
+      // Na 1ª etapa da nova solicitação, volta para Minhas Solicitações.
       /** @type {any} */ (window).LovePedidos?.mostrarAba('minhas');
       window.scrollTo({ top: 0 });
     });

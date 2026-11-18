@@ -17922,3 +17922,21 @@ html body #rfp-empty-state .rfp-vazio-card strong:not(#love-h-a) { font-size: 16
     -webkit-backdrop-filter: blur(20px) saturate(180%) !important; backdrop-filter: blur(20px) saturate(180%) !important;
   }
 }
+
+/* Meus Contratos — vazio: a mesma caixinha tracejada de Minhas Solicitações
+   (desktop e celular). */
+html body .ct-vazio-com-card .rfp-vazio-card:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+  width: 100%; max-width: 300px; min-height: 240px; margin: 0 auto; cursor: pointer;
+}
+html body .ct-vazio-com-card .rfp-vazio-card strong:not(#love-h-a) { font-size: 16px; font-weight: 600; color: #18181B; }
+html body .ct-vazio-com-card .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a) { white-space: normal; line-height: 1.5; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-contracted-list-container .ct-vazio.ct-vazio-com-card:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    min-height: 0 !important; padding: 0 !important; border: 0 !important; background: transparent !important;
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important; cursor: default;
+  }
+  html body .ct-vazio-com-card .rfp-vazio-card:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    max-width: none; background-color: rgba(255, 255, 255, 0.75) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important; backdrop-filter: blur(20px) saturate(180%) !important;
+  }
+}

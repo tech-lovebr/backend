@@ -2311,5 +2311,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 ", para usar todos os recursos de mapeamento, acesse o mapa do evento pelo computador (":": to use all mapping features, open the event map on a computer (",
 "Cadastre uma conta bancária para sacar seu saldo.":"Add a bank account to withdraw your balance.",
 "Sacar Pix":"Withdraw via Pix",
-"Encontre o fornecedor ideal":"Find the ideal vendor"
+"Encontre o fornecedor ideal":"Find the ideal vendor",
+"Você ainda não possui contratos ativos":"You don't have any active contracts yet",
+"Encontre um fornecedor ideal, contrate-o para o seu evento e organize as entregas.":"Find the ideal vendor, hire them for your event and organize the deliveries."
 });

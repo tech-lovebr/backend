@@ -194,10 +194,13 @@
           <table class="guests-table love-tabela w-full ct-tabela-vazia">
             <thead><tr><th>Contrato</th><th>Fornecedor</th><th>Valor</th><th>Pago</th><th>Situação</th></tr></thead>
           </table>
-          <div class="ct-vazio">
-            <dotlottie-wc class="rsvp-vazio-icone rsvp-vazio-animado" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
-            <p class="ct-vazio-titulo"><button type="button" class="rsvp-vazio-link" data-ct-solicitar>Nenhum contrato ainda</button></p>
-            <p class="ct-vazio-texto">Quando você aceitar a proposta de um fornecedor em Minhas Solicitações, o contrato aparece aqui com o valor combinado, os pagamentos e as datas de entrega.</p>
+          <div class="ct-vazio ct-vazio-com-card">
+            <!-- A caixinha tracejada clicável, igual à de Adicionar presente -->
+            <button type="button" class="lista-pronta-card lista-pronta-criar rfp-vazio-card" data-ct-solicitar>
+              <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
+              <strong>Você ainda não possui contratos ativos</strong>
+              <span class="lista-pronta-qtd">Encontre um fornecedor ideal, contrate-o para o seu evento e organize as entregas.</span>
+            </button>
           </div>
         </div>`;
       return;

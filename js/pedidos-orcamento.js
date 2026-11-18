@@ -144,7 +144,7 @@
     { titulo: 'Revise e publique', sub: 'Escolha quantas propostas quer receber e veja como os fornecedores vão ver o seu pedido.' }
   ];
   const TITULO_DA_LISTA = 'Minhas Solicitações';
-  const TITULO_DA_NOVA = 'Criar solicitação de orçamento';
+  const TITULO_DA_NOVA = 'Criar Solicitação de orçamento';
   const DESCRICAO_MIN = 50;
   const DESCRICAO_MAX = 600;
   const MAX_FOTOS = 5;
@@ -426,12 +426,12 @@
     const voltar = document.getElementById('btn-rfp-voltar');
     const criar = document.getElementById('btn-rfp-novo');
     const pedidosAberto = !!document.getElementById('b2b-pedidos-view') && !document.getElementById('b2b-pedidos-view')?.classList.contains('hidden');
-    if (titulo && pedidosAberto) titulo.textContent = aberta ? (noCelular() ? 'Criar solicitação' : TITULO_DA_NOVA) : TITULO_DA_LISTA;
+    if (titulo && pedidosAberto) titulo.textContent = aberta ? (noCelular() ? 'Criar Solicitação' : TITULO_DA_NOVA) : TITULO_DA_LISTA;
     // Computador: na nova solicitação a setinha volta para Minhas Solicitações
     // (no celular a setinha é a do próprio cabeçalho do celular).
     if (voltar) { voltar.hidden = !aberta || noCelular(); if (aberta) voltar.setAttribute('aria-label', 'Voltar para Minhas Solicitações'); }
     if (vendoPropostas && aberta) vendoPropostas = false;
-    // Minhas Solicitações: o botão "Criar solicitação" fica no topo, à direita.
+    // Minhas Solicitações: o botão "Criar Solicitação" fica no topo, à direita.
     if (criar) criar.classList.toggle('hidden', aberta || !pedidosAberto);
   }
 
@@ -497,7 +497,7 @@
     mostrarAba('minhas');
   }
 
-  /** Abas de Criar solicitação: 'nova', 'lote' (Criar várias) e 'minhas' (lista). @param {'nova'|'lote'|'minhas'} aba */
+  /** Abas de Criar Solicitação: 'nova', 'lote' (Criar várias) e 'minhas' (lista). @param {'nova'|'lote'|'minhas'} aba */
   function mostrarAba(aba) {
     const minhas = document.getElementById('pedidos-painel-minhas');
     if (aba === 'nova' || aba === 'lote') {
@@ -1122,7 +1122,7 @@
   const tabelaAusente = (error) => !!error && (error.code === '42P01' || error.code === 'PGRST205' || /pedidos_orcamento/.test(String(error.message || '')));
 
   // --------------------------------------------------------------------------
-  // Criar solicitação (um formulário só): tipo de celebração e um ou mais
+  // Criar Solicitação (um formulário só): tipo de celebração e um ou mais
   // serviços na etapa 1. Cada serviço vira uma solicitação independente (fica
   // no feed do nicho certo no Hub); com 2+ serviços, todas saem ligadas pelo
   // mesmo lote_id (migration 084) e aparecem juntas em Minhas Solicitações.
@@ -2858,7 +2858,7 @@
     if (vendoPropostas) mostrarLista(); else sair();
   });
 
-  /** Celular: a setinha do cabeçalho volta uma etapa; na 1ª, devolve false (sai para Encontrar fornecedor). */
+  /** Celular: a setinha do cabeçalho volta uma etapa; na 1ª, devolve false (sai para Encontrar Fornecedor). */
   function voltarEtapa() {
     const m = document.getElementById('rfp-editor');
     if (!m || m.hidden || etapa <= 1 || publicando) return false;
@@ -2867,7 +2867,7 @@
     return true;
   }
 
-  /** Pedido de abrir direto a nova solicitação (ex.: "Criar solicitação" em Contratos). */
+  /** Pedido de abrir direto a nova solicitação (ex.: "Criar Solicitação" em Contratos). */
   let novaPedida = false;
   function pedirNova() { novaPedida = true; }
   /** Entrar em Fornecedores › Minhas Solicitações: abre a lista, ou a nova

@@ -2271,5 +2271,13 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Minhas Solicitações ({x})":"My requests ({x})",
 "Nenhuma lista adicionada ainda. Em Meus Presentes, use \"Adicionar novo\".":"No lists added yet. In My gifts, use \"Add new\".",
 "Meus Recados":"My messages",
-"Meus Contratos":"My contracts"
+"Meus Contratos":"My contracts",
+"Criar Novo Evento":"Create new event",
+"Ver Meu Site":"View my website",
+"Central de Ajuda":"Help center",
+"Contas Bancárias":"Bank accounts",
+"Criar Solicitação":"Create request",
+"Voltar para Encontrar Fornecedor":"Back to Find a vendor",
+"Encontrar Fornecedor":"Find a vendor",
+"Criar Solicitação de orçamento":"Create quote request"
 });

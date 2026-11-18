@@ -55,8 +55,8 @@
        corpo da página (ex.: o carrossel do login) que já chama LoveI18n.t()
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
-  <script src="js/i18n.js?v=20261117_email"></script>
-  <script src="js/i18n-plataforma.js?v=20261117_en12"></script>
+  <script src="js/i18n.js?v=20261117_menus2"></script>
+  <script src="js/i18n-plataforma.js?v=20261117_en13"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -114,7 +114,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261117_padroniza">
+  <link rel="stylesheet" href="css/styles.css?v=20261117_menus2">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261117_logoazul">
@@ -769,7 +769,7 @@
             <div class="pt-2 border-t border-slate-100">
               <button id="btn-dropdown-create-new-event" class="w-full py-2.5 px-3 text-xs sm:text-sm font-bold text-[#183b54] hover:bg-blue-50 rounded-lg flex items-center gap-2 transition-all">
                 <span class="font-bold text-base leading-none text-zinc-500">+</span>
-                <span data-love-i18n="dashboardChrome.criarNovoEvento">Criar novo evento</span>
+                <span data-love-i18n="dashboardChrome.criarNovoEvento">Criar Novo Evento</span>
               </button>
             </div>
           </div>
@@ -804,13 +804,13 @@
 
         <!-- Botão Meu Perfil / Minha Conta (Ícone adaptativo ao tema, mesmo padrão de Chat/Notificações) -->
         <div class="relative">
-          <button id="btn-user-account-menu" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" title="Minha conta" data-love-i18n-title="dashboardChrome.minhaConta">
+          <button id="btn-user-account-menu" type="button" class="header-icon-btn p-2 text-zinc-600 hover:text-zinc-900 relative transition-colors flex items-center justify-center cursor-pointer rounded-xl hover:bg-zinc-100/80" title="Minha Conta" data-love-i18n-title="dashboardChrome.minhaConta">
             <!-- Foto da conta ou, sem foto, as iniciais do nome (preenchido pelo app.js) -->
             <span id="header-user-avatar" class="header-user-avatar love-avatar-box hidden" aria-hidden="true"></span>
             <svg id="header-user-icon" class="w-[23px] h-[23px]" fill="none" stroke="currentColor" stroke-width="2.15" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"></path>
             </svg>
-            <span class="sr-only" data-love-i18n="dashboardChrome.minhaConta">Minha conta</span>
+            <span class="sr-only" data-love-i18n="dashboardChrome.minhaConta">Minha Conta</span>
           </button>
 
           <!-- Dropdown Menu de Minha Conta -->
@@ -825,12 +825,12 @@
               </div>
             </div>
 
-            <!-- 1. Ver meu site -->
+            <!-- 1. Ver Meu Site -->
             <button id="btn-account-preview-site" class="w-full text-left px-3.5 py-2.5 rounded-xl text-[14.5px] font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 flex items-center gap-3 transition-all cursor-pointer">
               <svg class="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"></path>
               </svg>
-              <span data-love-i18n="dashboardChrome.verMeuSite">Ver meu site</span>
+              <span data-love-i18n="dashboardChrome.verMeuSite">Ver Meu Site</span>
             </button>
 
             <!-- 2. Financeiro -->
@@ -866,7 +866,7 @@
                 <circle cx="12" cy="12" r="9.25"></circle>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75a2.25 2.25 0 1 1 3.5 1.875c-.75.5-1.25 1.125-1.25 2.125m0 3h.01"></path>
               </svg>
-              <span data-love-i18n="dashboardChrome.centralDeAjuda">Central de ajuda</span>
+              <span data-love-i18n="dashboardChrome.centralDeAjuda">Central de Ajuda</span>
             </button>
 
             <div class="border-t border-slate-100 my-1"></div>
@@ -910,7 +910,7 @@
       </button>
     </aside>
     <div class="menu-conta-fundo" aria-hidden="true"></div>
-    <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha conta" data-love-i18n-aria-label="dashboardChrome.minhaConta" aria-hidden="true">
+    <section class="menu-conta" role="dialog" aria-modal="true" aria-label="Minha Conta" data-love-i18n-aria-label="dashboardChrome.minhaConta" aria-hidden="true">
       <button type="button" class="menu-conta-fechar" aria-label="Fechar" data-love-i18n-aria-label="dashboardChrome.fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
       <div class="menu-conta-cabeca">
         <span class="menu-conta-avatar love-avatar-box" aria-hidden="true"></span>
@@ -927,7 +927,7 @@
         </button>
         <div class="menu-celular-eventos-lista" hidden></div>
       </div>
-      <nav class="menu-conta-itens" aria-label="Minha conta" data-love-i18n-aria-label="dashboardChrome.minhaConta"></nav>
+      <nav class="menu-conta-itens" aria-label="Minha Conta" data-love-i18n-aria-label="dashboardChrome.minhaConta"></nav>
       <button type="button" class="menu-conta-sair"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg><span data-love-i18n="dashboardChrome.sair">Sair</span></button>
     </section>
 
@@ -2008,10 +2008,10 @@
               <div class="builder-toolbar-left">
                 <div class="builder-page-switcher" id="builder-page-switcher">
                   <button type="button" class="builder-page-name" id="builder-page-select-btn" aria-haspopup="true" aria-expanded="false">
-                    <span id="builder-page-select-label">Convite digital</span>
+                    <span id="builder-page-select-label">Convite Digital</span>
                   </button>
                   <div class="kanban-list-dropdown builder-page-dropdown" id="builder-page-dropdown">
-                    <button type="button" class="kanban-list-dropdown-item" data-page-option="convite">Convite digital</button>
+                    <button type="button" class="kanban-list-dropdown-item" data-page-option="convite">Convite Digital</button>
                     <button type="button" class="kanban-list-dropdown-item" data-page-option="savethedate">Save the Date</button>
                   </div>
                 </div>
@@ -2405,7 +2405,7 @@
                 </div>
               </div>
             </div>
-            <!-- Celular: aviso de que no computador há mais opções (igual ao do Convite digital) -->
+            <!-- Celular: aviso de que no computador há mais opções (igual ao do Convite Digital) -->
             <p class="aviso-computador-celular" role="note">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
               <span>Atenção, para usar todos os recursos de mapeamento, acesse o mapa do evento pelo computador (desktop).</span>
@@ -2501,7 +2501,7 @@
             <p id="wallet-header-desc" class="hidden text-sm text-zinc-500 -mt-2"></p>
 
           <!-- SUB-PAINEL 1: CARTEIRA DIGITAL -->
-          <!-- Carteira digital: Saque (Contas bancárias ficam em Configurações; js/carteira.js) -->
+          <!-- Carteira Digital: Saque (Contas Bancárias ficam em Configurações; js/carteira.js) -->
           <div id="wallet-sub-digital" class="wallet-sub-panel">
             <div id="carteira-raiz"></div>
           </div>
@@ -2588,7 +2588,7 @@
           <div id="home-capa-celular" class="home-capa-celular">
             <div id="home-capa-celular-foto" class="home-capa-celular-foto" role="img" aria-label="Foto do evento"></div>
             <!-- Computador: ao passar o mouse na capa, "Alterar imagem" no canto
-                 superior direito; troca também a capa do Convite digital. -->
+                 superior direito; troca também a capa do Convite Digital. -->
             <button type="button" id="btn-home-capa-trocar" class="home-capa-trocar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 2 2"/></svg><span>Alterar imagem</span></button>
             <input type="file" id="home-capa-arquivo" accept="image/*" class="hidden">
             <div class="home-capa-celular-caixa">
@@ -3013,7 +3013,7 @@
             <div class="criar-evento-centro">
               <h2 id="create-event-welcome-title" class="criar-evento-titulo">Sempre existe um bom motivo para celebrar</h2>
               <p id="create-event-welcome-subtitle" class="criar-evento-texto">Personalize o site da sua próxima celebração e convide suas pessoas favoritas.</p>
-              <button type="button" id="btn-start-event-creation" class="criar-evento-btn"><span>Criar novo evento</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+              <button type="button" id="btn-start-event-creation" class="criar-evento-btn"><span>Criar Novo Evento</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
             </div>
           </div>
 
@@ -3196,7 +3196,7 @@
              ================================================================= -->
         <section id="tab-faq" class="dashboard-tab-content space-y-0 w-full">
           <div class="builder-toolbar">
-            <h2 id="faq-header-title" class="floorplan-page-name" style="margin:0;">Central de ajuda</h2>
+            <h2 id="faq-header-title" class="floorplan-page-name" style="margin:0;">Central de Ajuda</h2>
             <div class="flex items-center gap-2.5 flex-shrink-0"></div>
           </div>
 
@@ -3223,8 +3223,8 @@
               <button type="button" class="love-tab-item active" data-config-aba="conta">Informações</button>
               <button type="button" class="love-tab-item" data-config-aba="privacidade">Privacidade</button>
               <button type="button" class="love-tab-item" data-config-aba="preferencias">Preferências</button>
-              <button type="button" class="love-tab-item" data-config-aba="eventos">Meu evento</button>
-              <button type="button" class="love-tab-item" data-config-aba="contas">Contas bancárias</button>
+              <button type="button" class="love-tab-item" data-config-aba="eventos">Meu Evento</button>
+              <button type="button" class="love-tab-item" data-config-aba="contas">Contas Bancárias</button>
             </div>
           </div>
 
@@ -3408,7 +3408,7 @@
               </div>
             </div>
 
-            <!-- Meu evento: as informações do evento ativo e, no fim, desativar
+            <!-- Meu Evento: as informações do evento ativo e, no fim, desativar
                  (marca o evento como excluído; o Admin continua vendo e pode restaurar). -->
             <!-- Preferências: e-mails da Love e avisos da lista de presentes.
                  Salva ao clicar no toggle (como em Preferências do Hub). -->
@@ -3425,14 +3425,14 @@
               </div>
             </div>
 
-            <!-- Contas bancárias: a raiz da Carteira (#carteira-raiz) vem para cá (js/carteira.js). -->
+            <!-- Contas Bancárias: a raiz da Carteira (#carteira-raiz) vem para cá (js/carteira.js). -->
             <div class="hidden w-full" id="config-painel-contas">
               <div id="config-contas-lugar"></div>
             </div>
 
             <div class="max-w-3xl mx-auto hidden space-y-6" id="config-painel-eventos">
               <div class="dash-card">
-                <h3 class="text-base font-bold text-zinc-900 mb-4">Meu evento</h3>
+                <h3 class="text-base font-bold text-zinc-900 mb-4">Meu Evento</h3>
                 <dl class="config-evento-dados" id="config-meu-evento-dados"></dl>
               </div>
               <div class="dash-card config-evento-desativar">
@@ -3459,15 +3459,15 @@
               <button type="button" id="btn-rfp-voltar" class="rfp-voltar-seta" aria-label="Voltar para as solicitações" hidden>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
-              <!-- Celular, em Criar solicitação: setinha volta para Encontrar fornecedor -->
-              <button type="button" id="btn-rfp-voltar-explorar-celular" class="rfp-voltar-seta rfp-voltar-explorar-celular" aria-label="Voltar para Encontrar fornecedor">
+              <!-- Celular, em Criar Solicitação: setinha volta para Encontrar Fornecedor -->
+              <button type="button" id="btn-rfp-voltar-explorar-celular" class="rfp-voltar-seta rfp-voltar-explorar-celular" aria-label="Voltar para Encontrar Fornecedor">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg>
               </button>
               <h2 id="b2b-toolbar-title" class="floorplan-page-name" style="margin:0;">Explorar</h2>
               <!-- Celular, em Conversas: bolinha com as não lidas ao lado do título -->
               <span id="b2b-chat-selo-celular" class="b2b-chat-selo-celular badge-header-chat hidden" aria-label="Não lidas">0</span>
             </div>
-            <!-- Celular, em Encontrar fornecedor: cidade que filtra (toque para trocar) -->
+            <!-- Celular, em Encontrar Fornecedor: cidade que filtra (toque para trocar) -->
             <button type="button" id="btn-b2b-cidade-celular" class="b2b-cidade-celular" aria-haspopup="dialog" aria-expanded="false" title="Trocar a cidade">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 12 3.5 6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg><span id="b2b-cidade-celular-nome">São Paulo, SP</span>
             </button>
@@ -3475,14 +3475,14 @@
             <button type="button" id="btn-b2b-explorar-celular" class="b2b-explorar-celular" aria-label="Explorar fornecedores" title="Explorar fornecedores">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>
             </button>
-            <!-- Celular, em Criar solicitação: lista = Minhas Solicitações; + = volta a criar -->
+            <!-- Celular, em Criar Solicitação: lista = Minhas Solicitações; + = volta a criar -->
             <button type="button" id="btn-rfp-lista-celular" class="rfp-lista-celular" aria-label="Minhas Solicitações" title="Minhas Solicitações">
               <svg class="rfp-icone-lista" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
               <svg class="rfp-icone-mais" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>
             </button>
             <!-- Solicitações de orçamento: botão do cabeçalho (só nessa tela) -->
             <button type="button" id="btn-rfp-novo" class="btn-primary flex-shrink-0 hidden">
-              <span>Criar solicitação</span>
+              <span>Criar Solicitação</span>
             </button>
             <div id="b2b-toolbar-controls" class="flex items-center gap-2.5 flex-shrink-0">
               <!-- Alternância Lista / Grid (ver b2bViewMode em app.js) — lista é o padrão. -->
@@ -3731,7 +3731,7 @@
                precisa e os fornecedores mandam propostas (js/pedidos-orcamento.js)
                =============================================================== -->
           <div id="b2b-pedidos-view" class="hidden px-6 sm:px-8 py-6 w-full max-w-none">
-            <!-- Minhas Solicitações: a lista; "Criar solicitação" (topo) abre a nova solicitação -->
+            <!-- Minhas Solicitações: a lista; "Criar Solicitação" (topo) abre a nova solicitação -->
 
             <div id="pedidos-painel-minhas" class="hidden">
               <div id="rfp-lista-wrap">
@@ -3931,12 +3931,12 @@
 
         <!-- =================================================================
              PAGE 8: INFORMAÇÕES & MEU EVENTO (Ícone 7 - Informação ⓘ)
-             Sub-seções: Meu evento | Dúvidas | Legal
+             Sub-seções: Meu Evento | Dúvidas | Legal
              ================================================================= -->
         <section id="tab-info-event" class="dashboard-tab-content space-y-8">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
             <div>
-              <span id="info-active-sub-badge" class="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-1">Meu evento</span>
+              <span id="info-active-sub-badge" class="text-xs font-bold text-blue-600 uppercase tracking-widest block mb-1">Meu Evento</span>
               <h2 id="info-active-sub-title" class="text-xl font-bold text-zinc-900 font-sans">Meu Evento</h2>
               <p class="text-sm text-slate-500 mt-0.5">Gerencie os links públicos, QR Code e dados fundamentais do seu evento.</p>
             </div>
@@ -4431,7 +4431,7 @@
               <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"/></svg>
               <span class="text-xs font-bold font-sans">Clique para trocar a imagem</span>
             </div>
-            <!-- Celular: "Alterar imagem" igual ao da capa do Convite digital -->
+            <!-- Celular: "Alterar imagem" igual ao da capa do Convite Digital -->
             <span class="gift-alterar-imagem-celular" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path stroke-linecap="round" stroke-linejoin="round" d="m5 18 5-5 3 3 4-5 4 5"/></svg>
               <span>Alterar imagem</span>
@@ -4710,7 +4710,7 @@
           <!-- Serviço clicado: escondido, só para o envio -->
           <select id="orcamento-servico" class="hidden" aria-hidden="true" tabindex="-1"></select>
 
-          <!-- B. Dados essenciais: mesma grade de 3 colunas de Criar solicitação.
+          <!-- B. Dados essenciais: mesma grade de 3 colunas de Criar Solicitação.
                Linha 1: data, início e término. Linha 2: convidados e local
                (espaço para locação: sem local, o lugar é o próprio espaço). -->
           <div class="orc-grade orc-grade-tempo">
@@ -5783,14 +5783,14 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261117_menus"></script>
+  <script src="js/app.js?v=20261117_menus2"></script>
   <script src="js/landing.js?v=20261117_gira55"></script>
-  <script src="js/carteira.js?v=20261117_menus"></script>
+  <script src="js/carteira.js?v=20261117_menus2"></script>
   <script src="js/checklist.js?v=20261117_atalhos"></script>
-  <script src="js/pedidos-orcamento.js?v=20261117_menus"></script>
-  <script src="js/contratos.js?v=20261117_menus"></script>
+  <script src="js/pedidos-orcamento.js?v=20261117_menus2"></script>
+  <script src="js/contratos.js?v=20261117_menus2"></script>
   <script src="js/recebimento.js?v=20261024_avisoTitulo"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
-  <script src="js/site-builder.js?v=20261117_menus"></script>
+  <script src="js/site-builder.js?v=20261117_menus2"></script>
 </body>
 </html>

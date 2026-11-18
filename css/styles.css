@@ -16988,3 +16988,12 @@ html body .lista-pronta-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):no
   html body #event-checklist-list .chk-grupo:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; border-radius: 10px !important; overflow: hidden; margin-bottom: 12px; border: 0 !important; }
   html body #event-checklist-list .chk-grupo-topo:not(#love-h-a):not(#love-h-b) { background: transparent !important; }
 }
+
+/* Celular — Encontrar Fornecedor: sem a faixa com os nomes das cidades (a
+   cidade já fica no topo, e é lá que se troca); a lista dos fornecedores
+   sobe para perto da busca. Desktop não muda. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #b2b-explore-view #b2b-city-filter-wrap:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #b2b-explore-view:not(#love-h-a):not(#love-h-b):not(#love-h-c) { padding-top: 0 !important; }
+  html body #b2b-explore-view > #b2b-cards-list-container:not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
+}

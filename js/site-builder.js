@@ -39,7 +39,7 @@ const DRESSCODE_PUBLISHED_STATE_KEY = 'love-site-builder-dresscode-published-sta
 // Save the Date: capa (mesma imagem do convite) + textos, sem botões. Não é
 // publicado — é compartilhado como imagem + texto (WhatsApp, Instagram, e-mail).
 const SAVETHEDATE_STORAGE_KEY = 'love-site-builder-savethedate';
-const BUILDER_PAGE_LABELS = { convite: 'Convite digital', presentes: 'Lista de Presentes', dresscode: 'Dress code', savethedate: 'Save the Date' };
+const BUILDER_PAGE_LABELS = { convite: 'Convite Digital', presentes: 'Lista de Presentes', dresscode: 'Dress code', savethedate: 'Save the Date' };
 let currentPageKey = 'convite';
 
 function escapeHtml(str) {
@@ -811,7 +811,7 @@ async function publicarConviteNoAr(btn) {
 // de demonstração) — já com o template de cor/imagem do tipo escolhido.
 /**
  * Template padrão do tipo de evento (tabela convite_templates_padrao,
- * migration 071): o Convite digital montado num evento-modelo. null se o
+ * migration 071): o Convite Digital montado num evento-modelo. null se o
  * tipo ainda não tem template.
  * @param {string} typeKey
  * @returns {Promise<any|null>}
@@ -1072,7 +1072,7 @@ function atualizarBotoesDaPagina() {
 
 function updatePageSwitcherUI() {
   const label = document.getElementById('builder-page-select-label');
-  if (label) label.textContent = BUILDER_PAGE_LABELS[currentPageKey] || 'Convite digital';
+  if (label) label.textContent = BUILDER_PAGE_LABELS[currentPageKey] || 'Convite Digital';
   document.querySelectorAll('#builder-page-dropdown [data-page-option]').forEach(item => {
     item.classList.toggle('active', item.dataset.pageOption === currentPageKey);
   });
@@ -1158,7 +1158,7 @@ const SAIDAS_DO_CONSTRUTOR = [
 
 let liberandoSaida = false;
 
-/** O construtor está na tela (Aparência › Convite digital / Save the Date)? */
+/** O construtor está na tela (Aparência › Convite Digital / Save the Date)? */
 function construtorVisivel() {
   const raiz = document.getElementById('site-builder-root');
   return !!(raiz && raiz.offsetParent !== null);
@@ -1486,7 +1486,7 @@ function renderLeftPanel() {
     return;
   }
 
-  // Sem a caixinha de rótulo no topo: no Convite digital o primeiro grupo já
+  // Sem a caixinha de rótulo no topo: no Convite Digital o primeiro grupo já
   // se chama "Elementos"; no Save the Date fica só o texto "Editar texto".
   const ehSaveTheDate = currentPageKey === 'savethedate';
   panel.innerHTML = `<div class="builder-panel-tab-body" id="builder-panel-tab-body"></div>`;
@@ -1785,7 +1785,7 @@ function trocarFotoNoCelular(el) {
   input.click();
 }
 
-/** Celular, Convite digital: editor só com o essencial (textos padronizados). */
+/** Celular, Convite Digital: editor só com o essencial (textos padronizados). */
 function construtorNoCelularAtivo() {
   return currentPageKey === 'convite' && window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
 }
@@ -4159,7 +4159,7 @@ function initSiteBuilder() {
 
   initCompartilharSaveTheDate();
 
-  // "Ver página publicada" (Convite digital e Informações): abre o convite no
+  // "Ver página publicada" (Convite Digital e Informações): abre o convite no
   // link público do evento (love.com.br/<slug>), não a prévia.
   ['builder-preview-link', 'classic-editor-ver-publicada'].forEach(id => {
     const btn = document.getElementById(id);
@@ -4526,13 +4526,13 @@ function renderConvitePublico(root) {
 // Cor de fundo da seção de botões (ela já acompanha a cor de Aparência) —
 // as telas internas do convite usam a mesma, como as seções de informação.
 /**
- * Estado do Convite digital, mesmo com outra página aberta na Aparência
+ * Estado do Convite Digital, mesmo com outra página aberta na Aparência
  * (ex.: Save the Date). Informações, Anfitriões e as telas do convite usam
- * sempre a capa, as cores e os botões do Convite digital.
+ * sempre a capa, as cores e os botões do Convite Digital.
  * @returns {any}
  */
 // Home (computador): "Alterar imagem" na capa troca a imagem do topo do
-// Convite digital (primeira seção), igual a Informações, e salva.
+// Convite Digital (primeira seção), igual a Informações, e salva.
 window.loveTrocarCapaDoConvite = function (file) {
   const conv = estadoDoConvite();
   const alvo = conv && (conv.sections || []).find(s => !s.isQuickNav && !s.isGiftsBlock);
@@ -4600,7 +4600,7 @@ function capaDasInformacoesHtml() {
 }
 
 // Prévia de Informações (computador e celular): "Alterar imagem" sobre a foto,
-// igual ao da capa em Convite digital. Sem foto, uma caixa com "Adicionar imagem".
+// igual ao da capa em Convite Digital. Sem foto, uma caixa com "Adicionar imagem".
 function ligarImagemDasInformacoes(container) {
   const tela = container.querySelector('.convite-tela');
   if (!tela) return;
@@ -6045,7 +6045,7 @@ window.wireColorSwatchPopovers = wireColorSwatchPopovers;
 })();
 
 
-/* -------------------- Celular: modelos prontos do Convite digital -------------------- */
+/* -------------------- Celular: modelos prontos do Convite Digital -------------------- */
 
 // Textos de cada tipo de evento (o resto vem do MODELOS_DE_CONVITE).
 const TEXTOS_DOS_MODELOS = {

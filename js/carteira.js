@@ -1,10 +1,10 @@
 // @ts-check
-// Carteira digital (Carteira › Carteira digital): Saque; Contas bancárias
-// ficam em Configurações › Contas bancárias. No modelo das carteiras de plataformas de pagamento:
+// Carteira Digital (Carteira › Carteira Digital): Saque; Contas Bancárias
+// ficam em Configurações › Contas Bancárias. No modelo das carteiras de plataformas de pagamento:
 //   Saque: saldo total, disponível para saque (com "Solicitar saque") e
 //          pendente; ao lado, o extrato dos presentes comprados e o
 //          histórico de saques (quando, quanto, para qual conta e status).
-//   Contas bancárias: antes da primeira conta, a verificação de identidade
+//   Contas Bancárias: antes da primeira conta, a verificação de identidade
 //          (RG frente e verso, nome, CPF e Pix — migration 086, bucket
 //          privado "documentos"); depois, a tabela das contas
 //          (clientes.dados_saque.contas) e o cadastro dentro da caixa.
@@ -213,7 +213,7 @@
             <p class="cart-numero">${valor(n.disponivel)}</p>
             ${podeSacar ? `
               <button type="button" class="btn-primary cart-sacar" data-cart-sacar ${n.disponivel > 0 && temConta ? '' : 'disabled'}>Solicitar saque</button>
-              ${temConta ? '' : '<p class="cart-dica">Cadastre uma conta em <button type="button" class="cart-link-texto" data-cart-aba="contas">Contas bancárias</button> para sacar.</p>'}` : '<p class="cart-dica">Só o criador do evento pode solicitar saques.</p>'}
+              ${temConta ? '' : '<p class="cart-dica">Cadastre uma conta em <button type="button" class="cart-link-texto" data-cart-aba="contas">Contas Bancárias</button> para sacar.</p>'}` : '<p class="cart-dica">Só o criador do evento pode solicitar saques.</p>'}
             <button type="button" class="cart-link-texto cart-ver" data-cart-vista="saques" ${vista === 'saques' ? 'aria-current="true"' : ''}>Ver histórico de saques</button>
           </div>
           <div class="cart-resumo-col">
@@ -297,7 +297,7 @@
   }
 
   // --------------------------------------------------------------------------
-  // Contas bancárias: verificação de identidade (antes da primeira conta),
+  // Contas Bancárias: verificação de identidade (antes da primeira conta),
   // tabela das contas (padrão Meus Convidados, sem busca) e cadastro na caixa.
   // --------------------------------------------------------------------------
   /** Cadastro de conta aberto dentro da caixa (no lugar da tabela), sem pop-up. */
@@ -896,8 +896,8 @@
     if (novo) { novo.focus(); if (pos !== null) novo.setSelectionRange(pos, pos); }
   });
 
-  // Sem abas: a Carteira mostra o Saque e as Contas bancárias ficam em
-  // Configurações › Contas bancárias. A mesma raiz (#carteira-raiz) muda de
+  // Sem abas: a Carteira mostra o Saque e as Contas Bancárias ficam em
+  // Configurações › Contas Bancárias. A mesma raiz (#carteira-raiz) muda de
   // lugar, então todos os seletores continuam valendo.
   /** @param {string} idDoLugar */
   function moverRaizPara(idDoLugar) {

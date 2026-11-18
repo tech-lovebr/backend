@@ -14155,3 +14155,20 @@ html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-cai
   html.hub-claro body .b2b-content form.settings-zola-forms:not(#love-h-a):not(#love-h-b) { row-gap: 12px !important; }
   html.hub-claro body .settings-shell > [data-settings-panel]:not([hidden]):not([style*="none"]) + [data-settings-panel]:not(#love-h-a):not(#love-h-b) { margin-top: 12px !important; }
 }
+
+/* Desktop — Meus produtos: "Adicionar novo" igual ao "Salvar lista" de Meus
+   Convidados do anfitrião (branco, linha cinza fina, 38px, cantos 8px, texto
+   13/500 #3F3F46, sem ícone; ao passar o mouse a linha e o texto escurecem). */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body .b2b-header-bar #product-add-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) {
+    display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0 !important;
+    height: 38px !important; min-height: 38px !important; padding: 0 14px !important; white-space: nowrap;
+    background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; box-shadow: none !important;
+    color: #3F3F46 !important; font-family: var(--fonte-love) !important; font-size: 13px !important; font-weight: 500 !important;
+    transition: border-color .15s, color .15s;
+  }
+  html body .b2b-header-bar #product-add-btn > svg:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body .b2b-header-bar #product-add-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):is(:hover, :focus-visible) { border-color: #181D24 !important; color: #181D24 !important; background: #FFFFFF !important; }
+  html:not(.hub-claro) body .b2b-header-bar #product-add-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i) { background: transparent !important; border-color: #3F3F46 !important; color: #E4E4E7 !important; }
+  html:not(.hub-claro) body .b2b-header-bar #product-add-btn:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h):not(#love-h-i):is(:hover, :focus-visible) { border-color: #FFFFFF !important; color: #FFFFFF !important; }
+}

@@ -1496,6 +1496,8 @@ document.addEventListener('DOMContentLoaded', () => {
       convidado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></svg>',
       presente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2Zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12Zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>',
       evento: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>', // só o +, como Criar Novo Evento no menu da conta
+      fornecedor: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+      contratos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
       seta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
     };
     function fechar() {
@@ -1504,22 +1506,6 @@ document.addEventListener('DOMContentLoaded', () => {
       menu = null;
       botao?.classList.remove('is-aberto');
       botao?.setAttribute('aria-expanded', 'false');
-    }
-    /** @param {HTMLElement} caixa */
-    async function desenharAtrasadas(caixa) {
-      const w = /** @type {any} */ (window);
-      /** @type {{id:string,titulo:string,prazo:string}[]} */
-      let lista = [];
-      try { lista = w.LoveChecklist && w.LoveChecklist.atrasadas ? await w.LoveChecklist.atrasadas() : []; } catch (e) { lista = []; }
-      if (!caixa.isConnected) return;
-      if (!lista.length) { caixa.innerHTML = '<p class="atalhos-vazio">Nada atrasado no checklist. Tudo em dia!</p>'; return; }
-      const mostrar = lista.slice(0, 3);
-      caixa.innerHTML = mostrar.map(t => `
-        <div class="atalhos-tarefa" data-tarefa="${escaparHtml(t.id)}">
-          <button type="button" class="atalhos-marcar" data-marcar aria-label="Marcar como feita"></button>
-          <button type="button" class="atalhos-tarefa-texto" data-abrir-checklist><span class="atalhos-tarefa-titulo">${escaparHtml(t.titulo)}</span><span class="atalhos-tarefa-prazo">${escaparHtml(t.prazo)}</span></button>
-        </div>`).join('')
-        + (lista.length > mostrar.length ? `<button type="button" class="atalhos-ver-todas" data-abrir-checklist>Ver todas as ${lista.length} atrasadas</button>` : '');
     }
     function abrir() {
       const m = document.createElement('div');
@@ -1530,33 +1516,21 @@ document.addEventListener('DOMContentLoaded', () => {
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="convidados">${ICONES.convidado}<span>Adicionar convidados</span></button>
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="presentes">${ICONES.presente}<span>Criar lista de presentes</span></button>
           <button type="button" role="menuitem" class="atalhos-item" data-atalho="evento">${ICONES.evento}<span>Criar Novo Evento</span></button>
-        </div>
-        <div class="atalhos-grupo">
-          <p class="atalhos-rotulo">Atrasadas no checklist</p>
-          <div class="atalhos-tarefas"><p class="atalhos-vazio">Carregando…</p></div>
+          <button type="button" role="menuitem" class="atalhos-item" data-atalho="fornecedor">${ICONES.fornecedor}<span>Encontrar Fornecedor</span></button>
+          <button type="button" role="menuitem" class="atalhos-item" data-atalho="contratos">${ICONES.contratos}<span>Meus Contratos</span></button>
         </div>`;
       document.body.appendChild(m);
       menu = m;
       botao?.classList.add('is-aberto');
       botao?.setAttribute('aria-expanded', 'true');
-      desenharAtrasadas(/** @type {HTMLElement} */ (m.querySelector('.atalhos-tarefas')));
       m.addEventListener('click', async (e) => {
         const alvo = /** @type {HTMLElement} */ (e.target);
         const atalho = alvo.closest('[data-atalho]')?.getAttribute('data-atalho');
         if (atalho === 'convidados') { fechar(); window.loveIrPara?.('rsvp', 'all'); setTimeout(() => abrirFichaDoConvidado(null), 80); return; }
         if (atalho === 'presentes') { fechar(); window.loveIrPara?.('gifts', 'gift-lists'); return; }
         if (atalho === 'evento') { fechar(); openCreateEventPage(); return; }
-        const marcar = /** @type {HTMLButtonElement|null} */ (alvo.closest('[data-marcar]'));
-        if (marcar) {
-          const linha = /** @type {HTMLElement} */ (marcar.closest('.atalhos-tarefa'));
-          linha.classList.add('is-feita');
-          marcar.disabled = true;
-          const ok = await /** @type {any} */ (window).LoveChecklist?.concluir(linha.dataset.tarefa || '');
-          if (!ok) { linha.classList.remove('is-feita'); marcar.disabled = false; return; }
-          setTimeout(() => { const caixa = /** @type {HTMLElement|null} */ (m.querySelector('.atalhos-tarefas')); if (caixa) desenharAtrasadas(caixa); }, 600);
-          return;
-        }
-        if (alvo.closest('[data-abrir-checklist]')) { fechar(); window.loveIrPara?.('rsvp', 'checklist'); }
+        if (atalho === 'fornecedor') { fechar(); window.loveIrPara?.('b2b', 'explore'); return; }
+        if (atalho === 'contratos') { fechar(); window.loveIrPara?.('b2b', 'contracted'); }
       });
     }
     botao.addEventListener('click', (e) => { e.stopPropagation(); if (menu) fechar(); else abrir(); });
@@ -1569,6 +1543,16 @@ document.addEventListener('DOMContentLoaded', () => {
     new MutationObserver(() => { if (menu && !document.getElementById('tab-overview')?.classList.contains('active')) fechar(); })
       .observe(document.getElementById('tab-overview') || document.body, { attributes: true, attributeFilter: ['class'] });
   })();
+
+  // Celular: nos vazios de Minhas Solicitações e Meus Contratos a caixa
+  // tracejada inteira funciona como o link (igual a Adicionar presente).
+  document.addEventListener('click', (e) => {
+    if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
+    const alvo = /** @type {HTMLElement} */ (e.target);
+    const caixa = alvo.closest?.('#rfp-empty-state, .ct-vazio');
+    if (!caixa || alvo.closest('button, a')) return;
+    /** @type {HTMLElement|null} */ (caixa.querySelector('.rsvp-vazio-link'))?.click();
+  });
 
   // Celular: o X no topo de Notificações volta para o Início.
   document.getElementById('btn-notifications-fechar')?.addEventListener('click', () => switchRailTab('overview'));

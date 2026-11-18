@@ -17160,3 +17160,46 @@ html body #site-builder-root .std-celular-conversa:not(#love-h-a):not(#love-h-b)
   html body #site-builder-root[data-pagina="savethedate"] .std-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c),
   html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
 }
+
+/* Desktop — Save the Date: Compartilhar com o ícone de compartilhar e o
+   mesmo bloco claro do "Adicionar novo" de Meus Presentes. */
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html body #view-event-os-dashboard #tab-edit-site #builder-share:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: inline-flex !important; align-items: center; gap: 7px; height: 38px !important; padding: 0 14px !important;
+    background: rgba(24, 59, 84, 0.07) !important; color: #3F3F46 !important; border: 0 !important; box-shadow: none !important;
+    border-radius: 8px !important; font-size: 13px !important; font-weight: 500 !important;
+  }
+  html body #view-event-os-dashboard #tab-edit-site #builder-share:not(#love-h-a):not(#love-h-b):not(#love-h-c):hover { background: rgba(24, 59, 84, 0.11) !important; color: #181D24 !important; }
+  html body #view-event-os-dashboard #tab-edit-site #builder-share:not(#love-h-a):not(#love-h-b):not(#love-h-c)::before {
+    content: ''; display: block; flex-shrink: 0; width: 16px; height: 16px; background: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15'/%3E%3C/svg%3E") center / 16px no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15'/%3E%3C/svg%3E") center / 16px no-repeat;
+  }
+}
+
+/* Celular — Minhas Solicitações e Meus Contratos: sem a lupa no cabeçalho
+   (a busca fica sempre à mostra logo abaixo) e o vazio na mesma caixa
+   tracejada do "Adicionar presente" (ícone 64px, texto centralizado). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-b2b:has(#b2b-pedidos-view:not(.hidden), #b2b-contracted-view:not(.hidden)) #b2b-top-search-bar > .busca-celular-botao:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #view-event-os-dashboard #b2b-contracted-list-container .ct-barra-topo .love-tabela-busca:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: block !important; width: 100% !important; max-width: none !important; }
+
+  html body #rfp-caixa #rfp-empty-state:not(.hidden):not(#love-h-a):not(#love-h-b),
+  html body #b2b-contracted-list-container .ct-vazio:not(#love-h-a):not(#love-h-b) {
+    display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+    flex: 0 0 auto !important; min-height: 240px; margin: 16px !important; padding: 24px !important; box-sizing: border-box;
+    background: #FFFFFF; border: 1px dashed #D4D4D8 !important; border-radius: 10px !important; text-align: center; cursor: pointer;
+  }
+  html body :is(#rfp-empty-state, .ct-vazio) .rsvp-vazio-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: block; width: 64px !important; height: 64px !important; margin: 0 auto 6px !important; }
+  html body :is(#rfp-empty-state, .ct-vazio) > p:first-of-type:not(#love-h-a):not(#love-h-b) { margin: 0 !important; }
+  html body :is(#rfp-empty-state, .ct-vazio) .rsvp-vazio-link:not(#love-h-a):not(#love-h-b):not(#love-h-c) { font-size: 16px !important; font-weight: 600 !important; line-height: 24px !important; color: #18181B !important; text-decoration: none !important; }
+  html body :is(#rfp-empty-state, .ct-vazio) > p:last-of-type:not(:first-of-type):not(#love-h-a):not(#love-h-b) { margin: 0 !important; max-width: 300px; font-size: 13px !important; font-weight: 400 !important; line-height: 19.5px !important; color: #71717A !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #b2b-contracted-list-container .ct-barra-topo .love-tabela-barra-esq:not(#love-h-a):not(#love-h-b):not(#love-h-c) { display: flex !important; flex: 1 1 auto !important; min-width: 0 !important; width: auto !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #b2b-contracted-list-container .ct-barra-topo .love-tabela-barra-dir:not(#love-h-a):not(#love-h-b):not(#love-h-c) { flex: 0 0 auto !important; width: auto !important; margin-left: 0 !important; }
+  html body #view-event-os-dashboard #b2b-contracted-list-container .ct-barra-topo .love-tabela-busca:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { flex: 1 1 auto; }
+  html body #view-event-os-dashboard #b2b-contracted-list-container #ct-busca:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 100% !important; }
+}

@@ -298,7 +298,8 @@ function ajustarFiltrosDaLista() {
     const contador = card && card.querySelector('.tabela-filtro-contador');
     if (contador) contador.hidden = true;
     card?.querySelector('[data-tabela-filtrar]')?.classList.remove('is-ativo');
-    const placeholder = financeListaAtual === 'notas' ? 'Pesquisar nº da nota ou cliente...' : 'Pesquisar nº, descrição ou valor...';
+    // No celular, só "Pesquisar".
+    const placeholder = window.matchMedia?.(MQ_CELULAR_HUB).matches ? 'Pesquisar' : (financeListaAtual === 'notas' ? 'Pesquisar nº da nota ou cliente...' : 'Pesquisar nº, descrição ou valor...');
     const busca = card && card.querySelector('.tabela-busca input');
     if (busca) busca.placeholder = placeholder;
   }
@@ -309,7 +310,7 @@ function initBarraListaFinanceira() {
   if (!card || financeListaEstado) return;
   ajustarFiltrosDaLista();
   financeListaEstado = montarBarraTabela(card, {
-    placeholder: 'Pesquisar descrição ou valor...',
+    placeholder: window.matchMedia?.(MQ_CELULAR_HUB).matches ? 'Pesquisar' : 'Pesquisar descrição ou valor...',
     celular: {
       nome: 2,
       semIniciais: true,

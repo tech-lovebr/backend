@@ -16938,3 +16938,26 @@ html body .lista-pronta-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):no
   .atalhos-tarefa-prazo { font-size: 12px; font-weight: 500; color: #b04369; }
   .atalhos-ver-todas { display: block; width: 100%; height: 40px; margin-top: 4px; padding: 0 10px; background: transparent; border: 0; border-radius: 8px; color: #183b54; font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
 }
+
+/* Celular — botões de adicionar do topo (Checklist e Orçamento) iguais ao
+   "+" de Meus presentes e Meus convidados: bloco cinza-azulado clarinho e
+   ícone cinza escuro. "Saiba mais" do Checklist só no desktop.
+   Notificações: arrastar o balão para a esquerda mostra "Remover" no mesmo
+   cinza clarinho. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body :is(#btn-checklist-nova, #btn-open-add-expense):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    background: rgba(24, 59, 84, 0.07) !important; color: #3F3F46 !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important;
+  }
+  html body :is(#btn-checklist-nova, #btn-open-add-expense):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) * { color: inherit !important; }
+  html body :is(#btn-checklist-nova, #btn-open-add-expense):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):active { background: rgba(24, 59, 84, 0.11) !important; color: #181D24 !important; }
+  html body .chk-saiba-mais:not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  .notif-linha { position: relative; }
+  html body #notifications-list-container .notif-linha > .notification-row:not(#love-h-a) { position: relative; z-index: 1; touch-action: pan-y; will-change: transform; -webkit-user-select: none; user-select: none; }
+  .notif-acoes { position: absolute; top: 0; right: 0; bottom: 0; width: 88px; z-index: 0; display: flex; visibility: hidden; }
+  .notif-linha.acoes-visiveis > .notif-acoes { visibility: visible; }
+  .notif-remover { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0; border: 0; border-radius: 12px;
+    background: #EEF1F3; color: #3F3F46; font-family: var(--fonte-love, 'Outfit'), sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .notif-remover:active { background: #E2E7EB; color: #181D24; }
+  .notif-remover svg { width: 22px; height: 22px; }
+}

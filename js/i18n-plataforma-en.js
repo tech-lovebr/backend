@@ -2254,5 +2254,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Marcar como feita":"Mark as done",
 "Ver todas as {x} atrasadas":"See all {x} overdue",
 "Venceu ontem":"Due yesterday",
-"Vence hoje":"Due today"
+"Vence hoje":"Due today",
+"Remover":"Remove"
 });

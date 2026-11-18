@@ -1309,7 +1309,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const outras = [...adminItems.filter(n => !n.fixada), ...buildLembreteNotifications(ev), ...buildConfirmacaoNotifications(ev), ...buildGiftNotifications()];
     const ms = (/** @type {any} */ n) => { const t = n.quando ? new Date(n.quando).getTime() : NaN; return isNaN(t) ? 0 : t; };
     outras.sort((a, b) => ms(b) - ms(a));
-    notificationsFeedCache = [...adminItems.filter(n => n.fixada), ...outras];
+    // Removidas pela pessoa (arrastar para o lado › Remover) não voltam.
+    const removidas = new Set(lerJsonLocal(chaveDasNotificacoesRemovidas(), []));
+    notificationsFeedCache = [...adminItems.filter(n => n.fixada), ...outras].filter(n => !removidas.has(String(n.id)));
     renderNotificationsPage();
     updateNotificationsBadge();
   }
@@ -1371,7 +1373,9 @@ document.addEventListener('DOMContentLoaded', () => {
     listEl.querySelectorAll('.notification-row').forEach(row => {
       const n = notificationsFeedCache[parseInt(row.dataset.index, 10)];
       if (!n) return;
+      prepararArrasteDaNotificacao(/** @type {HTMLElement} */ (row), n);
       row.addEventListener('click', () => {
+        if (/** @type {HTMLElement} */ (row).dataset.arrastou === '1' || row.parentElement?.classList.contains('is-aberta')) { fecharLinhaDaNotificacao(); return; }
         if (TIPOS_COM_LEITURA.includes(n.kind) && n.unread) {
           n.unread = false;
           if (n.kind === 'admin') markNotificationRead(n.id); else marcarNotificacaoLocalLida(n);
@@ -1382,6 +1386,98 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // ------------------------------------------------------------------
+  // Celular — Notificações: arrastar o balão para a esquerda mostra
+  // "Remover" (como em Conversas). Remover esconde a notificação de vez
+  // neste navegador (as do Admin também ficam como lidas).
+  // ------------------------------------------------------------------
+  const LARGURA_REMOVER_NOTIF = 96;
+  /** @type {HTMLElement|null} */
+  let linhaDaNotificacaoAberta = null;
+  function chaveDasNotificacoesRemovidas() {
+    return `love-notif-removidas-${window.loveClienteSession?.user?.id || 'local'}`;
+  }
+  /** @param {HTMLElement} linha @param {number} x @param {boolean} animar */
+  function moverLinhaDaNotificacao(linha, x, animar) {
+    const card = /** @type {HTMLElement|null} */ (linha.querySelector('.notification-row'));
+    if (!card) return;
+    card.style.transition = animar ? 'transform .38s cubic-bezier(.22, 1.2, .36, 1)' : 'none';
+    card.style.transform = x ? `translate3d(${x}px, 0, 0)` : '';
+    linha.classList.toggle('is-aberta', x < 0);
+    if (x < 0) linha.classList.add('acoes-visiveis');
+    else if (!animar) linha.classList.remove('acoes-visiveis');
+    else setTimeout(() => { if (!linha.classList.contains('is-aberta')) linha.classList.remove('acoes-visiveis'); }, 420);
+  }
+  function fecharLinhaDaNotificacao() {
+    if (linhaDaNotificacaoAberta) moverLinhaDaNotificacao(linhaDaNotificacaoAberta, 0, true);
+    linhaDaNotificacaoAberta = null;
+  }
+  /** @param {any} n */
+  function removerNotificacao(n) {
+    const chave = chaveDasNotificacoesRemovidas();
+    const lista = lerJsonLocal(chave, []);
+    if (!lista.includes(String(n.id))) { lista.push(String(n.id)); gravarJsonLocal(chave, lista.slice(-2000)); }
+    if (n.unread) {
+      n.unread = false;
+      if (n.kind === 'admin') markNotificationRead(n.id); else marcarNotificacaoLocalLida(n);
+    }
+    notificationsFeedCache = notificationsFeedCache.filter(x => x !== n);
+    linhaDaNotificacaoAberta = null;
+    updateNotificationsBadge();
+    renderNotificationsPage();
+  }
+  /** Envolve o balão numa linha com o "Remover" por trás. @param {HTMLElement} card @param {any} n */
+  function prepararArrasteDaNotificacao(card, n) {
+    if (!window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) return;
+    const linha = document.createElement('div');
+    linha.className = 'notif-linha';
+    card.replaceWith(linha);
+    const acoes = document.createElement('div');
+    acoes.className = 'notif-acoes';
+    acoes.innerHTML = '<button type="button" class="notif-remover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Remover</span></button>';
+    acoes.querySelector('button')?.addEventListener('click', (e) => { e.stopPropagation(); removerNotificacao(n); });
+    linha.append(acoes, card);
+    let x0 = 0, y0 = 0, inicio = 0, x = 0;
+    /** @type {null|'h'|'v'} */
+    let direcao = null;
+    card.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      x0 = e.touches[0].clientX; y0 = e.touches[0].clientY;
+      inicio = linha === linhaDaNotificacaoAberta ? -LARGURA_REMOVER_NOTIF : 0;
+      x = inicio; direcao = null; card.dataset.arrastou = '';
+    }, { passive: true });
+    card.addEventListener('touchmove', (e) => {
+      if (e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - x0, dy = e.touches[0].clientY - y0;
+      if (!direcao) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        direcao = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+        if (direcao === 'h') {
+          card.dataset.arrastou = '1';
+          if (linhaDaNotificacaoAberta && linhaDaNotificacaoAberta !== linha) fecharLinhaDaNotificacao();
+        }
+      }
+      if (direcao !== 'h') return;
+      e.preventDefault();
+      x = Math.max(-LARGURA_REMOVER_NOTIF, Math.min(0, inicio + dx));
+      moverLinhaDaNotificacao(linha, x, false);
+    }, { passive: false });
+    const soltar = () => {
+      if (direcao !== 'h') return;
+      const abrir = x < -LARGURA_REMOVER_NOTIF / 2;
+      moverLinhaDaNotificacao(linha, abrir ? -LARGURA_REMOVER_NOTIF : 0, true);
+      linhaDaNotificacaoAberta = abrir ? linha : (linhaDaNotificacaoAberta === linha ? null : linhaDaNotificacaoAberta);
+      direcao = null;
+      setTimeout(() => { card.dataset.arrastou = ''; }, 350);
+    };
+    card.addEventListener('touchend', soltar);
+    card.addEventListener('touchcancel', soltar);
+  }
+  document.addEventListener('touchstart', (e) => {
+    const alvo = /** @type {Element} */ (e.target);
+    if (linhaDaNotificacaoAberta && !(alvo.closest && linhaDaNotificacaoAberta.contains(alvo))) fecharLinhaDaNotificacao();
+  }, { passive: true, capture: true });
 
   // ------------------------------------------------------------------
   // Celular — "+" no meio da barra de baixo (só com o Início aberto):

@@ -17090,3 +17090,14 @@ html body .org-nome-texto .guest-nome-resto:not(#love-h-a) { font-weight: 600 !i
   html body .ficha-massa .ficha-massa-texto::placeholder { color: #A1A1AA; }
   html body .ficha-massa .ficha-erro:not([hidden]) { margin: 8px 0 0; }
 }
+
+/* Celular — barra de baixo: o item aberto fica com o ícone preenchido na
+   primária (coroa, lápis, convidados e a tampa do presente); o "+" do meio
+   com o ícone na primária. Desktop não muda. */
+.rail-cheio { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .sidebar-icon-rail .rail-icon-btn.active svg .rail-cheio:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { display: inline; fill: #183b54 !important; stroke: none !important; }
+  html body .sidebar-icon-rail .rail-icon-btn.active svg.rail-troca-cheio > path:not(.rail-cheio):not(#love-h-a):not(#love-h-b) { display: none; }
+  html body .sidebar-icon-rail .rail-icon-btn.active[data-rail-tab="b2b"] svg path:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { fill: #183b54 !important; }
+  html body .sidebar-icon-rail #rail-mais-celular .rail-mais-circulo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { color: #183b54; }
+}

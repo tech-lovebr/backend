@@ -409,7 +409,7 @@ function opFecharDetalhe() {
   opPedidoAberto = null;
   history.replaceState(null, '', location.pathname);
   const abaAtiva = document.querySelector('[data-leads-aba].active');
-  leadsMostrarAba(abaAtiva ? abaAtiva.dataset.leadsAba : 'eventos');
+  leadsMostrarAba(abaAtiva ? abaAtiva.dataset.leadsAba : 'leads');
 }
 
 /* Limite do plano: depois de 3 (Gratuito) ou 100 (Pro) propostas no mês, a
@@ -989,6 +989,9 @@ async function initOportunidades() {
   if (abaPedida === 'eventos' || abaPedida === 'propostas' || abaPedida === 'leads') {
     leadsMostrarAba(abaPedida);
     history.replaceState(null, '', location.pathname);
+  } else {
+    // Clientes é a primeira aba (Clientes, Orçamentos, Oportunidades) e abre primeiro.
+    leadsMostrarAba('leads');
   }
 
   // Sem produto cadastrado: só a mensagem para cadastrar um.

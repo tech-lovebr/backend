@@ -35,7 +35,7 @@
             <button type="button" class="produto-voltar" id="op-pedido-voltar" aria-label="Voltar para Oportunidades" data-dica="Voltar" hidden>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6"/></svg>
             </button>
-            <h2 class="text-xl font-bold text-zinc-900" id="leads-titulo-pagina">Oportunidades</h2>
+            <h2 class="text-xl font-bold text-zinc-900" id="leads-titulo-pagina">Meus clientes</h2>
           </div>
           <div class="produtos-header-acoes op-header-acoes" id="op-header-acoes">
             <label class="tabela-busca produtos-busca op-busca">
@@ -74,12 +74,12 @@
 
 
         <div class="category-tabs-bar" id="leads-abas">
-          <button type="button" class="category-tab active" data-leads-aba="eventos">Oportunidades</button>
+          <button type="button" class="category-tab active" data-leads-aba="leads">Clientes</button>
           <button type="button" class="category-tab" data-leads-aba="propostas">Orçamentos</button>
-          <button type="button" class="category-tab" data-leads-aba="leads">Clientes</button>
+          <button type="button" class="category-tab" data-leads-aba="eventos">Oportunidades</button>
         </div>
 
-        <div data-leads-painel="leads" hidden>
+        <div data-leads-painel="leads">
         <div class="dash-card" id="leads-table-card">
           <div class="overflow-x-auto leads-table-wrap">
             <table class="leads-table w-full">
@@ -93,7 +93,7 @@
         <p class="crm-footer-count" id="leads-count-label"></p>
         </div>
 
-        <div data-leads-painel="eventos">
+        <div data-leads-painel="eventos" hidden>
           <div class="op-vazio op-sem-produtos" id="op-sem-produtos" hidden>
             <p class="op-sem-produtos-titulo">Você ainda não possui produtos cadastrados.</p>
             <p>Cadastre um produto para encontrar clientes interessados.</p>
@@ -390,6 +390,6 @@
   <script src="js/data-br-localidades.js?v=1"></script>
   <script src="js/crm.js?v=38"></script>
   <script src="js/cliente-pagina.js?v=1"></script>
-  <script src="js/oportunidades.js?v=36"></script>
+  <script src="js/oportunidades.js?v=37"></script>
 </body>
 </html>

@@ -2306,5 +2306,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Conversar":"Chat",
 "Link do fornecedor copiado":"Vendor link copied",
 "Você ainda não recebeu recados":"You haven't received any messages yet",
-"Sacar":"Withdraw"
+"Sacar":"Withdraw",
+"Atenção":"Heads up",
+", para usar todos os recursos de mapeamento, acesse o mapa do evento pelo computador (":": to use all mapping features, open the event map on a computer ("
 });

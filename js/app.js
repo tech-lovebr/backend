@@ -606,12 +606,14 @@ document.addEventListener('DOMContentLoaded', () => {
       // só o texto: trocar de aba e voltar recria os .sub-drawer-item do
       // zero (mesmo texto/estado, elementos novos), e os botões da barra
       // ficavam presos aos elementos antigos (removidos), parecendo travados.
-      const assinatura = itens.map(i => (i.classList.contains('active') ? '*' : '') + i.textContent.trim()).join('|');
+      // Checklist é um menu à parte: sem as abas Meus Convidados / Mapa do Evento embaixo.
+      const noChecklist = !!lista.querySelector('.sub-drawer-item.active[data-route-sub="checklist"]');
+      const assinatura = (noChecklist ? 'chk#' : '') + itens.map(i => (i.classList.contains('active') ? '*' : '') + i.textContent.trim()).join('|');
       const mesmosElementos = itens.length === itensAnteriores.length && itens.every((el, i) => el === itensAnteriores[i]);
       if (mesmosElementos && assinatura === barra.dataset.assinatura) { posicionar(); return; }
       itensAnteriores = itens;
       barra.dataset.assinatura = assinatura;
-      barra.hidden = itens.length < 2;
+      barra.hidden = itens.length < 2 || noChecklist;
       barra.textContent = '';
       itens.forEach(orig => {
         const ativo = orig.classList.contains('active');

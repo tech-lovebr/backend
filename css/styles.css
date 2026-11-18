@@ -18084,3 +18084,8 @@ html body .convite-tela .convite-presentes-vazio .convite-presentes-vazio-texto:
 /* Telas do convite publicado: nada passa da largura da tela (sem rolagem
    para o lado). */
 html body .convite-tela:not(#love-h-a) { max-width: 100%; overflow-x: clip; }
+
+/* Convite publicado — Localização: o mapa como imagem (Google Static Maps,
+   carrega na hora); tocar abre o Google Maps. Sem a chave, volta o iframe. */
+a.convite-mapa { display: block; }
+.convite-mapa img { display: block; width: 100%; height: 240px; object-fit: cover; }

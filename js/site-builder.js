@@ -4766,9 +4766,10 @@ function renderLocalizacaoPublica(root) {
   const enderecoCompleto = enderecoComCidade(ev.endereco, ev.cidade, ev.uf);
   const destino = (enderecoCompleto || '').trim() || (ev.local || '').trim();
   const mapa = destino ? `
-    <div class="convite-mapa">
-      <iframe src="https://maps.google.com/maps?q=${encodeURIComponent(destino)}&z=15&output=embed" title="Mapa do local" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
-    </div>
+    <a class="convite-mapa" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destino)}" target="_blank" rel="noopener" aria-label="Abrir o local no Google Maps">
+      <img src="/api/mapa?q=${encodeURIComponent(destino)}" alt="Mapa do local" width="640" height="240" decoding="async" fetchpriority="high"
+        onerror="this.closest('.convite-mapa').outerHTML='<div class=&quot;convite-mapa&quot;><iframe src=&quot;https://maps.google.com/maps?q=${encodeURIComponent(destino).replace(/'/g, '%27')}&amp;z=15&amp;output=embed&quot; title=&quot;Mapa do local&quot; allowfullscreen></iframe></div>'">
+    </a>
     <div class="convite-mapa-como-chegar">${botoesDeMapaHtml(ev.local, enderecoCompleto)}</div>` : '';
   const conteudo = caixaInfoPublica(
     blocoInfoPublico('Local', ev.local) +

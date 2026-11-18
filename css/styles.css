@@ -17524,3 +17524,18 @@ html body .btn-message-supplier.b2b-botao-icone svg:not(#love-h-a) { width: 18px
   html body .menu-celular .menu-celular-link-sair:not(#love-h-a) { margin-top: 8px; position: relative; }
   html body .menu-celular .menu-celular-link-sair:not(#love-h-a)::before { content: ""; position: absolute; top: -4px; left: 8px; right: 8px; height: 1px; background: rgba(0, 0, 0, 0.06); }
 }
+
+/* Celular — Encontrar Fornecedor: o ícone de Conversas fica solto (sem a
+   caixinha cinza) e a caixinha cinza passa para o ícone de Solicitar
+   orçamento (fundo .07 e o ícone escuro, como o "+" de Meus Presentes). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-message-supplier.b2b-botao-icone:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) {
+    background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+  }
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-message-supplier.b2b-botao-icone svg:not(#love-h-a):not(#love-h-b) { width: 22px; height: 22px; }
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-hire-supplier:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) {
+    background: rgba(24, 59, 84, 0.07) !important; border-color: transparent !important; color: #18181B !important; box-shadow: none !important;
+  }
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-hire-supplier:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) * { color: #18181B !important; }
+  html body #view-event-os-dashboard #b2b-cards-list-container .b2b-item-card .btn-hire-supplier:active:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: rgba(24, 59, 84, 0.11) !important; }
+}

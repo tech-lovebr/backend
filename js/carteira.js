@@ -214,7 +214,7 @@
             <p class="cart-rotulo"><span class="cart-so-desktop">Saldo disponível para saque</span><span class="cart-so-celular">Saldo disponível</span></p>
             <p class="cart-numero">${valor(n.disponivel)}</p>
             ${podeSacar ? `
-              <button type="button" class="btn-primary cart-sacar" data-cart-sacar ${n.disponivel > 0 && temConta ? '' : 'disabled'}><span class="cart-so-desktop">Solicitar saque</span><span class="cart-so-celular">Sacar</span></button>
+              <button type="button" class="btn-primary cart-sacar" data-cart-sacar ${n.disponivel > 0 && temConta ? '' : 'disabled'}><span class="cart-so-desktop">Solicitar saque</span><span class="cart-so-celular">Sacar Pix</span></button>
               ${temConta ? '' : '<p class="cart-dica cart-dica-conta">Cadastre uma conta em <button type="button" class="cart-link-texto" data-cart-aba="contas">Contas Bancárias</button> para sacar.</p>'}` : '<p class="cart-dica">Só o criador do evento pode solicitar saques.</p>'}
             <button type="button" class="cart-link-texto cart-ver" data-cart-vista="saques" ${vista === 'saques' ? 'aria-current="true"' : ''}>Ver histórico de saques</button>
           </div>

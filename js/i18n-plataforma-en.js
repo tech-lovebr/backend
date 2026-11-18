@@ -2309,5 +2309,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Sacar":"Withdraw",
 "Atenção":"Heads up",
 ", para usar todos os recursos de mapeamento, acesse o mapa do evento pelo computador (":": to use all mapping features, open the event map on a computer (",
-"Cadastre uma conta bancária para sacar seu saldo.":"Add a bank account to withdraw your balance."
+"Cadastre uma conta bancária para sacar seu saldo.":"Add a bank account to withdraw your balance.",
+"Sacar Pix":"Withdraw via Pix"
 });

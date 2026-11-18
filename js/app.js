@@ -18180,6 +18180,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!alvo) return;
     const abrir = /** @type {HTMLElement|null} */ (alvo.closest('[data-orc-abrir]'));
     if (abrir) { e.stopPropagation(); abrirDespesa(abrir.dataset.orcAbrir || ''); return; }
+    // Celular: sem a coluna do ⋯, tocar na linha abre a despesa.
+    const linhaDaDespesa = /** @type {HTMLElement|null} */ (alvo.closest('#budget-expenses-tbody tr[data-despesa-id]'));
+    if (linhaDaDespesa && orcamentoNoCelular() && !alvo.closest('button, a')) { abrirDespesa(linhaDaDespesa.dataset.despesaId || ''); return; }
     if (alvo.closest('#btn-orc-voltar')) { fecharDespesa(); return; }
     if (alvo.closest('[data-orc-editar]') && despesaAberta) abrirDespesaNoDrawer(despesaAberta);
   });

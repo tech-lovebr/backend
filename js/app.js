@@ -1496,7 +1496,7 @@ document.addEventListener('DOMContentLoaded', () => {
       convidado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></svg>',
       presente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8v13m0-13V6a2 2 0 1 1 2 2h-2Zm0 0V5.5A2.5 2.5 0 1 0 9.5 8H12Zm-7 4h14M5 12a2 2 0 1 1 0-4h14a2 2 0 1 1 0 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>',
       evento: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4.5v15m7.5-7.5h-15"/></svg>', // só o +, como Criar Novo Evento no menu da conta
-      fornecedor: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+      fornecedor: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6l4 6l5-4-2 10H5L3 8l5 4 4-6z"/></svg>', // a coroa de Fornecedores
       contratos: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>',
       seta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
     };
@@ -1526,7 +1526,7 @@ document.addEventListener('DOMContentLoaded', () => {
       m.addEventListener('click', async (e) => {
         const alvo = /** @type {HTMLElement} */ (e.target);
         const atalho = alvo.closest('[data-atalho]')?.getAttribute('data-atalho');
-        if (atalho === 'convidados') { fechar(); window.loveIrPara?.('rsvp', 'all'); setTimeout(() => abrirFichaDoConvidado(null), 80); return; }
+        if (atalho === 'convidados') { fechar(); window.loveIrPara?.('rsvp', 'all'); return; }
         if (atalho === 'presentes') { fechar(); window.loveIrPara?.('gifts', 'gift-lists'); return; }
         if (atalho === 'evento') { fechar(); openCreateEventPage(); return; }
         if (atalho === 'fornecedor') { fechar(); window.loveIrPara?.('b2b', 'explore'); return; }
@@ -12887,7 +12887,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <span>Adicionar</span>
       </button>
       <button type="button" role="menuitem" data-add="massa">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M7.5 17a4.5 4.5 0 0 1 9 0"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h6.5M14.5 17.5h6M17.5 14.5v6"/></svg>
         <span>Adicionar em massa</span>
       </button>
       <button type="button" role="menuitem" data-add="contatos">

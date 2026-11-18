@@ -18004,3 +18004,13 @@ html body #rfp-empty-state .rfp-vazio-card .lista-pronta-qtd:not(#love-h-a):not(
   html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="overview"] svg.rail-icone-so-desktop:not(#love-h-a):not(#love-h-b) { display: none !important; }
   html body .sidebar-icon-rail .rail-icon-btn[data-rail-tab="overview"] svg.rail-icone-so-celular:not(#love-h-a):not(#love-h-b) { display: block !important; }
 }
+
+/* Celular — Meus Convidados: a tabela no layout automático e a coluna do
+   nome com a largura toda. Com table-layout: fixed, ao passar do desktop
+   para o celular sem recarregar (girar o tablet, Inspecionar), o navegador
+   guardava as 6 colunas do desktop e o nome ficava com 1/6 da largura
+   (só o avatar, sem o nome e com a linha divisória curta). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-rsvp table.guests-table:not(#love-h-a):not(#love-h-b):not(#love-h-c) { table-layout: auto !important; }
+  html body #tab-rsvp table.guests-table tbody td:first-child:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 100% !important; }
+}

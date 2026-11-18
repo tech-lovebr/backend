@@ -1559,9 +1559,32 @@ function montarMenuDoCelular() {
   window.matchMedia(MQ_CELULAR).addEventListener?.('change', (e) => { if (!e.matches) fechar(); });
 }
 
+/* Celular: páginas que se abrem "por cima" (Notificações, Configurações,
+   Central de ajuda, Workshops) ficam com o título à esquerda e um X à
+   direita, como no anfitrião — sem a seta de voltar. O X volta para a
+   página de onde a pessoa veio (ou para o Início). O CSS só mostra no celular. */
+const PAGINAS_COM_X = ['notificacoes', 'configuracoes', 'faq', 'guias', 'workshops'];
+function colocarXNoCabecalho() {
+  if (!PAGINAS_COM_X.includes(document.body.dataset.page || '')) return;
+  const cab = document.querySelector('.b2b-content > .b2b-header-bar');
+  if (!cab || cab.querySelector('.header-fechar-celular')) return;
+  const x = document.createElement('a');
+  x.href = 'dashboard';
+  x.className = 'header-fechar-celular';
+  x.setAttribute('aria-label', 'Fechar');
+  x.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+  x.addEventListener('click', (e) => {
+    let veioDaqui = false;
+    try { veioDaqui = !!document.referrer && new URL(document.referrer).origin === location.origin && new URL(document.referrer).pathname !== location.pathname; } catch (_) {}
+    if (veioDaqui && history.length > 1) { e.preventDefault(); history.back(); }
+  });
+  cab.appendChild(x);
+}
+
 document.addEventListener('shell:ready', () => {
   ligarBarraDeBaixo();
   montarMenuDoCelular();
+  colocarXNoCabecalho();
 });
 
 /* Faixa central de 1280px (como no anfitrião): a largura da área de

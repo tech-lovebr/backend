@@ -2279,5 +2279,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Criar Solicitação":"Create request",
 "Voltar para Encontrar Fornecedor":"Back to Find a vendor",
 "Encontrar Fornecedor":"Find a vendor",
-"Criar Solicitação de orçamento":"Create quote request"
+"Criar Solicitação de orçamento":"Create quote request",
+"Texto copiado. Cole onde quiser compartilhar.":"Text copied. Paste it wherever you want to share.",
+"Copie o texto e cole onde quiser compartilhar.":"Copy the text and paste it wherever you want to share."
 });

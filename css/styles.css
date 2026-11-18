@@ -17018,3 +17018,34 @@ html body .lista-pronta-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):no
     width: calc(100% + 4px); height: calc(100% + 8px); margin: -4px -2px; border-radius: 8px; box-shadow: none;
   }
 }
+
+/* Celular — "Defina seu orçamento": cabeçalho como os outros (título à
+   esquerda, X à direita, fundo branco) e corpo no cinza clarinho com as
+   informações em caixas brancas, como Adicionar convidado. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #modal-setup-budget:not(#love-h-a):not(#love-h-b) { background: #F4F6F7 !important; }
+  html body #modal-setup-budget > .modal-container-custom:not(#love-h-a):not(#love-h-b) {
+    background: #F4F6F7 !important; padding: 0 0 calc(24px + env(safe-area-inset-bottom, 0px)) !important; gap: 0 !important;
+  }
+  html body #modal-setup-budget > .modal-container-custom > *:not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; }
+  html body #modal-setup-budget .orc-setup-fechar:not(#love-h-a):not(#love-h-b) { left: auto !important; right: 6px; z-index: 2; }
+  html body #modal-setup-budget .modal-container-custom > .text-center:not(#love-h-a):not(#love-h-b) {
+    text-align: left !important; background: #FFFFFF; padding: calc(12px + env(safe-area-inset-top, 0px)) 60px 14px 16px !important;
+  }
+  html body #modal-setup-budget .modal-container-custom > .text-center h3:not(#love-h-a):not(#love-h-b) {
+    font-size: 20px !important; font-weight: 700 !important; line-height: 26px !important; letter-spacing: -0.4px !important; color: #18181B !important; padding-top: 9px;
+  }
+  html body #modal-setup-budget .modal-container-custom > .text-center p:not(#love-h-a):not(#love-h-b) { margin: 4px 0 0 !important; max-width: none !important; font-size: 13px !important; color: #71717A !important; }
+  html body #modal-setup-budget .modal-container-custom > .grid:not(#love-h-a):not(#love-h-b) { padding: 16px 16px 0; gap: 12px !important; }
+  html body #modal-setup-budget .modal-container-custom > .grid > div:not(#love-h-a):not(#love-h-b) {
+    background: #FFFFFF !important; border: 0 !important; border-radius: 10px !important; padding: 16px !important; box-shadow: none !important;
+  }
+  html body #modal-setup-budget input:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; border: 1px solid #E4E4E7 !important; }
+  html body #modal-setup-budget input:not(:placeholder-shown):not(#love-h-a):not(#love-h-b) { background: rgba(24, 59, 84, 0.06) !important; border-color: transparent !important; }
+  html body #modal-setup-budget .modal-container-custom > .pt-2:not(#love-h-a):not(#love-h-b) { padding: 16px 16px 0 !important; }
+}
+
+/* Celular — Save the Date: Compartilhar à esquerda e Salvar à direita. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-edit-site .builder-toolbar-right > #builder-save:not(#love-h-a):not(#love-h-b) { order: 2; }
+}

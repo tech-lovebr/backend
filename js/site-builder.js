@@ -5841,6 +5841,17 @@ async function compartilharSaveTheDate(canal, status) {
   persistBuilderState(true);
   const texto = textoDoSaveTheDate();
   if (!texto) { avisar('Escreva o texto do Save the Date antes de compartilhar.'); return false; }
+  // Celular: o compartilhar do próprio aparelho (como o link da Home), sem o menu.
+  if (canal === 'sistema') {
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Save the Date', text: texto }); } catch (e) { return false; }
+      avisar('');
+      return true;
+    }
+    const copiou = await copiarTexto(texto);
+    avisar(copiou ? 'Texto copiado. Cole onde quiser compartilhar.' : 'Copie o texto e cole onde quiser compartilhar.');
+    return copiou;
+  }
   if (canal === 'whatsapp') {
     const url = (ehCelular() ? 'https://wa.me/?text=' : 'https://web.whatsapp.com/send?text=') + encodeURIComponent(texto);
     window.open(url, '_blank');
@@ -5867,8 +5878,13 @@ function initCompartilharSaveTheDate() {
   if (!wrap || !btn || !menu || wrap.dataset.ligado) return;
   wrap.dataset.ligado = '1';
   const fechar = () => { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); };
-  btn.addEventListener('click', (e) => {
+  btn.addEventListener('click', async (e) => {
     e.stopPropagation();
+    if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches && navigator.share) {
+      const ok = await compartilharSaveTheDate('sistema', status);
+      if (ok && typeof window.markPlatformTaskAchieved === 'function') window.markPlatformTaskAchieved('savethedate');
+      return;
+    }
     const abrir = menu.classList.contains('hidden');
     menu.classList.toggle('hidden', !abrir);
     btn.setAttribute('aria-expanded', String(abrir));

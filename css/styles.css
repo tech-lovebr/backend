@@ -17151,3 +17151,12 @@ html body .org-nome-texto .guest-nome-resto:not(#love-h-a) { font-weight: 600 !i
   html body #event-checklist-list .chk-contadores > .chk-contador:first-child b:not(#love-h-a):not(#love-h-b) { color: #FFFFFF !important; }
   html body #event-checklist-list .chk-contadores > .chk-contador:last-child:not(#love-h-a):not(#love-h-b) { background: #FFFFFF !important; }
 }
+
+/* Save the Date — sem os coraçõezinhos no fundo da conversa (desktop e
+   celular). No celular o fundo fica igual ao do painel. */
+html body #site-builder-root .std-celular-conversa:not(#love-h-a):not(#love-h-b):not(#love-h-c), html body .std-celular-conversa:not(#love-h-a):not(#love-h-b) { background-image: none !important; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #site-builder-root[data-pagina="savethedate"] #builder-canvas:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #site-builder-root[data-pagina="savethedate"] .std-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa:not(#love-h-a):not(#love-h-b):not(#love-h-c) { background: transparent !important; }
+}

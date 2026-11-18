@@ -14339,3 +14339,12 @@ html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-cai
   html body #notifications-list .notification-row > .flex-1:not(#love-h-a):not(#love-h-b) { flex: 1 1 auto; width: 100%; min-width: 0; }
   html body #notifications-list .notification-row > .flex-1 > .min-w-0:not(#love-h-a):not(#love-h-b) { flex: 1 1 auto; }
 }
+
+/* Seus formulários vazio: o "Criar formulário" como o "Adicionar presente"
+   do Meus presentes do index — traço pontilhado em volta e fundo
+   transparente (sem o bloco cinza). Desktop e celular. */
+html body .forms-vazio .produtos-vazio-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
+  background: transparent !important; border: 1px dashed #D4D4D8 !important; border-radius: 10px !important;
+}
+html body .forms-vazio .produtos-vazio-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):hover { background: transparent !important; border-color: #A1A1AA !important; }
+html:not(.hub-claro) body .forms-vazio .produtos-vazio-criar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: transparent !important; border-color: #404040 !important; }

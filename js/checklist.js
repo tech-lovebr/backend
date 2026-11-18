@@ -870,5 +870,25 @@
     desenhar();
   }
 
-  /** @type {any} */ (window).LoveChecklist = { render };
+  /** Tarefas atrasadas (ou que vencem hoje), da mais antiga para a mais nova. */
+  async function atrasadas() {
+    await carregar();
+    const h = hoje();
+    return tarefas
+      .filter(t => !t.concluida && dataLocal(t.prazo) && /** @type {Date} */ (dataLocal(t.prazo)) <= h)
+      .sort((a, b) => String(a.prazo).localeCompare(String(b.prazo)))
+      .map(t => ({ id: String(t.id), titulo: t.titulo, prazo: textoDoPrazo(t).texto }));
+  }
+  /** Marca uma tarefa como feita (atalho do celular). @param {string} id */
+  async function concluir(id) {
+    await carregar();
+    const t = tarefas.find(x => String(x.id) === String(id));
+    if (!t) return false;
+    t.concluida = true;
+    if (await salvar(t)) return true;
+    t.concluida = false;
+    return false;
+  }
+
+  /** @type {any} */ (window).LoveChecklist = { render, atrasadas, concluir };
 })();

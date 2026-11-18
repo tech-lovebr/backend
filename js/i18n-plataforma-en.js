@@ -2246,5 +2246,13 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "{x}, chegou o grande dia! Aproveite cada momento.":"{x}, the big day is here! Enjoy every moment.",
 "Chegou o grande dia! Aproveite cada momento.":"The big day is here! Enjoy every moment.",
 "comprou":"bought",
-"por R$ {x}.":"for R$ {x}."
+"por R$ {x}.":"for R$ {x}.",
+"Atalhos":"Shortcuts",
+"Criar lista de presentes":"Create gift registry",
+"Atrasadas no checklist":"Overdue on your checklist",
+"Nada atrasado no checklist. Tudo em dia!":"Nothing overdue on your checklist. All caught up!",
+"Marcar como feita":"Mark as done",
+"Ver todas as {x} atrasadas":"See all {x} overdue",
+"Venceu ontem":"Due yesterday",
+"Vence hoje":"Due today"
 });

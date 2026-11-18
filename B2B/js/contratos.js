@@ -167,6 +167,9 @@ function renderFinanceStats() {
 
   const temConta = !!((typeof B2B_DATA !== 'undefined' && B2B_DATA.professional.pixKey) || window.b2bTemContaBancaria);
   document.getElementById('fin-dica-conta').hidden = temConta;
+  // Celular: o mesmo aviso solto no céu, acima dos saldos (a frase toda abre Contas bancárias).
+  const avisoCelular = document.getElementById('fin-aviso-conta-celular');
+  if (avisoCelular) avisoCelular.hidden = temConta;
   const sacar = document.getElementById('request-withdrawal-btn');
   sacar.disabled = !(disponivel > 0 && temConta);
   if (!sacar.dataset.ligado) {

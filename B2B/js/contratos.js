@@ -10,6 +10,7 @@ let bWalletTransactions = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.b2bAuthReady;
+  desenharEmpresaDoCelular();
   await loadContratosData();
   initPaymentsViewTabs();
   renderFinanceStats();
@@ -991,4 +992,27 @@ function initPaymentLinkModal() {
       showToast('Link copiado!');
     });
   });
+}
+
+/* Celular: no topo de Meus ganhos, a caixa da empresa (foto, nome e plano),
+   como a de Ganhos; os valores ficam nas caixas de saldo logo abaixo. */
+function desenharEmpresaDoCelular() {
+  const p = (typeof B2B_DATA !== 'undefined' && B2B_DATA.professional) || {};
+  const nome = String(p.company || p.razaoSocial || p.name || '').trim() || 'Minha empresa';
+  const nomeEl = document.getElementById('fin-empresa-nome');
+  if (nomeEl) nomeEl.textContent = nome;
+  const avatar = document.getElementById('fin-empresa-avatar');
+  if (avatar) {
+    const foto = p.profilePhoto || p.avatar;
+    if (foto && /^(https?:|data:image\/|blob:)/.test(foto)) {
+      avatar.style.backgroundImage = `url("${String(foto).replace(/["\\]/g, encodeURIComponent)}")`;
+      avatar.classList.add('tem-foto');
+      avatar.textContent = '';
+    } else {
+      const partes = nome.split(/\s+/).filter(Boolean);
+      avatar.textContent = (((partes[0] || '')[0] || '') + (partes.length > 1 ? (partes[partes.length - 1][0] || '') : '')).toUpperCase();
+    }
+  }
+  const plano = document.getElementById('fin-empresa-plano');
+  if (plano) plano.textContent = p.plan === 'Pro' ? 'Plano Pro' : 'Plano Gratuito';
 }

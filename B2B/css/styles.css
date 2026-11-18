@@ -14462,3 +14462,38 @@ html:not(.hub-claro) body .fin-resumo .cart-numero.love-saldo-valor:not(#love-h-
   html:not(.hub-claro) body .b2b-content :is(.category-tab.active, .submenu-celular-item.is-ativo, .work-view-tab.active):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) * { color: inherit !important; }
   html:not(.hub-claro) body .b2b-content :is(.category-tab.active, .submenu-celular-item.is-ativo, .work-view-tab.active):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h)::before { background: #9CC3E4 !important; }
 }
+
+/* Meus ganhos (celular): a caixa da empresa (foto, nome e plano) no topo,
+   em vidro como as caixas de saldo, 12px acima delas; no computador não
+   aparece. O Sacar fica na altura do valor (não mais centrado no rótulo). */
+.fin-empresa-celular { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content .ganhos-caixa.fin-empresa-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { display: block; max-width: none; margin: 0 0 12px !important; border: 0 !important; border-radius: 10px !important; }
+  html body .fin-empresa-celular .ganhos-empresa:not(#love-h-a):not(#love-h-b) { padding: 16px; gap: 14px; }
+  html body .fin-empresa-celular .ganhos-avatar:not(#love-h-a):not(#love-h-b) { width: 56px; height: 56px; font-size: 20px; }
+  html body .fin-empresa-celular .ganhos-nome:not(#love-h-a):not(#love-h-b) { font-size: 17px; font-weight: 600; }
+  html body .fin-empresa-celular .ganhos-plano:not(#love-h-a):not(#love-h-b) { margin-top: 2px; font-size: 14px; color: #71717A; }
+  html:not(.hub-claro) body .fin-empresa-celular .ganhos-plano:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #A3B5C8 !important; }
+  html:not(.hub-claro) body .fin-empresa-celular .ganhos-nome:not(#love-h-a):not(#love-h-b):not(#love-h-c) { color: #FFFFFF !important; }
+  html body .fin-resumo .cart-resumo-col > .cart-sacar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { grid-row: 2 !important; align-self: center !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .b2b-content .ganhos-caixa.fin-empresa-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { margin: 16px 0 12px !important; }
+  /* Rótulo na linha toda; embaixo, o valor à esquerda e o Sacar à direita. */
+  html body .fin-resumo .cart-resumo-col > .cart-rotulo:not(#love-h-a):not(#love-h-b):not(#love-h-c) { grid-column: 1 / -1 !important; }
+  /* Escuro: as mesmas caixas de saldo, no vidro escuro. */
+  html:not(.hub-claro) body .b2b-content .cart-resumo.fin-resumo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+    padding: 0 !important; background: transparent !important; background-color: transparent !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; border: 0 !important;
+  }
+  html:not(.hub-claro) body .fin-resumo .cart-resumo-topo:not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html:not(.hub-claro) body .fin-resumo .cart-resumo-cols:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { display: flex !important; flex-direction: column; gap: 12px !important; padding: 0 !important; }
+  html:not(.hub-claro) body .fin-resumo .cart-resumo-col:not(#love-h-a):not(#love-h-b):not(#love-h-c) {
+    display: grid !important; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 4px; align-items: center;
+    padding: 16px !important; margin: 0 !important; border: 0 !important; border-radius: 10px;
+    background-color: rgba(20, 40, 58, 0.62); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  }
+  html:not(.hub-claro) body .fin-resumo .cart-resumo-col > *:not(#love-h-a):not(#love-h-b) { grid-column: 1 / -1; margin: 0 !important; }
+  html:not(.hub-claro) body .fin-resumo .cart-resumo-col > .cart-numero:not(#love-h-a):not(#love-h-b) { grid-column: 1; }
+  html:not(.hub-claro) body .fin-resumo .cart-resumo-col > .cart-sacar:not(#love-h-a):not(#love-h-b):not(#love-h-c) { grid-column: 2; width: auto !important; min-width: 96px; white-space: nowrap; }
+  html:not(.hub-claro) body .fin-resumo .cart-resumo-col > .cart-ver:not(#love-h-a):not(#love-h-b) { margin-top: 8px !important; justify-self: start; }
+}

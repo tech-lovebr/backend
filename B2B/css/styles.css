@@ -14417,3 +14417,22 @@ html:not(.hub-claro) body .fin-resumo .cart-numero.love-saldo-valor:not(#love-h-
   /* Notificações: a faixa do título na mesma cor do topo. */
   html:not(.hub-claro) body[data-page="notificacoes"] .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) { background: #0C1824 !important; border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; }
 }
+
+/* ==========================================================================
+   Celular — como no index: o topo com a logo e o sino só no Início
+   (Dashboard). Nas outras telas (Clientes, Agenda, Meus ganhos...) o
+   cabeçalho da própria página vira a faixa do topo, branca de ponta a ponta
+   (mesma cor do topo do Início), com o título à esquerda e os botões à
+   direita, presa no alto ao rolar. No escuro, na cor do menu (#0C1824).
+   ========================================================================== */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-page="dashboard"]):has(.b2b-content > .b2b-header-bar) #shell-topbar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { display: none !important; }
+  html body:not([data-page="dashboard"]):has(.b2b-content > .b2b-header-bar) .b2b-content:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { padding-top: 0 !important; }
+  html body:not([data-page="dashboard"]):has(.b2b-content > .b2b-header-bar) .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) {
+    position: sticky !important; top: 0; z-index: 30; flex-shrink: 0; box-sizing: border-box; display: flex !important; align-items: center !important;
+    min-height: calc(64px + env(safe-area-inset-top, 0px)) !important; margin: 0 -16px 0 !important; padding: env(safe-area-inset-top, 0px) 16px 0 !important;
+    background: #FFFFFF !important; border: 0 !important; box-shadow: none !important;
+  }
+  html body:not([data-page="dashboard"]):has(.b2b-content > .b2b-header-bar) .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g):not(#love-h-h) { margin-bottom: 16px !important; }
+  html:not(.hub-claro) body:not([data-page="dashboard"]):has(.b2b-content > .b2b-header-bar) .b2b-content > .b2b-header-bar:not(#love-h-a):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: #0C1824 !important; border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important; }
+}

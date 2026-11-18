@@ -17122,3 +17122,11 @@ html body .org-nome-texto .guest-nome-resto:not(#love-h-a) { font-weight: 600 !i
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #modal-setup-budget > .modal-container-custom:not(#love-h-a):not(#love-h-b):not(#love-h-c) { border: 0 !important; }
 }
+
+/* Celular — Meus Convidados: a linha entre os contatos vai no próprio cartão
+   branco do convidado (ele cobria a linha da célula), no mesmo tom das
+   linhas de Co-anfitriões. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #rsvp-guests-table-body tr.group > td > div:first-child:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.06) !important; }
+  html body #rsvp-guests-table-body tr.group:has(+ tr.guest-letra-linha) > td > div:first-child:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { box-shadow: none !important; }
+}

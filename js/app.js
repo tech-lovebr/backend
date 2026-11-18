@@ -223,6 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
     marcar();
   })();
 
+  // Texto em português de um elemento, mesmo no planwithlove.com (onde a tela
+  // está traduzida para o inglês — ver js/i18n-plataforma.js).
+  function textoOriginalPt(el) {
+    const i18n = /** @type {any} */ (window).LoveI18nPlataforma;
+    return i18n ? i18n.original(el) : ((el && el.textContent) || '');
+  }
+
   function getActiveEvent() {
     return state.events.find(e => e.id === state.activeEventId) || state.events[0];
   }
@@ -574,7 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rotulo = document.createElement('span');
         rotulo.textContent = (orig.querySelector('span') || orig).textContent.trim();
         if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'all' && /^(Meus convidados|Minha lista)$/.test(rotulo.textContent)) rotulo.textContent = 'Meus convidados';
-        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'contracted' && rotulo.textContent === 'Contratos') rotulo.textContent = 'Meus contratos';
+        if (/** @type {HTMLElement} */ (orig).dataset.routeSub === 'contracted' && textoOriginalPt(rotulo) === 'Contratos') rotulo.textContent = 'Meus contratos';
         botao.appendChild(rotulo);
         const contador = orig.querySelector('.badge-recados-count');
         if (contador && contador.textContent.trim()) {
@@ -16965,7 +16972,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('wallet');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Gerenciar despesas'));
+        b.classList.toggle('active', textoOriginalPt(b).includes('Gerenciar despesas'));
       });
     }
     switchWalletSubSection('wallet-budget', 'Gerenciar despesas');
@@ -17008,7 +17015,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('rsvp');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Mapa do evento'));
+        b.classList.toggle('active', textoOriginalPt(b).includes('Mapa do evento'));
       });
     }
     document.querySelectorAll('.dashboard-tab-content').forEach(c => c.classList.remove('active'));
@@ -17022,7 +17029,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('edit-site');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Produzir convite'));
+        b.classList.toggle('active', textoOriginalPt(b).includes('Produzir convite'));
       });
     }
     switchEditorSubSection('invite-print', 'Produzir convite');
@@ -17137,7 +17144,7 @@ document.addEventListener('DOMContentLoaded', () => {
     switchRailTab('wallet');
     if (elements.drawerSubItemsList) {
       elements.drawerSubItemsList.querySelectorAll('.sub-drawer-item').forEach(b => {
-        b.classList.toggle('active', b.textContent.includes('Carteira Digital'));
+        b.classList.toggle('active', textoOriginalPt(b).includes('Carteira Digital'));
       });
     }
     switchWalletSubSection('wallet-digital', 'Carteira Digital');

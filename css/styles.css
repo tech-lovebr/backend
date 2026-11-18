@@ -17009,3 +17009,12 @@ html body .lista-pronta-card.lista-pronta-criar:not(#love-h-a):not(#love-h-b):no
   html body #btn-checklist-nova:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) { padding: 0 14px !important; }
   html body #submenu-celular[hidden]:not(#love-h-a) { display: none !important; }
 }
+
+/* Celular — "+" do meio da barra de baixo: mesmo formato do item ativo
+   (caixa de cantos arredondados do tamanho do botão), não mais redondo. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body .sidebar-icon-rail #rail-mais-celular .rail-mais-circulo:not(#love-h-a):not(#love-h-b) {
+    /* o botão tem 4px 2px de respiro (como os outros): a caixa cobre ele todo */
+    width: calc(100% + 4px); height: calc(100% + 8px); margin: -4px -2px; border-radius: 8px; box-shadow: none;
+  }
+}

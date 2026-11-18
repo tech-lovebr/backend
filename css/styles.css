@@ -17128,3 +17128,9 @@ html body .org-nome-texto .guest-nome-resto:not(#love-h-a) { font-weight: 600 !i
   }
   html body #modal-setup-budget .modal-container-custom > .grid:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { padding-top: 12px !important; }
 }
+
+/* Celular — abas do submenu: o item ativo sem o fundo cinza, só com a linha
+   em cima (igual ao fundo das outras abas). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]) #dashboard-main-area .submenu-celular .submenu-celular-item.is-ativo:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { background: #FFFFFF !important; }
+}

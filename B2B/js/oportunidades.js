@@ -260,7 +260,7 @@ function opCardHtml(p) {
 function opAtualizarQtdFiltros() {
   const n = ['op-filtro-categoria', 'op-filtro-cidade', 'op-filtro-orcamento'].filter(id => document.getElementById(id)?.value).length;
   const qtd = document.getElementById('op-filtrar-qtd');
-  if (qtd) { qtd.textContent = n ? ` (${n})` : ''; qtd.hidden = !n; }
+  if (qtd) { qtd.textContent = n ? String(n) : ''; qtd.hidden = !n; }
 }
 function opLigarFiltrarPor() {
   const btn = document.getElementById('op-filtrar-btn');
@@ -827,12 +827,26 @@ function opPosicionarBusca() {
     // Filtros rápidos (Apenas não respondidas, Salvas) dentro da caixa, abaixo da busca.
     const chips = document.getElementById('op-filtros');
     if (chips && chips.previousElementSibling !== barra) barra.after(chips);
+    const salvasCel = document.querySelector('[data-op-salvas]');
+    if (chips && salvasCel && salvasCel.parentElement !== chips) chips.prepend(salvasCel);
     caixa.classList.add('lista-celular');
     // Mesmo botão de Clientes: "Filtrar ⌄" com borda (o rótulo vem do atributo).
     filtrarBtn.setAttribute('data-tabela-filtrar', '');
     filtrarBtn.setAttribute('data-rotulo-celular', 'Filtrar');
   } else {
-    acoes.append(busca, filtrar);
+    // Desktop: a busca fica colada no topo da caixa da lista (como Meus
+    // convidados do index); no cabeçalho só os ícones Salvas e Filtrar por.
+    let barraDesk = document.getElementById('op-barra-desktop');
+    if (!barraDesk) {
+      barraDesk = document.createElement('div');
+      barraDesk.className = 'op-barra-desktop';
+      barraDesk.id = 'op-barra-desktop';
+      caixa.prepend(barraDesk);
+    }
+    barraDesk.prepend(busca);
+    const salvas = document.querySelector('[data-op-salvas]');
+    if (salvas) acoes.append(salvas);
+    acoes.append(filtrar);
     const chips = document.getElementById('op-filtros');
     if (chips && chips.parentElement === caixa) caixa.parentElement.insertBefore(chips, document.getElementById('op-aviso') || caixa);
     caixa.classList.remove('lista-celular');

@@ -14240,3 +14240,40 @@ html:not(.hub-claro) body[data-page="dashboard"] .b2b-content :is(.dash-home-cai
   html body #products-grid .product-card > div:last-child > div:first-child > p:not(#love-h-a):not(#love-h-b) { font-size: 15px !important; font-weight: 400 !important; line-height: 1.35; color: #18181B !important; }
   html body #products-grid .product-card > div:last-child > p.text-base:not(#love-h-a):not(#love-h-b) { margin-top: 0 !important; font-size: 15px !important; font-weight: 500 !important; color: #183b54 !important; font-variant-numeric: tabular-nums; }
 }
+
+/* ==========================================================================
+   Desktop — Clientes / Oportunidades como Meus convidados do index: a busca
+   colada no topo da caixa da lista (faixa de 14px 16px com a linha fina
+   embaixo); no cabeçalho, Salvas e Filtrar por só como ícones (38px, fundo
+   cinza-azulado .07, cantos 8px; ativo .11). Sem "Apenas não respondidas".
+   ========================================================================== */
+.op-barra-desktop { display: none; }
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body #op-caixa > .op-barra-desktop:not(#love-h-a):not(#love-h-b) { display: flex; align-items: center; gap: 8px; padding: 14px 16px; border-bottom: 1px solid var(--divisor-suave, rgba(0, 0, 0, 0.04)); }
+  html body #op-caixa > .op-barra-desktop .op-busca:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 320px; max-width: 100%; margin: 0; }
+  html body #op-filtros:not(:has(> :not([hidden]):not(select))):not(#love-h-a):not(#love-h-b) { display: none !important; }
+
+  html body #op-header-acoes :is(.op-filtrar-btn, .op-chip-salvas):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f),
+  html body .dash-card .tabela-barra [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f) {
+    position: relative; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0 !important;
+    width: 38px !important; height: 38px !important; min-width: 38px !important; min-height: 38px !important; padding: 0 !important; font-size: 0 !important;
+    background: rgba(24, 59, 84, 0.07) !important; border: 0 !important; border-radius: 8px !important; box-shadow: none !important; color: #3F3F46 !important;
+  }
+  html body #op-header-acoes :is(.op-filtrar-btn, .op-chip-salvas) svg:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body .dash-card .tabela-barra [data-tabela-filtrar] svg:not(#love-h-a):not(#love-h-b):not(#love-h-c) { width: 18px !important; height: 18px !important; flex-shrink: 0; }
+  html body #op-header-acoes :is(.op-filtrar-rotulo, #op-salvas-qtd):not(#love-h-a):not(#love-h-b),
+  html body .dash-card .tabela-barra [data-tabela-filtrar] > span:not(.tabela-filtro-contador):not(#love-h-a):not(#love-h-b) { display: none !important; }
+  html body #op-header-acoes :is(.op-filtrar-btn, .op-chip-salvas):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):is(:hover, [aria-expanded="true"], .is-ativo),
+  html body .dash-card .tabela-barra [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):is(:hover, [aria-expanded="true"]) { background: rgba(24, 59, 84, 0.11) !important; color: #181D24 !important; }
+  /* Quantos filtros ligados: bolinha no canto do ícone. */
+  html body #op-filtrar-qtd:not([hidden]):not(#love-h-a):not(#love-h-b),
+  html body .dash-card .tabela-barra [data-tabela-filtrar] .tabela-filtro-contador:not([hidden]):not(#love-h-a):not(#love-h-b) {
+    position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 6px; background: #183b54; color: #FFFFFF; font-size: 10px !important; font-weight: 600; line-height: 1;
+  }
+  html:not(.hub-claro) body #op-header-acoes :is(.op-filtrar-btn, .op-chip-salvas):not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g),
+  html:not(.hub-claro) body .dash-card .tabela-barra [data-tabela-filtrar]:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e):not(#love-h-f):not(#love-h-g) { background: rgba(255, 255, 255, 0.08) !important; color: #E4E4E7 !important; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #op-caixa > .op-barra-desktop:not(#love-h-a) { display: none !important; }
+}

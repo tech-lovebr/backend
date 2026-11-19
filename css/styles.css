@@ -17900,7 +17900,7 @@ html body .be-countdown-unit:not(#love-h-a):not(#love-h-b) { border: 0 !importan
 /* Minhas Solicitações — vazio: a caixinha tracejada de Adicionar presente
    (desktop e celular), com hover de clicável. */
 html body #rfp-empty-state .rfp-vazio-card:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) {
-  width: 100%; max-width: 260px; min-height: 240px; margin: 0 auto; cursor: pointer;
+  width: 100%; max-width: 300px; min-height: 240px; margin: 0 auto; cursor: pointer;
 }
 html body #rfp-empty-state .rfp-vazio-card strong:not(#love-h-a) { font-size: 16px; font-weight: 600; color: #18181B; }
 /* Sem a caixa tracejada ao redor de "Crie uma nova solicitação" — pedido do

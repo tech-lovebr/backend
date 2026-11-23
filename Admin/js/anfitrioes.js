@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 6);
+  renderLoading(tbody, 7);
 
   const [clientes, eventos, convidados, presentes, carteira, conversas, contas] = await Promise.all([
     safeSelect('clientes', '*'),
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     supabaseClient.rpc('admin_listar_contas')
   ]);
 
-  if (clientes.error) return renderError(tbody, 6, clientes.error);
+  if (clientes.error) return renderError(tbody, 7, clientes.error);
 
   CLIENTES = clientes.data;
   // Sem a função no banco a coluna fica vazia, em vez de derrubar a página.
@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-categoria').addEventListener('change', render);
+  document.getElementById('filtro-source').addEventListener('change', render);
 
   montarOpcoesDeCategoria();
   ligarMenuDeFiltros();
@@ -181,6 +182,7 @@ function categoriasDe(clienteId) {
 }
 
 function montarOpcoesDeCategoria() {
+  preencherFiltroDeSource(document.getElementById('filtro-source'), CLIENTES.map(c => c.origem_cadastro));
   const tipos = [...new Set(EVENTOS.map(e => e.tipo).filter(Boolean))]
     .sort((a, b) => (EVENT_TYPE_LABELS[a] || a).localeCompare(EVENT_TYPE_LABELS[b] || b));
 
@@ -214,6 +216,7 @@ function ligarMenuDeFiltros() {
 
   document.getElementById('limpar-filtros').addEventListener('click', () => {
     document.getElementById('filtro-categoria').value = '';
+    document.getElementById('filtro-source').value = '';
     render();
     fechar();
   });
@@ -222,7 +225,7 @@ function ligarMenuDeFiltros() {
 function atualizarBadgeDeFiltros() {
   const badge = document.getElementById('filtro-badge');
   if (!badge) return;
-  const ativos = document.getElementById('filtro-categoria').value ? 1 : 0;
+  const ativos = ['filtro-categoria', 'filtro-source'].filter(id => document.getElementById(id).value).length;
   badge.textContent = ativos;
   badge.hidden = ativos === 0;
 }
@@ -230,9 +233,11 @@ function atualizarBadgeDeFiltros() {
 function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
   const categoria = document.getElementById('filtro-categoria').value;
+  const source = document.getElementById('filtro-source').value;
 
   return CLIENTES.filter(c => {
     if (!noPeriodo(c)) return false;
+    if (!casaComSource(c.origem_cadastro, source)) return false;
     if (categoria && !categoriasDe(c.id).has(categoria)) return false;
     if (!termo) return true;
     return [c.couple_name, c.email, c.phone, c.cpf, c.city]
@@ -262,7 +267,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 6, 'Nenhum anfitrião encontrado',
+    renderEmpty(tbody, 7, 'Nenhum anfitrião encontrado',
       CLIENTES.length ? 'Ajuste a busca ou o período acima.' : 'Nenhuma conta de anfitrião foi criada ainda.');
     return;
   }
@@ -280,6 +285,7 @@ function render() {
         <td class="cell-strong"><span class="celula-com-perfil">${miniaturaDePerfil(FOTOS.get(c.id) || c.avatar_url)}<button type="button" class="nome-clicavel" data-ver="${escapeHtml(c.id)}">${dash(c.couple_name)}</button></span></td>
         <td class="cell-muted">${celulaEmail(c.email)}</td>
         <td>${formatNumber(m.eventos)}</td>
+        <td class="cell-muted">${escapeHtml(rotuloDoSource(c.origem_cadastro))}</td>
         <td class="cell-muted">${escapeHtml(ultimoAcessoDe(c.id))}</td>
       </tr>`;
   }).join('');

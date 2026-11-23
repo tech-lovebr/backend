@@ -20141,10 +20141,11 @@ document.addEventListener('DOMContentLoaded', () => {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
-          data: { role: 'cliente', first_name, last_name, full_name, couple_name: full_name, ...dadosDoDispositivo() }
+          data: { role: 'cliente', first_name, last_name, full_name, couple_name: full_name, ...window.LoveOrigem.dadosDoSignUp(), ...dadosDoDispositivo() }
         }
       });
       submitBtn.disabled = false;
+      if (!error) window.LoveOrigem.limpar();
 
       // Confirmação de e-mail ligada: sem sessão até a pessoa clicar no link.
       if (!error && !cadastro?.session) {
@@ -25684,11 +25685,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // a conta é criada logo abaixo e a pessoa segue o onboarding de conta nova.
     void modoGoogle;
     let motivoSemCadastro = '';
+    let primeiroAcessoGoogle = false;
     if (!cliente && veioDoGoogle) {
       const { data: criado, error: erroCriar } = await supabaseClient.rpc('garantir_cliente_google');
       if (erroCriar) console.error('Erro ao criar cadastro pelo Google:', erroCriar);
       if (criado) {
         ({ data: cliente } = await supabaseClient.from('clientes').select('*').eq('id', session.user.id).maybeSingle());
+        primeiroAcessoGoogle = !!cliente;
         // Boas-vindas por e-mail (quem entra pelo Google não recebe o
         // "Confirm sign up" do Supabase). A função não repete o envio.
         if (cliente) {
@@ -25742,6 +25745,10 @@ document.addEventListener('DOMContentLoaded', () => {
       showLoginMfaPanel();
       return;
     }
+
+    // Source do cadastro: nunca atrapalha a entrada na plataforma.
+    await window.LoveOrigem.gravarNoGoogle(session, primeiroAcessoGoogle)
+      .catch(erro => console.warn('Source do cadastro não gravado:', erro));
 
     // Dados do /cadastro digitados antes de "Continuar com o Google" (nome,
     // nascimento, tipo e data do evento): gravados no cadastro agora que ele

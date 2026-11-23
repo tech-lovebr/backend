@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!(await window.adminReady)) return;
 
   const tbody = document.getElementById('tbody');
-  renderLoading(tbody, 7);
+  renderLoading(tbody, 8);
 
   const [fornecedores, carteira, conversas, leads, produtos, contratos, links, contas] = await Promise.all([
     safeSelect('fornecedores', '*'),
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     supabaseClient.rpc('admin_listar_contas')
   ]);
 
-  if (fornecedores.error) return renderError(tbody, 7, fornecedores.error);
+  if (fornecedores.error) return renderError(tbody, 8, fornecedores.error);
 
   FORNECEDORES = fornecedores.data;
   // Sem a função no banco fica só a foto do cadastro (ou o ícone).
@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('busca').addEventListener('input', render);
   document.getElementById('filtro-plano').addEventListener('change', render);
   document.getElementById('filtro-categoria').addEventListener('change', render);
+  document.getElementById('filtro-source').addEventListener('change', render);
 
   addHeaderAction('Exportar', exportar);
   addHeaderAction('Cadastrar', () => NovoFornecedor.abrir(), {
@@ -109,6 +110,7 @@ function ligarMenuDeFiltros() {
   document.getElementById('limpar-filtros').addEventListener('click', () => {
     document.getElementById('filtro-plano').value = '';
     document.getElementById('filtro-categoria').value = '';
+    document.getElementById('filtro-source').value = '';
     render();
     fechar();
   });
@@ -116,7 +118,7 @@ function ligarMenuDeFiltros() {
 
 /** Mostra no botão quantos filtros estão ativos. */
 function atualizarBadgeDeFiltros() {
-  const ativos = ['filtro-plano', 'filtro-categoria']
+  const ativos = ['filtro-plano', 'filtro-categoria', 'filtro-source']
     .filter(id => document.getElementById(id)?.value).length;
 
   const badge = document.getElementById('filtro-badge');
@@ -262,6 +264,7 @@ function montarOpcoesDeFiltro() {
 
   preencher('filtro-plano', FORNECEDORES.map(f => f.plan));
   preencher('filtro-categoria', FORNECEDORES.map(f => f.category));
+  preencherFiltroDeSource(document.getElementById('filtro-source'), FORNECEDORES.map(f => f.origem_cadastro));
 }
 
 /* ----------------------------------------------------------------- Lista */
@@ -270,9 +273,11 @@ function filtrar() {
   const termo = document.getElementById('busca').value.trim().toLowerCase();
   const plano = document.getElementById('filtro-plano').value;
   const categoria = document.getElementById('filtro-categoria').value;
+  const source = document.getElementById('filtro-source').value;
 
   return FORNECEDORES.filter(f => {
     if (!noPeriodo(f)) return false;
+    if (!casaComSource(f.origem_cadastro, source)) return false;
     if (plano && f.plan !== plano) return false;
     if (categoria && f.category !== categoria) return false;
     if (!termo) return true;
@@ -296,7 +301,7 @@ function render() {
 
   if (!lista.length) {
     renderBarraDeSelecao();
-    renderEmpty(tbody, 7, 'Nenhum fornecedor encontrado',
+    renderEmpty(tbody, 8, 'Nenhum fornecedor encontrado',
       FORNECEDORES.length ? 'Ajuste a busca, os filtros ou o período acima.' : 'Nenhuma conta B2B foi criada ainda.');
     return;
   }
@@ -316,6 +321,7 @@ function render() {
       <td class="cell-muted">${celulaEmail(f.email)}</td>
       <td class="cell-muted">${celulaCopiavel(f.cnpj, f.document_type === 'cpf' ? 'CPF' : 'CNPJ')}</td>
       <td>${badge(f.plan || 'Gratuito', f.plan && f.plan !== 'Gratuito' ? 'badge-info' : '')}</td>
+      <td class="cell-muted">${escapeHtml(rotuloDoSource(f.origem_cadastro))}</td>
       <td class="col-numero">${formatNumber(metricas(f.id).contratosPlataforma)}</td>
     </tr>`;
   }).join('');

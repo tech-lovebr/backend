@@ -1285,3 +1285,20 @@ function miniaturaDePerfil(url) {
     : '';
   return `<span class="mini-perfil${valida ? ' tem-foto' : ''}" aria-hidden="true">${foto}${icone}</span>`;
 }
+
+
+/* Source do cadastro (origem_cadastro, migration 135). Sem origem: "Direto". */
+const SOURCE_DIRETO = '__direto';
+const rotuloDoSource = origem => origem || 'Direto';
+const casaComSource = (origem, filtro) => !filtro || (filtro === SOURCE_DIRETO ? !origem : origem === filtro);
+
+function preencherFiltroDeSource(select, origens) {
+  if (!select) return;
+  const opcoes = [...new Set(origens.filter(Boolean))].sort();
+  [[SOURCE_DIRETO, 'Direto'], ...opcoes.map(o => [o, o])].forEach(([valor, texto]) => {
+    const opcao = document.createElement('option');
+    opcao.value = valor;
+    opcao.textContent = texto;
+    select.appendChild(opcao);
+  });
+}

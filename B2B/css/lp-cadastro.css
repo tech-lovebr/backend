@@ -1,0 +1,70 @@
+/* Landing de cadastro rápido de fornecedores (/lp1). Usa o topo e os botões
+   de css/hub-landing.css; aqui ficam a chamada e a caixa de criar conta. */
+html, body { margin: 0; padding: 0; background: #0C1824; }
+body.lp-cadastro { min-height: 100dvh; display: flex; flex-direction: column; overflow-x: hidden; font-family: var(--sans); }
+.lp-cadastro .nav { position: relative; background: #0C1824; }
+.lp-hero {
+  flex: 1 1 auto; display: flex; align-items: center; padding: 56px 0 72px;
+  background:
+    linear-gradient(90deg, rgba(12, 24, 36, .94) 0%, rgba(12, 24, 36, .78) 52%, rgba(12, 24, 36, .5) 100%),
+    #183b54 url("../assets/landing/heroi.jpg") center / cover no-repeat;
+}
+.lp-grade { display: grid; grid-template-columns: minmax(0, 1fr) 432px; align-items: center; gap: 72px; width: 100%; box-sizing: border-box; }
+.lp-texto { min-width: 0; color: #EAF1F8; }
+.lp-selo { display: inline-block; margin: 0 0 20px; color: #A9C6EA; font-size: 14px; font-weight: 500; }
+.lp-texto h1 { margin: 0; max-width: 620px; font-family: var(--serif); font-size: clamp(38px, 4.4vw, 58px); font-weight: 300; font-variation-settings: "SOFT" 50; line-height: 1.08; letter-spacing: -0.025em; color: #FFFFFF; }
+.lp-lede { max-width: 520px; margin: 20px 0 28px; font-size: 18px; font-weight: 300; line-height: 1.5; color: #C9D6E3; }
+.lp-beneficios { display: grid; gap: 12px; margin: 32px 0 0; padding: 0; list-style: none; font-size: 15px; color: #EAF1F8; }
+.lp-beneficios li { display: flex; align-items: center; gap: 10px; }
+.lp-beneficios svg { flex: 0 0 18px; width: 18px; height: 18px; color: #A9C6EA; }
+
+.lp-card { box-sizing: border-box; width: 100%; padding: 32px; border-radius: 10px; background: #FFFFFF; color: #18181B; scroll-margin: 24px; }
+.lp-card h2 { margin: 0; font-size: 24px; font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; color: #18181B; }
+.lp-card-sub { margin: 6px 0 24px; font-size: 15px; line-height: 1.45; color: #71717A; overflow-wrap: anywhere; }
+.lp-google { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 46px; border: 0; border-radius: 8px; background: rgba(24, 59, 84, .07); color: #18181B; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: background .15s; }
+.lp-google:hover { background: rgba(24, 59, 84, .11); color: #181D24; }
+.lp-google svg { width: 18px; height: 18px; flex: none; }
+.lp-ou { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: 13px; color: #A1A1AA; }
+.lp-ou::before, .lp-ou::after { content: ""; flex: 1; height: 1px; background: rgba(24, 59, 84, .08); }
+.lp-form { display: grid; gap: 14px; }
+.lp-campo { display: grid; gap: 4px; }
+.lp-campo label { font-size: 13px; font-weight: 500; color: #71717A; }
+.lp-campo-caixa { position: relative; }
+.lp-campo input { box-sizing: border-box; width: 100%; height: 46px; padding: 0 14px; border: 0; border-radius: 8px; outline: 0; background: rgba(24, 59, 84, .06); color: #18181B; font-family: inherit; font-size: 16px; transition: background .15s; }
+.lp-campo input:focus { background: rgba(24, 59, 84, .10); }
+#lp-senha { padding-right: 84px; }
+.lp-ver { position: absolute; top: 0; right: 4px; height: 46px; padding: 0 10px; border: 0; background: none; color: #52525B; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+.lp-ver:hover { color: #181D24; }
+.lp-regras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; margin: 2px 0 0; padding: 0; list-style: none; font-size: 12px; line-height: 16px; color: #71717A; }
+.lp-regras[hidden] { display: none; }
+.lp-regras li { display: flex; align-items: flex-start; gap: 5px; }
+.lp-regras li::before { content: "○"; flex: none; }
+.lp-regras li.is-ok { color: #2F6B4F; }
+.lp-regras li.is-ok::before { content: "✓"; }
+.lp-erro { margin: 0; font-size: 13px; line-height: 1.4; color: #B42318; }
+.lp-btn { display: flex; align-items: center; justify-content: center; box-sizing: border-box; width: 100%; height: 48px; border: 0; border-radius: 8px; background: #183b54; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 500; text-decoration: none; cursor: pointer; transition: background .15s; }
+.lp-btn:hover { background: #122c3f; }
+.lp-btn:disabled { opacity: .6; cursor: default; }
+.lp-reenviar { padding: 0; border: 0; background: none; color: #183b54; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+.lp-card-rodape { margin: 16px 0 0; text-align: center; font-size: 14px; color: #71717A; }
+.lp-card-rodape a { color: #183b54; font-weight: 500; }
+.lp-privacidade { margin: 12px 0 0; text-align: center; font-size: 12px; line-height: 1.4; color: #A1A1AA; }
+.lp-privacidade a { color: inherit; text-decoration: underline; }
+[hidden] { display: none !important; }
+
+@media (max-width: 960px) {
+  .lp-grade { grid-template-columns: minmax(0, 1fr); gap: 32px; max-width: 520px; }
+}
+@media (max-width: 768px) {
+  .lp-hero { align-items: flex-start; padding: 28px 0 32px; background: linear-gradient(180deg, rgba(12, 24, 36, .9) 0%, rgba(12, 24, 36, .72) 100%), #183b54 url("../assets/landing/heroi.jpg") center / cover no-repeat; }
+  .lp-grade { gap: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .lp-selo { margin-bottom: 12px; }
+  .lp-texto h1 { font-size: 34px; }
+  .lp-lede { margin: 12px 0 18px; font-size: 16px; }
+  .lp-beneficios { display: none; }
+  .lp-texto .btn { justify-content: center; width: 100%; box-sizing: border-box; }
+  .lp-card { padding: 24px 16px; }
+}
+@media (max-width: 340px) {
+  .lp-regras { grid-template-columns: minmax(0, 1fr); }
+}

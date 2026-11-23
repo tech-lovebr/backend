@@ -230,6 +230,10 @@
       "destination": "/resetar-senha.html"
     },
     {
+      "source": "/lp1",
+      "destination": "/lp1.html"
+    },
+    {
       "source": "/signup",
       "destination": "/signup.html"
     },

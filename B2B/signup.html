@@ -845,6 +845,7 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { history.replaceState(null, '', location.pathname); return; }
       completando = true;
+      gravarOrigemDoCadastro(session).catch(() => {});
       showAuthView('signup');
       document.body.classList.add('auth-completar');
       document.querySelectorAll('.so-completar').forEach(el => { el.hidden = false; });
@@ -864,6 +865,26 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
         if (linha) linha.click();
       }
     })();
+
+    /* De qual landing a conta veio (/lp1...). No e-mail já vem nos dados da
+       conta; no Google, sai do que a landing guardou neste navegador, só para
+       conta criada nas últimas 24h. A coluna fornecedores.origem_cadastro é
+       opcional: sem ela, a origem continua guardada nos dados da conta. */
+    async function gravarOrigemDoCadastro(session) {
+      const meta = session.user.user_metadata || {};
+      let origem = meta.origem_cadastro || '';
+      if (!origem) {
+        let guardada = null;
+        try { guardada = JSON.parse(localStorage.getItem('b2b-origem-cadastro') || 'null'); } catch (e) { /* sem armazenamento */ }
+        const landingRecente = guardada && Date.now() - Number(guardada.em) < 30 * 864e5;
+        const contaNova = Date.now() - new Date(session.user.created_at).getTime() < 864e5;
+        if (!landingRecente || !contaNova || !/^[a-z0-9-]{1,40}$/.test(guardada.origem || '')) return;
+        origem = guardada.origem;
+        await supabaseClient.auth.updateUser({ data: { origem_cadastro: origem } });
+      }
+      await supabaseClient.from('fornecedores').update({ origem_cadastro: origem }).eq('id', session.user.id).is('origem_cadastro', null);
+      try { localStorage.removeItem('b2b-origem-cadastro'); } catch (e) { /* sem armazenamento */ }
+    }
 
     /* O que você busca na Love? — até 3 opções. */
     let objetivosEscolhidos = [];

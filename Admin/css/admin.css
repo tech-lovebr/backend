@@ -4850,3 +4850,12 @@ body[data-theme="dark"] .rede-icone { background: transparent; border-color: rgb
 
 /* Conta aberta sem os dados gerais acima: a caixa sobe para logo abaixo do cabeçalho. */
 .admin-content:has(> #kpi-grid[hidden]) > #visao-conta { margin-top: 0; }
+
+/* Todo botão de voltar mostra a mãozinha de clicável. */
+.header-bar-voltar,
+.painel-linha-voltar,
+.drawer-back,
+.conversa-voltar,
+.login-voltar,
+#btn-voltar-lista,
+#np-voltar { cursor: pointer; }

@@ -14852,3 +14852,8 @@ html:not(.hub-claro) body[data-page="dashboard"] .b2b-content .dashboard-quick-a
   html:not(.hub-claro) body .atalhos-celular .atalhos-item:not(#nm-0):not(#nm-1):not(#nm-2):not(#nm-3):not(#nm-4):not(#nm-5):not(#nm-6):not(#nm-7):not(#nm-8):not(#nm-9):not(#nm-10):not(#nm-11):active { background: rgba(255, 255, 255, .08); }
   html:not(.hub-claro) body .atalhos-celular .atalhos-item svg:not(#nm-0):not(#nm-1):not(#nm-2):not(#nm-3):not(#nm-4):not(#nm-5):not(#nm-6):not(#nm-7):not(#nm-8):not(#nm-9):not(#nm-10):not(#nm-11) { color: #9CC3E4; }
 }
+
+/* Dark no celular: Sacar disponível com a mesma cor do Dark no desktop. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html:not(.hub-claro) body[data-page="dashboard"] .dash-saldo-celular-botao:not(#hs-0):not(#hs-1):not(#hs-2):not(#hs-3):not(#hs-4):not(#hs-5):not(#hs-6):not(#hs-7):not(#hs-8):not(#hs-9):not(#hs-10):not(#hs-11):not(#hs-12):not(#hs-13), html:not(.hub-claro) body[data-page="dashboard"] .dash-saldo-celular-botao:not(#hs-0):not(#hs-1):not(#hs-2):not(#hs-3):not(#hs-4):not(#hs-5):not(#hs-6):not(#hs-7):not(#hs-8):not(#hs-9):not(#hs-10):not(#hs-11):not(#hs-12):not(#hs-13):is(:hover, :focus-visible, :active) { background: #0F1F2F !important; background-image: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; color: #EAF1F8 !important; }
+}

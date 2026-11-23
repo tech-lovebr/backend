@@ -19322,8 +19322,6 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.removeItem('love-pending-event-type-slug');
       localStorage.removeItem('love-pending-event-name');
       localStorage.removeItem('love-pending-event-date');
-      // Onboarding de conta nova (Google pela tela de login) terminou.
-      localStorage.removeItem('love-onboarding-conta-nova');
 
       newEvt.id = createdEvento.id;
       newEvt.giftList = [];
@@ -25552,10 +25550,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (erroCriar) console.error('Erro ao criar cadastro pelo Google:', erroCriar);
       if (criado) {
         ({ data: cliente } = await supabaseClient.from('clientes').select('*').eq('id', session.user.id).maybeSingle());
-        // Conta criada agora: marca para abrir o onboarding de conta nova
-        // (tipo, nome e data no /cadastro e depois "Crie seu primeiro evento").
-        // Só quem nasce aqui recebe a marca; conta antiga nunca vê o onboarding.
-        if (cliente) { try { localStorage.setItem('love-onboarding-conta-nova', session.user.id); } catch (e) {} }
         // Boas-vindas por e-mail (quem entra pelo Google não recebe o
         // "Confirm sign up" do Supabase). A função não repete o envio.
         if (cliente) {
@@ -25643,17 +25637,24 @@ document.addEventListener('DOMContentLoaded', () => {
     // Eventos próprios + os em que esta conta é organizadora.
     const events = (cliente ? await loadEventsFromSupabase(session.user.id) : []).concat(eventosOrganizados);
 
-    // Conta nova criada pelo Google na tela de login: ainda não passou pelo
-    // onboarding (tipo de evento, nome e data) — leva para o /cadastro, que
-    // pula a etapa de e-mail e senha e volta para "Crie seu primeiro evento".
-    let marcaContaNova = null;
-    try { marcaContaNova = localStorage.getItem('love-onboarding-conta-nova'); } catch (e) {}
-    if (marcaContaNova && (marcaContaNova !== session.user.id || events.length)) {
-      try { localStorage.removeItem('love-onboarding-conta-nova'); } catch (e) {}
-      marcaContaNova = null;
-    }
-    if (marcaContaNova && !pendingType) {
-      try { sessionStorage.removeItem('love-depois-do-login'); } catch (e) {}
+    // Conta do Google (pelo login ou pelo /cadastro) que ainda não respondeu
+    // o onboarding: sem evento e sem tipo de evento na conta. Vale em qualquer
+    // aparelho e também para quem saiu no meio. Leva para o /cadastro, que
+    // pula e-mail e senha, pergunta tipo, dados e data e volta para "Crie seu
+    // primeiro evento". O que sobrou de outro cadastro neste navegador não
+    // conta como resposta; "love-onboarding-feito" evita perguntar de novo
+    // se a gravação na conta falhar.
+    let onboardingFeito = null;
+    try {
+      localStorage.removeItem('love-onboarding-conta-nova'); // marca antiga
+      onboardingFeito = localStorage.getItem('love-onboarding-feito');
+    } catch (e) {}
+    if (veioDoGoogle && cliente && !events.length && !cliente.intended_event_type && onboardingFeito !== session.user.id) {
+      try {
+        ['love-pending-event-type', 'love-pending-event-type-label', 'love-pending-event-type-slug', 'love-pending-event-name', 'love-pending-event-date']
+          .forEach(k => localStorage.removeItem(k));
+        sessionStorage.removeItem('love-depois-do-login');
+      } catch (e) {}
       window.location.replace('/cadastro?conta-nova=1');
       return;
     }

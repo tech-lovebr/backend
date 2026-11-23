@@ -482,6 +482,7 @@
       }
       if (full_name) localStorage.setItem('love-pending-event-name', full_name);
       if (eventDate) localStorage.setItem('love-pending-event-date', eventDate); else localStorage.removeItem('love-pending-event-date');
+      localStorage.setItem('love-onboarding-feito', session.user.id);
       window.location.replace('/');
     }
     // Voltar (no topo, à esquerda): etapa anterior; na primeira, volta ao site.

@@ -18306,3 +18306,10 @@ html body #tab-faq button.faq-pergunta:not(#love-faq-a):not(#love-faq-b):not(#lo
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-faq > div:has(> #faq-page-container):not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { padding-top: 16px !important; margin-top: 0 !important; }
 }
+
+/* Desktop — Notificações: lista centralizada na página, com o título e o
+   "Marcar todas como lidas" alinhados às pontas dela. */
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html body #tab-notifications #notifications-list-container:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { width: 100%; max-width: 768px !important; margin-left: auto !important; margin-right: auto !important; }
+  html body #tab-notifications > .builder-toolbar:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { box-sizing: border-box; width: 100%; max-width: 832px !important; margin-left: auto !important; margin-right: auto !important; padding-left: 32px !important; padding-right: 32px !important; }
+}

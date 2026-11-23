@@ -18099,7 +18099,9 @@ a.convite-mapa { display: block; }
 .convite-mapa img { display: block; width: 100%; height: 240px; object-fit: cover; }
 
 /* Save the Date — celular: o mesmo céu do painel (Home) atrás da tela.
-   Desktop: a conversa no azul-claro do item ativo do menu lateral. */
+   Desktop: sem fundo próprio (aparece o plano de fundo da plataforma) e a
+   mensagem no centro da área, na vertical e na horizontal; a margem de baixo
+   compensa o selo "Hoje" para o centro ser o do balão. */
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body:not([data-theme="dark"]):has(#tab-edit-site.active #site-builder-root[data-pagina="savethedate"]) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
     background:
@@ -18113,5 +18115,7 @@ a.convite-mapa { display: block; }
 @media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
   html body #site-builder-root[data-pagina="savethedate"] #builder-canvas:not(#love-h-a):not(#love-h-b):not(#love-h-c),
   html body #site-builder-root[data-pagina="savethedate"] .std-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c),
-  html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background-color: #EBF4FF !important; }
+  html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background-color: transparent !important; }
+  html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) { justify-content: center; padding: 24px 12px !important; }
+  html body #site-builder-root[data-pagina="savethedate"] .std-mensagem-bloco:not(#love-h-a):not(#love-h-b):not(#love-h-c) { justify-content: center; margin-bottom: 37px; }
 }

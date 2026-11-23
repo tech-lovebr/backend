@@ -25337,7 +25337,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
-  document.getElementById('btn-config-voltar')?.addEventListener('click', () => switchRailTab('overview'));
+  ['btn-config-voltar', 'btn-faq-voltar'].forEach(id => document.getElementById(id)?.addEventListener('click', () => switchRailTab('overview')));
   document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {
     if (!el.closest('.modal-container-custom')) {
       const clickTarget = el.tagName.toLowerCase() === 'img' ? el.parentElement : el;

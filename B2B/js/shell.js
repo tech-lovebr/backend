@@ -129,7 +129,24 @@ window.b2bAuthReady = initAuthGuard();
 let shellIsReady = false;
 let pageIsReady = false;
 function revealAppIfReady() {
-  if (shellIsReady && pageIsReady) document.body.classList.add('app-ready');
+  if (!shellIsReady || !pageIsReady) return;
+  document.body.classList.add('app-ready');
+  abrirAtalhoDaUrl();
+}
+
+/* Atalho do "+" do celular: crm?atalho=cliente e funcoes?atalho=colaborador
+   chegam com o formulário de adicionar aberto. */
+function abrirAtalhoDaUrl() {
+  const url = new URL(location.href);
+  const atalho = url.searchParams.get('atalho');
+  if (!atalho) return;
+  url.searchParams.delete('atalho');
+  history.replaceState(null, '', url.pathname + url.search + url.hash);
+  const pagina = document.body.dataset.page;
+  const celular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches;
+  const alvo = atalho === 'cliente' && pagina === 'crm' ? (celular ? 'lead-add-celular' : 'lead-add-btn')
+    : atalho === 'colaborador' && pagina === 'funcoes' ? 'member-add-btn' : '';
+  if (alvo) document.getElementById(alvo)?.click();
 }
 window.b2bPageReady = function () {
   pageIsReady = true;
@@ -1262,6 +1279,66 @@ function ligarBarraDeBaixo() {
   });
 }
 
+/* Celular: no Dashboard o meio da barra de baixo vira um "+" (sem texto) que
+   sobe um menu com os atalhos do fornecedor, como o do anfitrião. Nas outras
+   páginas o meio continua sendo o Dashboard. */
+function ligarAtalhosDoCelular() {
+  const barra = document.querySelector('.mobile-bottom-nav');
+  const inicio = barra?.querySelector('.mobile-nav-item[data-page="dashboard"]');
+  if (!inicio || document.body.dataset.page !== 'dashboard' || document.getElementById('nav-mais-celular')) return;
+  const icone = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+  const ITENS = [
+    [['produtos?add=1', 'Adicionar produto', 'M21 8 12 3 3 8v8l9 5 9-5V8ZM3.3 8.2 12 13l8.7-4.8M12 13v8'],
+     ['crm?atalho=cliente', 'Adicionar cliente', 'M12.5 8a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0ZM2.5 20a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6'],
+     ['vendas?novo=orcamento', 'Criar orçamento', 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5ZM14 3v5h5M9 13h6M9 17h4'],
+     ['#cobranca', 'Gerar cobrança', 'M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7ZM3 10h18M7 15h4'],
+     ['funcoes?atalho=colaborador', 'Adicionar colaborador', 'M16 20a4 4 0 0 0-8 0M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM20 18a3 3 0 0 0-3-3M17 9a2.5 2.5 0 0 0 0-5M4 18a3 3 0 0 1 3-3M7 9a2.5 2.5 0 0 1 0-5']],
+    [['paginas-site', 'Editar meu site', 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3.6 9h16.8M3.6 15h16.8M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z']]
+  ];
+  const botao = document.createElement('button');
+  botao.type = 'button';
+  botao.id = 'nav-mais-celular';
+  botao.className = 'nav-mais-celular';
+  botao.setAttribute('aria-label', 'Abrir atalhos');
+  botao.setAttribute('aria-haspopup', 'menu');
+  botao.setAttribute('aria-expanded', 'false');
+  botao.innerHTML = '<span class="nav-mais-caixa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>';
+  inicio.after(botao);
+  let menu = null;
+  const fechar = () => {
+    if (!menu) return;
+    menu.remove();
+    menu = null;
+    botao.classList.remove('is-aberto');
+    botao.setAttribute('aria-expanded', 'false');
+  };
+  const abrir = () => {
+    const m = document.createElement('div');
+    m.className = 'atalhos-celular';
+    m.setAttribute('role', 'menu');
+    m.innerHTML = ITENS.map(grupo => `<div class="atalhos-grupo">${grupo.map(([href, nome, d]) => `<a role="menuitem" class="atalhos-item" href="${href}">${icone(d)}<span>${nome}</span></a>`).join('')}</div>`).join('');
+    m.addEventListener('click', e => {
+      const item = e.target instanceof Element ? e.target.closest('.atalhos-item') : null;
+      if (!item) return;
+      if (item.getAttribute('href') === '#cobranca') {
+        e.preventDefault();
+        fechar();
+        document.getElementById('dashboard-create-payment-link-btn')?.click();
+        return;
+      }
+      fechar();
+    });
+    document.body.appendChild(m);
+    menu = m;
+    botao.classList.add('is-aberto');
+    botao.setAttribute('aria-expanded', 'true');
+  };
+  botao.addEventListener('click', e => { e.stopPropagation(); if (menu) fechar(); else abrir(); });
+  document.addEventListener('pointerdown', e => { if (menu && !menu.contains(e.target) && !botao.contains(e.target)) fechar(); }, true);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
+  window.matchMedia(MQ_CELULAR).addEventListener?.('change', ev => { if (!ev.matches) fechar(); });
+}
+
 /* Menu do celular (☰ no topo do Dashboard): gaveta lateral com todas as
    seções do Hub e, embaixo, a conta. Tocar na conta abre o pop-up de baixo
    para cima com as empresas, os itens da conta e Sair, que repassam o toque
@@ -1366,13 +1443,17 @@ function montarMenuDoCelular() {
     const daSidebar = (/** @type {string} */ sel) => sidebar ? sidebar.querySelector(sel) : null;
     let html = '';
     if (document.querySelector('#avatar-dropdown .topbar-item-adicionar-empresa')) html += linha('nova-empresa', 'Adicionar empresa', ICONE_ADICIONAR, pagina === 'nova-empresa');
-    html += linha('paginas-site', 'Meu site', icone(daSidebar('.sidebar-nav-group .sidebar-nav-toggle')), pagina === 'paginas-site');
-    html += linha('produtos', 'Produtos', icone(daSidebar('.sidebar-nav-item[data-page="produtos"]')), pagina === 'produtos');
-    html += linha('workshops', 'Workshops', icone(daSidebar('.sidebar-nav-item[data-page="workshops"]')), pagina === 'workshops');
-    [['configuracoes', 'Configurações', 'configuracoes'], ['funcoes', 'Adicionar colaborador', 'funcoes'], ['planos', 'Planos e recursos', 'planos'], ['central-de-ajuda', 'Central de ajuda', 'faq']].forEach(([href, rotulo, pg]) => {
+    const daConta = (/** @type {string} */ href, /** @type {string} */ rotulo, /** @type {string} */ pg) => {
       const orig = doMenu(href);
       html += linha(href, (orig?.textContent || '').trim() || rotulo, icone(orig), pagina === pg);
-    });
+    };
+    html += linha('produtos', 'Meus produtos', icone(daSidebar('.sidebar-nav-item[data-page="produtos"]')), pagina === 'produtos');
+    html += linha('paginas-site', 'Meu site', icone(daSidebar('.sidebar-nav-group .sidebar-nav-toggle')), pagina === 'paginas-site');
+    daConta('funcoes', 'Adicionar colaborador', 'funcoes');
+    daConta('configuracoes', 'Configurações', 'configuracoes');
+    daConta('planos', 'Planos e recursos', 'planos');
+    html += linha('workshops', 'Workshops', icone(daSidebar('.sidebar-nav-item[data-page="workshops"]')), pagina === 'workshops');
+    daConta('central-de-ajuda', 'Central de ajuda', 'faq');
     html += `<button type="button" class="menu-celular-link menu-celular-link-sair">${ICONE_SAIR}<span>Sair</span></button>`;
     nav.innerHTML = html;
   };
@@ -1545,6 +1626,7 @@ function textosDoCelular() {
 
 document.addEventListener('shell:ready', () => {
   ligarBarraDeBaixo();
+  ligarAtalhosDoCelular();
   montarMenuDoCelular();
   colocarXNoCabecalho();
   textosDoCelular();

@@ -18301,3 +18301,8 @@ html body #tab-faq button.faq-pergunta:not(#love-faq-a):not(#love-faq-b):not(#lo
   html body #tab-account-settings #config-abas .love-tab-item:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j)::before { display: none !important; }
   html body #tab-account-settings #config-abas .love-tab-item:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j) span:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j) { line-height: 16px !important; }
 }
+
+/* Celular — Central de Ajuda: a capa desce 16px, sem encostar no topo. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-faq > div:has(> #faq-page-container):not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { padding-top: 16px !important; margin-top: 0 !important; }
+}

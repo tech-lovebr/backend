@@ -2341,5 +2341,6 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Convidados e presentes":"Guests and gifts",
 "Lista, confirmações e presentes":"List, RSVPs and gifts",
 "Contas":"Accounts",
-"Privacidade":"Privacy"
+"Privacidade":"Privacy",
+"Voltar para o início":"Back to home"
 });

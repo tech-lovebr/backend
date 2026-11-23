@@ -1720,9 +1720,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const CONFIG_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
   /** @type {Record<string, string>} */
-  const CONFIG_ABA_NO_CELULAR = { eventos: 'conta' };
+  const CONFIG_ABA_NO_CELULAR = { eventos: 'privacidade' };
   /** @type {Record<string, string[]>} */
-  const CONFIG_GRUPOS_CELULAR = { conta: ['conta', 'eventos'], privacidade: ['privacidade'], preferencias: ['preferencias'], contas: ['contas'] };
+  const CONFIG_GRUPOS_CELULAR = { conta: ['conta'], privacidade: ['privacidade', 'eventos'], preferencias: ['preferencias'], contas: ['contas'] };
   // Data vazia não tem "placeholder" no navegador: a classe diz se foi preenchida.
   const marcarNascimento = () => {
     const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-nascimento'));
@@ -1740,7 +1740,7 @@ document.addEventListener('DOMContentLoaded', () => {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
     const celular = CONFIG_CELULAR.matches;
     const abaInicial = celular ? (CONFIG_ABA_NO_CELULAR[opts.aba || ''] || opts.aba || 'conta') : (opts.aba || 'conta');
-    // Celular: 4 caixinhas no topo. Informações junta Meu Evento.
+    // Celular: 4 caixinhas no topo. Privacidade junta Meu Evento.
     abrirSubmenuDaPagina('Configurações', celular ? [
       { id: 'conta', rotulo: 'Informações' },
       { id: 'privacidade', rotulo: 'Privacidade' },
@@ -25337,6 +25337,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Retorno universal à Home/Visão Geral ao clicar em qualquer Logo da plataforma
+  document.getElementById('btn-config-voltar')?.addEventListener('click', () => switchRailTab('overview'));
   document.querySelectorAll('.btn-navigate-home, img[src*="logo.png"], img[src*="icone-azul1"], img[src*="iconelove2"]').forEach(el => {
     if (!el.closest('.modal-container-custom')) {
       const clickTarget = el.tagName.toLowerCase() === 'img' ? el.parentElement : el;

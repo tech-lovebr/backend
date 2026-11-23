@@ -72,7 +72,41 @@ document.addEventListener('DOMContentLoaded', () => {
   initResponsesDrawer();
   openFromLink();
   carregarFormulariosDoBanco();
+  initLinkDoSiteCelular();
 });
+
+/* Celular: o site só se edita no computador, mas o endereço fica no topo de
+   Editar meu site para compartilhar ou abrir (como a caixinha da Home do
+   anfitrião). Publicado = já existe a linha em site_pages (botão Publicar). */
+async function initLinkDoSiteCelular() {
+  const caixa = document.getElementById('site-link-celular');
+  if (!caixa || !(await window.b2bAuthReady)) return;
+  const p = B2B_DATA.professional || {};
+  const pro = p.plan === 'Pro';
+  const session = window.b2bSession || (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+  const { data } = await supabaseClient.from('site_pages').select('slug').eq('fornecedor_id', empresaId(session)).maybeSingle();
+  const publicado = !!(data && data.slug);
+  const slug = (data && data.slug) || (typeof slugDoNome === 'function' ? slugDoNome(p.company) : '');
+  if (!slug) return;
+  const url = pro ? `https://${slug}.love.com.br` : `https://hub.love.com.br/site/${slug}`;
+  const link = /** @type {HTMLAnchorElement} */ (document.getElementById('site-link-url'));
+  link.textContent = url.replace(/^https:\/\//, '');
+  link.href = publicado ? url : 'site-preview';
+  caixa.classList.toggle('is-publicado', publicado);
+  document.getElementById('site-link-status-texto').textContent = publicado ? 'Publicado' : 'Não publicado';
+  caixa.hidden = false;
+  document.getElementById('site-link-ver').addEventListener('click', () => window.open(publicado ? url : 'site-preview', '_blank', 'noopener'));
+  document.getElementById('site-link-compartilhar').addEventListener('click', async () => {
+    if (!publicado) { showToast('Publique o site pelo computador para compartilhar.', true); return; }
+    if (navigator.share) {
+      try { await navigator.share({ title: p.company || 'Meu site', url }); } catch (e) { /* cancelado */ }
+      return;
+    }
+    try { await navigator.clipboard.writeText(url); showToast('Link copiado.'); }
+    catch (e) { window.open(url, '_blank', 'noopener'); }
+  });
+}
 
 // Lista real (site_formularios) chega depois da sessão; até lá vale o cache
 // do navegador, que já aparece na hora.
@@ -272,6 +306,10 @@ function openFormDrawer(formId) {
   // Abre na própria página (sem gaveta): a lista some e o editor aparece no lugar.
   document.body.classList.add('form-editor-aberto');
   drawer.classList.add('show');
+  if (window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)').matches) {
+    const tituloDaPagina = document.getElementById('site-titulo-pagina');
+    if (tituloDaPagina) tituloDaPagina.textContent = existing ? 'Editar formulário' : 'Novo formulário';
+  }
   window.scrollTo({ top: 0 });
   document.querySelector('.b2b-content')?.scrollTo({ top: 0 });
   titleInput.focus();
@@ -281,6 +319,7 @@ function closeFormDrawer() {
   document.getElementById('form-drawer-backdrop').classList.remove('show');
   document.getElementById('form-drawer').classList.remove('show');
   document.body.classList.remove('form-editor-aberto');
+  if (window.b2bAbaDoSite === 'formularios') mostrarAbaDoSite('formularios');
   closeOpenColorPopover();
 }
 

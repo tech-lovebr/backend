@@ -2,7 +2,7 @@
    LOVE B2B — Notificações
    Mesmo desenho e comportamento da página /notificacoes da plataforma do
    anfitrião (js/app.js da raiz: loadNotificationsFeed, renderNotificationsPage,
-   markNotificationRead, markAllNotificationsRead). A busca e o número do
+   markNotificationRead). A busca e o número do
    sino ficam em js/shell.js (fetchB2BNotificacoes / updateNotificationsBadge),
    que roda em todas as páginas.
    ========================================================================== */
@@ -67,19 +67,6 @@ async function markNotificationRead(notificacaoId) {
     .upsert({ notificacao_id: notificacaoId, user_id: userId }, { onConflict: 'notificacao_id,user_id', ignoreDuplicates: true });
 }
 
-async function markAllNotificationsRead() {
-  const userId = notificationUserId();
-  const unreadIds = notificationsCache.filter(n => n.unread).map(n => n.id);
-  if (!userId || !unreadIds.length) return true;
-  const rows = unreadIds.map(id => ({ notificacao_id: id, user_id: userId }));
-  const { error } = await supabaseClient
-    .from('notificacao_leituras')
-    .upsert(rows, { onConflict: 'notificacao_id,user_id', ignoreDuplicates: true });
-  if (error) { console.error('Erro ao marcar notificações como lidas:', error); return false; }
-  await loadNotificationsFeed();
-  return true;
-}
-
 function openNotificationLink(url) {
   if (!url) return;
   if (/^https?:\/\//i.test(url)) { window.open(url, '_blank', 'noopener'); return; }
@@ -135,18 +122,6 @@ function renderNotificationsPage() {
 async function initNotificacoesPage() {
   const authed = await window.b2bAuthReady;
   if (!authed) return;
-
-  const markAllBtn = document.getElementById('notifications-mark-all-btn');
-  if (markAllBtn) {
-    markAllBtn.addEventListener('click', async () => {
-      if (markAllBtn.disabled) return;
-      markAllBtn.disabled = true;
-      const ok = await markAllNotificationsRead();
-      markAllBtn.disabled = false;
-      if (ok) showToast('Todas as notificações foram marcadas como lidas.');
-      else showToast('Não foi possível marcar as notificações como lidas.', true);
-    });
-  }
 
   await loadNotificationsFeed();
   window.b2bPageReady?.();

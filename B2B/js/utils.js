@@ -1710,7 +1710,8 @@ function salvarDaFicha(drawer) {
 }
 
 function prepararFichaDoCelular(drawer) {
-  if (!drawer || drawer.dataset.fichaCelular || drawer.id === 'product-drawer') return;
+  // Produto e formulário têm editor próprio no celular.
+  if (!drawer || drawer.dataset.fichaCelular || drawer.id === 'product-drawer' || drawer.id === 'form-drawer') return;
   const header = drawer.querySelector(':scope > .form-drawer-header');
   if (!header) return;
   drawer.dataset.fichaCelular = '1';

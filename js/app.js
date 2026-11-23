@@ -1076,19 +1076,6 @@ document.addEventListener('DOMContentLoaded', () => {
       .upsert({ notificacao_id: notificacaoId, user_id: userId }, { onConflict: 'notificacao_id,user_id', ignoreDuplicates: true });
   }
 
-  async function markAllNotificationsRead() {
-    const userId = window.loveClienteSession?.user?.id;
-    notificationsFeedCache.filter(n => (n.kind === 'lembrete' || n.kind === 'rsvp') && n.unread).forEach(n => { n.unread = false; marcarNotificacaoLocalLida(n); });
-    const unreadIds = notificationsFeedCache.filter(n => n.kind === 'admin' && n.unread).map(n => n.id);
-    if (!userId || !unreadIds.length) { renderNotificationsPage(); updateNotificationsBadge(); return; }
-    const rows = unreadIds.map(id => ({ notificacao_id: id, user_id: userId }));
-    const { error } = await supabaseClient
-      .from('notificacao_leituras')
-      .upsert(rows, { onConflict: 'notificacao_id,user_id', ignoreDuplicates: true });
-    if (error) { console.error('Erro ao marcar notificações como lidas:', error); return; }
-    await loadNotificationsFeed();
-  }
-
   // Presentes recebidos de verdade (activeEvent.receivedGifts) viram
   // notificação: "Fulano comprou Tal Presente, pelo valor de R$X. O saldo
   // já está na sua conta."
@@ -2312,14 +2299,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const achou = tabela.find(([re]) => /** @type {RegExp} */ (re).test(nome));
     if (achou) return { desc: /** @type {string} */ (achou[1]), d: /** @type {string} */ (achou[2]) };
     return { desc: 'Dúvidas frequentes', d: 'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z' };
-  }
-
-  const btnNotificationsMarkAllRead = document.getElementById('btn-notifications-mark-all-read');
-  if (btnNotificationsMarkAllRead) {
-    btnNotificationsMarkAllRead.addEventListener('click', async () => {
-      await markAllNotificationsRead();
-      showToast('Todas as notificações foram marcadas como lidas.', '✓');
-    });
   }
 
   // =========================================================================

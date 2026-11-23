@@ -16606,11 +16606,6 @@ html body #tab-create-event-page #btn-start-event-creation:hover svg { transform
   html.love-saldo-oculto .love-saldo-valor:not(#love-h-a) { filter: none !important; user-select: auto; }
 }
 
-/* Celular, Notificações: sem o botão "Marcar todas como lidas". */
-@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
-  html body #btn-notifications-mark-all-read:not(#love-h-a):not(#love-h-b) { display: none !important; }
-}
-
 /* Celular: o topo deixa de flutuar — fica FIXO, de ponta a ponta, encostado
    em cima, como a barra de baixo (branco, 64px, linha fina embaixo). A capa
    da Home e a colagem de Criar evento começam logo abaixo dele. */

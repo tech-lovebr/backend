@@ -18097,3 +18097,21 @@ html body .convite-tela:not(#love-h-a) { max-width: 100%; overflow-x: clip; }
    carrega na hora); tocar abre o Google Maps. Sem a chave, volta o iframe. */
 a.convite-mapa { display: block; }
 .convite-mapa img { display: block; width: 100%; height: 240px; object-fit: cover; }
+
+/* Save the Date — celular: o mesmo céu do painel (Home) atrás da tela.
+   Desktop: a conversa no azul-claro do item ativo do menu lateral. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body:not([data-theme="dark"]):has(#tab-edit-site.active #site-builder-root[data-pagina="savethedate"]) #view-event-os-dashboard:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d):not(#love-h-e) {
+    background:
+      radial-gradient(ellipse 30% 28% at 50% 50%, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%),
+      radial-gradient(ellipse 42% 38% at 82% 15%, #F4E2D9 0%, rgba(244, 226, 217, 0) 100%),
+      radial-gradient(ellipse 38% 36% at 15% 85%, #B9D1EE 0%, rgba(185, 209, 238, 0) 100%),
+      #E4EDF8 !important;
+    background-attachment: fixed !important;
+  }
+}
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  html body #site-builder-root[data-pagina="savethedate"] #builder-canvas:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #site-builder-root[data-pagina="savethedate"] .std-celular:not(#love-h-a):not(#love-h-b):not(#love-h-c),
+  html body #site-builder-root[data-pagina="savethedate"] .std-celular-conversa:not(#love-h-a):not(#love-h-b):not(#love-h-c):not(#love-h-d) { background-color: #EBF4FF !important; }
+}

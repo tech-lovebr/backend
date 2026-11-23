@@ -1244,9 +1244,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmados = (ev.guests || []).filter((/** @type {any} */ g) => g.status === 'confirmed');
     const comHora = confirmados.map((/** @type {any} */ g) => ({ g, d: horaDaConfirmacao(g) }))
       .filter((/** @type {any} */ x) => x.d).sort((/** @type {any} */ a, /** @type {any} */ b) => a.d - b.d);
-    const semHora = confirmados.length - comHora.length; // confirmados pelo anfitrião
-    return comHora.map((/** @type {any} */ x, /** @type {number} */ i) => {
-      const total = semHora + i + 1;
+    return comHora.map((/** @type {any} */ x) => {
       const id = `rsvp-${x.g.id}`;
       return {
         kind: 'rsvp',
@@ -1256,7 +1254,7 @@ document.addEventListener('DOMContentLoaded', () => {
         iconBox: 'bg-green-50 text-green-700',
         rotulo: 'CONFIRMAÇÃO DE PRESENÇA',
         titleHtml: '',
-        bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(x.g.name || 'Um convidado')}</strong> confirmou. ${total === 1 ? 'Agora é 1 pessoa na sua lista.' : `Agora são ${total} pessoas na sua lista.`}`,
+        bodyHtml: `<strong class="text-zinc-900 font-bold">${escapeNotificationText(x.g.name || 'Um convidado')}</strong> confirmou.`,
         time: formatCommentDate(x.d),
         quando: x.d.toISOString(),
         unread: !lidas.has(id) && x.d.getTime() >= desdeMs,

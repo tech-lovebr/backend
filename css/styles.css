@@ -18293,3 +18293,11 @@ html body #tab-faq button.faq-pergunta:not(#love-faq-a):not(#love-faq-b):not(#lo
   html body #tab-faq #btn-faq-voltar:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { position: absolute; left: -10px; top: -10px; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; min-width: 44px; margin: 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #18181B; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   html body #tab-faq #btn-faq-voltar svg:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { width: 24px; height: 24px; }
 }
+
+/* Celular — Configurações: ícone e texto das 4 caixinhas exatamente no meio,
+   com a mesma margem em cima e embaixo. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-account-settings #config-abas .love-tab-item:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j) { padding: 0 2px !important; }
+  html body #tab-account-settings #config-abas .love-tab-item:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j)::before { display: none !important; }
+  html body #tab-account-settings #config-abas .love-tab-item:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j) span:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j) { line-height: 16px !important; }
+}

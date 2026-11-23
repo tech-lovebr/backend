@@ -145,7 +145,11 @@ async function initB2BMensagens() {
 
   renderContactsList();
   renderActiveChat();
+  // Celular: link direto abre a conversa; sem ele, fica na lista (e nada é
+  // marcado como lido antes de a pessoa abrir).
+  if (abrirSuporte || conversaPedida) abrirConversaNoCelular();
   markActiveConversationRead();
+  textoDoCampoDoChat();
   // Formulários (+ › Formulário) vêm do banco — site_formularios.
   if (typeof loadSiteForms === 'function') loadSiteForms();
   setupChatEvents();
@@ -212,6 +216,7 @@ async function loadB2BConversations() {
 // Conversa aberta = mensagens do cliente lidas (marcar_conversa_lida,
 // migration 045); o número do ícone do chat atualiza junto.
 async function markActiveConversationRead() {
+  if (typeof hubNoCelular === 'function' && hubNoCelular() && !document.body.classList.contains('chat-conversa-aberta')) return;
   const conv = b2bConversations.find(c => c.id === activeConvId);
   if (!conv || !conv.unread) return;
   conv.unread = 0;
@@ -324,13 +329,19 @@ function abrirMenuConversa(btn, conv) {
   const menu = document.createElement('div');
   menu.className = 'conv-menu';
   menu.setAttribute('role', 'menu');
+  const fixada = conversasFixadas().includes(conv.id);
   menu.innerHTML = `
+    <button type="button" role="menuitem" data-conv-fixar>${fixada ? 'Desafixar' : 'Fixar'}</button>
     <button type="button" role="menuitem" data-conv-excluir>Excluir</button>`;
   document.body.appendChild(menu);
   const r = btn.getBoundingClientRect();
   menu.style.top = `${r.bottom + 4 + window.scrollY}px`;
   menu.style.left = `${Math.max(8, r.right - menu.offsetWidth + window.scrollX)}px`;
   btn.closest('.conv-item')?.classList.add('menu-aberto');
+  menu.querySelector('[data-conv-fixar]').addEventListener('click', () => {
+    fecharMenuConversa();
+    alternarFixada(conv.id);
+  });
   menu.querySelector('[data-conv-excluir]').addEventListener('click', () => {
     fecharMenuConversa();
     const excluir = () => excluirConversaDaLista(conv.id);
@@ -338,7 +349,7 @@ function abrirMenuConversa(btn, conv) {
       confirmarNoHub({
         titulo: 'Excluir conversa?',
         texto: `A conversa com ${conv.name} sai da sua lista. Se chegar mensagem nova, ela volta.`,
-        botao: 'Excluir', perigo: true, aoConfirmar: excluir
+        botao: 'Excluir', aoConfirmar: excluir
       });
     } else excluir();
   });
@@ -466,7 +477,7 @@ function renderContactsList(searchQuery = '') {
   }
 
   const q = searchQuery.toLowerCase().trim();
-  const fixadas = []; // "Fixar" saiu do menu
+  const fixadas = conversasFixadas();
   const ordem = c => (c.isSuporte ? -2 : (fixadas.includes(c.id) ? -1 : 0));
   const filtered = b2bConversations
     .filter(c => c.isSuporte || conversaVisivel(c))
@@ -499,7 +510,7 @@ function renderContactsList(searchQuery = '') {
       </div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between gap-1 mb-0.5">
-          <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'font-semibold' : 'text-zinc-900'} truncate">${conv.name}</h4>
+          <h4 class="text-xs sm:text-sm font-medium ${isActive ? 'font-semibold' : 'text-zinc-900'} truncate">${escapeMsg(conv.name)}</h4>
           <span class="conv-item-canto">
             ${fixadas.includes(conv.id) ? '<svg class="conv-item-fixada" viewBox="0 0 24 24" fill="currentColor" aria-label="Fixada"><path d="M15 3.5a1 1 0 0 1 1.7-.7l4.5 4.5a1 1 0 0 1-.7 1.7h-1.3l-3.6 3.6.4 3.6a1 1 0 0 1-1.7.8L11 13.7 5.7 19 5 19l0-.7L10.3 13 6.9 9.6a1 1 0 0 1 .8-1.7l3.6.4L15 4.7V3.5Z"/></svg>' : ''}
             <span class="conv-item-hora text-[10px] text-zinc-400">${conv.time}</span>
@@ -509,7 +520,7 @@ function renderContactsList(searchQuery = '') {
         <div class="flex items-center justify-between gap-2">
           ${outroEstaDigitando(conv)
             ? '<p class="text-xs truncate leading-tight chat-previa-digitando">Digitando…</p>'
-            : `<p class="text-xs ${conv.unread ? 'text-zinc-900 font-semibold' : 'text-zinc-500'} truncate leading-tight">${conv.lastMessage}</p>`}
+            : `<p class="text-xs ${conv.unread ? 'text-zinc-900 font-semibold' : 'text-zinc-500'} truncate leading-tight">${escapeMsg(conv.lastMessage)}</p>`}
           ${conv.unread ? `<span class="chat-unread-count">${conv.unread > 99 ? '99+' : conv.unread}</span>` : ''}
         </div>
       </div>
@@ -525,8 +536,8 @@ function renderContactsList(searchQuery = '') {
       activeConvId = conv.id;
       renderContactsList(document.getElementById('chat-search-input') ? document.getElementById('chat-search-input').value : '');
       renderActiveChat();
-      markActiveConversationRead();
       abrirConversaNoCelular();
+      markActiveConversationRead();
     });
 
     // Celular: a linha tem, por trás, Abrir e Remover (arrastar para a esquerda).
@@ -535,7 +546,10 @@ function renderContactsList(searchQuery = '') {
       linha.className = 'conv-linha';
       const acoes = document.createElement('div');
       acoes.className = 'conv-acoes';
-      acoes.innerHTML = acoesDoArrasteHtml(true, true, 'Abrir');
+      acoes.innerHTML = `
+        <button type="button" class="lc-acao lc-acao-editar conv-acao conv-acao-abrir">${ICONE_ACAO_ABRIR}<span>Abrir</span></button>
+        <button type="button" class="lc-acao lc-acao-remover conv-acao conv-acao-remover">${ICONE_ACAO_REMOVER}<span>Remover</span></button>`;
+      linha.dataset.larguraAcoes = '144';
       linha.append(acoes, item);
       acoes.querySelector('.lc-acao-editar').addEventListener('click', (e) => {
         e.stopPropagation();
@@ -565,14 +579,39 @@ function renderContactsList(searchQuery = '') {
 function atualizarTotalDoChat(n) {
   const el = document.getElementById('chat-total-celular');
   if (el) el.textContent = `${n} ${n === 1 ? 'conversa' : 'conversas'}`;
+  // Celular: no lugar de "N conversas", a bolinha com as não lidas ao lado do título.
+  const selo = document.getElementById('chat-selo-celular');
+  if (selo) {
+    const naoLidas = b2bConversations
+      .filter(c => c.isSuporte || conversaVisivel(c))
+      .reduce((t, c) => t + (Number(c.unread) || 0), 0);
+    selo.textContent = naoLidas > 99 ? '99+' : String(naoLidas);
+    selo.hidden = !naoLidas;
+  }
 }
+
+/* Celular: o campo diz só "Escrever..."; no computador, o texto completo. */
+function textoDoCampoDoChat() {
+  const campo = document.getElementById('chat-input');
+  if (!campo) return;
+  const conv = b2bConversations.find(c => c.id === activeConvId);
+  campo.placeholder = typeof hubNoCelular === 'function' && hubNoCelular()
+    ? 'Escrever...'
+    : (conv && conv.isSuporte ? 'Escreva uma mensagem para o suporte...' : 'Digite / para ver comandos rápidos');
+}
+// Girar a tela ou mudar de largura: a lista troca de formato e a conversa fecha.
+window.matchMedia(MQ_CELULAR_HUB).addEventListener?.('change', () => {
+  document.body.classList.remove('chat-conversa-aberta');
+  renderContactsList(document.getElementById('chat-search-input')?.value || '');
+  textoDoCampoDoChat();
+});
 
 /* Celular: a conversa abre em tela cheia, com a seta para voltar à lista. */
 function abrirConversaNoCelular() {
   if (typeof hubNoCelular !== 'function' || !hubNoCelular()) return;
   document.body.classList.add('chat-conversa-aberta');
   const msgs = document.getElementById('chat-messages');
-  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+  if (msgs) requestAnimationFrame(() => { msgs.scrollTop = msgs.scrollHeight; });
 }
 function voltarParaConversasNoCelular() {
   document.body.classList.remove('chat-conversa-aberta');
@@ -605,7 +644,7 @@ function renderActiveChat() {
       : `<span class="${activeConv.online ? 'text-emerald-600 font-medium' : 'text-zinc-400'}">${activeConv.online ? 'Online agora' : ''}</span>`;
   }
   const chatInput = document.getElementById('chat-input');
-  if (chatInput) chatInput.placeholder = activeConv.isSuporte ? 'Escreva uma mensagem para o suporte...' : 'Digite / para ver comandos rápidos';
+  if (chatInput) textoDoCampoDoChat();
   document.getElementById('chat-form')?.classList.toggle('chat-form--suporte', !!activeConv.isSuporte);
   if (avatarEl) avatarEl.innerHTML = b2bAvatarHtml(activeConv.avatar, activeConv.name);
   if (onlineDotEl) onlineDotEl.style.display = activeConv.online ? 'block' : 'none';

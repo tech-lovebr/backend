@@ -1610,7 +1610,7 @@ function acoesDoArrasteHtml(editar, remover, rotuloEditar = 'Editar') {
 
 let linhaArrastadaAberta = null;
 function larguraDasAcoes(linha) {
-  return (linha.querySelectorAll('.lc-acao').length || 1) * LARGURA_ACAO_ARRASTE;
+  return Number(linha.dataset.larguraAcoes) || (linha.querySelectorAll('.lc-acao').length || 1) * LARGURA_ACAO_ARRASTE;
 }
 function moverLinhaArrastada(linha, x, animar) {
   const card = linha._cardDoArraste || linha;

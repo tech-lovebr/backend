@@ -577,7 +577,7 @@ function renderCoverImagePicker() {
         ${currentCoverImage
           ? `<img src="${currentCoverImage}" class="header-logo-picker-preview" alt="">
              <div class="header-logo-picker-overlay">${PI_IMAGE}<span>Alterar imagem</span></div>`
-          : `<span class="image-upload-zone-plus">${PI_PLUS}</span><span class="image-upload-zone-text">Adicione ou arraste a imagem de capa</span>`}
+          : `<span class="image-upload-zone-plus">${PI_PLUS}</span><span class="image-upload-zone-text"><span class="etapa-longa">Adicione ou arraste a imagem de capa</span><span class="etapa-curta">Adicionar capa</span></span>`}
         <input type="file" accept="image/*" class="image-upload-zone-input" id="product-cover-input">
       </label>
       ${currentCoverImage ? `<button type="button" class="header-logo-picker-remove" id="product-cover-remove" title="Remover imagem">${PI_CLOSE}</button>` : ''}

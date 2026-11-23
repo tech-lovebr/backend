@@ -2339,5 +2339,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Vantagens e serviços da Love":"Love perks and services",
 "Dúvidas frequentes":"Frequently asked questions",
 "Convidados e presentes":"Guests and gifts",
-"Lista, confirmações e presentes":"List, RSVPs and gifts"
+"Lista, confirmações e presentes":"List, RSVPs and gifts",
+"Contas":"Accounts",
+"Privacidade":"Privacy"
 });

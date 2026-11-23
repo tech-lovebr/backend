@@ -1720,9 +1720,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const CONFIG_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
   /** @type {Record<string, string>} */
-  const CONFIG_ABA_NO_CELULAR = { eventos: 'conta', privacidade: 'preferencias' };
+  const CONFIG_ABA_NO_CELULAR = { eventos: 'conta' };
   /** @type {Record<string, string[]>} */
-  const CONFIG_GRUPOS_CELULAR = { conta: ['conta', 'eventos'], preferencias: ['preferencias', 'privacidade'], contas: ['contas'] };
+  const CONFIG_GRUPOS_CELULAR = { conta: ['conta', 'eventos'], privacidade: ['privacidade'], preferencias: ['preferencias'], contas: ['contas'] };
+  // Data vazia não tem "placeholder" no navegador: a classe diz se foi preenchida.
+  const marcarNascimento = () => {
+    const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('settings-user-nascimento'));
+    campo?.classList.toggle('tem-valor', Boolean(campo.value));
+  };
+  document.getElementById('settings-user-nascimento')?.addEventListener('input', marcarNascimento);
   // Girar a tela / mudar a largura com Configurações aberta: refaz as abas.
   CONFIG_CELULAR.addEventListener?.('change', () => {
     if (state.currentTab !== 'tab-account-settings') return;
@@ -1734,10 +1740,10 @@ document.addEventListener('DOMContentLoaded', () => {
     abrirPaginaDaConta('tab-account-settings', '/configuracoes', 'Configurações', opts);
     const celular = CONFIG_CELULAR.matches;
     const abaInicial = celular ? (CONFIG_ABA_NO_CELULAR[opts.aba || ''] || opts.aba || 'conta') : (opts.aba || 'conta');
-    // Celular: só 3 abas (como no Hub). Informações junta Meu Evento;
-    // Preferências junta Privacidade; Contas Bancárias fica sozinha.
+    // Celular: 4 caixinhas no topo. Informações junta Meu Evento.
     abrirSubmenuDaPagina('Configurações', celular ? [
       { id: 'conta', rotulo: 'Informações' },
+      { id: 'privacidade', rotulo: 'Privacidade' },
       { id: 'preferencias', rotulo: 'Preferências' },
       { id: 'contas', rotulo: 'Contas Bancárias' }
     ] : [
@@ -1775,6 +1781,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const v = profile[coluna];
       el.value = v == null ? '' : coluna === 'cep' ? mascaraCep(String(v)) : coluna === 'renda_mensal' ? String(Math.round(Number(v))) : String(v);
     });
+    marcarNascimento();
     document.getElementById('settings-form-error')?.classList.add('hidden');
     document.getElementById('settings-form-ok')?.classList.add('hidden');
     resetSettingsSecurity();

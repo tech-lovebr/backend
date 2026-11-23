@@ -18219,3 +18219,46 @@ html body #tab-faq button.faq-pergunta:not(#love-faq-a):not(#love-faq-b):not(#lo
   .faq-cat.ativa .faq-cat-seta { transform: rotate(0deg); }
   .faq-cat-seta svg { width: 16px; height: 16px; }
 }
+
+/* Celular — Suas informações: 4 caixinhas no topo (como a Central de Ajuda) e
+   formulário em cartões brancos com os campos da ficha do convidado, sobre a
+   cor do dashboard. */
+#config-abas .love-tab-item svg { display: none; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-account-settings #config-abas:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; height: auto; margin: 0; padding: 0; overflow: visible; border: 0 !important; background: transparent !important; }
+  html body #tab-account-settings #config-abas .love-tab-item[data-config-aba="eventos"]:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { display: none !important; }
+  html body #tab-account-settings #config-abas .love-tab-item:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { display: flex !important; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 0; width: auto; height: 72px; margin: 0; padding: 8px 2px; border: 0 !important; border-radius: 10px !important; background: #FFFFFF !important; color: #18181B !important; font-size: 12px !important; font-weight: 500 !important; line-height: 16px; letter-spacing: -0.01em; white-space: nowrap; box-shadow: none !important; }
+  html body #tab-account-settings #config-abas .love-tab-item:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h)::after { display: none !important; }
+  html body #tab-account-settings #config-abas .love-tab-item.active:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { background: #183b54 !important; color: #FFFFFF !important; }
+  html body #tab-account-settings #config-abas .love-tab-item svg:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { display: block; flex-shrink: 0; width: 24px; height: 24px; color: #183b54; }
+  html body #tab-account-settings #config-abas .love-tab-item.active svg:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { color: #FFFFFF; }
+
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade, #config-painel-preferencias, #config-painel-eventos) .dash-card:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { margin: 0 !important; padding: 16px !important; border: 0 !important; border-radius: 10px !important; background: #FFFFFF !important; box-shadow: none !important; }
+
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .conta-info-campos:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { gap: 16px; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .field-label:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { margin: 0 0 4px; color: #71717A; font-size: 13px; font-weight: 500; line-height: 19.5px; letter-spacing: -0.13px; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .field-input:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { box-sizing: border-box; width: 100%; height: 46px; min-height: 46px; padding: 0 12px; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; background: #FFFFFF !important; color: #18181B; font-size: 16px; font-weight: 500; box-shadow: none !important; outline: 0; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) :is(input.field-input:not([type="date"]):not(:placeholder-shown), input.field-input[type="date"].tem-valor, select.field-input:not(:has(option:checked[value=""]))):not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { background: rgba(24, 59, 84, 0.06) !important; border-color: transparent !important; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .field-input:focus:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { border-color: rgba(24, 29, 36, 0.22) !important; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .field-input.is-faltando:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { border-color: #B42318 !important; }
+
+  /* Primeiro nome e sobrenome (e CEP e bairro) lado a lado; a renda precisa
+     da linha inteira para o valor caber. */
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .conta-nome-linha:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .conta-nome-linha:has(#settings-user-renda):not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .conta-endereco-linha:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 12px; }
+}
+
+/* Celular — Suas informações: 16px entre as caixinhas e o cartão; em telas
+   bem estreitas as 4 caixinhas ficam em 2 por linha para o texto caber. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-account-settings > div:has(> #config-abas):not(#love-c-a):not(#love-c-b):not(#love-c-c) { margin-bottom: 0 !important; padding-bottom: 0 !important; }
+  html body #tab-account-settings > div:has(> #config-painel-conta):not(#love-c-a):not(#love-c-b):not(#love-c-c) { margin-top: 0 !important; padding-top: 16px !important; }
+  html body #tab-account-settings :is(#config-painel-conta, #config-painel-privacidade) .field-input:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h) { transition: none !important; }
+}
+@media (max-width: 359px) {
+  html body #tab-account-settings #config-abas:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body #tab-account-settings #config-abas:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { gap: 8px !important; margin-bottom: 0 !important; }
+}

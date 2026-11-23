@@ -18168,7 +18168,7 @@ html body #view-event-os-dashboard #tab-b2b:has(#b2b-contracted-view:not(.hidden
 #faq-page-container { display: block; }
 .faq-central { display: flex; flex-direction: column; gap: 24px; }
 .faq-central [hidden] { display: none !important; }
-.faq-capa { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 56px 32px; border-radius: 10px; background: #183b54; text-align: center; }
+.faq-capa { display: flex; flex-direction: column; align-items: center; gap: 24px; padding: 56px 32px; border-radius: 10px; background: #183b54 url("../assets/central-ajuda-capa.webp") center / cover no-repeat; text-align: center; }
 html body #tab-faq .faq-capa-titulo:not(#love-faq-a) { margin: 0; color: #FFFFFF; font-size: 32px; font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; }
 .faq-so-celular { display: none; }
 .faq-busca { display: flex; align-items: center; gap: 10px; box-sizing: border-box; width: 100%; max-width: 560px; height: 48px; padding: 0 16px; border-radius: 8px; background: #FFFFFF; color: #71717A; cursor: text; }

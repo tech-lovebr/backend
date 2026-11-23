@@ -198,8 +198,8 @@
             <!-- A caixinha tracejada clicável, igual à de Adicionar presente -->
             <button type="button" class="lista-pronta-card lista-pronta-criar rfp-vazio-card" data-ct-solicitar>
               <dotlottie-wc class="lista-pronta-lottie" src="/assets/lottie/convidados-vazio.lottie?v=3" autoplay loop aria-hidden="true"></dotlottie-wc>
-              <strong>Você ainda não possui contratos ativos</strong>
-              <span class="lista-pronta-qtd">Encontre um fornecedor ideal, contrate-o para o seu evento e organize as entregas.</span>
+              <strong>Sem contratos ativos</strong>
+              <span class="lista-pronta-qtd">No momento você não possui contratos ativos. Encontre um novo fornecedor.</span>
             </button>
           </div>
         </div>`;

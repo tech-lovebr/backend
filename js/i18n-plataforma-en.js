@@ -2342,5 +2342,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Lista, confirmações e presentes":"List, RSVPs and gifts",
 "Contas":"Accounts",
 "Privacidade":"Privacy",
-"Voltar para o início":"Back to home"
+"Voltar para o início":"Back to home",
+"Sem contratos ativos":"No active contracts",
+"No momento você não possui contratos ativos. Encontre um novo fornecedor.":"You have no active contracts right now. Find a new vendor."
 });

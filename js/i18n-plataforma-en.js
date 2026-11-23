@@ -2324,5 +2324,18 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Mínimo":"Minimum",
 "Máximo":"Maximum",
 "Investimento mínimo":"Minimum budget",
-"Investimento máximo":"Maximum budget"
+"Investimento máximo":"Maximum budget",
+"Como podemos ajudar?":"How can we help?",
+"Pesquisar na central de ajuda":"Search the help center",
+"Resultados da pesquisa":"Search results",
+"Nenhuma pergunta encontrada.":"No questions found.",
+"Contratação, orçamentos e contratos":"Hiring, quotes and contracts",
+"Saldo, saques e pagamentos":"Balance, withdrawals and payments",
+"Lista, confirmações e mesas":"List, RSVPs and tables",
+"Lista de presentes e recebimentos":"Gift list and payouts",
+"Edição e publicação do seu site":"Editing and publishing your site",
+"Criação e envio do seu convite":"Creating and sending your invitation",
+"Dados e organização do evento":"Event details and planning",
+"Vantagens e serviços da Love":"Love perks and services",
+"Dúvidas frequentes":"Frequently asked questions"
 });

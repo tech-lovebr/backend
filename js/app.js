@@ -1651,13 +1651,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openFaqPage(opts = {}) {
     abrirPaginaDaConta('tab-faq', '/central-de-ajuda', 'Central de Ajuda', opts);
-    // Central de Ajuda usa o submenu lateral, como os outros menus: título
-    // "Central de Ajuda" e as categorias como itens.
-    if (elements.subDrawer) elements.subDrawer.classList.remove('hidden-drawer');
-    if (elements.mainArea) elements.mainArea.classList.remove('full-width');
-    if (elements.drawerTitle) elements.drawerTitle.textContent = 'Central de Ajuda';
-    if (elements.drawerActionBtn && elements.drawerActionBtn.parentElement) elements.drawerActionBtn.parentElement.classList.add('hidden');
-    if (elements.drawerSubItemsList) elements.drawerSubItemsList.innerHTML = '';
+    // Sem submenu lateral: as categorias ficam em caixas dentro da página e
+    // a página sempre abre sem categoria escolhida (salvo link "Saiba mais").
+    faqCategoriaAtiva = null;
+    faqBusca = '';
     loadFaqPage();
   }
 
@@ -2011,6 +2008,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Categoria pedida por um link "Saiba mais" (trecho do nome, ex.: "present").
   /** @type {string|null} */
   let faqCategoriaPedida = null;
+  // Texto do Pesquisar da central de ajuda.
+  let faqBusca = '';
 
   async function loadFaqPage() {
     const cont = document.getElementById('faq-page-container');
@@ -2195,63 +2194,115 @@ document.addEventListener('DOMContentLoaded', () => {
     if (faqCategoriaPedida) {
       const pedida = faqCategoriaPedida.toLowerCase();
       const achou = categorias.find(c => c.toLowerCase().includes(pedida));
-      if (achou) faqCategoriaAtiva = achou;
+      if (achou) { faqCategoriaAtiva = achou; faqBusca = ''; }
       faqCategoriaPedida = null;
     }
-    // Primeira categoria fica selecionada; mantém a escolhida ao recarregar.
-    if (!faqCategoriaAtiva || !grupos.has(faqCategoriaAtiva)) faqCategoriaAtiva = categorias[0];
+    if (faqCategoriaAtiva && !grupos.has(faqCategoriaAtiva)) faqCategoriaAtiva = null;
 
+    const icone = (/** @type {string} */ d) => `<svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="${d}"/></svg>`;
     const seta = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>';
+    const buscaEstavaAtiva = document.activeElement?.id === 'faq-busca';
+
     cont.innerHTML = `
-      <nav class="faq-categorias" aria-label="Categorias">
-        ${categorias.map(cat => `
-          <button type="button" class="faq-categoria-btn${cat === faqCategoriaAtiva ? ' ativa' : ''}" data-categoria="${escaparHtml(cat)}">${escaparHtml(cat)}</button>`).join('')}
-      </nav>
-      <div class="faq-conteudo">
-        <h3 class="faq-categoria-titulo">${escaparHtml(faqCategoriaAtiva)}</h3>
-        <div class="faq-lista">
-          ${grupos.get(faqCategoriaAtiva).map(item => `
-            <div class="faq-item">
-              <button type="button" class="faq-pergunta" aria-expanded="false">
-                <span>${escaparHtml(item.pergunta || '')}</span>
-                ${seta}
-              </button>
-              <div class="faq-resposta">${faqRespostaHtml(item.resposta)}</div>
-            </div>`).join('')}
+      <div class="faq-central">
+        <div class="faq-capa">
+          <h3 class="faq-capa-titulo"><span class="faq-so-celular">Central de Ajuda</span><span class="faq-so-desktop">Como podemos ajudar?</span></h3>
+          <label class="faq-busca">
+            ${icone('M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z')}
+            <input id="faq-busca" type="search" autocomplete="off" placeholder="Pesquisar na central de ajuda" aria-label="Pesquisar na central de ajuda" value="${escaparHtml(faqBusca)}">
+          </label>
         </div>
+        <div class="faq-cats">
+          ${categorias.map(cat => {
+            const v = faqVisualDaCategoria(cat);
+            return `<button type="button" class="faq-cat" data-categoria="${escaparHtml(cat)}" aria-expanded="false">
+              <span class="faq-cat-icone">${icone(v.d)}</span>
+              <span class="faq-cat-textos"><span class="faq-cat-nome">${escaparHtml(cat)}</span><span class="faq-cat-desc">${escaparHtml(v.desc)}</span></span>
+              <span class="faq-cat-seta">${seta}</span>
+            </button>`;
+          }).join('')}
+        </div>
+        <div class="faq-painel" hidden></div>
       </div>`;
 
-    cont.querySelectorAll('.faq-categoria-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        faqCategoriaAtiva = btn.dataset.categoria;
-        renderFaqPage(itens);
-      });
-    });
+    const central = /** @type {HTMLElement} */ (cont.querySelector('.faq-central'));
+    const caixas = /** @type {HTMLElement} */ (cont.querySelector('.faq-cats'));
+    const painel = /** @type {HTMLElement} */ (cont.querySelector('.faq-painel'));
+    const botoes = /** @type {HTMLElement[]} */ ([...cont.querySelectorAll('.faq-cat')]);
+    const noCelular = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
+    const semAcento = (/** @type {string} */ t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const semTags = (/** @type {string} */ t) => String(t || '').replace(/<[^>]*>/g, ' ');
 
-    // Submenu lateral (desktop): as mesmas categorias, no formato dos outros menus.
-    if (state.currentTab === 'tab-faq' && elements.drawerSubItemsList) {
-      elements.drawerSubItemsList.innerHTML = '';
-      categorias.forEach(cat => {
-        const item = document.createElement('div');
-        item.className = `sub-drawer-item${cat === faqCategoriaAtiva ? ' active' : ''}`;
-        item.dataset.faqCategoria = cat;
-        const rotulo = document.createElement('span');
-        rotulo.textContent = cat;
-        item.appendChild(rotulo);
-        item.addEventListener('click', () => {
-          faqCategoriaAtiva = cat;
-          renderFaqPage(itens);
-        });
-        elements.drawerSubItemsList.appendChild(item);
+    const desenhar = () => {
+      const termo = semAcento(faqBusca.trim());
+      // O painel sai de dentro da lista antes de ela poder ser escondida.
+      central.appendChild(painel);
+      caixas.hidden = Boolean(termo);
+      let ativo = null;
+      botoes.forEach(b => {
+        const on = !termo && b.dataset.categoria === faqCategoriaAtiva;
+        b.classList.toggle('ativa', on);
+        b.setAttribute('aria-expanded', String(on));
+        if (on) ativo = b;
       });
-    }
-    cont.querySelectorAll('.faq-pergunta').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const item = btn.closest('.faq-item');
+      const lista = termo
+        ? itens.filter(i => semAcento(`${i.pergunta} ${semTags(i.resposta)}`).includes(termo))
+        : (faqCategoriaAtiva ? grupos.get(faqCategoriaAtiva) : null);
+      if (!lista) { painel.hidden = true; painel.innerHTML = ''; return; }
+      painel.hidden = false;
+      painel.innerHTML = `
+        <h3 class="faq-categoria-titulo">${termo ? 'Resultados da pesquisa' : escaparHtml(faqCategoriaAtiva)}</h3>
+        ${lista.length ? `<div class="faq-lista">${lista.map(item => `
+          <div class="faq-item">
+            <button type="button" class="faq-pergunta" aria-expanded="false">
+              <span>${escaparHtml(item.pergunta || '')}</span>
+              ${seta}
+            </button>
+            <div class="faq-resposta">${faqRespostaHtml(item.resposta)}</div>
+          </div>`).join('')}</div>` : '<p class="faq-sem-resultado">Nenhuma pergunta encontrada.</p>'}`;
+      // Celular: as perguntas abrem logo abaixo da categoria tocada.
+      if (ativo && noCelular.matches) /** @type {HTMLElement} */ (ativo).after(painel);
+    };
+
+    central.addEventListener('click', (e) => {
+      const alvo = /** @type {HTMLElement} */ (e.target);
+      const pergunta = alvo.closest('.faq-pergunta');
+      if (pergunta) {
+        const item = /** @type {HTMLElement} */ (pergunta.closest('.faq-item'));
         const aberto = item.classList.toggle('aberto');
-        btn.setAttribute('aria-expanded', String(aberto));
-      });
+        pergunta.setAttribute('aria-expanded', String(aberto));
+        return;
+      }
+      const btn = /** @type {HTMLElement|null} */ (alvo.closest('.faq-cat'));
+      if (!btn) return;
+      faqCategoriaAtiva = btn.dataset.categoria === faqCategoriaAtiva ? null : (btn.dataset.categoria || null);
+      desenhar();
+      if (faqCategoriaAtiva) (noCelular.matches ? btn : painel).scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     });
+    const campoBusca = /** @type {HTMLInputElement} */ (cont.querySelector('#faq-busca'));
+    campoBusca.addEventListener('input', () => { faqBusca = campoBusca.value; desenhar(); });
+    if (buscaEstavaAtiva) campoBusca.focus();
+    noCelular.onchange = desenhar;
+    desenhar();
+  }
+
+  // Ícone e descrição curta de cada categoria. Categorias novas criadas no
+  // Admin caem no ícone de dúvida.
+  function faqVisualDaCategoria(/** @type {string} */ cat) {
+    const nome = String(cat || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const tabela = [
+      [/fornecedor/, 'Contratação, orçamentos e contratos', 'M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z'],
+      [/carteira|financeiro/, 'Saldo, saques e pagamentos', 'M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3'],
+      [/convidado/, 'Lista, confirmações e mesas', 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z'],
+      [/presente/, 'Lista de presentes e recebimentos', 'M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z'],
+      [/site/, 'Edição e publicação do seu site', 'M12 21a9 9 0 100-18 9 9 0 000 18zm0 0c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3 7.5 7.03 7.5 12s2.015 9 4.5 9zM3.6 9h16.8M3.6 15h16.8'],
+      [/convite/, 'Criação e envio do seu convite', 'M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75'],
+      [/evento/, 'Dados e organização do evento', 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5'],
+      [/benef|servico/, 'Vantagens e serviços da Love', 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z'],
+    ];
+    const achou = tabela.find(([re]) => /** @type {RegExp} */ (re).test(nome));
+    if (achou) return { desc: /** @type {string} */ (achou[1]), d: /** @type {string} */ (achou[2]) };
+    return { desc: 'Dúvidas frequentes', d: 'M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z' };
   }
 
   const btnNotificationsMarkAllRead = document.getElementById('btn-notifications-mark-all-read');

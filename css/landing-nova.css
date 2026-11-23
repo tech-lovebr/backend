@@ -621,3 +621,11 @@
 /* Logo da landing (topo, menu e encontrar-evento) no azul da plataforma
    logada (#183B54), em vez da tinta quase preta. O do rodapé continua colorido. */
 #view-public-site#view-public-site#view-public-site .lv-logo:not(.lv-flogo){color:#183B54 !important}
+
+/* Título do topo em três linhas no celular: "Tudo para planejar" / palavra
+   que gira / "sem estresse". No computador as quebras não existem. */
+#view-public-site#view-public-site .lv-dis .lv-quebra-cel { display: none; }
+@media (max-width: 768px) {
+  #view-public-site#view-public-site .lv-dis .lv-quebra-cel { display: inline; }
+  #view-public-site#view-public-site .lv-hero .lv-dis { font-size: min(44px, calc((100vw - 58px) / 8.6)) !important; }
+}

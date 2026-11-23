@@ -42,7 +42,7 @@
 
   document.documentElement.lang = 'en';
   var script = document.createElement('script');
-  script.src = 'js/i18n-plataforma-en.js?v=20261123_en21';
+  script.src = 'js/i18n-plataforma-en.js?v=20261123_en22';
   script.onload = iniciar;
   (document.head || document.documentElement).appendChild(script);
 

@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   addHeaderAction('Exportar', exportar);
   moverControlesParaHeader();
   filtroDePeriodo(PERIODO, () => { renderKpis(); render(); });
-  ContaDrawer.emLinha({ host: document.getElementById('visao-conta'), esconder: [document.querySelector('.table-card'), document.getElementById('barra-selecao'), document.getElementById('header-actions')] });
+  ContaDrawer.emLinha({ host: document.getElementById('visao-conta'), esconder: [document.getElementById('kpi-grid'), document.querySelector('.table-card'), document.getElementById('barra-selecao'), document.getElementById('header-actions')] });
   aplicarBuscaDaUrl(document.getElementById('busca'));
 
   // Link direto para uma conta: anfitrioes?conta=<uuid>. É por aqui que o

@@ -4847,3 +4847,6 @@ body[data-theme="dark"] .mini-perfil { background: #27272A; border-color: rgba(2
 .rede-icone svg { width: 16px; height: 16px; }
 .rede-icone:hover { border-color: #181D24; color: #181D24; }
 body[data-theme="dark"] .rede-icone { background: transparent; border-color: rgba(255, 255, 255, .12); color: #E4E4E7; }
+
+/* Conta aberta sem os dados gerais acima: a caixa sobe para logo abaixo do cabeçalho. */
+.admin-content:has(> #kpi-grid[hidden]) > #visao-conta { margin-top: 0; }

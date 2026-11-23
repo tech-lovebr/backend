@@ -19,11 +19,18 @@
 
   const mostrarErro = texto => { erro.textContent = texto; erro.classList.remove('is-info'); erro.hidden = false; };
 
-  // Chamada do topo: leva ao formulário, já no campo de e-mail.
+  // A criação de conta (Google ou e-mail) só aparece depois da chamada.
+  const abrirCadastro = () => {
+    const caixa = $('criar-conta');
+    const jaAberta = !caixa.hidden;
+    caixa.hidden = false;
+    document.querySelector('.lp-coluna .ctas').hidden = true;
+    document.querySelector('.lp-beneficios').hidden = true;
+    caixa.scrollIntoView({ behavior: jaAberta ? 'smooth' : 'auto', block: 'center' });
+  };
   document.querySelectorAll('[data-lp-criar]').forEach(a => a.addEventListener('click', e => {
     e.preventDefault();
-    $('criar-conta').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    campoEmail.focus({ preventScroll: true });
+    abrirCadastro();
   }));
 
   $('lp-google').addEventListener('click', () => entrarComGoogleHub(location.origin + '/dashboard'));
@@ -96,17 +103,4 @@
     if (!data?.session) { avisoConfirmeEmail(email); return; }
     location.href = 'signup?completar=1';
   });
-
-  // Já conectado neste navegador: não cria outra conta por cima.
-  (async () => {
-    const { data } = await supabaseClient.auth.getSession();
-    if (!data?.session) return;
-    form.hidden = true;
-    document.querySelector('.lp-ou').hidden = true;
-    $('lp-google').hidden = true;
-    document.querySelector('.lp-card-rodape').hidden = true;
-    $('lp-card-titulo').textContent = 'Você já está conectado';
-    $('lp-card-sub').textContent = 'Sua conta está aberta neste navegador.';
-    $('lp-ir-painel').hidden = false;
-  })();
 })();

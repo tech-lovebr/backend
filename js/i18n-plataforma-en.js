@@ -2337,5 +2337,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Criação e envio do seu convite":"Creating and sending your invitation",
 "Dados e organização do evento":"Event details and planning",
 "Vantagens e serviços da Love":"Love perks and services",
-"Dúvidas frequentes":"Frequently asked questions"
+"Dúvidas frequentes":"Frequently asked questions",
+"Convidados e presentes":"Guests and gifts",
+"Lista, confirmações e presentes":"List, RSVPs and gifts"
 });

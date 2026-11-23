@@ -18266,7 +18266,7 @@ html body #tab-faq button.faq-pergunta:not(#love-faq-a):not(#love-faq-b):not(#lo
 /* Celular — Configurações: seta de voltar ao início, respiro abaixo do título,
    Meu Evento dentro de Privacidade, cartões separados e o aviso de documentos
    na caixa tracejada de Adicionar presente / Minhas Solicitações. */
-.config-voltar, .cart-docs-icone { display: none; }
+.config-voltar { display: none; }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-account-settings .builder-toolbar:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { justify-content: flex-start; gap: 4px; }
   html body #tab-account-settings #account-settings-header-title:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { flex: 1; min-width: 0; }
@@ -18280,13 +18280,7 @@ html body #tab-faq button.faq-pergunta:not(#love-faq-a):not(#love-faq-b):not(#lo
   html body #tab-account-settings :is(#config-painel-privacidade, #config-painel-preferencias, #config-painel-eventos) > *:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { margin-top: 0 !important; margin-bottom: 0 !important; }
   html body #tab-account-settings:has(#config-painel-eventos:not(.hidden)) > div:has(> #config-painel-conta):not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { gap: 16px !important; }
 
-  html body #tab-account-settings #config-painel-contas .cart-docs-aviso:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; box-sizing: border-box; width: 100%; height: 420px; margin: 0 !important; padding: 24px !important; border: 1px dashed #D4D4D8 !important; border-radius: 10px !important; background: rgba(255, 255, 255, 0.75) !important; box-shadow: none !important; text-align: center; }
-  html body #tab-account-settings #config-painel-contas .cart-docs-ilustra:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { display: none; }
-  html body #tab-account-settings #config-painel-contas .cart-docs-icone:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { display: block; flex-shrink: 0; width: 64px; height: 64px; margin: 0 auto 20px; color: #D4D4D8; }
-  html body #tab-account-settings #config-painel-contas .cart-docs-texto:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { display: flex; flex-direction: column; align-items: center; max-width: 280px; }
-  html body #tab-account-settings #config-painel-contas .cart-docs-texto h3:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { margin: 0 0 4px; color: #18181B; font-size: 16px; font-weight: 600; line-height: 1.4; letter-spacing: 0; }
-  html body #tab-account-settings #config-painel-contas .cart-docs-texto p:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { margin: 0; color: #71717A; font-size: 14px; font-weight: 400; line-height: 1.6; }
-  html body #tab-account-settings #config-painel-contas .cart-docs-texto .cart-btn-escuro:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { margin-top: 20px; }
+  html body #tab-account-settings #config-painel-contas .cart-docs-aviso:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i) { box-sizing: border-box; width: 100%; margin: 0 !important; border: 1px dashed #D4D4D8 !important; border-radius: 10px !important; background: rgba(255, 255, 255, 0.75) !important; box-shadow: none !important; }
 }
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-account-settings #btn-config-voltar:not(#love-c-a):not(#love-c-b):not(#love-c-c):not(#love-c-d):not(#love-c-e):not(#love-c-f):not(#love-c-g):not(#love-c-h):not(#love-c-i):not(#love-c-j) { flex: 0 0 44px !important; width: 44px !important; min-width: 44px !important; max-width: 44px !important; }

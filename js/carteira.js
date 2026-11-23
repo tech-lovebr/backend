@@ -366,7 +366,6 @@
     return `
       <section class="cart-caixa cart-docs-aviso">
         <div class="cart-docs-ilustra">${ILUSTRACAO_DOCUMENTOS}</div>
-        <svg class="cart-docs-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
         <div class="cart-docs-texto">
           <h3>${recusada ? 'Seus documentos precisam ser enviados de novo' : 'Antes de adicionar uma conta bancária, envie seus documentos'}</h3>
           <p>${recusada && verificacao.motivo ? esc(verificacao.motivo) : 'Para adicionar uma conta e sacar os valores disponíveis, é necessário verificar a sua identidade.'}</p>

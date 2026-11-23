@@ -2344,5 +2344,7 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Privacidade":"Privacy",
 "Voltar para o início":"Back to home",
 "Sem contratos ativos":"No active contracts",
-"No momento você não possui contratos ativos. Encontre um novo fornecedor.":"You have no active contracts right now. Find a new vendor."
+"No momento você não possui contratos ativos. Encontre um novo fornecedor.":"You have no active contracts right now. Find a new vendor.",
+"Criar nova Solicitação":"Create new request",
+"Encontre o fornecedor ideal para o seu evento":"Find the ideal vendor for your event"
 });

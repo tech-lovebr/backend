@@ -56,7 +56,7 @@
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
   <script src="js/i18n.js?v=20261117_menus2"></script>
-  <script src="js/i18n-plataforma.js?v=20261123_en20"></script>
+  <script src="js/i18n-plataforma.js?v=20261123_en21"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -114,7 +114,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261123_orctipo">
+  <link rel="stylesheet" href="css/styles.css?v=20261123_orcfaixa3">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261117_logoazul">
@@ -4778,12 +4778,17 @@
           <!-- D. Expectativa de investimento -->
           <div>
             <span class="orc-label">Expectativa de investimento</span>
-            <div class="orc-pills" data-grupo="faixa" role="radiogroup" aria-label="Expectativa de investimento">
-              <button type="button" class="orc-pill" data-valor="Até R$ 3.000" role="radio">Até R$ 3.000</button>
-              <button type="button" class="orc-pill" data-valor="R$ 3.000 a R$ 6.000" role="radio">R$ 3.000 – 6.000</button>
-              <button type="button" class="orc-pill" data-valor="R$ 6.000 a R$ 12.000" role="radio">R$ 6.000 – 12.000</button>
-              <button type="button" class="orc-pill" data-valor="Acima de R$ 12.000" role="radio">Acima de R$ 12.000</button>
-              <button type="button" class="orc-pill" data-valor="Prefiro negociar" role="radio">Prefiro negociar</button>
+            <!-- Barra com mínimo e máximo: arrasta para os lados -->
+            <div class="orc-faixa" id="orcamento-faixa">
+              <div class="orc-faixa-trilho">
+                <span class="orc-faixa-cheio" id="orcamento-faixa-cheio"></span>
+                <input type="range" id="orcamento-faixa-min" min="0" max="20000" step="500" value="0" aria-label="Investimento mínimo">
+                <input type="range" id="orcamento-faixa-max" min="0" max="20000" step="500" value="20000" aria-label="Investimento máximo">
+              </div>
+              <div class="orc-faixa-valores">
+                <div class="orc-faixa-valor"><span>Mínimo</span><output id="orcamento-faixa-min-texto" for="orcamento-faixa-min">R$ 0</output></div>
+                <div class="orc-faixa-valor"><span>Máximo</span><output id="orcamento-faixa-max-texto" for="orcamento-faixa-max">R$ 20.000+</output></div>
+              </div>
             </div>
           </div>
 
@@ -5800,7 +5805,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261123_orctipo"></script>
+  <script src="js/app.js?v=20261123_orcfaixa3"></script>
   <script src="js/landing.js?v=20261117_gira55"></script>
   <script src="js/carteira.js?v=20261118_pix"></script>
   <script src="js/checklist.js?v=20261118_chkdesk"></script>

@@ -2320,5 +2320,9 @@ Object.assign(window.LOVE_PLATAFORMA_EN, {
 "Os anfitriões ainda não informaram o local do evento.":"The hosts haven't shared the event location yet.",
 "Os anfitriões ainda não definiram o dress code.":"The hosts haven't set the dress code yet.",
 "Confirme sua presença":"Confirm your attendance",
-"Escreva o tipo de celebração":"Type the kind of celebration"
+"Escreva o tipo de celebração":"Type the kind of celebration",
+"Mínimo":"Minimum",
+"Máximo":"Maximum",
+"Investimento mínimo":"Minimum budget",
+"Investimento máximo":"Maximum budget"
 });

@@ -21853,29 +21853,10 @@ document.addEventListener('DOMContentLoaded', () => {
     return iso ? (formatEventDateLong(iso) || String(iso)) : '';
   }
 
-  // Exemplo no campo de detalhes, de acordo com a categoria do serviço.
-  function exemploDeBriefing(categoria) {
-    const c = String(categoria || '').toLowerCase();
-    if (/m[uú]sica|banda|dj|som/.test(c)) return 'Ex.: 4 horas de apresentação, repertório de MPB e pop acústico na recepção e pista animada depois do jantar.';
-    if (/buffet|gastronomia|alimenta/.test(c)) return 'Ex.: jantar completo com entrada, dois pratos principais e opção vegetariana; serviço à francesa.';
-    if (/bar|bebida|drink/.test(c)) return 'Ex.: open bar de 5 horas com drinks clássicos, opções sem álcool e bartender na recepção.';
-    if (/foto|v[ií]deo|filmagem/.test(c)) return 'Ex.: cobertura do making of à festa, ensaio no dia e vídeo de até 5 minutos com os melhores momentos.';
-    if (/decora|flor/.test(c)) return 'Ex.: decoração em tons claros com flores naturais, mesa principal e arranjos nas mesas dos convidados.';
-    return 'Ex.: conte o que você imagina para o serviço, horários, estilo e qualquer detalhe importante.';
-  }
-
   (function ligarModalDeOrcamento() {
     const modal = document.getElementById('modal-b2b-orcamento');
     if (!modal) return;
     modal.addEventListener('click', (e) => {
-      const pill = e.target.closest('.orc-pill');
-      if (pill) {
-        const grupo = pill.closest('.orc-pills');
-        const jaAtiva = pill.classList.contains('is-ativa');
-        grupo.querySelectorAll('.orc-pill').forEach(p => { p.classList.remove('is-ativa'); p.setAttribute('aria-checked', 'false'); });
-        if (!jaAtiva) { pill.classList.add('is-ativa'); pill.setAttribute('aria-checked', 'true'); }
-        return;
-      }
       const passo = e.target.closest('[data-convidados]');
       if (passo) {
         const campo = document.getElementById('orcamento-convidados');
@@ -21890,6 +21871,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('orcamento-data')?.addEventListener('input', () => document.getElementById('orcamento-data-selo')?.classList.add('hidden'));
     ligarTipoDeCelebracao();
+    ligarFaixaDeInvestimento();
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(modal);
     });
@@ -21949,8 +21931,49 @@ document.addEventListener('DOMContentLoaded', () => {
     return String(ev.tipoNome || (doCatalogo && doCatalogo.nome) || porTipo[ev.type] || '').trim();
   }
 
-  function valorDaPill(grupo) {
-    return document.querySelector(`#modal-b2b-orcamento .orc-pills[data-grupo="${grupo}"] .orc-pill.is-ativa`)?.dataset.valor || '';
+  // Expectativa de investimento: barra com mínimo e máximo. Com as duas pontas
+  // nos extremos a pessoa não informou valor, e nada vai no pedido.
+  function faixaCampo(/** @type {'min'|'max'} */ q) { return /** @type {HTMLInputElement|null} */ (document.getElementById(`orcamento-faixa-${q}`)); }
+  function reaisDaFaixa(/** @type {number} */ v) { return `R$ ${v.toLocaleString('pt-BR')}`; }
+
+  function desenharFaixaDeInvestimento() {
+    const min = faixaCampo('min');
+    const max = faixaCampo('max');
+    if (!min || !max) return;
+    const topo = Number(max.max);
+    const a = Number(min.value);
+    const b = Number(max.value);
+    const cheio = document.getElementById('orcamento-faixa-cheio');
+    if (cheio) { cheio.style.left = `${(a / topo) * 100}%`; cheio.style.right = `${100 - (b / topo) * 100}%`; }
+    const textoMin = document.getElementById('orcamento-faixa-min-texto');
+    const textoMax = document.getElementById('orcamento-faixa-max-texto');
+    if (textoMin) textoMin.textContent = reaisDaFaixa(a);
+    if (textoMax) textoMax.textContent = reaisDaFaixa(b) + (b >= topo ? '+' : '');
+    // As duas pontas juntas no fim: a do mínimo fica por cima para poder voltar.
+    min.style.zIndex = a >= topo - Number(min.step) ? '3' : '2';
+  }
+
+  function ligarFaixaDeInvestimento() {
+    const min = faixaCampo('min');
+    const max = faixaCampo('max');
+    if (!min || !max) return;
+    const passo = Number(min.step);
+    min.addEventListener('input', () => { if (Number(min.value) > Number(max.value) - passo) min.value = String(Number(max.value) - passo); desenharFaixaDeInvestimento(); });
+    max.addEventListener('input', () => { if (Number(max.value) < Number(min.value) + passo) max.value = String(Number(min.value) + passo); desenharFaixaDeInvestimento(); });
+    desenharFaixaDeInvestimento();
+  }
+
+  function textoDaFaixaDeInvestimento() {
+    const min = faixaCampo('min');
+    const max = faixaCampo('max');
+    if (!min || !max) return '';
+    const topo = Number(max.max);
+    const a = Number(min.value);
+    const b = Number(max.value);
+    if (a <= 0 && b >= topo) return '';
+    if (b >= topo) return `Acima de ${reaisDaFaixa(a)}`;
+    if (a <= 0) return `Até ${reaisDaFaixa(b)}`;
+    return `${reaisDaFaixa(a)} a ${reaisDaFaixa(b)}`;
   }
 
   function abrirPedidoOrcamento(item, servico) {
@@ -22006,10 +22029,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (campoTipo) campoTipo.value = nomeDoTipoDoEvento(ev);
     const opcoesTipo = document.getElementById('orcamento-tipo-opcoes');
     if (opcoesTipo) opcoesTipo.hidden = true;
-    modal.querySelectorAll('.orc-pills .orc-pill').forEach(p => { p.classList.remove('is-ativa'); p.setAttribute('aria-checked', 'false'); });
-    // E. Exemplo de briefing de acordo com a categoria do serviço.
-    const msgPh = document.getElementById('orcamento-mensagem');
-    if (msgPh) msgPh.placeholder = exemploDeBriefing(svc && svc.category);
+    const faixaMin = faixaCampo('min');
+    const faixaMax = faixaCampo('max');
+    if (faixaMin && faixaMax) { faixaMin.value = faixaMin.min; faixaMax.value = faixaMax.max; desenharFaixaDeInvestimento(); }
     const convEl = document.getElementById('orcamento-convidados');
     if (convEl) convEl.value = (ev && Array.isArray(ev.guests) && ev.guests.length) ? ev.guests.length : '';
     // Local: o endereço salvo em Informações já vem escolhido; "Outro
@@ -22101,7 +22123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inicio = (/** @type {HTMLSelectElement|null} */ (document.getElementById('orcamento-inicio')))?.value || '';
     const fim = (/** @type {HTMLSelectElement|null} */ (document.getElementById('orcamento-fim')))?.value || '';
     const horario = inicio && fim ? `${inicio} às ${fim}` : (inicio ? `a partir das ${inicio}` : (fim ? `até ${fim}` : ''));
-    const extras = { tipo: (/** @type {HTMLInputElement|null} */ (document.getElementById('orcamento-tipo'))?.value || '').trim(), faixa: valorDaPill('faixa'), horario };
+    const extras = { tipo: (/** @type {HTMLInputElement|null} */ (document.getElementById('orcamento-tipo'))?.value || '').trim(), faixa: textoDaFaixaDeInvestimento(), horario };
     const mensagem = (document.getElementById('orcamento-mensagem')?.value || '').trim();
     const localSel = document.getElementById('orcamento-local');
     const semLocal = document.getElementById('orcamento-local-bloco')?.classList.contains('hidden');
@@ -23186,7 +23208,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (insuranceView) insuranceView.classList.add('hidden');
         if (contractedView) contractedView.classList.remove('hidden');
         if (toolbarTitle) toolbarTitle.textContent = 'Contratos';
-        if (searchInput) searchInput.placeholder = 'Pesquisar fornecedores';
         renderB2BContracted();
       } else if (viewId === 'insurance') {
         if (exploreView) exploreView.classList.add('hidden');

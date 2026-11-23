@@ -18199,9 +18199,9 @@ html body #tab-faq button.faq-pergunta:not(#love-faq-a):not(#love-faq-b):not(#lo
 @media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
   html body #tab-faq .builder-toolbar:not(#love-h-a):not(#love-h-b) { justify-content: center; }
   html body #tab-faq #faq-header-title:not(#love-h-a), html body #tab-faq .builder-toolbar > div:not(#love-h-a) { display: none !important; }
-  .faq-topo-logo { display: flex; align-items: center; gap: 8px; }
-  .faq-topo-logo img:first-child { height: 32px; width: auto; }
-  .faq-topo-logo img:last-child { height: 24px; width: auto; }
+  /* Mesmo logo do topo da Home: mesmo arquivo, largura e altura na tela. */
+  .faq-topo-logo { display: block; align-self: flex-start; margin-top: -2px; }
+  html body #tab-faq .faq-topo-logo img:not(#love-h-a) { display: block; width: 102px; height: auto; }
   .faq-central { gap: 16px; }
   .faq-capa { gap: 16px; padding: 32px 16px; }
   html body #tab-faq .faq-capa-titulo:not(#love-faq-a) { font-size: 26px; }

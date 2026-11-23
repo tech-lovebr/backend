@@ -845,11 +845,11 @@ function opPosicionarBusca() {
     }
     barra.prepend(busca);
     barra.querySelector('.tabela-barra-acoes')?.append(filtrar);
-    // Filtros rápidos (Apenas não respondidas, Salvas) dentro da caixa, abaixo da busca.
+    // Filtro rápido (Apenas não respondidas) dentro da caixa; Salvas é só o ícone no cabeçalho.
     const chips = document.getElementById('op-filtros');
     if (chips && chips.previousElementSibling !== barra) barra.after(chips);
     const salvasCel = document.querySelector('[data-op-salvas]');
-    if (chips && salvasCel && salvasCel.parentElement !== chips) chips.prepend(salvasCel);
+    if (salvasCel) acoes.append(salvasCel);
     caixa.classList.add('lista-celular');
     // Mesmo botão de Clientes: "Filtrar ⌄" com borda (o rótulo vem do atributo).
     filtrarBtn.setAttribute('data-tabela-filtrar', '');

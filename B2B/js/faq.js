@@ -170,17 +170,15 @@
           <span class="ajuda-cat-textos"><span class="ajuda-cat-nome">${escapeHtml(c.nome)}</span><span class="ajuda-cat-desc">${escapeHtml(c.desc)}</span></span>
           <span class="ajuda-cat-seta">${SETA}</span>
         </button>`).join('')}</div>
-      <div class="ajuda-painel" hidden></div>
-      <a class="ajuda-guia-link" href="guias">Ver o Guia de início</a>`;
+      <div class="ajuda-painel" hidden></div>`;
 
     const caixas = raiz.querySelector('.ajuda-cats');
     const painel = raiz.querySelector('.ajuda-painel');
-    const link = raiz.querySelector('.ajuda-guia-link');
     const botoes = [...raiz.querySelectorAll('.ajuda-cat')];
 
     const desenhar = () => {
       const termo = semAcento(busca.trim());
-      raiz.insertBefore(painel, link);
+      raiz.appendChild(painel);
       caixas.hidden = !!termo;
       let botaoAtivo = null;
       botoes.forEach(b => {

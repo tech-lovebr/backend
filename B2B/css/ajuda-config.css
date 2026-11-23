@@ -38,8 +38,6 @@ html body[data-page="faq"] button.ajuda-pergunta:not(#aj-0):not(#aj-1):not(#aj-2
 .ajuda-resposta a { color: #183b54; text-decoration: underline; }
 .ajuda-resposta iframe, .ajuda-resposta img, .ajuda-resposta video { max-width: 100%; }
 .ajuda-vazio { margin: 0; padding: 24px; border-radius: 10px; background: #FFFFFF; color: #71717A; font-size: 14px; text-align: center; }
-.ajuda-guia-link { align-self: center; color: #71717A; font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
-.ajuda-guia-link:hover { color: #183b54; }
 .ajuda-voltar-topo { display: none; }
 @media (min-width: 769px) and (max-width: 1023px) {
   .ajuda-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -76,8 +74,7 @@ html:not(.hub-claro) body[data-page="faq"] button.ajuda-cat:not(.ativa):not(#aj-
 html:not(.hub-claro) body[data-page="faq"] button.ajuda-cat.ativa:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #183b54 !important; }
 html:not(.hub-claro) body[data-page="faq"] .ajuda-cat-icone { color: #9CC3E4; }
 html:not(.hub-claro) body[data-page="faq"] .ajuda-cat.ativa .ajuda-cat-icone { color: #FFFFFF; }
-html:not(.hub-claro) body[data-page="faq"] .ajuda-cat-desc, html:not(.hub-claro) body[data-page="faq"] .ajuda-guia-link { color: #A3B5C8; }
-html:not(.hub-claro) body[data-page="faq"] .ajuda-guia-link:hover { color: #FFFFFF; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-cat-desc { color: #A3B5C8; }
 html:not(.hub-claro) body[data-page="faq"] .ajuda-resultados { color: #FFFFFF; }
 html:not(.hub-claro) body[data-page="faq"] :is(.ajuda-lista, .ajuda-vazio) { background: rgba(20, 40, 58, .62); }
 html:not(.hub-claro) body[data-page="faq"] .ajuda-vazio { color: #C4C4CC; }

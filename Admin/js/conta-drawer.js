@@ -230,6 +230,20 @@ const ContaDrawer = (() => {
     return iso ? `${iso[3]}/${iso[2]}/${iso[1]}` : valor;
   }
 
+  /** "DD/MM/AAAA" vira "DD/MM/AAAA (34 anos)"; data inválida fica como está. */
+  function nascimentoComIdade(texto) {
+    const m = String(texto || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!m) return texto;
+    const dia = Number(m[1]), mes = Number(m[2]), ano = Number(m[3]);
+    const nascimento = new Date(ano, mes - 1, dia);
+    if (nascimento.getFullYear() !== ano || nascimento.getMonth() !== mes - 1 || nascimento.getDate() !== dia) return texto;
+    const hoje = new Date();
+    const jaFez = hoje.getMonth() + 1 > mes || (hoje.getMonth() + 1 === mes && hoje.getDate() >= dia);
+    const idade = hoje.getFullYear() - ano - (jaFez ? 0 : 1);
+    if (idade < 0 || idade > 130) return texto;
+    return `${texto} (${idade} ${idade === 1 ? 'ano' : 'anos'})`;
+  }
+
   /* ------------------------------------------------- Edição do cadastro
 
      O cabeçalho ganha "Editar": os campos que o Admin pode corrigir viram
@@ -406,7 +420,7 @@ const ContaDrawer = (() => {
           ${linha('E-mail', `${escapeHtml(c.email || '—')}${seloDaConta(c)}`)}
           ${c.origem === 'b2b' && !EDITANDO && fornecedorDe(c.id) ? '' : linha('Data de nascimento', EDITANDO && c.origem === 'b2b'
             ? campoTexto('birthday', fornecedorDe(c.id)?.birthday, '', 'date')
-            : escapeHtml(nascimento || 'Não informada'))}
+            : escapeHtml((c.origem === 'anfitriao' ? nascimentoComIdade(nascimento) : nascimento) || 'Não informada'))}
           ${mostrarCanal ? linha('Canal', escapeHtml(origem.rotulo)) : ''}
           ${linha('Criada em', escapeHtml(dataHoraCompleta(c.criado_em) || '—'))}
           ${acesso && acesso.exato ? linha('Cadastrou-se em', escapeHtml(acesso.texto)) : ''}

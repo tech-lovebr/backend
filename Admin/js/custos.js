@@ -646,6 +646,40 @@ const STATUS = {
 };
 const TIPO = { recorrente: 'Recorrente', unico: 'Pagamento único' };
 
+/* Última cobrança até o fim do período: repete o dia do mês de "inicio"
+   (dia 31 em mês curto vira o último dia). "piso" impede data antes do início. */
+function ultimaCobranca(inicio, ate, piso = '') {
+  const [, , dia] = inicio.split('-').map(Number);
+  if (!dia) return '';
+  const iso = (a, m) => {
+    const d = Math.min(dia, new Date(a, m + 1, 0).getDate());
+    return [a, String(m + 1).padStart(2, '0'), String(d).padStart(2, '0')].join('-');
+  };
+  const teto = [ate.getFullYear(), String(ate.getMonth() + 1).padStart(2, '0'), String(ate.getDate()).padStart(2, '0')].join('-');
+  let data = iso(ate.getFullYear(), ate.getMonth());
+  if (data > teto) {
+    const anterior = new Date(ate.getFullYear(), ate.getMonth() - 1, 1);
+    data = iso(anterior.getFullYear(), anterior.getMonth());
+  }
+  return piso && data < piso ? piso : data;
+}
+
+/* Data em que o custo foi cobrado. Manual: a data lançada (recorrente repete
+   o dia todo mês). Vercel: o dia em que o ciclo vira. Supabase e Amazon não
+   informam a data da fatura, então ficam sem data em vez de uma inventada. */
+function dataDaCobranca(l) {
+  const { ate } = intervalo();
+  if (l.manual) {
+    const inicio = String(l.data || '').slice(0, 10);
+    if (!inicio) return '';
+    return l.tipo === 'unico' ? inicio : ultimaCobranca(inicio, ate, inicio);
+  }
+  const ciclo = String(l.ciclo?.inicio || '').slice(0, 10);
+  return ciclo ? ultimaCobranca(ciclo, ate) : '';
+}
+
+const dataBr = iso => iso.split('-').reverse().join('/');
+
 function renderTabela() {
   const thead = document.getElementById('thead');
   const tbody = document.getElementById('tbody');
@@ -692,7 +726,7 @@ function renderTabela() {
     return;
   }
 
-  thead.innerHTML = '<tr><th>Status</th><th>Nome</th><th>Tipo</th><th>Valor</th><th>Moeda</th><th>Categoria</th></tr>';
+  thead.innerHTML = '<tr><th>Data da cobrança</th><th>Nome</th><th>Tipo</th><th>Valor</th><th>Moeda</th><th>Categoria</th></tr>';
   const lista = linhas.filter(l => casa(l.nome) || casa(l.categoria) || casa(TIPO[l.tipo]));
   if (!lista.length) {
     return renderEmpty(tbody, 6, 'Nenhum custo', termo ? 'Nada encontrado para essa busca.' : 'Adicione o primeiro custo manual.');
@@ -700,13 +734,14 @@ function renderTabela() {
 
   tbody.innerHTML = lista.map((l, i) => {
     const [rotulo, classe] = STATUS[l.status] || STATUS.ativo;
+    const cobradoEm = dataDaCobranca(l);
     // O que esse custo representou no período escolhido, rateado por dia.
     const original = originalNoPeriodo(l);
     const reais = valorNoPeriodo(l);
     const semCotacao = l.moeda !== 'BRL' && !COTACAO[l.moeda];
     return `
       <tr ${l.manual ? `data-manual="${i}"` : `data-integracao="${i}"`}>
-        <td><span title="${escapeHtml(l.erro || '')}">${badge(rotulo, classe)}</span></td>
+        <td>${l.status !== 'ativo' ? `<span title="${escapeHtml(l.erro || '')}">${badge(rotulo, classe)}</span>` : cobradoEm ? escapeHtml(dataBr(cobradoEm)) : '<span class="cell-muted">—</span>'}</td>
         <td class="cell-strong">${escapeHtml(nomeDoCusto(l))}${origemDoNome(l) ? `<span class="cell-sub">${escapeHtml(origemDoNome(l))}</span>` : ''}</td>
         <td>${l.tipo ? badge(TIPO[l.tipo] || l.tipo) : '<span class="cell-muted">—</span>'}</td>
         <td class="valor-dinheiro">

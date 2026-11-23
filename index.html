@@ -56,7 +56,7 @@
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
   <script src="js/i18n.js?v=20261117_menus2"></script>
-  <script src="js/i18n-plataforma.js?v=20261123_en19"></script>
+  <script src="js/i18n-plataforma.js?v=20261123_en20"></script>
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-GTSEBKVH96"></script>
@@ -114,7 +114,7 @@
   </script>
 
   <!-- Custom Styles -->
-  <link rel="stylesheet" href="css/styles.css?v=20261123_vaziorecados2">
+  <link rel="stylesheet" href="css/styles.css?v=20261123_orctipo">
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261117_logoazul">
@@ -4752,7 +4752,7 @@
               <label for="orcamento-convidados" class="orc-label">Convidados</label>
               <div class="orc-contador">
                 <button type="button" class="orc-contador-btn" data-convidados="-10" aria-label="Menos 10 convidados">−</button>
-                <input id="orcamento-convidados" type="number" min="1" inputmode="numeric" class="orc-input orc-contador-input" placeholder="0">
+                <input id="orcamento-convidados" type="number" min="0" step="10" inputmode="numeric" class="orc-input orc-contador-input" placeholder="0">
                 <button type="button" class="orc-contador-btn" data-convidados="10" aria-label="Mais 10 convidados">+</button>
               </div>
             </div>
@@ -4767,12 +4767,11 @@
           </div>
 
           <div>
-            <span class="orc-label">Tipo de celebração</span>
-            <div class="orc-pills" data-grupo="tipo" role="radiogroup" aria-label="Tipo de celebração">
-              <button type="button" class="orc-pill" data-valor="Casamento" role="radio">Casamento</button>
-              <button type="button" class="orc-pill" data-valor="Aniversário" role="radio">Aniversário</button>
-              <button type="button" class="orc-pill" data-valor="Corporativo" role="radio">Corporativo</button>
-              <button type="button" class="orc-pill" data-valor="Outro" role="radio">Outro</button>
+            <label for="orcamento-tipo" class="orc-label">Tipo de celebração</label>
+            <!-- Escreve e as opções do catálogo aparecem; já vem com o tipo do evento -->
+            <div class="orc-tipo">
+              <input id="orcamento-tipo" type="text" class="orc-input" maxlength="60" autocomplete="off" placeholder="Escreva o tipo de celebração" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="orcamento-tipo-opcoes">
+              <div id="orcamento-tipo-opcoes" class="orc-tipo-opcoes" role="listbox" aria-label="Tipos de celebração" hidden></div>
             </div>
           </div>
 
@@ -5801,7 +5800,7 @@
   <script src="js/animations.js?v=20260910_villasantanna"></script>
   <script src="js/tipos-evento.js?v=20261115_fraldas"></script>
   <script src="js/balao-aviso.js?v=2"></script>
-  <script src="js/app.js?v=20261123_onbgoogle"></script>
+  <script src="js/app.js?v=20261123_orctipo"></script>
   <script src="js/landing.js?v=20261117_gira55"></script>
   <script src="js/carteira.js?v=20261118_pix"></script>
   <script src="js/checklist.js?v=20261118_chkdesk"></script>

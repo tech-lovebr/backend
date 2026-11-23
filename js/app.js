@@ -21880,17 +21880,74 @@ document.addEventListener('DOMContentLoaded', () => {
       if (passo) {
         const campo = document.getElementById('orcamento-convidados');
         const atual = parseInt(campo.value, 10) || 0;
-        campo.value = Math.max(1, atual + Number(passo.dataset.convidados));
+        // De 10 em 10, sempre em dezena redonda (57 → 60 no + e 50 no −).
+        const novo = Number(passo.dataset.convidados) > 0 ? (Math.floor(atual / 10) + 1) * 10 : (Math.ceil(atual / 10) - 1) * 10;
+        campo.value = novo > 0 ? String(novo) : '';
         return;
       }
       // Clique no fundo escuro fecha.
       if (e.target === modal) closeModal(modal);
     });
     document.getElementById('orcamento-data')?.addEventListener('input', () => document.getElementById('orcamento-data-selo')?.classList.add('hidden'));
+    ligarTipoDeCelebracao();
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(modal);
     });
   })();
+
+  // Tipo de celebração: campo de escrever; conforme digita, as opções do
+  // catálogo (js/tipos-evento.js) aparecem. Texto livre também vale.
+  function ligarTipoDeCelebracao() {
+    const campo = /** @type {HTMLInputElement|null} */ (document.getElementById('orcamento-tipo'));
+    const lista = document.getElementById('orcamento-tipo-opcoes');
+    if (!campo || !lista) return;
+    /** @type {any[]} */
+    let opcoes = [];
+    let ativa = -1;
+    const fechar = () => { lista.hidden = true; campo.setAttribute('aria-expanded', 'false'); ativa = -1; };
+    const desenhar = () => {
+      const cat = /** @type {any} */ (window).LoveTiposEvento;
+      opcoes = cat ? cat.buscar(campo.value, 6) : [];
+      if (!opcoes.length) { fechar(); return; }
+      if (ativa >= opcoes.length) ativa = opcoes.length - 1;
+      lista.innerHTML = opcoes.map((t, i) => `<button type="button" role="option" tabindex="-1" class="orc-tipo-opcao${i === ativa ? ' is-ativa' : ''}" aria-selected="${i === ativa}" data-i="${i}">${escaparHtml(t.nome)}</button>`).join('');
+      lista.hidden = false;
+      campo.setAttribute('aria-expanded', 'true');
+    };
+    const escolher = (/** @type {number} */ i) => { if (opcoes[i]) campo.value = opcoes[i].nome; fechar(); };
+    campo.addEventListener('input', () => { ativa = -1; desenhar(); });
+    campo.addEventListener('blur', () => setTimeout(fechar, 120));
+    lista.addEventListener('mousedown', (e) => {
+      const op = /** @type {HTMLElement} */ (e.target).closest('[data-i]');
+      if (!op) return;
+      e.preventDefault();
+      escolher(Number(/** @type {HTMLElement} */ (op).dataset.i));
+    });
+    campo.addEventListener('keydown', (e) => {
+      const aberta = !lista.hidden && opcoes.length;
+      if (aberta && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        e.preventDefault();
+        ativa = (ativa + (e.key === 'ArrowDown' ? 1 : -1) + opcoes.length) % opcoes.length;
+        desenhar();
+      } else if (aberta && e.key === 'Escape') {
+        e.stopPropagation();
+        fechar();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (aberta && ativa >= 0) escolher(ativa); else fechar();
+      }
+    });
+  }
+
+  // Nome do tipo do evento ativo, como a pessoa escolheu ao criar ("Aniversário").
+  function nomeDoTipoDoEvento(/** @type {any} */ ev) {
+    if (!ev) return '';
+    const cat = /** @type {any} */ (window).LoveTiposEvento;
+    const doCatalogo = ev.tipoEvento && cat ? cat.porSlug(ev.tipoEvento) : null;
+    /** @type {Record<string, string>} */
+    const porTipo = { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo', anniversary: 'Bodas', baby: 'Chá de Bebê', baby_shower: 'Chá de Bebê', gender_reveal: 'Chá Revelação', bridal_shower: 'Chá de Panela', graduation: 'Formatura' };
+    return String(ev.tipoNome || (doCatalogo && doCatalogo.nome) || porTipo[ev.type] || '').trim();
+  }
 
   function valorDaPill(grupo) {
     return document.querySelector(`#modal-b2b-orcamento .orc-pills[data-grupo="${grupo}"] .orc-pill.is-ativa`)?.dataset.valor || '';
@@ -21944,12 +22001,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Espaço para locação: o lugar é o próprio espaço, então não pede local.
     const ehEspaco = !!(svc && CATEGORIAS_DE_ESPACO.includes(normalizarTexto(svc.category)));
     document.getElementById('orcamento-local-bloco')?.classList.toggle('hidden', ehEspaco);
-    // Tipo de celebração vindo do evento; faixa começa em branco.
-    const tipoDoEvento = { wedding: 'Casamento', birthday: 'Aniversário', corporate: 'Corporativo' }[ev && ev.type] || (ev ? 'Outro' : '');
-    modal.querySelectorAll('.orc-pills').forEach(g => {
-      const inicial = g.dataset.grupo === 'tipo' ? tipoDoEvento : '';
-      g.querySelectorAll('.orc-pill').forEach(p => { const on = p.dataset.valor === inicial; p.classList.toggle('is-ativa', on); p.setAttribute('aria-checked', String(on)); });
-    });
+    // Tipo de celebração já escrito com o tipo do evento; faixa começa em branco.
+    const campoTipo = /** @type {HTMLInputElement|null} */ (document.getElementById('orcamento-tipo'));
+    if (campoTipo) campoTipo.value = nomeDoTipoDoEvento(ev);
+    const opcoesTipo = document.getElementById('orcamento-tipo-opcoes');
+    if (opcoesTipo) opcoesTipo.hidden = true;
+    modal.querySelectorAll('.orc-pills .orc-pill').forEach(p => { p.classList.remove('is-ativa'); p.setAttribute('aria-checked', 'false'); });
     // E. Exemplo de briefing de acordo com a categoria do serviço.
     const msgPh = document.getElementById('orcamento-mensagem');
     if (msgPh) msgPh.placeholder = exemploDeBriefing(svc && svc.category);
@@ -22044,7 +22101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inicio = (/** @type {HTMLSelectElement|null} */ (document.getElementById('orcamento-inicio')))?.value || '';
     const fim = (/** @type {HTMLSelectElement|null} */ (document.getElementById('orcamento-fim')))?.value || '';
     const horario = inicio && fim ? `${inicio} às ${fim}` : (inicio ? `a partir das ${inicio}` : (fim ? `até ${fim}` : ''));
-    const extras = { tipo: valorDaPill('tipo'), faixa: valorDaPill('faixa'), horario };
+    const extras = { tipo: (/** @type {HTMLInputElement|null} */ (document.getElementById('orcamento-tipo'))?.value || '').trim(), faixa: valorDaPill('faixa'), horario };
     const mensagem = (document.getElementById('orcamento-mensagem')?.value || '').trim();
     const localSel = document.getElementById('orcamento-local');
     const semLocal = document.getElementById('orcamento-local-bloco')?.classList.contains('hidden');

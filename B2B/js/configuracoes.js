@@ -93,11 +93,11 @@ function initAccordionCards() {
 // sozinhas, sem esse botão.
 const SETTINGS_TABS_COM_SALVAR_TOPO = { perfil: 'profile-form', empresa: 'company-form' };
 
-// Celular: só 3 abas. Informações junta Dados da empresa; Preferências junta
-// Contas conectadas, Privacidade e URLs; Contas bancárias fica sozinha.
+// Celular: 4 caixinhas. Informações junta Dados da empresa; Preferências junta
+// URLs; Privacidade e Contas bancárias ficam sozinhas.
 const SETTINGS_CELULAR = window.matchMedia('(max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px)');
-const SETTINGS_GRUPOS_CELULAR = { perfil: ['perfil', 'empresa'], preferencias: ['preferencias', 'seguranca', 'urls'], banco: ['banco'] };
-const SETTINGS_ABA_NO_CELULAR = { empresa: 'perfil', seguranca: 'preferencias', urls: 'preferencias' };
+const SETTINGS_GRUPOS_CELULAR = { perfil: ['perfil', 'empresa'], seguranca: ['seguranca'], preferencias: ['preferencias', 'urls'], banco: ['banco'] };
+const SETTINGS_ABA_NO_CELULAR = { empresa: 'perfil', urls: 'preferencias' };
 
 function arrumarAbasNoCelular() {
   const wrap = document.getElementById('settings-tabs');
@@ -107,15 +107,47 @@ function arrumarAbasNoCelular() {
     const b = wrap.querySelector(`[data-settings-tab="${tab}"]`);
     if (b) b.hidden = celular;
   });
-  // Contas conectadas: em Preferências no celular, em Informações no computador.
-  const contas = document.getElementById('settings-contas-conectadas');
-  const destino = document.querySelector(celular ? '[data-settings-panel="preferencias"]' : '[data-settings-panel="perfil"]');
-  if (contas && destino && contas.parentElement !== destino) destino.appendChild(contas);
   // Reabre a aba ativa (no celular, a aba que a junta).
   const ativa = wrap.querySelector('[data-settings-tab].active');
   const tab = ativa ? ativa.dataset.settingsTab : 'perfil';
   const alvo = celular ? (SETTINGS_ABA_NO_CELULAR[tab] || tab) : tab;
   wrap.querySelector(`[data-settings-tab="${alvo}"]`)?.click();
+}
+
+// Caixinhas do celular: repassam o toque para a aba original.
+function marcarCaixinha(tab) {
+  const alvo = SETTINGS_ABA_NO_CELULAR[tab] || tab;
+  document.querySelectorAll('[data-caixinha]').forEach(b => {
+    const on = b.dataset.caixinha === alvo;
+    b.classList.toggle('active', on);
+    if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+}
+
+function initCaixinhas() {
+  document.querySelectorAll('[data-caixinha]').forEach(b => b.addEventListener('click', () => {
+    document.querySelector(`#settings-tabs [data-settings-tab="${b.dataset.caixinha}"]`)?.click();
+  }));
+}
+
+// Celular: campo vazio tem contorno e preenchido tem fundo. Um placeholder em
+// branco faz o CSS perceber também o valor colocado pelo código.
+function marcarCamposNoCelular() {
+  if (!SETTINGS_CELULAR.matches) return;
+  const area = document.querySelector('.settings-shell');
+  if (!area) return;
+  area.querySelectorAll('input:not([placeholder]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="date"]), textarea:not([placeholder])').forEach(i => { i.placeholder = ' '; });
+  area.querySelectorAll('input[type="date"]').forEach(i => i.classList.toggle('tem-valor', !!i.value));
+}
+
+function initCamposNoCelular() {
+  const area = document.querySelector('.settings-shell');
+  if (!area) return;
+  marcarCamposNoCelular();
+  area.addEventListener('input', marcarCamposNoCelular);
+  area.addEventListener('change', marcarCamposNoCelular);
+  new MutationObserver(marcarCamposNoCelular).observe(area, { childList: true, subtree: true });
+  SETTINGS_CELULAR.addEventListener?.('change', marcarCamposNoCelular);
 }
 
 function resetSalvarTopoLabel() {
@@ -129,6 +161,7 @@ function initSettingsTabs() {
   wrap.querySelectorAll('[data-settings-tab]').forEach(btn => {
     btn.addEventListener('click', () => {
       wrap.querySelectorAll('[data-settings-tab]').forEach(b => b.classList.toggle('active', b === btn));
+      marcarCaixinha(btn.dataset.settingsTab);
       // O título da página é o nome da aba escolhida no menu lateral.
       setText('settings-titulo-pagina', btn.dataset.titulo || btn.textContent.trim());
       const mostrar = SETTINGS_CELULAR.matches ? (SETTINGS_GRUPOS_CELULAR[btn.dataset.settingsTab] || [btn.dataset.settingsTab]) : [btn.dataset.settingsTab];
@@ -153,8 +186,10 @@ function initSettingsTabs() {
   // configuracoes?tab=banco (link do Financeiro) abre direto na aba pedida.
   const pedida = new URLSearchParams(location.search).get('tab');
   if (pedida) wrap.querySelector(`[data-settings-tab="${pedida}"]`)?.click();
+  initCaixinhas();
   arrumarAbasNoCelular();
   SETTINGS_CELULAR.addEventListener?.('change', arrumarAbasNoCelular);
+  initCamposNoCelular();
 }
 
 // Enquanto a pessoa mexe no formulário da aba ativa, o botão do cabeçalho
@@ -199,18 +234,6 @@ function initProfileForm() {
       if (typeof wireNameCaseInput === 'function') wireNameCaseInput(i);
       i.addEventListener('input', juntar);
     });
-    // Celular: o nome do responsável num campo só; reparte em primeiro nome e sobrenome.
-    const responsavelInput = document.getElementById('profile-responsavel');
-    if (responsavelInput) {
-      responsavelInput.value = nomeInicial;
-      if (typeof wireNameCaseInput === 'function') wireNameCaseInput(responsavelInput);
-      responsavelInput.addEventListener('input', () => {
-        const ps = responsavelInput.value.trim().split(/\s+/).filter(Boolean);
-        primeiroInput.value = ps.shift() || '';
-        sobrenomeInput.value = ps.join(' ');
-        nomeInput.value = responsavelInput.value.trim().replace(/\s+/g, ' ');
-      });
-    }
   }
   const birthdatePicker = initDatePicker(document.getElementById('profile-birthdate'), p.birthDate || '');
   document.getElementById('profile-phone').value = p.phone || '';
@@ -281,7 +304,7 @@ function initProfileForm() {
     // No celular o CNPJ é pedido em Contas bancárias, não aqui.
     const pedeDocumento = !SETTINGS_CELULAR.matches;
     if (!company || !name || (pedeDocumento && !documentNumber)) {
-      showToast(pedeDocumento ? `Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.` : 'Preencha o nome da empresa e o nome do responsável para continuar.', true);
+      showToast(pedeDocumento ? `Preencha nome, sobrenome, nome fantasia e ${docLabel} para continuar.` : 'Preencha o nome da empresa, nome e sobrenome para continuar.', true);
       return;
     }
     if (phone.replace(/\D/g, '').length < 10) {

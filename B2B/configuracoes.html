@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=974"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
+  <link rel="stylesheet" href="css/styles.css?v=974"><link rel="stylesheet" href="css/ajuda-config.css?v=1"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
 </head>
 <body class="font-sans" data-page="configuracoes">
   <div class="b2b-shell">
@@ -31,6 +31,7 @@
       <div id="shell-topbar"></div>
       <main class="b2b-content">
         <div class="b2b-header-bar">
+          <a href="dashboard" class="header-voltar-celular settings-voltar" aria-label="Voltar ao início"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg></a>
           <h2 class="text-xl font-bold text-zinc-900" id="settings-titulo-pagina">Suas informações</h2>
           <button type="submit" form="profile-form" class="btn-secondary builder-toolbar-btn header-btn-light settings-salvar-topo" id="settings-salvar-topo">Salvar</button>
         </div>
@@ -46,6 +47,13 @@
           <div class="settings-nav-divisor" role="separator"></div>
           <p class="settings-nav-titulo">Suas configurações</p>
           <button type="button" class="category-tab" data-settings-tab="urls"><span>URLs</span></button>
+        </nav>
+
+        <nav class="settings-caixinhas" id="settings-caixinhas" aria-label="Configurações">
+          <button type="button" class="settings-caixinha active" data-caixinha="perfil" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.118a7.5 7.5 0 0115 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.5-1.632z"/></svg><span>Informações</span></button>
+          <button type="button" class="settings-caixinha" data-caixinha="seguranca"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg><span>Privacidade</span></button>
+          <button type="button" class="settings-caixinha" data-caixinha="preferencias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"/></svg><span>Preferências</span></button>
+          <button type="button" class="settings-caixinha" data-caixinha="banco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18"/></svg><span>Contas</span></button>
         </nav>
 
         <div data-settings-panel="perfil">
@@ -165,17 +173,15 @@
 
               <div class="settings-info-painel" data-info-painel="pessoal" hidden>
                 <p class="settings-info-dica settings-conta-digital">Insira os dados do responsável pela conta. O CPF e a data de nascimento servem para a verificação de identidade.</p>
-                <div class="settings-so-celular">
-                  <label for="profile-responsavel" class="field-label">Nome do responsável <span style="color:#DC2626;">*</span></label>
-                  <input id="profile-responsavel" type="text" class="field-input" autocomplete="name">
-                </div>
-                <div class="settings-so-desktop">
+                <div class="settings-nome-linha">
+                <div>
                   <label for="profile-first-name" class="field-label">Primeiro nome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-first-name" type="text" class="field-input" autocomplete="given-name">
                 </div>
-                <div class="settings-so-desktop">
+                <div>
                   <label for="profile-last-name" class="field-label">Sobrenome <span style="color:#DC2626;">*</span></label>
                   <input id="profile-last-name" type="text" class="field-input" autocomplete="family-name">
+                </div>
                 </div>
                 <div class="settings-endereco-linha settings-endereco-linha--metade settings-conta-digital">
                   <div data-so-cnpj>
@@ -635,7 +641,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>
   <script src="js/shell.js?v=101"></script>
-  <script src="js/configuracoes.js?v=87"></script>
+  <script src="js/configuracoes.js?v=88"></script>
   <script src="js/contas-bancarias.js?v=8"></script>
   <script src="js/ver-senha.js?v=3"></script>
 </body>

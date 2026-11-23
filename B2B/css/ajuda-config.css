@@ -1,0 +1,165 @@
+/* Central de Ajuda (Hub) e Configurações no celular, no padrão do anfitrião. */
+
+/* ---------- Central de Ajuda ---------- */
+html body[data-page="faq"] .b2b-content:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { margin-left: 0 !important; }
+.ajuda-central { display: flex; flex-direction: column; gap: 24px; width: 100%; min-width: 0; font-family: var(--fonte-love, "Outfit", sans-serif); }
+.ajuda-central [hidden] { display: none !important; }
+.ajuda-capa { display: flex; flex-direction: column; align-items: center; gap: 24px; box-sizing: border-box; padding: 56px 32px; border-radius: 10px; background: #183b54 url("../assets/central-ajuda-capa.webp") center / cover no-repeat; text-align: center; }
+html body[data-page="faq"] .ajuda-capa-titulo:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { margin: 0; color: #FFFFFF !important; font-size: 32px; font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; }
+.ajuda-so-celular { display: none; }
+.ajuda-busca { display: flex; align-items: center; gap: 10px; box-sizing: border-box; width: 100%; max-width: 560px; height: 48px; padding: 0 16px; border-radius: 8px; background: #FFFFFF; color: #71717A; cursor: text; }
+.ajuda-busca svg { width: 20px; height: 20px; flex-shrink: 0; }
+html body[data-page="faq"] .ajuda-busca input:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { flex: 1; min-width: 0; width: auto; height: 100%; min-height: 0; padding: 0; border: 0 !important; outline: 0; box-shadow: none !important; background: transparent !important; color: #18181B !important; font-family: inherit; font-size: 15px; }
+html body[data-page="faq"] .ajuda-busca input:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11)::placeholder { color: #71717A; }
+.ajuda-cats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+html body[data-page="faq"] button.ajuda-cat:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; padding: 28px 20px; border: 0 !important; border-radius: 10px !important; background: #FFFFFF !important; color: #18181B !important; box-shadow: none !important; font-family: inherit; text-align: center; cursor: pointer; transition: background-color .15s, color .15s; }
+html body[data-page="faq"] button.ajuda-cat:not(.ativa):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11):hover { background: #EDF1F3 !important; }
+html body[data-page="faq"] button.ajuda-cat.ativa:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #183b54 !important; color: #FFFFFF !important; }
+.ajuda-cat-icone { display: inline-flex; color: #183b54; }
+.ajuda-cat.ativa .ajuda-cat-icone { color: #FFFFFF; }
+.ajuda-cat-icone svg { width: 32px; height: 32px; }
+.ajuda-cat-textos { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ajuda-cat-nome { font-size: 16px; font-weight: 600; line-height: 1.3; }
+.ajuda-cat-desc { font-size: 13px; font-weight: 400; line-height: 1.4; color: #71717A; }
+.ajuda-cat.ativa .ajuda-cat-desc { color: rgba(255, 255, 255, .75); }
+.ajuda-cat-seta { display: none; }
+.ajuda-resultados { margin: 0 0 12px; color: #18181B; font-size: 18px; font-weight: 600; letter-spacing: -0.025em; }
+.ajuda-lista { border-radius: 10px; background: #FFFFFF; overflow: hidden; }
+.ajuda-item + .ajuda-item { border-top: 1px solid rgba(24, 59, 84, .06); }
+html body[data-page="faq"] button.ajuda-pergunta:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 52px; padding: 14px 20px; border: 0 !important; border-radius: 0 !important; background: transparent !important; color: #18181B !important; box-shadow: none !important; font-family: inherit; font-size: 15px; font-weight: 500; line-height: 1.4; text-align: left; cursor: pointer; }
+.ajuda-pergunta svg { flex: 0 0 16px; width: 16px; height: 16px; color: #A1A1AA; transition: transform .2s; }
+.ajuda-item.aberto .ajuda-pergunta svg { transform: rotate(180deg); }
+.ajuda-resposta { display: none; padding: 0 20px 16px; color: #52525B; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.ajuda-item.aberto .ajuda-resposta { display: block; }
+.ajuda-resposta p { margin: 0; }
+.ajuda-resposta p + p, .ajuda-resposta p + ul, .ajuda-resposta p + ol { margin-top: .5rem; }
+.ajuda-resposta ul { list-style: disc; padding-left: 1.25rem; margin: .5rem 0; }
+.ajuda-resposta ol { list-style: decimal; padding-left: 1.25rem; margin: .5rem 0; }
+.ajuda-resposta a { color: #183b54; text-decoration: underline; }
+.ajuda-resposta iframe, .ajuda-resposta img, .ajuda-resposta video { max-width: 100%; }
+.ajuda-vazio { margin: 0; padding: 24px; border-radius: 10px; background: #FFFFFF; color: #71717A; font-size: 14px; text-align: center; }
+.ajuda-guia-link { align-self: center; color: #71717A; font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+.ajuda-guia-link:hover { color: #183b54; }
+.ajuda-voltar-topo { display: none; }
+@media (min-width: 769px) and (max-width: 1023px) {
+  .ajuda-cats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="faq"] .b2b-content > .b2b-header-bar:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: none !important; }
+  html body[data-page="faq"] #shell-topbar .b2b-topbar > .menu-celular-botao:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11),
+  html body[data-page="faq"] #shell-topbar .b2b-topbar #topbar-icon-group:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: none !important; }
+  html body[data-page="faq"] #shell-topbar .b2b-topbar > .ajuda-voltar-topo:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { position: absolute; left: 6px; top: calc(env(safe-area-inset-top, 0px) + 10px); display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; color: #18181B; }
+  .ajuda-voltar-topo svg { width: 24px; height: 24px; }
+  .ajuda-central { gap: 16px; }
+  .ajuda-capa { gap: 16px; padding: 32px 16px; }
+  html body[data-page="faq"] .ajuda-capa-titulo:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { font-size: 26px; }
+  html body[data-page="faq"] .ajuda-busca input:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { font-size: 16px !important; }
+  .ajuda-so-celular { display: inline; }
+  .ajuda-so-desktop { display: none; }
+  .ajuda-cats { display: flex; flex-direction: column; gap: 8px; }
+  html body[data-page="faq"] button.ajuda-cat:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { flex-direction: row; gap: 14px; width: 100%; min-height: 64px; padding: 12px 16px; text-align: left; }
+  html body[data-page="faq"] button.ajuda-cat.ativa:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #FFFFFF !important; color: #18181B !important; }
+  .ajuda-cat.ativa .ajuda-cat-icone { color: #183b54; }
+  .ajuda-cat-icone svg { width: 24px; height: 24px; }
+  .ajuda-cat-textos { flex: 1; }
+  .ajuda-cat-nome { font-size: 15px; }
+  .ajuda-cat.ativa .ajuda-cat-desc { color: #71717A; }
+  .ajuda-cat-seta { display: inline-flex; flex-shrink: 0; color: #A1A1AA; transform: rotate(-90deg); transition: transform .2s; }
+  .ajuda-cat.ativa .ajuda-cat-seta { transform: rotate(0deg); }
+  .ajuda-cat-seta svg { width: 16px; height: 16px; }
+  html body[data-page="faq"] button.ajuda-pergunta:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { padding: 14px 16px; }
+  .ajuda-resposta { padding: 0 16px 16px; }
+}
+/* Central de Ajuda: tema escuro */
+html:not(.hub-claro) body[data-page="faq"] button.ajuda-cat:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: rgba(20, 40, 58, .62) !important; color: #FFFFFF !important; }
+html:not(.hub-claro) body[data-page="faq"] button.ajuda-cat:not(.ativa):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11):hover { background: rgba(32, 58, 80, .72) !important; }
+html:not(.hub-claro) body[data-page="faq"] button.ajuda-cat.ativa:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #183b54 !important; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-cat-icone { color: #9CC3E4; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-cat.ativa .ajuda-cat-icone { color: #FFFFFF; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-cat-desc, html:not(.hub-claro) body[data-page="faq"] .ajuda-guia-link { color: #A3B5C8; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-guia-link:hover { color: #FFFFFF; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-resultados { color: #FFFFFF; }
+html:not(.hub-claro) body[data-page="faq"] :is(.ajuda-lista, .ajuda-vazio) { background: rgba(20, 40, 58, .62); }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-vazio { color: #C4C4CC; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-item + .ajuda-item { border-top-color: rgba(255, 255, 255, .08); }
+html:not(.hub-claro) body[data-page="faq"] button.ajuda-pergunta:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #FFFFFF !important; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-resposta { color: #C4C4CC; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-resposta a { color: #9CC3E4; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html:not(.hub-claro) body[data-page="faq"] button.ajuda-cat.ativa:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: rgba(20, 40, 58, .62) !important; color: #FFFFFF !important; }
+  html:not(.hub-claro) body[data-page="faq"] .ajuda-cat.ativa .ajuda-cat-icone { color: #9CC3E4; }
+  html:not(.hub-claro) body[data-page="faq"] .ajuda-cat.ativa .ajuda-cat-desc { color: #A3B5C8; }
+  html:not(.hub-claro) body[data-page="faq"] #shell-topbar .b2b-topbar > .ajuda-voltar-topo:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #FFFFFF; }
+}
+
+/* ---------- Configurações no celular (o desktop não muda) ---------- */
+.settings-caixinhas { display: none; }
+.settings-nome-linha { display: contents; }
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="configuracoes"] .b2b-content:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #F4F6F7 !important; }
+  html body[data-page="configuracoes"] .b2b-content > .b2b-header-bar:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: flex !important; align-items: center !important; justify-content: flex-start !important; gap: 4px !important; margin-bottom: 0 !important; background: transparent !important; }
+  html body[data-page="configuracoes"] .b2b-header-bar > .header-fechar-celular:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11),
+  html body[data-page="configuracoes"] .b2b-content > .submenu-celular:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: none !important; }
+  html body[data-page="configuracoes"] .b2b-header-bar > .settings-voltar:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: inline-flex !important; flex: 0 0 44px !important; align-items: center; justify-content: center; width: 44px !important; min-width: 44px; height: 44px; margin: 0 0 0 -10px; color: #18181B; }
+  html body[data-page="configuracoes"] .settings-voltar svg:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { width: 24px; height: 24px; }
+  html body[data-page="configuracoes"] .settings-shell:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: block !important; margin-top: 12px !important; padding: 0 !important; }
+
+  html body[data-page="configuracoes"] .settings-caixinhas:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
+  html body[data-page="configuracoes"] button.settings-caixinha:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-sizing: border-box; min-width: 0; height: 72px; margin: 0; padding: 0 2px !important; border: 0 !important; border-radius: 10px !important; background: #FFFFFF !important; color: #18181B !important; box-shadow: none !important; font-family: var(--fonte-love, "Outfit", sans-serif); cursor: pointer; }
+  html body[data-page="configuracoes"] button.settings-caixinha.active:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #183b54 !important; color: #FFFFFF !important; }
+  html body[data-page="configuracoes"] .settings-caixinha svg:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: block; flex: 0 0 24px; width: 24px; height: 24px; color: #183b54; }
+  html body[data-page="configuracoes"] .settings-caixinha.active svg:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #FFFFFF; }
+  html body[data-page="configuracoes"] .settings-caixinha span:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: block; max-width: 100%; font-size: 12px !important; font-weight: 500; line-height: 16px !important; white-space: nowrap; }
+
+  html body[data-page="configuracoes"] [data-settings-panel]:not([style*="none"]):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: flex !important; flex-direction: column; gap: 16px; margin: 0 !important; }
+  html body[data-page="configuracoes"] [data-settings-panel]:not([style*="none"]) ~ [data-settings-panel]:not([style*="none"]):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { margin-top: 16px !important; }
+  html body[data-page="configuracoes"] .settings-zola-forms:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: flex !important; flex-direction: column; gap: 16px; }
+  html body[data-page="configuracoes"] :is(.settings-zola-forms, [data-settings-panel]) > *:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { margin-top: 0 !important; margin-bottom: 0 !important; }
+  html body[data-page="configuracoes"] .settings-contas-conectadas:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: flex !important; flex-direction: column; gap: 12px; }
+  html body[data-page="configuracoes"] :is(.dash-card, .settings-imagens, .settings-url-pro, .cart-caixa:not(.cart-docs-aviso), .cart-verif-cartao):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { box-sizing: border-box; max-width: 100%; margin-left: 0 !important; margin-right: 0 !important; padding: 16px !important; border: 0 !important; border-radius: 10px !important; background: #FFFFFF !important; box-shadow: none !important; }
+  html body[data-page="configuracoes"] .cart-verif:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { padding: 0 !important; overflow: hidden; }
+
+  html body[data-page="configuracoes"] .settings-nome-linha:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  html body[data-page="configuracoes"] .settings-nome-linha > div:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { min-width: 0; }
+  html body[data-page="configuracoes"] .field-label:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11), html body[data-page="configuracoes"] .cart-campo > span:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { margin: 0 0 4px; color: #71717A !important; font-size: 13px !important; font-weight: 500 !important; line-height: 19.5px; }
+  html body[data-page="configuracoes"] .cart-campo:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { gap: 0; min-width: 0; }
+  html body[data-page="configuracoes"] :is(input.field-input, select.field-select, .cart-campo input, .cart-campo select):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { box-sizing: border-box; width: 100%; height: 46px !important; min-height: 46px !important; padding: 0 12px !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; outline: 0; background-color: #FFFFFF !important; color: #18181B !important; box-shadow: none !important; transition: none !important; }
+  html body[data-page="configuracoes"] :is(input.field-input:not([type="date"]):not(:placeholder-shown), input.field-input[type="date"].tem-valor, select.field-select:not(:has(option:checked[value=""])), .cart-campo input:not([type="date"]):not(:placeholder-shown), .cart-campo input[type="date"].tem-valor, .cart-campo select:not(:has(option:checked[value=""]))):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { border-color: transparent !important; background-color: rgba(24, 59, 84, .06) !important; }
+  html body[data-page="configuracoes"] :is(input.field-input, select.field-select, .cart-campo input, .cart-campo select):focus:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { border-color: rgba(24, 29, 36, .22) !important; }
+  html body[data-page="configuracoes"] .field-textarea:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { box-sizing: border-box; width: 100%; padding: 12px !important; border: 1px solid #E4E4E7 !important; border-radius: 8px !important; background: #FFFFFF !important; color: #18181B !important; box-shadow: none !important; }
+  html body[data-page="configuracoes"] .field-textarea:not(:placeholder-shown):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { border-color: transparent !important; background: rgba(24, 59, 84, .06) !important; }
+
+  html body[data-page="configuracoes"] .cart-conta-digital .cart-form-grade:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px 12px; }
+  html body[data-page="configuracoes"] .cart-conta-digital .cart-campo:has(:is([data-cd="tipo_empresa"], [data-cd="faturamento_mensal"], [data-cd="responsavel_cpf"], [data-cd="data_nascimento"])):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { grid-column: 1 / -1; }
+
+  html body[data-page="configuracoes"] .cart-docs-aviso:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { box-sizing: border-box; width: 100%; margin: 0 !important; border: 1px dashed #D4D4D8 !important; border-radius: 10px !important; background: rgba(255, 255, 255, .75) !important; box-shadow: none !important; }
+
+  /* Configurações no celular: tema escuro */
+  html:not(.hub-claro) body[data-page="configuracoes"] .b2b-content:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #0F1F2F !important; }
+  html:not(.hub-claro) body[data-page="configuracoes"] .b2b-header-bar > .settings-voltar:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #FFFFFF; }
+  html:not(.hub-claro) body[data-page="configuracoes"] button.settings-caixinha:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: rgba(20, 40, 58, .62) !important; color: #FFFFFF !important; }
+  html:not(.hub-claro) body[data-page="configuracoes"] button.settings-caixinha.active:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #183b54 !important; }
+  html:not(.hub-claro) body[data-page="configuracoes"] .settings-caixinha svg:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #9CC3E4; }
+  html:not(.hub-claro) body[data-page="configuracoes"] .settings-caixinha.active svg:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #FFFFFF; }
+  html:not(.hub-claro) body[data-page="configuracoes"] :is(.dash-card, .settings-imagens, .settings-url-pro, .cart-caixa:not(.cart-docs-aviso), .cart-verif-cartao):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: rgba(20, 40, 58, .62) !important; }
+  html:not(.hub-claro) body[data-page="configuracoes"] .field-label:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11), html:not(.hub-claro) body[data-page="configuracoes"] .cart-campo > span:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #A3B5C8 !important; }
+  html:not(.hub-claro) body[data-page="configuracoes"] :is(input.field-input, select.field-select, .cart-campo input, .cart-campo select):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11), html:not(.hub-claro) body[data-page="configuracoes"] .field-textarea:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { border-color: rgba(255, 255, 255, .14) !important; background-color: transparent !important; color: #FFFFFF !important; }
+  html:not(.hub-claro) body[data-page="configuracoes"] :is(input.field-input:not([type="date"]):not(:placeholder-shown), input.field-input[type="date"].tem-valor, select.field-select:not(:has(option:checked[value=""])), .cart-campo input:not([type="date"]):not(:placeholder-shown), .cart-campo input[type="date"].tem-valor, .cart-campo select:not(:has(option:checked[value=""]))):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11), html:not(.hub-claro) body[data-page="configuracoes"] .field-textarea:not(:placeholder-shown):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { border-color: transparent !important; background-color: rgba(255, 255, 255, .08) !important; }
+  html:not(.hub-claro) body[data-page="configuracoes"] :is(input.field-input, select.field-select, .cart-campo input, .cart-campo select) option:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #0F1F2F; color: #FFFFFF; }
+  html:not(.hub-claro) body[data-page="configuracoes"] .cart-docs-aviso:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { border-color: rgba(255, 255, 255, .22) !important; background: rgba(20, 40, 58, .62) !important; }
+}
+@media (max-width: 359px) {
+  html body[data-page="configuracoes"] .settings-caixinhas:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11):not(#aj-z) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Central de Ajuda: mesma linha do título no desktop; no celular, o topo do Hub com a seta e o logo. */
+@media (min-width: 769px) and (hover: hover), (min-width: 769px) and (pointer: fine), (min-width: 769px) and (min-height: 501px) {
+  html body[data-page="faq"] #ajuda-raiz:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { width: calc(100% + 16px); margin-left: -8px; margin-right: -8px; }
+}
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  html body[data-page="faq"] #shell-topbar:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { display: block !important; }
+  html body[data-page="faq"] #ajuda-raiz:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { margin-top: 16px; }
+  html:not(.hub-claro) body[data-page="faq"] #shell-topbar .b2b-topbar:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #0C1824 !important; box-shadow: 0 1px 0 rgba(255, 255, 255, .08) !important; }
+  html:not(.hub-claro) body[data-page="faq"] #shell-topbar .b2b-topbar > .logo-celular > .logo-celular-tinta:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { filter: brightness(0) invert(1); }
+}
+html:not(.hub-claro) body[data-page="faq"] .ajuda-cat:not(.ativa) .ajuda-cat-desc:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { color: #A3B5C8 !important; }

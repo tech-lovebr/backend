@@ -29,7 +29,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=974"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
+  <link rel="stylesheet" href="css/styles.css?v=974"><link rel="stylesheet" href="css/ajuda-config.css?v=1"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
 </head>
 <body class="font-sans" data-page="faq">
 
@@ -40,123 +40,10 @@
 
       <main class="b2b-content">
       <div class="b2b-header-bar">
-        <a href="dashboard" class="header-voltar-celular" aria-label="Voltar" onclick="if (history.length > 1) { history.back(); return false; }"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m0 0 7 7m-7-7 7-7"/></svg></a>
         <h2 class="text-xl font-bold text-zinc-900">Central de ajuda</h2>
       </div>
 
-      <div class="guias-layout">
-
-        <aside class="guias-sidebar">
-          <nav class="guias-menu-table" id="faq-categories">
-            <button type="button" class="guide-link guide-link--active" data-category="produtos">Produtos e Serviços</button>
-            <button type="button" class="guide-link" data-category="contratos">Contratos e Pagamentos</button>
-            <button type="button" class="guide-link" data-category="crm">CRM e Chat</button>
-            <button type="button" class="guide-link" data-category="colaboradores">Colaboradores e Funções</button>
-            <button type="button" class="guide-link" data-category="planos">Planos e Upgrade</button>
-            <button type="button" class="guide-link" data-category="conta">Conta e Configurações</button>
-            <button type="button" class="guide-link" data-category="privacidade">Privacidade e segurança</button>
-            <a href="guias" class="guide-link">Guia de início</a>
-          </nav>
-        </aside>
-
-        <div class="dash-card faq-table-card">
-          <div class="dash-card-header">
-            <div class="dash-card-header-left">
-              <h2 class="faq-table-title" id="faq-category-title">Produtos e Serviços</h2>
-            </div>
-          </div>
-
-          <div class="faq-list" data-category-panel="produtos">
-            <details class="faq-item" open>
-              <summary>Como cadastro ou edito meus produtos e serviços?</summary>
-              <p>Acesse <strong>Serviços</strong> no menu lateral e clique em "Adicionar novo". Você pode editar preço, descrição e fotos de qualquer item a qualquer momento.</p>
-            </details>
-            <details class="faq-item">
-              <summary>As mudanças no catálogo aparecem na vitrine automaticamente?</summary>
-              <p>Sim. Assim que você salva uma alteração em um produto ou serviço, ela reflete na vitrine que os anfitriões veem dentro dos eventos, sem precisar de nenhum passo extra.</p>
-            </details>
-          </div>
-
-          <div class="faq-list" data-category-panel="contratos" style="display:none;">
-            <details class="faq-item" open>
-              <summary>Como recebo os pagamentos dos contratos fechados?</summary>
-              <p>Os repasses referentes aos contratos assinados aparecem na área <strong>Meus ganhos</strong>, junto com o histórico de recebimentos e pendências.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Como envio um contrato para assinatura do cliente?</summary>
-              <p>Em <strong>Contratos</strong>, clique em "Novo orçamento/contrato", preencha os dados do evento e envie o link de assinatura direto para o cliente.</p>
-            </details>
-          </div>
-
-          <div class="faq-list" data-category-panel="crm" style="display:none;">
-            <details class="faq-item" open>
-              <summary>Como acompanho os leads que chegam pela plataforma?</summary>
-              <p>Todo novo interesse de um anfitrião vira um lead automaticamente em <strong>CRM</strong>, onde você acompanha o estágio da negociação até o fechamento.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Como falo com um cliente diretamente pelo portal?</summary>
-              <p>Use o menu <strong>Chat</strong> para conversar com cada cliente — o histórico da conversa fica salvo junto com os dados do lead ou contrato.</p>
-            </details>
-          </div>
-
-          <div class="faq-list" data-category-panel="colaboradores" style="display:none;">
-            <details class="faq-item" open>
-              <summary>Como convido um colaborador para minha conta?</summary>
-              <p>Acesse <strong>Funções</strong> no menu lateral, clique em "Convidar pessoa" e escolha a função (Administrador, Operacional, Financeiro ou Visualizador) — ou personalize exatamente quais áreas essa pessoa pode acessar.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Posso limitar o que cada colaborador acessa?</summary>
-              <p>Sim. Ao convidar alguém, você escolhe uma função pronta ou personaliza o acesso módulo por módulo, liberando só o que essa pessoa precisa ver.</p>
-            </details>
-          </div>
-
-          <div class="faq-list" data-category-panel="planos" style="display:none;">
-            <details class="faq-item" open>
-              <summary>Como funciona o upgrade para o plano Pro?</summary>
-              <p>No plano Pro você libera CRM avançado, relatórios financeiros completos e colaboradores ilimitados na sua conta. É possível solicitar o upgrade a qualquer momento em <strong>Planos e recursos</strong>.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Posso voltar para o plano Gratuito depois?</summary>
-              <p>Sim, o downgrade pode ser feito a qualquer momento na página de <strong>Planos e recursos</strong>, sem multa ou período de carência.</p>
-            </details>
-          </div>
-
-          <div class="faq-list" data-category-panel="privacidade" style="display:none;">
-            <details class="faq-item" open>
-              <summary>Quais dados da minha empresa a Love guarda?</summary>
-              <p>Guardamos os dados que você cadastra no Hub (empresa, CNPJ/CPF, responsável, contato, endereço, produtos, clientes e contratos) só para fazer a plataforma funcionar. Você encontra tudo em detalhes na nossa <a href="privacidade">Política de privacidade</a>.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Como deixo a minha conta mais segura?</summary>
-              <p>Em <strong>Configurações › Privacidade</strong>, ative a autenticação de dois fatores: além da senha, o login passa a pedir um código do Google Authenticator.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Para que serve a verificação de conta?</summary>
-              <p>Ela confirma que a empresa é real (Cartão CNPJ e documento do sócio). Os documentos ficam guardados com segurança, só são usados para a verificação e contas verificadas ganham mais destaque na vitrine.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Entrei com o Google. Posso passar a entrar com e-mail e senha?</summary>
-              <p>Sim. Em <strong>Configurações › Informações › Contas conectadas</strong>, clique em "Desconectar do Google". Na próxima vez, digite o seu e-mail no login e use "Esqueci minha senha" para criar a senha.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Quem consegue ver os meus dados bancários?</summary>
-              <p>Só você e quem você liberar em <strong>Funções</strong> com acesso ao financeiro. A chave Pix é usada apenas para enviar os seus saques.</p>
-            </details>
-          </div>
-
-          <div class="faq-list" data-category-panel="conta" style="display:none;">
-            <details class="faq-item" open>
-              <summary>Como altero os dados da minha empresa (CNPJ/CPF)?</summary>
-              <p>O nome da empresa e o CNPJ/CPF ficam bloqueados depois de preenchidos pela primeira vez. Em <strong>Configurações</strong>, clique em "Solicitar alteração" ao lado do campo para falar com nosso suporte.</p>
-            </details>
-            <details class="faq-item">
-              <summary>Ainda preciso de ajuda. Como falo com o suporte?</summary>
-              <p>Use a busca no topo da tela (⌘K) para encontrar rapidamente clientes, contratos ou produtos, ou envie uma mensagem pelo menu <strong>Chat</strong> que nossa equipe responde por lá.</p>
-            </details>
-          </div>
-        </div>
-
-      </div>
+      <div id="ajuda-raiz" class="ajuda-central"></div>
       </main>
     </div>
   </div>
@@ -166,6 +53,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>
   <script src="js/shell.js?v=101"></script>
-  <script src="js/faq.js?v=4"></script>
+  <script src="js/faq.js?v=5"></script>
 </body>
 </html>

@@ -51,6 +51,9 @@ const NOME_PLATAFORMA = PLATAFORMA === 'fornecedor' ? 'Plataforma dos fornecedor
 
 let BANNERS = [];
 let FAQ = [];
+/* A coluna faq.termos_busca vem da migration 134. Até ela rodar, a tela
+   funciona como antes e o campo só avisa o que falta. */
+let TEM_TERMOS = false;
 let PASSOS = [];
 let SERVICOS = [];
 let HUB = [];
@@ -177,6 +180,9 @@ async function carregar() {
 
   BANNERS = banners.data;
   FAQ = faq.data;
+  TEM_TERMOS = FAQ.length
+    ? 'termos_busca' in FAQ[0]
+    : !(await supabaseClient.from('faq').select('termos_busca').limit(1)).error;
   PASSOS = passos.data;
   SERVICOS = servicos.data;
   HUB = hub.data;
@@ -608,6 +614,7 @@ function renderFaq() {
                   <div style="flex:1;min-width:0">
                     <p class="pergunta">${escapeHtml(q.pergunta)}</p>
                     <p class="resposta">${escapeHtml(textoDe(q.resposta))}</p>
+                    ${seloDeTermos(q)}
                   </div>
                   ${/<iframe/i.test(q.resposta || '') ? badge('vídeo', 'badge-info') : ''}
                   ${q.ativo ? '' : badge('rascunho', 'badge-warning')}
@@ -759,6 +766,101 @@ async function excluirPerguntas(ids) {
   await carregar();
 }
 
+/* ------------------------------- Termos de pesquisa de cada pergunta
+   Como as pessoas procuram a dúvida ("como sacar", "retirar dinheiro").
+   Repetido não entra, sem diferenciar maiúsculas nem acentos. */
+const MAX_TERMOS = 30;
+const MAX_CARACTERES_TERMO = 60;
+
+const limparTermo = texto => String(texto || '').replace(/\s+/g, ' ').trim();
+const chaveDoTermo = texto => limparTermo(texto).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const separarTermos = texto => String(texto || '').split(/[,\r\n]+/).map(limparTermo).filter(Boolean);
+
+function seloDeTermos(q) {
+  if (!TEM_TERMOS) return '';
+  const total = (q.termos_busca || []).length;
+  return total
+    ? `<span class="faq-termos">${formatNumber(total)} ${total === 1 ? 'termo' : 'termos'}</span>`
+    : '<span class="faq-termos is-vazio">Sem termos</span>';
+}
+
+function campoDeTermos() {
+  return `
+    <div class="field campo-termos">
+      <label class="field-label" for="termos-input">Termos de pesquisa</label>
+      <div class="keywords" id="termos-lista"></div>
+      <input class="field-input" id="termos-input" type="text" autocomplete="off"
+             placeholder="Ex.: como sacar" ${TEM_TERMOS ? '' : 'disabled'}>
+      <p class="campo-termos-dica">${TEM_TERMOS
+        ? 'Escreva como as pessoas podem procurar esta dúvida. Pressione Enter para adicionar.'
+        : 'Rode supabase/migrations/134_faq_termos_busca.sql no Supabase para usar este campo.'}</p>
+    </div>`;
+}
+
+function ligarTermosDeBusca(iniciais) {
+  const caixa = document.getElementById('termos-lista');
+  const campo = document.getElementById('termos-input');
+  const vistos = new Set();
+  // O que já está salvo fica como está, mesmo que o limite mude depois.
+  const termos = (iniciais || []).map(limparTermo).filter(t => {
+    const chave = chaveDoTermo(t);
+    if (!chave || vistos.has(chave)) return false;
+    vistos.add(chave);
+    return true;
+  });
+
+  const desenhar = () => {
+    caixa.innerHTML = termos.map((t, i) => `
+      <span class="keyword">${escapeHtml(t)}<button type="button" data-remover-termo="${i}" aria-label="Remover ${escapeHtml(t)}">×</button></span>`).join('');
+  };
+
+  /* Entra o que for válido; o que não coube volta para o campo, para nada
+     do que foi digitado se perder. */
+  const adicionar = textos => {
+    const sobra = [];
+    let longo = false;
+    let cheio = false;
+    textos.forEach(texto => {
+      const chave = chaveDoTermo(texto);
+      if (termos.some(t => chaveDoTermo(t) === chave)) return;
+      if (texto.length > MAX_CARACTERES_TERMO) { longo = true; sobra.push(texto); return; }
+      if (termos.length >= MAX_TERMOS) { cheio = true; sobra.push(texto); return; }
+      termos.push(texto);
+    });
+    campo.value = sobra.join(', ');
+    desenhar();
+    if (longo) toast(`Cada termo pode ter até ${MAX_CARACTERES_TERMO} caracteres.`);
+    else if (cheio) toast(`São no máximo ${MAX_TERMOS} termos por pergunta.`);
+    return !sobra.length;
+  };
+
+  caixa.addEventListener('click', e => {
+    const botao = e.target.closest('[data-remover-termo]');
+    if (!botao) return;
+    termos.splice(Number(botao.dataset.removerTermo), 1);
+    desenhar();
+    campo.focus();
+  });
+  campo.addEventListener('keydown', e => {
+    if (e.isComposing || (e.key !== 'Enter' && e.key !== ',')) return;
+    e.preventDefault();
+    adicionar(separarTermos(campo.value));
+  });
+  campo.addEventListener('paste', e => {
+    const colado = e.clipboardData?.getData('text') || '';
+    if (!/[,\r\n]/.test(colado)) return;
+    e.preventDefault();
+    adicionar([...separarTermos(campo.value), ...separarTermos(colado)]);
+  });
+
+  desenhar();
+  return {
+    lista: () => [...termos],
+    // Ao salvar, o que ficou digitado no campo também entra.
+    confirmar: () => campo.disabled || adicionar(separarTermos(campo.value))
+  };
+}
+
 function abrirFormularioPergunta(item, categoriaInicial) {
   const editando = Boolean(item && item.id);
   const categorias = categoriasOrdenadas();
@@ -801,6 +903,8 @@ function abrirFormularioPergunta(item, categoriaInicial) {
           </p>
         </div>
 
+        ${campoDeTermos()}
+
         ${blocoPublicacao(item?.ordem ?? proximaPosicao(irmas, 'ordem'), !item || item.ativo, 'Ordem na categoria')}
       </form>`,
     footer: `
@@ -815,6 +919,7 @@ function abrirFormularioPergunta(item, categoriaInicial) {
   });
 
   const form = document.getElementById('form-conteudo');
+  const termos = ligarTermosDeBusca(item?.termos_busca);
   const editor = EditorRico.montar(document.getElementById('faq-editor'), {
     placeholder: 'Escreva a resposta. Negrito, listas, links e vídeo são permitidos.'
   });
@@ -849,12 +954,14 @@ function abrirFormularioPergunta(item, categoriaInicial) {
     if (!categoria) return toast('Escolha ou escreva a categoria.');
     if (!pergunta) return toast('Escreva a pergunta.');
     if (!editor.texto().trim() && !/<iframe/i.test(resposta)) return toast('Escreva a resposta.');
+    if (!termos.confirmar()) return;
 
     await gravar('faq', item?.id, {
       plataforma: PLATAFORMA,
       categoria,
       pergunta,
       resposta,
+      ...(TEM_TERMOS ? { termos_busca: termos.lista() } : {}),
       ordem: Number(d.posicao) || 0,
       ativo: d.ativo === 'true',
       atualizado_por: window.adminUser.id

@@ -4859,3 +4859,19 @@ body[data-theme="dark"] .rede-icone { background: transparent; border-color: rgb
 .login-voltar,
 #btn-voltar-lista,
 #np-voltar { cursor: pointer; }
+
+/* Termos de pesquisa da Central de Ajuda: etiquetas preenchidas, sem contorno. */
+.campo-termos,
+.campo-termos .field-input,
+.campo-termos .keyword,
+.faq-termos { font-family: "Outfit", "Helvetica Neue", Arial, sans-serif; }
+.campo-termos .field-input,
+.campo-termos .field-input:hover { border: 0; border-radius: 8px; background: rgba(24, 59, 84, .06); box-shadow: none; }
+.campo-termos .field-input:focus { border: 0; outline: 0; background: rgba(24, 59, 84, .10); box-shadow: none; }
+.campo-termos .field-input:disabled { opacity: .6; cursor: not-allowed; }
+.campo-termos .keyword { border: 0; border-radius: 6px; background: rgba(24, 59, 84, .07); color: #183b54; font-weight: 500; }
+.campo-termos .keyword button { color: #5B6779; }
+.campo-termos .keyword button:hover { color: #181D24; }
+.campo-termos-dica { margin: .375rem 0 0; font-size: .75rem; line-height: 1.6; color: var(--text-muted); }
+.faq-termos { display: block; margin-top: .25rem; font-size: .6875rem; font-weight: 500; color: #A1A1AA; }
+.faq-termos.is-vazio { color: #B45309; }

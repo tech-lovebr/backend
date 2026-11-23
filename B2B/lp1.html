@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300,50,0;1,9..144,300,50,0&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/hub-landing.css?v=28">
-  <link rel="stylesheet" href="css/lp-cadastro.css?v=1">
+  <link rel="stylesheet" href="css/lp-cadastro.css?v=2">
 </head>
 <body class="lp-cadastro" data-origem="lp1">
 
@@ -49,19 +49,12 @@
   </div>
 </header>
 
-<main class="lp-hero">
-  <div class="wrap lp-grade">
-    <section class="lp-texto">
-      <p class="lp-selo">Para fornecedores de eventos</p>
-      <h1>Cadastre sua empresa e receba pedidos de eventos</h1>
-      <p class="lp-lede">Crie sua conta grátis e fale com quem está organizando um evento na Love.</p>
-      <a class="btn btn-l" href="#criar-conta" data-lp-criar>Criar conta grátis <i></i></a>
-      <ul class="lp-beneficios">
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Receba pedidos de clientes</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Envie propostas e contratos</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Receba pagamentos por Pix</li>
-      </ul>
-    </section>
+<main class="lp-main" id="top">
+<section class="hero pl gr night drift lp-hero">
+  <div class="wrap in lp-coluna">
+    <h1 class="dis">Cadastre sua empresa <span class="it">e receba pedidos de eventos</span></h1>
+    <p class="lede center">Crie sua conta grátis e fale com quem está organizando um evento na Love.</p>
+    <div class="ctas"><a class="btn btn-l" href="#criar-conta" data-lp-criar>Criar conta grátis <i></i></a></div>
 
     <section class="lp-card" id="criar-conta" aria-labelledby="lp-card-titulo">
       <h2 id="lp-card-titulo">Crie sua conta</h2>
@@ -100,7 +93,14 @@
       <p class="lp-card-rodape">Já tem uma conta? <a href="login">Entrar</a></p>
       <p class="lp-privacidade">Ao continuar, você reconhece a <a href="privacidade">Política de privacidade</a>.</p>
     </section>
+
+    <ul class="lp-beneficios">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Receba pedidos de clientes</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Envie propostas e contratos</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Receba pagamentos por Pix</li>
+      </ul>
   </div>
+</section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>

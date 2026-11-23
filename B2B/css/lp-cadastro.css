@@ -1,22 +1,16 @@
 /* Landing de cadastro rápido de fornecedores (/lp1). Usa o topo e os botões
    de css/hub-landing.css; aqui ficam a chamada e a caixa de criar conta. */
-html, body { margin: 0; padding: 0; background: #0C1824; }
-body.lp-cadastro { min-height: 100dvh; display: flex; flex-direction: column; overflow-x: hidden; font-family: var(--sans); }
-.lp-cadastro .nav { position: relative; background: #0C1824; }
-.lp-hero {
-  flex: 1 1 auto; display: flex; align-items: center; padding: 56px 0 72px;
-  background:
-    linear-gradient(90deg, rgba(12, 24, 36, .94) 0%, rgba(12, 24, 36, .78) 52%, rgba(12, 24, 36, .5) 100%),
-    #183b54 url("../assets/landing/heroi.jpg") center / cover no-repeat;
-}
-.lp-grade { display: grid; grid-template-columns: minmax(0, 1fr) 432px; align-items: center; gap: 72px; width: 100%; box-sizing: border-box; }
-.lp-texto { min-width: 0; color: #EAF1F8; }
-.lp-selo { display: inline-block; margin: 0 0 20px; color: #A9C6EA; font-size: 14px; font-weight: 500; }
-.lp-texto h1 { margin: 0; max-width: 620px; font-family: var(--serif); font-size: clamp(38px, 4.4vw, 58px); font-weight: 300; font-variation-settings: "SOFT" 50; line-height: 1.08; letter-spacing: -0.025em; color: #FFFFFF; }
-.lp-lede { max-width: 520px; margin: 20px 0 28px; font-size: 18px; font-weight: 300; line-height: 1.5; color: #C9D6E3; }
-.lp-beneficios { display: grid; gap: 12px; margin: 32px 0 0; padding: 0; list-style: none; font-size: 15px; color: #EAF1F8; }
-.lp-beneficios li { display: flex; align-items: center; gap: 10px; }
-.lp-beneficios svg { flex: 0 0 18px; width: 18px; height: 18px; color: #A9C6EA; }
+html, body { margin: 0; padding: 0; }
+body.lp-cadastro { min-height: 100dvh; display: flex; flex-direction: column; overflow-x: hidden; }
+.lp-cadastro .nav { position: relative; }
+/* Uma coluna só, no fundo e nas fontes do primeiro banner da landing do Hub. */
+.lp-main { flex: 1 1 auto; display: flex; flex-direction: column; }
+.lp-hero { flex: 1 1 auto; padding-bottom: 64px; }
+.lp-coluna { width: 100%; box-sizing: border-box; }
+.lp-coluna .lp-card { max-width: 480px; margin-top: 8px; text-align: left; }
+.lp-beneficios { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 28px; margin: 6px 0 0; padding: 0; list-style: none; font-size: 15px; color: var(--ink); }
+.lp-beneficios li { display: flex; align-items: center; gap: 8px; }
+.lp-beneficios svg { flex: 0 0 18px; width: 18px; height: 18px; color: var(--hi); }
 
 .lp-card { box-sizing: border-box; width: 100%; padding: 32px; border-radius: 10px; background: #FFFFFF; color: #18181B; scroll-margin: 24px; }
 .lp-card h2 { margin: 0; font-size: 24px; font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; color: #18181B; }
@@ -52,18 +46,14 @@ body.lp-cadastro { min-height: 100dvh; display: flex; flex-direction: column; ov
 .lp-privacidade a { color: inherit; text-decoration: underline; }
 [hidden] { display: none !important; }
 
-@media (max-width: 960px) {
-  .lp-grade { grid-template-columns: minmax(0, 1fr); gap: 32px; max-width: 520px; }
-}
 @media (max-width: 768px) {
-  .lp-hero { align-items: flex-start; padding: 28px 0 32px; background: linear-gradient(180deg, rgba(12, 24, 36, .9) 0%, rgba(12, 24, 36, .72) 100%), #183b54 url("../assets/landing/heroi.jpg") center / cover no-repeat; }
-  .lp-grade { gap: 24px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-  .lp-selo { margin-bottom: 12px; }
-  .lp-texto h1 { font-size: 34px; }
-  .lp-lede { margin: 12px 0 18px; font-size: 16px; }
+  .lp-hero { margin-left: 0; margin-right: 0; padding-top: 32px; padding-bottom: 32px; }
+  .lp-coluna { gap: 18px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .lp-coluna .dis { font-size: 36px; }
+  .lp-coluna .lede { font-size: 17px; }
+  .lp-coluna .ctas, .lp-coluna .ctas .btn { width: 100%; max-width: 480px; box-sizing: border-box; justify-content: center; }
+  .lp-coluna .lp-card { padding: 24px 16px; }
   .lp-beneficios { display: none; }
-  .lp-texto .btn { justify-content: center; width: 100%; box-sizing: border-box; }
-  .lp-card { padding: 24px 16px; }
 }
 @media (max-width: 340px) {
   .lp-regras { grid-template-columns: minmax(0, 1fr); }

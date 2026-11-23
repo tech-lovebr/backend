@@ -193,6 +193,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (bProducts.some(p => String(p.id) === pedido.get('editar'))) openProductDrawer(pedido.get('editar'));
     else history.replaceState(null, '', location.pathname);
   }
+  document.documentElement.classList.remove('produto-abrindo');
   window.b2bPageReady?.();
 });
 

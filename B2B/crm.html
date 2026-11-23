@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] } } } }</script>
-  <link rel="stylesheet" href="css/styles.css?v=972"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
+  <link rel="stylesheet" href="css/styles.css?v=973"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
 </head>
 <body class="font-sans" data-page="crm">
   <div class="b2b-shell">
@@ -81,6 +81,10 @@
         </div>
 
         <div data-leads-painel="leads">
+        <button type="button" class="lista-vazia-criar" id="leads-vazio-criar" hidden>
+          <dotlottie-wc class="lista-vazia-lottie" renderconfig="{&quot;autoResize&quot;:true}" src="assets/lottie/clientes-lista-vazio.lottie?v=2" autoplay loop aria-hidden="true"></dotlottie-wc>
+          <strong>Adicionar cliente</strong>
+        </button>
         <div class="dash-card" id="leads-table-card">
           <div class="overflow-x-auto leads-table-wrap">
             <table class="leads-table w-full">
@@ -113,6 +117,7 @@
             </div>
             <p class="op-aviso" id="op-aviso" hidden></p>
             <div class="dash-card op-caixa" id="op-caixa">
+              <div class="op-lista-cabecalho" aria-hidden="true"><span>Oportunidade</span><span>Categoria</span><span>Local</span><span>Data do evento</span><span>Orçamento</span><span></span></div>
               <div class="op-posts" id="op-grade"></div>
               <div class="op-vazio op-vazio-caixa" id="op-vazio" hidden>Nenhum evento procurando a sua categoria agora. Avisaremos quando chegar um novo.</div>
               <div class="guests-pagination op-paginacao" id="op-paginacao">
@@ -150,6 +155,10 @@
               </a>
             </div>
           </div>
+          <a href="vendas?novo=orcamento" class="lista-vazia-criar" id="op-propostas-vazio" hidden>
+            <svg class="lista-vazia-icone" viewBox="0 0 64 64" fill="none" stroke="#D4D4D8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8h20l10 10v36a2 2 0 0 1-2 2H18a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2Z"/><path d="M38 8v10h10M24 30h16M24 38h16M24 46h10"/></svg>
+            <strong>Criar orçamento</strong>
+          </a>
           <div class="dash-card" id="op-propostas-card">
             <div class="overflow-x-auto leads-table-wrap">
               <table class="leads-table w-full">
@@ -389,8 +398,8 @@
   <script src="js/supabase-init.js?v=6"></script>
   <script src="js/shell.js?v=101"></script>
   <script src="js/data-br-localidades.js?v=1"></script>
-  <script src="js/crm.js?v=39"></script>
+  <script src="js/crm.js?v=40"></script>
   <script src="js/cliente-pagina.js?v=1"></script>
-  <script src="js/oportunidades.js?v=37"></script>
+  <script src="js/oportunidades.js?v=39"></script>
 </body>
 </html>

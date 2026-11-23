@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Importar e Exportar (o que está filtrado/buscado no momento).
   leadsTabelaEstado = montarBarraTabela(document.getElementById('leads-table-card'), {
     placeholder: 'Pesquisar cliente, e-mail ou CPF...',
-    celular: { nome: 2, info: 6, singular: 'cliente', plural: 'clientes', vazio: { lottie: 'clientes-lista-vazio', titulo: 'Adicione seu primeiro cliente', texto: 'Quem você cadastrar ou quem pedir orçamento pelo chat aparece aqui.', abrirSel: '#lead-add-celular' }, nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
+    celular: { nome: 2, semIniciais: true, singular: 'cliente', plural: 'clientes', vazio: { lottie: 'clientes-lista-vazio', titulo: 'Adicione seu primeiro cliente', texto: 'Quem você cadastrar ou quem pedir orçamento pelo chat aparece aqui.', abrirSel: '#lead-add-celular' }, nomeSel: '.lead-nome-link', filtroRotulo: 'Evento', editarSel: '[data-open-lead]', remover: tr => excluirLeadDaLinha(tr) },
     filtros: [
       { chave: 'tipo', rotulo: 'Tipo do evento', opcoes: () => [...new Set(crmLeads.map(l => l.tipo_evento).filter(Boolean))].sort().map(v => [v, v]) },
       { chave: 'produto', rotulo: 'Produto/serviço', opcoes: () => [...new Set(crmLeads.map(l => l.event_name).filter(Boolean))].sort().map(v => [v, v]) },
@@ -263,7 +263,8 @@ function renderLeadsTable() {
   const tbody = document.getElementById('leads-table-body');
   if (!tbody) return;
 
-  const items = leadsFiltrados();
+  // Em ordem alfabética, com a letra de cada grupo (como Meus convidados).
+  const items = leadsFiltrados().sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'pt-BR', { sensitivity: 'base' }));
   // Seleção: tira ids que não existem mais.
   const existentes = new Set(crmLeads.map(l => l.id));
   [...leadsSelecionados].forEach(id => { if (!existentes.has(id)) leadsSelecionados.delete(id); });
@@ -276,16 +277,41 @@ function renderLeadsTable() {
   if (!leadsPaginacao) leadsPaginacao = montarPaginacaoTabela(document.getElementById('leads-table-card'), () => renderLeadsTable());
   const daPagina = paginarLinhas(leadsPaginacao, items, JSON.stringify(leadsTabelaEstado ? [leadsTabelaEstado.busca, leadsTabelaEstado.filtros] : []));
 
+  // Nenhum cliente ainda: só a caixa tracejada de adicionar.
+  const semClientes = !crmLeads.length;
+  const criarVazio = document.getElementById('leads-vazio-criar');
+  const cardLeads = document.getElementById('leads-table-card');
+  if (criarVazio && cardLeads) {
+    criarVazio.hidden = !semClientes;
+    cardLeads.hidden = semClientes;
+    if (semClientes && typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
+    if (!criarVazio.dataset.ligado) {
+      criarVazio.dataset.ligado = '1';
+      criarVazio.addEventListener('click', () => {
+        const alvo = typeof hubNoCelular === 'function' && hubNoCelular() ? 'lead-add-celular' : 'lead-add-btn';
+        document.getElementById(alvo)?.click();
+      });
+    }
+  }
+
   if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="7" class="tabela-vazia-cheia">Nenhum lead encontrado.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="tabela-vazia-cheia">Nenhum cliente encontrado.</td></tr>`;
     atualizarLixeiraDeLeads();
     return;
   }
 
-  tbody.innerHTML = daPagina.map(lead => `
+  let letraAnterior = '';
+  const linhaDaLetra = (nome) => {
+    const inicial = (String(nome || '').trim()[0] || '#').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+    const letra = /[A-Z]/.test(inicial) ? inicial : '#';
+    if (letra === letraAnterior) return '';
+    letraAnterior = letra;
+    return `<tr class="lista-letra"><td colspan="7">${letra}</td></tr>`;
+  };
+  tbody.innerHTML = daPagina.map(lead => `${linhaDaLetra(lead.name)}
     <tr>
       <td class="col-id">${lead.numeroExibido || ''}</td>
-      <td class="col-principal"><span class="lead-nome-cel${pedidoDoLead(lead) ? ' tem-origem' : ''}"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}"><span><button type="button" class="lead-nome-link" data-open-cliente="${lead.id}">${escapeHtml(lead.name)}</button>${pedidoDoLead(lead) ? '<span class="lead-origem-tag">Pedido pelo chat</span>' : ''}</span></span></td>
+      <td class="col-principal"><span class="lead-nome-cel${pedidoDoLead(lead) ? ' tem-origem' : ''}"><input type="checkbox" class="gifts-select-all-check" data-lead-check="${lead.id}"${leadsSelecionados.has(lead.id) ? ' checked' : ''} aria-label="Selecionar ${escapeHtml(lead.name)}"><span class="lista-av" aria-hidden="true">${escapeHtml(iniciaisDoNome(lead.name))}</span><span><button type="button" class="lead-nome-link" data-open-cliente="${lead.id}">${nomeEmPartesDoLead(lead.name)}</button>${pedidoDoLead(lead) ? '<span class="lead-origem-tag">Pedido pelo chat</span>' : ''}</span></span></td>
       <td>${escapeHtml(lead.tipo_evento || '—')}</td>
       <td>${escapeHtml(lead.event_name || '')}</td>
       <td>${escapeHtml(lead.event_date || '')}</td>
@@ -927,4 +953,10 @@ function leadsPosicionarFiltro() {
   const celular = window.matchMedia?.(MQ_CELULAR_HUB).matches;
   if (celular) card.querySelector(':scope > .tabela-barra .tabela-barra-acoes')?.prepend(filtro);
   else topo.append(filtro);
+}
+
+/* Nome como em Meus convidados: o primeiro nome leve e o resto em negrito. */
+function nomeEmPartesDoLead(nome) {
+  const partes = String(nome || '').trim().split(/\s+/).filter(Boolean);
+  return `<span class="lista-nome-primeiro">${escapeHtml(partes[0] || '')}</span>${partes.length > 1 ? ` <span class="lista-nome-resto">${escapeHtml(partes.slice(1).join(' '))}</span>` : ''}`;
 }

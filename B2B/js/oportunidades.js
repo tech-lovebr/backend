@@ -85,6 +85,7 @@ const opMilhar = n => Number(n).toLocaleString('pt-BR', { maximumFractionDigits:
 let opNomesClientes = {};
 let opFotosClientes = {};
 const opNomeAnfitriao = p => opNomesClientes[p.cliente_id] || 'Anfitrião(ã)';
+const opIniciaisAnfitriao = p => (opNomesClientes[p.cliente_id] ? iniciaisDoNome(opNomesClientes[p.cliente_id]) : 'A');
 const opDataCurta = p => (p.data_flexivel || !p.data_evento) ? 'Data flexível'
   : new Date(p.data_evento + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 const opDataLonga = p => (p.data_flexivel || !p.data_evento) ? 'Data flexível'
@@ -242,12 +243,16 @@ function opCardHtml(p) {
   return `
     <div class="op-post" data-op-pedido="${escapeHtml(p.id)}" tabindex="0">
       <div class="op-post-info">
+        <span class="lista-av" aria-hidden="true">${escapeHtml(opIniciaisAnfitriao(p))}</span>
         <button type="button" class="op-post-titulo">${escapeHtml(opTitulo(p))}</button>
+        ${selos ? `<span class="op-post-selos op-post-selos-linha">${selos}</span>` : ''}
         <p class="op-post-criado">Publicada ${escapeHtml(opHaQuanto(p.created_at))} por ${escapeHtml(opNomeAnfitriao(p))}</p>
         <p class="op-post-situacao"><b>${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</b>${local ? ` · ${escapeHtml(local)}` : ''}${OP_CONVIDADOS_NOME[p.convidados] ? ` · ${escapeHtml(OP_CONVIDADOS_NOME[p.convidados])} convidados` : ''}${selos ? ` <span class="op-post-selos">${selos}</span>` : ''}</p>
       </div>
-      <div class="op-post-num"><b>${escapeHtml(opDataCurta(p))}</b><span>Data do evento</span></div>
-      <div class="op-post-num"><b>${escapeHtml(orcamento)}</b><span>Orçamento</span></div>
+      <span class="op-post-col">${escapeHtml(OP_CATEGORIA_NOME[p.categoria] || opCategoria(p.categoria))}</span>
+      <span class="op-post-col">${escapeHtml(local || '—')}</span>
+      <div class="op-post-num op-post-data"><b>${escapeHtml(opDataCurta(p))}</b><span>Data do evento</span></div>
+      <div class="op-post-num op-post-orcamento"><b>${escapeHtml(orcamento)}</b><span>Orçamento</span></div>
       <button type="button" class="op-post-botao">Ver detalhes</button>
       <button type="button" class="op-post-salvar${salva ? ' is-salva' : ''}" data-op-salvar-linha="${escapeHtml(p.id)}" aria-pressed="${salva}" aria-label="${salva ? 'Remover das salvas' : 'Salvar vaga'}" data-dica="${salva ? 'Salva' : 'Salvar vaga'}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 5.5a2.5 2.5 0 0 1 2.5-2.5h6a2.5 2.5 0 0 1 2.5 2.5V21L12 16.5 6.5 21V5.5Z"/></svg>
@@ -663,6 +668,7 @@ async function opEnviarProposta(e) {
 /* -------------------- Minhas propostas -------------------- */
 
 let opPropostasPaginacao = null;
+let opPropostasEstado = null;
 let opOrcamentos = [];
 
 // Linha de um orçamento (criado pelo "+") na lista de Propostas enviadas.
@@ -673,7 +679,7 @@ function opLinhaOrcamento(o) {
   const titulo = `Orçamento${o.numero ? ' nº ' + o.numero : ''}${o.cliente_nome ? ' · ' + o.cliente_nome : ''}`;
   return `
       <tr class="op-linha-orcamento">
-        <td class="col-principal">${escapeHtml(titulo)}</td>
+        <td class="col-principal"><span class="lista-nome-cel"><span class="lista-av" aria-hidden="true">${escapeHtml(iniciaisDoNome(o.cliente_nome || 'Orçamento'))}</span><span class="lista-nome-texto">${escapeHtml(titulo)}</span></span></td>
         <td>${escapeHtml(dataEv)}</td>
         <td>${escapeHtml(o.endereco_evento || '—')}</td>
         <td class="finance-valor">${escapeHtml(opBRL(o.valor_total))}</td>
@@ -686,21 +692,35 @@ function opLinhaOrcamento(o) {
 function opRenderPropostas() {
   const body = document.getElementById('op-propostas-body');
   if (!body) return;
+  // Busca colada no topo da caixa e lista de uma linha por orçamento (como Meus convidados).
+  if (!opPropostasEstado) {
+    opPropostasEstado = montarBarraTabela(document.getElementById('op-propostas-card'), {
+      placeholder: 'Pesquisar',
+      celular: { nome: 1, info: 5, semIniciais: true, singular: 'orçamento', plural: 'orçamentos' },
+      aoMudar: () => opRenderPropostas()
+    });
+  }
   if (!opPropostasPaginacao) opPropostasPaginacao = montarPaginacaoTabela(document.getElementById('op-propostas-card'), () => opRenderPropostas());
   // Propostas das Oportunidades e orçamentos do "+", do mais novo ao mais antigo.
-  const todas = [...opPropostas, ...opOrcamentos.map(o => ({ ...o, _orcamento: true }))]
+  const existentes = [...opPropostas, ...opOrcamentos.map(o => ({ ...o, _orcamento: true }))]
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-  const daPagina = paginarLinhas(opPropostasPaginacao, todas);
+  const todas = existentes.filter(x => tabelaBateBusca(opPropostasEstado, x._orcamento
+    ? [x.numero, x.cliente_nome, x.endereco_evento]
+    : [opTitulo(x.pedido || {}), opLocal(x.pedido || {})]));
+  const daPagina = paginarLinhas(opPropostasPaginacao, todas, opPropostasEstado ? opPropostasEstado.busca : '');
   // Sem produto e sem propostas: o aviso para cadastrar um produto no lugar da tabela.
-  const semProduto = opSemProdutos && !todas.length;
+  const semProduto = opSemProdutos && !existentes.length;
   const avisoSemProduto = document.getElementById('op-propostas-sem-produtos');
   if (avisoSemProduto) {
     avisoSemProduto.hidden = !semProduto;
-    document.getElementById('op-propostas-card').hidden = semProduto;
     if (semProduto && typeof carregarPlayerLottieHub === 'function') carregarPlayerLottieHub();
   }
+  // Nenhum orçamento ainda: só a caixa tracejada de criar (sem produto, a de cadastrar produto).
+  document.getElementById('op-propostas-card').hidden = !existentes.length;
+  const criarOrcamento = document.getElementById('op-propostas-vazio');
+  if (criarOrcamento) criarOrcamento.hidden = semProduto || existentes.length > 0;
   if (!todas.length) {
-    body.innerHTML = '<tr><td colspan="7" class="tabela-vazia-cheia">Você ainda não enviou propostas.</td></tr>';
+    body.innerHTML = '<tr><td colspan="7" class="tabela-vazia-cheia">Nenhum orçamento encontrado.</td></tr>';
     return;
   }
   body.innerHTML = daPagina.map(pr => {
@@ -712,7 +732,7 @@ function opRenderPropostas() {
     const orcamento = `vendas?criar=orcamento&cliente=${encodeURIComponent(p.cliente_id || '')}&servico=${encodeURIComponent(opCategoria(p.categoria))}&data=${encodeURIComponent(p.data_evento || '')}&local=${encodeURIComponent(opLocal(p))}`;
     return `
       <tr class="${aceita ? 'op-linha-aceita' : ''}">
-        <td class="col-principal">${escapeHtml(opTitulo(p))}${aceita ? `<a class="op-proximo-passo" href="${orcamento}">Gerar orçamento / contrato</a>` : ''}</td>
+        <td class="col-principal"><span class="lista-nome-cel"><span class="lista-av" aria-hidden="true">${escapeHtml(opIniciaisAnfitriao(p))}</span><span class="lista-nome-texto">${escapeHtml(opTitulo(p))}</span></span>${aceita ? `<a class="op-proximo-passo" href="${orcamento}">Gerar orçamento / contrato</a>` : ''}</td>
         <td>${escapeHtml(p.data_evento || p.data_flexivel ? opData(p) : '—')}</td>
         <td>${escapeHtml(opLocal(p) || '—')}</td>
         <td class="finance-valor">${escapeHtml(opBRL(pr.valor))}</td>
@@ -722,6 +742,7 @@ function opRenderPropostas() {
           <div class="op-menu-wrap">
             <button type="button" class="tabela-ver-mais" data-op-menu="${escapeHtml(pr.id)}" title="Mais opções" aria-label="Mais opções">${typeof TABELA_ICONE_VER_MAIS !== 'undefined' ? TABELA_ICONE_VER_MAIS : '⋯'}</button>
             <div class="op-menu" data-op-menu-lista="${escapeHtml(pr.id)}" hidden>
+              ${aceita ? `<a class="so-no-celular-menu" href="${orcamento}">Gerar orçamento</a>` : ''}
               ${pr.conversation_id ? `<a href="chat?conversa=${encodeURIComponent(pr.conversation_id)}">Abrir conversa</a>` : ''}
               ${podeRetirar ? `<button type="button" data-op-retirar="${escapeHtml(pr.id)}">Retirar proposta</button>` : ''}
             </div>
@@ -881,7 +902,7 @@ function opLigarEventos() {
   });
   opLigarFiltrarPor();
   document.querySelector('[data-op-salvas]').addEventListener('click', () => { opSoSalvas = !opSoSalvas; opRenderPedidos(); });
-  document.querySelector('[data-op-nao-respondidas]').addEventListener('click', () => { opSoNaoRespondidas = !opSoNaoRespondidas; opRenderPedidos(); });
+  document.querySelector('[data-op-nao-respondidas]')?.addEventListener('click', () => { opSoNaoRespondidas = !opSoNaoRespondidas; opRenderPedidos(); });
 
   document.getElementById('op-busca')?.addEventListener('input', opRenderPedidos);
   const grade = document.getElementById('op-grade');

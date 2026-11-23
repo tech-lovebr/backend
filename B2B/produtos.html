@@ -10,6 +10,10 @@
     gtag('config', 'G-GTSEBKVH96');
   </script>
 
+  <script>
+    // Abrindo direto em adicionar/editar: a lista e a busca nem aparecem.
+    try { if (/[?&](add=1|editar=)/.test(location.search)) document.documentElement.classList.add('produto-abrindo'); } catch (e) {}
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Serviços — Portal do Fornecedor Love</title>
@@ -29,7 +33,7 @@
     }
   </script>
 
-  <link rel="stylesheet" href="css/styles.css?v=972"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
+  <link rel="stylesheet" href="css/styles.css?v=973"><script>try{if(localStorage.getItem("b2b-visual")!=="escuro")document.documentElement.classList.add("hub-claro")}catch(e){document.documentElement.classList.add("hub-claro")}</script>
 </head>
 <body class="font-sans" data-page="produtos">
 
@@ -639,6 +643,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="js/supabase-init.js?v=6"></script>
   <script src="js/shell.js?v=101"></script>
-  <script src="js/produtos.js?v=87"></script>
+  <script src="js/produtos.js?v=88"></script>
 </body>
 </html>

@@ -2267,6 +2267,8 @@ function openProductDrawer(id) {
     if (jaIniciou && location.search !== endereco) history.replaceState(null, '', location.pathname + endereco);
     document.body.classList.toggle('produto-modo-editar', aberto && editando);
     document.body.classList.toggle('produto-modo-criar', aberto && !editando);
+    // Finalizar rascunho: as etapas ficam em cima da caixa, sem o menu lateral.
+    document.body.classList.toggle('produto-modo-rascunho', aberto && editando && abrindoRascunho());
     if (aberto && editando) {
       const main = document.querySelector('.b2b-main');
       const cab = document.querySelector('.b2b-header-bar');

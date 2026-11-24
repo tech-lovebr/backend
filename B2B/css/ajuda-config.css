@@ -169,3 +169,7 @@ html:not(.hub-claro) body[data-page="faq"] .ajuda-busca input:not(#aj-0):not(#aj
   html:not(.hub-claro) body[data-page="faq"] #shell-topbar .b2b-topbar:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { background: #0C1824 !important; box-shadow: 0 1px 0 rgba(255, 255, 255, .08) !important; }
   html:not(.hub-claro) body[data-page="faq"] #shell-topbar .b2b-topbar > .logo-celular > .logo-celular-tinta:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11) { filter: brightness(0) invert(1); }
 }
+
+/* Escuro: a varredura de vidro (shell.js) clareia ícones sobre fundo escuro; a lupa da busca branca fica na cor do Pesquisar. */
+html:not(.hub-claro) body[data-page="faq"] .ajuda-capa .ajuda-busca :is(svg, svg *):not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11):not(#aj-12):not(#aj-13):not(#aj-14):not(#aj-15) { color: #71717A !important; stroke: #71717A !important; opacity: 1 !important; }
+html:not(.hub-claro) body[data-page="faq"] .ajuda-capa .ajuda-busca:not(#aj-0):not(#aj-1):not(#aj-2):not(#aj-3):not(#aj-4):not(#aj-5):not(#aj-6):not(#aj-7):not(#aj-8):not(#aj-9):not(#aj-10):not(#aj-11):not(#aj-12):not(#aj-13):not(#aj-14):not(#aj-15) { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }

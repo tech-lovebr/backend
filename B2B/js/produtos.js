@@ -399,7 +399,7 @@ function renderProducts() {
         ${p.suspenso ? `<p class="produto-suspenso-aviso"><strong>Suspenso pela Love</strong>${p.suspensoMotivo ? ' — ' + escapeHtml(p.suspensoMotivo) : ''}</p>` : ''}
         <p class="text-base font-bold text-zinc-900 mt-auto">${productPriceLabel(p)}</p>
         <div class="flex items-center gap-2 mt-1">
-          <button class="btn-secondary flex-1 justify-center text-xs py-2" data-edit-product="${p.id}">${p.rascunho && !p.active ? 'Finalizar rascunho' : 'Editar'}</button>
+          <button class="btn-secondary flex-1 justify-center text-xs py-2" data-edit-product="${p.id}">${p.rascunho && !p.active ? 'Continuar editando' : 'Editar'}</button>
           <button type="button" class="btn-secondary product-duplicar-btn" data-duplicate-product="${p.id}" title="Duplicar anúncio" aria-label="Duplicar anúncio"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button>
         </div>
       </div>
@@ -1461,7 +1461,7 @@ function renderScopeList(kind) {
 
 /* -------------------- Navegação do wizard -------------------- */
 
-// Editor aberto num rascunho (Finalizar rascunho no card).
+// Editor aberto num rascunho (Continuar editando no card).
 function abrindoRascunho() {
   try {
     const id = document.getElementById('product-form')?.dataset.editId;
@@ -1723,7 +1723,7 @@ function montarLinhaDoProduto() {
 /* -------------------- Rascunho --------------------
    Começou a criar e saiu: o produto fica em Meus produtos como Rascunho
    (fora do Explorar). Grava sozinho enquanto a pessoa preenche e ao fechar;
-   "Finalizar rascunho" no card reabre, e Salvar publica. */
+   "Continuar editando" no card reabre, e Salvar publica. */
 
 let rascunhoAtual = null; // { id } do rascunho aberto no editor (null = não é rascunho)
 let rascunhoFila = Promise.resolve();
@@ -1756,7 +1756,7 @@ function salvarRascunho({ recarregar = false } = {}) {
       await loadProducts();
       renderCategoryTabs();
       renderProducts();
-      showToast('Salvo como rascunho. Para publicar, clique em Finalizar rascunho.');
+      showToast('Salvo como rascunho. Para publicar, clique em Continuar editando.');
     }
   }).catch(e => console.warn('Rascunho não salvo.', e));
   return rascunhoFila;
@@ -2267,7 +2267,7 @@ function openProductDrawer(id) {
     if (jaIniciou && location.search !== endereco) history.replaceState(null, '', location.pathname + endereco);
     document.body.classList.toggle('produto-modo-editar', aberto && editando);
     document.body.classList.toggle('produto-modo-criar', aberto && !editando);
-    // Finalizar rascunho: as etapas ficam em cima da caixa, sem o menu lateral.
+    // Editando rascunho: as etapas ficam em cima da caixa, sem o menu lateral.
     document.body.classList.toggle('produto-modo-rascunho', aberto && editando && abrindoRascunho());
     if (aberto && editando) {
       const main = document.querySelector('.b2b-main');

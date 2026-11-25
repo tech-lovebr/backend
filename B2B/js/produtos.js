@@ -2128,7 +2128,14 @@ function openProductDrawer(id) {
   }
   document.getElementById('product-name').value = p.name;
   currentProductTags = (p.tags || []).slice();
-  document.getElementById('product-category').value = p.category;
+  const selectCategoria = /** @type {HTMLSelectElement} */ (document.getElementById('product-category'));
+  selectCategoria.value = p.category || '';
+  // Categoria salva que não está entre as opções da lista (ex.: rascunho com
+  // subcategoria): entra como opção para o campo mostrar o nome dela.
+  if (p.category && selectCategoria.value !== p.category) {
+    selectCategoria.add(new Option(p.category, p.category));
+    selectCategoria.value = p.category;
+  }
   document.getElementById('product-description').value = p.description || '';
 
   currentCoverImage = p.coverImage || null;

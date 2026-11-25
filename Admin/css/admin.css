@@ -4875,3 +4875,8 @@ body[data-theme="dark"] .rede-icone { background: transparent; border-color: rgb
 .campo-termos-dica { margin: .375rem 0 0; font-size: .75rem; line-height: 1.6; color: var(--text-muted); }
 .faq-termos { display: block; margin-top: .25rem; font-size: .6875rem; font-weight: 500; color: #A1A1AA; }
 .faq-termos.is-vazio { color: #B45309; }
+
+/* Operacional › Gateways: blocos empilhados com 24px entre eles. */
+.gateways-corpo { display: grid; gap: 24px; }
+.gateways-bloco .table-wrap + .table-wrap { border-top: 1px solid var(--divisor-suave, #F4F4F5); }
+.gateways-nota { margin: 0; padding: .875rem 1.25rem; font-size: .8125rem; line-height: 1.6; color: var(--text-muted); }

@@ -70,4 +70,9 @@ async function enviarParaGateways(db, titularId, { so } = {}) {
   return { situacao: primeiro ? primeiro.situacao : "sem_gateway", gateways };
 }
 
-module.exports = { enviarParaGateways, gatewaysAtivos };
+/** Todos os gateways que têm adaptador (ligados ou não). */
+function gatewaysDisponiveis() {
+  return Object.keys(ADAPTADORES);
+}
+
+module.exports = { enviarParaGateways, gatewaysAtivos, gatewaysDisponiveis };

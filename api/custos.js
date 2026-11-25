@@ -9,6 +9,8 @@
 //     valor fixo em SUPABASE_CUSTO_MENSAL_USD, quando informado);
 //   - Amazon AWS (e-mail): AWS Cost Explorer, fatura da conta inteira por
 //     serviço (SES, SNS, impostos). O usuário IAM precisa de ce:GetCostAndUsage.
+//   - Asaas (pagamentos): taxas lançadas no extrato da conta principal
+//     (api/_asaas-taxas.js). No sandbox as taxas são de teste e não somam.
 // E a cotação do dia (USD e EUR em reais) para converter tudo.
 //
 // Variáveis de ambiente:
@@ -19,6 +21,7 @@
 
 const crypto = require("crypto");
 const { supabaseAdmin } = require("./_ses");
+const { taxasAsaas, ambienteAsaas } = require("./_asaas-taxas");
 
 const ORIGENS_PERMITIDAS = ["https://admin.love.com.br", "http://localhost:8090", "http://127.0.0.1:8090"];
 const MESES = 12;
@@ -436,6 +439,23 @@ async function custoAws(meses) {
   }
 }
 
+/* -------------------------------------------------------------- Asaas */
+
+async function custoAsaas(meses) {
+  const base = { fonte: "asaas", nome: "Asaas", categoria: "Pagamentos", tipo: "recorrente", moeda: "BRL" };
+  if (!process.env.ASAAS_API_KEY) return { ...base, status: "nao_conectado", meses: mesesZerados(meses) };
+  if (ambienteAsaas() === "sandbox") {
+    return { ...base, status: "ativo", detalhe: "Sandbox: taxas de teste não entram na soma", meses: mesesZerados(meses) };
+  }
+  try {
+    const t = await taxasAsaas(meses);
+    const total = t.meses[meses[meses.length - 1]] || 0;
+    return { ...base, status: "ativo", detalhe: total ? `Taxas do mês R$ ${total.toFixed(2).replace(".", ",")}` : "Sem taxas no mês", meses: t.meses };
+  } catch (e) {
+    return { ...base, status: "erro", erro: String(e.message || e), meses: mesesZerados(meses) };
+  }
+}
+
 /* ------------------------------------------------------------ Handler */
 
 module.exports = async (req, res) => {
@@ -466,11 +486,11 @@ async function responder(req, res, token) {
   if (!forcar && CACHE && Date.now() - CACHE.em < VALIDADE_CACHE) return res.status(200).json(CACHE.dados);
 
   const meses = ultimosMeses();
-  const [taxas, vercel, supa, aws] = await Promise.all([
-    cotacoes(), custoVercel(meses), custoSupabase(meses), custoAws(meses)
+  const [taxas, vercel, supa, aws, pagamentos] = await Promise.all([
+    cotacoes(), custoVercel(meses), custoSupabase(meses), custoAws(meses), custoAsaas(meses)
   ]);
 
-  const dados = { meses, cotacoes: taxas, itens: [vercel, supa, aws], atualizado_em: new Date().toISOString() };
+  const dados = { meses, cotacoes: taxas, itens: [vercel, supa, aws, pagamentos], atualizado_em: new Date().toISOString() };
   // Com alguma integração em erro, não guarda: a próxima consulta tenta de novo.
   if (!dados.itens.some(i => i.status === "erro")) CACHE = { em: Date.now(), dados };
   return res.status(200).json(dados);

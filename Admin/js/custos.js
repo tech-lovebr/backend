@@ -203,8 +203,8 @@ function valorManualNoMes(c, mes) {
    vier vazio a linha fica muda na tabela ("Custo sem nome", pastilha de tipo
    em branco). Como a fonte já identifica o serviço, dá para preencher aqui
    em vez de mostrar um custo anônimo. */
-const NOME_DA_FONTE = { vercel: 'Vercel', supabase: 'Supabase', aws: 'Amazon' };
-const CATEGORIA_DA_FONTE = { vercel: 'Servidor', supabase: 'Banco de dados', aws: 'E-mail' };
+const NOME_DA_FONTE = { vercel: 'Vercel', supabase: 'Supabase', aws: 'Amazon', asaas: 'Asaas' };
+const CATEGORIA_DA_FONTE = { vercel: 'Servidor', supabase: 'Banco de dados', aws: 'E-mail', asaas: 'Pagamentos' };
 
 /* Fonte mesmo quando a API não manda: cada integração tem campos que só ela
    usa (Vercel: ciclo e serviços por dia; Supabase: plano; AWS: lista de

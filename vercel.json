@@ -42,5 +42,29 @@
     { "source": "/blog", "destination": "https://love-blog.vercel.app/blog" },
     { "source": "/blog/:path*", "destination": "https://love-blog.vercel.app/blog/:path*" },
     { "source": "/:slug([a-z0-9-]+)", "destination": "/convite-preview.html" }
+  ],
+  "headers": [
+    { "source": "/login", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/novo-evento", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/personalizar", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/presentes", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/convidados", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/carteira", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/fornecedores", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/notificacoes", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/central-de-ajuda", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/configuracoes", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/resetar-senha", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/resetar-senha.html", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/convite-preview", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/convite-preview.html", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/organizador", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/organizador.html", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/personalizar/:path*", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/presentes/:path*", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/convidados/:path*", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/carteira/:path*", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/fornecedores/:path*", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] },
+    { "source": "/:path*", "has": [{"type": "host", "value": "(?<sub>.*)\\.vercel\\.app"}], "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}] }
   ]
 }

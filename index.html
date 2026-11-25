@@ -72,6 +72,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Love: Crie seu Site Grátis, Lista de Convidados & Presentes</title>
   <meta name="description" content="Sistema Operacional completo para seus eventos pessoais e de casamento. Crie seu site, gerencie confirmações RSVP, receba presentes em dinheiro via PIX e contrate assessoria certificada.">
+  <link rel="canonical" href="https://love.com.br/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Love">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Love: Crie seu Site Grátis, Lista de Convidados &amp; Presentes">
+  <meta property="og:description" content="Sistema Operacional completo para seus eventos pessoais e de casamento. Crie seu site, gerencie confirmações RSVP, receba presentes em dinheiro via PIX e contrate assessoria certificada.">
+  <meta property="og:url" content="https://love.com.br/">
+  <meta property="og:image" content="https://love.com.br/assets/login-banner.jpg">
+  <meta property="og:image:width" content="2400">
+  <meta property="og:image:height" content="1600">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="alternate" hreflang="pt-BR" href="https://love.com.br/">
+  <link rel="alternate" hreflang="en" href="https://planwithlove.com/">
+  <link rel="alternate" hreflang="x-default" href="https://love.com.br/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://love.com.br/#organization","name":"Love","url":"https://love.com.br/","logo":{"@type":"ImageObject","url":"https://love.com.br/assets/love-logo-google-120.png","width":120,"height":120},"sameAs":["https://planwithlove.com/"]},{"@type":"WebSite","@id":"https://love.com.br/#website","name":"Love","url":"https://love.com.br/","inLanguage":"pt-BR","publisher":{"@id":"https://love.com.br/#organization"}}]}</script>
   <script>
     // planwithlove.com: título e descrição em inglês (ver love-en-domain acima).
     try {
@@ -79,6 +94,14 @@
         document.title = 'Love: Free Wedding & Event Websites, Registry & Planning';
         var loveMetaDesc = document.querySelector('meta[name="description"]');
         if (loveMetaDesc) loveMetaDesc.setAttribute('content', 'The complete Event OS for your personal and wedding celebrations. Build your site, manage RSVPs, receive cash gifts via Pix, and hire certified planners.');
+        var loveEnDesc = loveMetaDesc ? loveMetaDesc.getAttribute('content') : '';
+        var loveSet = function (sel, attr, val) { var el = document.querySelector(sel); if (el) el.setAttribute(attr, val); };
+        loveSet('link[rel="canonical"]', 'href', 'https://planwithlove.com' + location.pathname);
+        loveSet('meta[property="og:url"]', 'content', 'https://planwithlove.com' + location.pathname);
+        loveSet('meta[property="og:locale"]', 'content', 'en_US');
+        loveSet('meta[property="og:title"]', 'content', document.title);
+        loveSet('meta[property="og:description"]', 'content', loveEnDesc);
+        loveSet('meta[property="og:image"]', 'content', 'https://planwithlove.com/assets/login-banner.jpg');
       }
     } catch (e) {}
   </script>

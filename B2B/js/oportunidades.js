@@ -1006,6 +1006,10 @@ async function initOportunidades() {
   if (!session) return;
   opEmpresaId = empresaId(session);
   document.querySelectorAll('[data-leads-aba]').forEach(b => b.addEventListener('click', () => leadsMostrarAba(b.dataset.leadsAba)));
+  try {
+    const aviso = sessionStorage.getItem('b2b-aviso-pendente');
+    if (aviso) { sessionStorage.removeItem('b2b-aviso-pendente'); showToast(aviso); }
+  } catch (e) { /* sem armazenamento */ }
   const abaPedida = new URLSearchParams(location.search).get('aba');
   if (abaPedida === 'eventos' || abaPedida === 'propostas' || abaPedida === 'leads') {
     leadsMostrarAba(abaPedida);

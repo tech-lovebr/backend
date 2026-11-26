@@ -3,6 +3,21 @@
    ========================================================================== */
 
 let activeCategory = 'Todos';
+// Onboarding de quem veio de uma landing de cadastro (/lp1): "Cadastre seu
+// primeiro produto e encontre clientes para contratá-lo". Ligado por
+// signup.html (b2b-primeiro-produto) e desligado ao salvar o produto.
+let primeiroProdutoOnboarding = false;
+try { primeiroProdutoOnboarding = localStorage.getItem('b2b-primeiro-produto') === '1'; } catch (e) { /* sem armazenamento */ }
+function concluirPrimeiroProduto() {
+  if (!primeiroProdutoOnboarding) return false;
+  primeiroProdutoOnboarding = false;
+  try {
+    localStorage.removeItem('b2b-primeiro-produto');
+    sessionStorage.setItem('b2b-aviso-pendente', 'Produto publicado na vitrine. Agora encontre clientes para contratá-lo.');
+  } catch (e) { /* sem armazenamento */ }
+  location.href = 'crm?aba=eventos';
+  return true;
+}
 let produtosBusca = '';
 
 // SKU: letras, números, hífen e sublinhado (o resto sai ao digitar).
@@ -1507,7 +1522,7 @@ function goToStep(n) {
   const tituloEtapa = document.getElementById('produto-etapa-titulo');
   const subEtapa = document.getElementById('produto-etapa-sub');
   if (subEtapa) subEtapa.textContent = ({
-    1: 'Crie anúncios atrativos para seus produtos e serviços na vitrine da Love e seja descoberto por quem está organizando eventos agora.',
+    1: primeiroProdutoOnboarding && criando ? 'Cadastre seu primeiro produto e encontre clientes para contratá-lo. Ele aparece na vitrine da Love para quem está organizando um evento.' : 'Crie anúncios atrativos para seus produtos e serviços na vitrine da Love e seja descoberto por quem está organizando eventos agora.',
     2: 'Conte o que está incluso, os pacotes e os valores para o cliente entender a sua proposta.',
     3: 'Fotos e vídeos bem escolhidos fazem o seu anúncio se destacar na vitrine.'
   })[n] || '';
@@ -1882,7 +1897,9 @@ function initProductDrawer() {
   };
 
   if (addBtn) addBtn.addEventListener('click', () => {
-    if (!isProfileComplete()) {
+    // No onboarding da landing (/lp1) o primeiro produto sai sem travar no
+    // perfil completo; os dados de Configurações são pedidos depois.
+    if (!isProfileComplete() && !primeiroProdutoOnboarding) {
       openCompleteProfileModal();
       return;
     }
@@ -2095,6 +2112,7 @@ function initProductDrawer() {
           if (error) { showToast('Não foi possível adicionar o produto.', true); return; }
           avisarAdicionado(name, 'Produto adicionado à vitrine.');
         }
+        if (!form.dataset.editId && concluirPrimeiroProduto()) return;
         await loadProducts();
         renderCategoryTabs();
         renderProducts();
@@ -2265,7 +2283,7 @@ function openProductDrawer(id) {
     const editando = !!(document.getElementById('product-form') || {}).dataset?.editId;
     // Editando: 'Editar: Bar completo' (o nome do produto ao lado).
     const nomeProduto = ((document.getElementById('product-name') || {}).value || '').trim();
-    titulo.textContent = aberto ? (editando ? (abrindoRascunho() ? 'Editando rascunho' : (nomeProduto ? `Editar: ${nomeProduto}` : 'Editar produto')) : 'Adicionar novo produto') : 'Meus produtos';
+    titulo.textContent = aberto ? (editando ? (abrindoRascunho() ? 'Editando rascunho' : (nomeProduto ? `Editar: ${nomeProduto}` : 'Editar produto')) : (primeiroProdutoOnboarding ? 'Cadastre seu primeiro produto' : 'Adicionar novo produto')) : 'Meus produtos';
     // O endereço acompanha o que está aberto, para o F5 voltar ao mesmo lugar.
     const idEditando = (document.getElementById('product-form') || {}).dataset?.editId;
     const endereco = aberto ? (editando ? `?editar=${encodeURIComponent(idEditando)}` : '?add=1') : '';

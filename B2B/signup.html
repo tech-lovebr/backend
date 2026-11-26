@@ -870,9 +870,11 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
        conta; no Google, sai do que a landing guardou neste navegador, só para
        conta criada nas últimas 24h. A coluna fornecedores.origem_cadastro é
        opcional: sem ela, a origem continua guardada nos dados da conta. */
+    let origemDoCadastro = '';
     async function gravarOrigemDoCadastro(session) {
       const meta = session.user.user_metadata || {};
       let origem = meta.origem_cadastro || '';
+      origemDoCadastro = origem;
       if (!origem) {
         let guardada = null;
         try { guardada = JSON.parse(localStorage.getItem('b2b-origem-cadastro') || 'null'); } catch (e) { /* sem armazenamento */ }
@@ -880,6 +882,7 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
         const contaNova = Date.now() - new Date(session.user.created_at).getTime() < 864e5;
         if (!landingRecente || !contaNova || !/^[a-z0-9-]{1,40}$/.test(guardada.origem || '')) return;
         origem = guardada.origem;
+        origemDoCadastro = origem;
         await supabaseClient.auth.updateUser({ data: { origem_cadastro: origem } });
       }
       await supabaseClient.from('fornecedores').update({ origem_cadastro: origem }).eq('id', session.user.id).is('origem_cadastro', null);
@@ -1008,11 +1011,15 @@ body.auth-completar #view-login#view-login #signup-titulo { white-space: nowrap;
         errorEl.classList.remove('hidden');
         return;
       }
+      // Veio de uma landing de cadastro (/lp1...): o onboarding é "cadastre seu
+      // primeiro produto e encontre clientes para contratá-lo".
+      const veioDeLanding = /^lp/.test(origemDoCadastro || ((session && session.user.user_metadata) || {}).origem_cadastro || '');
       try {
         localStorage.removeItem('b2b-onboarding-empresa');
-        localStorage.setItem('b2b-onboarding-pending', '1');
+        if (veioDeLanding) localStorage.setItem('b2b-primeiro-produto', '1');
+        else localStorage.setItem('b2b-onboarding-pending', '1');
       } catch (e) { /* sem armazenamento */ }
-      window.location.replace('dashboard');
+      window.location.replace(veioDeLanding ? 'produtos?add=1' : 'dashboard');
     }
 
     document.getElementById('signup-email-form').addEventListener('submit', async (e) => {

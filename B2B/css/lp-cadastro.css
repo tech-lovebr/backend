@@ -102,3 +102,12 @@ body.lp-cadastro { display: block; }
   .lp-stage .lp-slide { animation: none; }
   .lp-stage .lp-slide:first-child { opacity: 1; }
 }
+/* CRM: lista de clientes, tarefas, eventos e entregas. */
+.lp-crm { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.lp-crm li { display: grid; gap: 10px; align-content: start; padding: 28px; border-radius: 10px; background: rgba(255, 255, 255, .05); }
+.lp-crm-ic { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; background: rgba(156, 195, 228, .14); color: #9CC3E4; }
+.lp-crm-ic svg { width: 20px; height: 20px; }
+.lp-crm b { font-size: 18px; font-weight: 500; line-height: 1.3; }
+.lp-crm p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--mute); }
+@media (max-width: 1000px) { .lp-crm { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 768px) { .lp-crm { grid-template-columns: minmax(0, 1fr); gap: 10px; } .lp-crm li { padding: 20px; } }

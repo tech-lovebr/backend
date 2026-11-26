@@ -87,3 +87,18 @@ body.lp-cadastro { display: block; }
 .lp-oferta b { font-weight: 500; color: #9CC3E4; }
 .lp-oferta b:first-child { color: #EAF1F8; }
 @media (max-width: 768px) { .lp-oferta { font-size: 14px; } }
+/* Topo: o destaque do título em branco e a foto vira carrossel de empresas
+   trabalhando (fotos do Hub), uma por vez, com fade. */
+.lp-hero .dis .it { color: #FFFFFF; }
+.lp-stage .lp-slide { opacity: 0; animation: lp-slide 30s infinite; }
+.lp-stage .lp-slide:nth-child(1) { animation-delay: 0s; }
+.lp-stage .lp-slide:nth-child(2) { animation-delay: 5s; }
+.lp-stage .lp-slide:nth-child(3) { animation-delay: 10s; }
+.lp-stage .lp-slide:nth-child(4) { animation-delay: 15s; }
+.lp-stage .lp-slide:nth-child(5) { animation-delay: 20s; }
+.lp-stage .lp-slide:nth-child(6) { animation-delay: 25s; }
+@keyframes lp-slide { 0% { opacity: 0; } 3% { opacity: 1; } 17% { opacity: 1; } 20% { opacity: 0; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .lp-stage .lp-slide { animation: none; }
+  .lp-stage .lp-slide:first-child { opacity: 1; }
+}

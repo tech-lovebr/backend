@@ -44,7 +44,8 @@
 
     // Brilho que segue o cursor.
     var hero = $('#lv-hero'), brilho = $('#lv-glow');
-    if (!reduce && hero && brilho) hero.addEventListener('mousemove', function (e) {
+    // No celular o toque também dispara mousemove e o brilho pulava para o dedo.
+    if (!reduce && hero && brilho && window.matchMedia('(hover: hover) and (pointer: fine)').matches) hero.addEventListener('mousemove', function (e) {
       var r = hero.getBoundingClientRect();
       brilho.style.left = ((e.clientX - r.left) / r.width * 100) + '%';
       brilho.style.top = ((e.clientY - r.top) / r.height * 100) + '%';

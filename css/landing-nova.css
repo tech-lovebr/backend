@@ -629,3 +629,20 @@
   #view-public-site#view-public-site .lv-dis .lv-quebra-cel { display: inline; }
   #view-public-site#view-public-site .lv-hero .lv-dis { font-size: min(44px, calc((100vw - 58px) / 8.6)) !important; }
 }
+
+/* Celular: o degradê da abertura fica concentrado em volta do título, com o
+   mesmo desenho e as mesmas cores, medido em pixels (não em % da caixa, que no
+   celular é bem mais alta que larga e esticava as manchas). Sem o movimento
+   e sem o brilho seguir o toque, fica igual em qualquer iPhone. */
+@media (max-width: 768px) {
+  #view-public-site#view-public-site .lv-hero.lv-sky {
+    animation: none !important;
+    background:
+      radial-gradient(240px 260px at 12% 90px, #FFFFFF 0%, transparent 70%),
+      radial-gradient(260px 280px at 90% 60px, #F5E6DE 0%, transparent 72%),
+      radial-gradient(340px 380px at 78% 520px, #B9D1EE 0%, transparent 72%),
+      radial-gradient(300px 340px at 18% 420px, #DCE9F8 0%, transparent 72%),
+      #E9F1FB !important;
+  }
+  #view-public-site#view-public-site .lv-hero .lv-glow { width: 380px; height: 380px !important; left: 50% !important; top: 210px !important; transition: none; }
+}

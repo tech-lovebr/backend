@@ -300,5 +300,4 @@ html body .cd-fundo, html body .cd-janela { display: none !important; }
 html body .cd-cabecalho { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html body .cd-pagina { align-items: center !important; justify-content: center !important; }
 html body .cd-cartao { display: flex !important; justify-content: center !important; width: 100% !important; max-width: 480px !important; margin: 0 auto !important; padding: 0 !important; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
-html body .cd-lado { flex: 1 1 auto !important; width: 100% !important; padding-left: 16px !important; padding-right: 16px !important; background: transparent !important; }
-@media (max-width: 768px) { html body .cd-lado { padding-left: 0 !important; padding-right: 0 !important; } }
+html body .cd-lado { flex: 1 1 auto !important; width: 100% !important; background: transparent !important; }

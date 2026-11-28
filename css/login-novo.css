@@ -399,5 +399,4 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
 #view-login#view-login#view-login .lg-cabecalho, #view-login#view-login#view-login .lg-cabecalho.lg-on { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 #view-login#view-login#view-login .lg-pagina { display: flex !important; align-items: center !important; justify-content: center !important; }
 #view-login#view-login#view-login .lg-cartao { display: flex !important; justify-content: center !important; width: 100% !important; max-width: 440px !important; margin: 0 auto !important; padding: 0 !important; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
-#view-login#view-login#view-login .lg-lado { flex: 1 1 auto !important; justify-content: center !important; width: 100% !important; padding-left: 16px !important; padding-right: 16px !important; background: transparent !important; }
-@media (max-width: 768px) { #view-login#view-login#view-login .lg-lado { padding-left: 0 !important; padding-right: 0 !important; } }
+#view-login#view-login#view-login .lg-lado { flex: 1 1 auto !important; justify-content: center !important; width: 100% !important; background: transparent !important; }

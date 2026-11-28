@@ -299,5 +299,24 @@ html, html body { background: #FFFFFF !important; }
 html body .cd-fundo, html body .cd-janela { display: none !important; }
 html body .cd-cabecalho { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html body .cd-pagina { align-items: center !important; justify-content: center !important; }
-html body .cd-cartao { display: flex !important; justify-content: center !important; width: 100% !important; max-width: 480px !important; margin: 0 auto !important; padding: 0 !important; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
+html body .cd-cartao { display: flex !important; justify-content: center !important; width: 100% !important; max-width: 440px !important; margin: 0 auto !important; padding: 0 !important; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
 html body .cd-lado { flex: 1 1 auto !important; width: 100% !important; background: transparent !important; }
+
+/* Cadastro idêntico ao login (css/login-novo.css): título centralizado sem
+   frase embaixo, Continuar com o Google em bloco de 40px com cantos de 4px,
+   rótulos e campos do mesmo tamanho e o mesmo espaçamento entre eles. */
+#cd#cd#cd .onboard-step > h1 { text-align: center !important; margin-bottom: 26px !important; letter-spacing: -0.03em; }
+#cd#cd#cd .onboard-step > h1 i { font-style: normal !important; font-weight: inherit !important; color: inherit !important; }
+#cd#cd#cd .onboard-step:has(#btn-onboard-google) > h1 + p.text-zinc-500 { display: none !important; }
+#cd#cd#cd #btn-onboard-google { height: 40px !important; min-height: 40px !important; padding-top: 0 !important; padding-bottom: 0 !important; border: 1px solid transparent !important; border-radius: 4px !important; background: rgba(24, 59, 84, 0.07) !important; box-shadow: none !important; color: #3C4043 !important; font-size: 14px !important; }
+#cd#cd#cd #btn-onboard-google span { font-size: 14px !important; font-weight: 400 !important; color: #3C4043 !important; }
+#cd#cd#cd #btn-onboard-google:is(:hover, :focus-visible) { background: rgba(24, 59, 84, 0.11) !important; }
+#cd#cd#cd #form-onboard-register > * + * { margin-top: 18px !important; }
+#cd#cd#cd #form-onboard-register label { margin-bottom: 14px !important; color: #16202F !important; font-size: 14px !important; line-height: 21px !important; font-weight: 400 !important; }
+#cd#cd#cd #form-onboard-register input:not([type="checkbox"]):not([type="radio"]) { height: 48px !important; min-height: 48px !important; font-size: 16px !important; }
+#cd#cd#cd .onboard-step > h1 + p { text-align: center !important; }
+/* Computador: o título começa na mesma altura do "Acesse sua conta" (o login
+   centraliza um painel de 487px numa caixa de 680px → 56px do topo). */
+@media (min-width: 769px) and (min-height: 501px), (min-width: 769px) and (hover: hover) {
+  #cd#cd#cd .cd-painel { margin-top: 56px !important; margin-bottom: auto !important; }
+}

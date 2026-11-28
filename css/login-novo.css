@@ -405,3 +405,7 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
    continuar exatamente no meio da tela no celular. Só aparece no Entrar. */
 #view-login#view-login#view-login .lg-novo-fora { margin: 20px 0 -42px !important; min-height: 22px; text-align: center !important; }
 #view-login#view-login#view-login .lg-pagina:has(#login-panel-signin.hidden) > .lg-novo-fora { display: none !important; }
+/* Celular: mais respiro dentro da caixa, em cima e embaixo (igual ao cadastro). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login#view-login .lg-lado { padding-top: 40px !important; padding-bottom: 40px !important; }
+}

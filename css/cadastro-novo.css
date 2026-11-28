@@ -321,3 +321,7 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 #cd#cd#cd .onboard-step[data-step="1"] .cd-ou { margin: 18px 0 18px !important; }
 #cd#cd#cd .cd-ja-tem-fora { margin: 0 0 -41px !important; min-height: 21px; text-align: center !important; }
 #cd#cd#cd .cd-pagina:has(.onboard-step[data-step="1"]:not(.is-active)) > .cd-ja-tem-fora { display: none !important; }
+/* Celular: mais respiro dentro da caixa, em cima e embaixo (igual ao login). */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #cd#cd#cd .cd-lado { padding-top: 40px !important; padding-bottom: 40px !important; }
+}

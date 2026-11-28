@@ -391,3 +391,13 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
 /* Logo do login (entrar, esqueci a senha, nova senha...) no azul da
    plataforma logada (#183B54). */
 #view-login#view-login#view-login .lg-logo { color: #183B54 !important; }
+
+/* Login sem cartão e sem foto: a tela inteira é branca (a mesma cor do
+   "Acesse sua conta") e o formulário fica no centro. */
+#view-login#view-login#view-login { --lg-fundo: #FFFFFF; background: #FFFFFF !important; }
+#view-login#view-login#view-login .lg-fundo, #view-login#view-login#view-login .lg-janela, #view-login#view-login#view-login .lg-relevo { display: none !important; }
+#view-login#view-login#view-login .lg-cabecalho, #view-login#view-login#view-login .lg-cabecalho.lg-on { background: #FFFFFF !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+#view-login#view-login#view-login .lg-pagina { display: flex !important; align-items: center !important; justify-content: center !important; }
+#view-login#view-login#view-login .lg-cartao { display: flex !important; justify-content: center !important; width: 100% !important; max-width: 440px !important; margin: 0 auto !important; padding: 0 !important; background: transparent !important; border-radius: 0 !important; box-shadow: none !important; }
+#view-login#view-login#view-login .lg-lado { flex: 1 1 auto !important; justify-content: center !important; width: 100% !important; padding-left: 16px !important; padding-right: 16px !important; background: transparent !important; }
+@media (max-width: 768px) { #view-login#view-login#view-login .lg-lado { padding-left: 0 !important; padding-right: 0 !important; } }

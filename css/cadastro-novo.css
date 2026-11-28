@@ -306,3 +306,10 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
 #cd#cd#cd #form-onboard-register label { margin-bottom: 14px !important; color: #16202F !important; font-size: 14px !important; line-height: 21px !important; font-weight: 400 !important; }
 #cd#cd#cd #form-onboard-register input:not([type="checkbox"]):not([type="radio"]) { height: 48px !important; min-height: 48px !important; font-size: 16px !important; }
 #cd#cd#cd .onboard-step > h1 + p { text-align: center !important; }
+
+/* Celular: a caixa fica no meio da tela, com o mesmo respiro em cima e embaixo
+   (igual ao login), e o topo é da mesma cor sólida da barra do navegador. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #cd#cd#cd .cd-cabecalho { background: #F7F8FA !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  #cd#cd#cd .cd-pagina { justify-content: center !important; padding-top: 16px !important; padding-bottom: 16px !important; min-height: calc(100vh - 72px - env(safe-area-inset-top, 0px)) !important; min-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px)) !important; }
+}

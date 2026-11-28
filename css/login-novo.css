@@ -391,3 +391,11 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
 /* Logo do login (entrar, esqueci a senha, nova senha...) no azul da
    plataforma logada (#183B54). */
 #view-login#view-login#view-login .lg-logo { color: #183B54 !important; }
+
+/* Celular: a caixa fica no meio da tela, com o mesmo respiro em cima e embaixo,
+   e o topo é da mesma cor sólida da barra do navegador (theme-color #F7F8FA),
+   sem o azulado do fundo aparecendo por trás. */
+@media (max-width: 768px), (hover: none) and (pointer: coarse) and (max-height: 500px) {
+  #view-login#view-login#view-login .lg-cabecalho, #view-login#view-login#view-login .lg-cabecalho.lg-on { background: #F7F8FA !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  #view-login#view-login#view-login .lg-pagina { align-items: center !important; align-content: center !important; padding-top: 16px !important; padding-bottom: 16px !important; min-height: calc(100vh - 72px - env(safe-area-inset-top, 0px)) !important; min-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px)) !important; }
+}

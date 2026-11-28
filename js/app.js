@@ -814,12 +814,12 @@ document.addEventListener('DOMContentLoaded', () => {
     state.currentView = viewName;
 
     // Login: a página por trás e a barra do navegador no celular ficam na cor
-    // do fundo (#E9F1FB), como no cadastro — antes o topo do Safari ficava branco.
+    // do topo (#F7F8FA), como no cadastro — antes o topo do Safari ficava branco.
     document.body.classList.toggle('login-mode', viewName === 'login');
     const corDaBarra = document.querySelector('meta[name="theme-color"]');
     if (corDaBarra) {
       if (!corDaBarra.dataset.original) corDaBarra.dataset.original = corDaBarra.getAttribute('content') || '';
-      corDaBarra.setAttribute('content', viewName === 'login' ? '#E9F1FB' : corDaBarra.dataset.original);
+      corDaBarra.setAttribute('content', viewName === 'login' ? '#F7F8FA' : corDaBarra.dataset.original);
     }
 
     if (viewName === 'dashboard') {

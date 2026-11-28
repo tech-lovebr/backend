@@ -313,3 +313,11 @@ body[data-theme="dark"] #cd#cd .olho-senha:hover { color: #FFFFFF; }
   #cd#cd#cd .cd-cabecalho { background: #F7F8FA !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   #cd#cd#cd .cd-pagina { justify-content: center !important; padding-top: 16px !important; padding-bottom: 16px !important; min-height: calc(100vh - 72px - env(safe-area-inset-top, 0px)) !important; min-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px)) !important; }
 }
+
+/* Cadastro: e-mail e senha primeiro, depois "ou" e Criar conta com o Google.
+   "Já tem uma conta? Entrar" fora do cartão (20px abaixo, pelo gap da página),
+   sem tirar a caixa do meio da tela; só na primeira etapa. */
+#cd#cd#cd #form-onboard-register { margin-top: 0 !important; }
+#cd#cd#cd .onboard-step[data-step="1"] .cd-ou { margin: 18px 0 18px !important; }
+#cd#cd#cd .cd-ja-tem-fora { margin: 0 0 -41px !important; min-height: 21px; text-align: center !important; }
+#cd#cd#cd .cd-pagina:has(.onboard-step[data-step="1"]:not(.is-active)) > .cd-ja-tem-fora { display: none !important; }

@@ -399,3 +399,9 @@ body[data-theme="dark"] #view-login#view-login #login-panel-signin .lg-campo inp
   #view-login#view-login#view-login .lg-cabecalho, #view-login#view-login#view-login .lg-cabecalho.lg-on { background: #F7F8FA !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   #view-login#view-login#view-login .lg-pagina { align-items: center !important; align-content: center !important; padding-top: 16px !important; padding-bottom: 16px !important; min-height: calc(100vh - 72px - env(safe-area-inset-top, 0px)) !important; min-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px)) !important; }
 }
+
+/* "Ainda não tem uma conta? Cadastre-se" fora do cartão, 20px abaixo dele.
+   A margem negativa embaixo tira a linha da conta da altura, para a caixa
+   continuar exatamente no meio da tela no celular. Só aparece no Entrar. */
+#view-login#view-login#view-login .lg-novo-fora { margin: 20px 0 -42px !important; min-height: 22px; text-align: center !important; }
+#view-login#view-login#view-login .lg-pagina:has(#login-panel-signin.hidden) > .lg-novo-fora { display: none !important; }

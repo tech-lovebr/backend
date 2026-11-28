@@ -55,7 +55,7 @@
        corpo da página (ex.: o carrossel do login) que já chama LoveI18n.t()
        durante o parse — por isso carrega aqui no <head>, não no fim do body
        junto dos outros scripts da plataforma. -->
-  <script src="js/i18n.js?v=20261117_menus2"></script>
+  <script src="js/i18n.js?v=20261128_fora"></script>
   <script src="js/i18n-plataforma.js?v=20261123_en27"></script>
 
   <!-- Google tag (gtag.js) -->
@@ -141,7 +141,7 @@
   <link rel="stylesheet" href="css/landing.css?v=20261103_landing22">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..600&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..600,0..100,0..1;1,9..144,100..600,0..100,0..1&family=Nothing+You+Could+Do&display=swap">
   <link rel="stylesheet" href="css/landing-nova.css?v=20261128_ceu">
-  <link rel="stylesheet" href="css/login-novo.css?v=20261128_meio">
+  <link rel="stylesheet" href="css/login-novo.css?v=20261128_fora">
 </head>
 <body class="relative min-h-screen text-slate-900 bg-white antialiased">
 
@@ -610,8 +610,6 @@
               </div>
               <button type="submit" id="btn-do-email-login" class="lg-btn lg-btn-escuro"><span data-love-i18n="login.entrar">Entrar</span><i aria-hidden="true"></i></button>
             </form>
-
-            <p class="lg-novo"><span data-love-i18n="login.aindaNaoTemConta">Ainda não tem uma conta?</span> <button type="button" id="btn-login-to-register" class="lg-link lg-link-forte" data-love-i18n="login.cadastreSe">Cadastre-se</button></p>
           </div>
 
           <!-- Painel: Esqueci a senha -->
@@ -707,6 +705,9 @@
           </div>
         </div>
       </section>
+
+      <!-- Fora do cartão, para não ser tocado sem querer (só no painel Entrar) -->
+      <p class="lg-novo lg-novo-fora"><span data-love-i18n="login.aindaNaoTemConta">Ainda não tem uma conta?</span> <button type="button" id="btn-login-to-register" class="lg-link lg-link-forte" data-love-i18n="login.cadastreSe">Cadastre-se</button></p>
     </div>
 
     <script>
